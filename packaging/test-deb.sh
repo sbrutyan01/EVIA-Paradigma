@@ -13,7 +13,9 @@ for image in ubuntu:22.04 ubuntu:24.04 debian:12 debian:13; do
     export DEBIAN_FRONTEND=noninteractive
     apt-get update -qq
     apt-get install -y -qq --no-install-recommends "./'"$DEB"'" > /tmp/apt.log 2>&1 || { tail -60 /tmp/apt.log; exit 1; }
-    missing=$(find /opt/evia-paradigma -name "*.so" -exec ldd {} \; 2>/dev/null | grep "not found" | sort -u || true)
+    # the runtime finds its own libraries (e.g. lib/server/libjvm.so) itself; ldd needs to be told where they are
+    rt=/opt/evia-paradigma/lib/runtime/lib
+    missing=$(find /opt/evia-paradigma -name "*.so" -exec env LD_LIBRARY_PATH="$rt:$rt/server" ldd {} \; 2>/dev/null | grep "not found" | sort -u || true)
     if [ -n "$missing" ]; then echo "missing libraries:"; echo "$missing"; exit 1; fi
     evia-paradigma --version
     evia-paradigma --run examples/example.evia | tail -n 1
