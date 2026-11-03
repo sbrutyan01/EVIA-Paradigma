@@ -41,7 +41,7 @@ final class Cli {
                     return 0;
                 }
                 case "--version" -> {
-                    out.println("EVIA Paradigma 1.0 (Java " + System.getProperty("java.version") + ")");
+                    out.println("EVIA Paradigma " + App.VERSION + " (Java " + System.getProperty("java.version") + ")");
                     return 0;
                 }
                 default -> {

@@ -11,6 +11,8 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C++20 generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.1"><img src="https://img.shields.io/badge/version-0.1-blue" alt="version 0.1"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
 Drag blocks onto a canvas, wire them together, run the program. Combine blocks into
@@ -27,7 +29,7 @@ libraries; a Maven project for NetBeans and Java 25.
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-1.0.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.jar`.
 
 ### Installing Clang 23
 
@@ -133,3 +135,7 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
+
+## License
+
+EVIA Paradigma is released under the [MIT License](LICENSE). Copyright (c) 2026 Sergey (sbrutyan01).

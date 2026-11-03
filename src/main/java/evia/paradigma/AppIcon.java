@@ -55,10 +55,10 @@ final class AppIcon {
             JLabel img = new JLabel(new ImageIcon(l.getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
             p.add(img, BorderLayout.NORTH);
         }
-        JLabel text = new JLabel("<html><div style='text-align:center'><b style='font-size:15pt'>EVIA Paradigma</b><br>"
+        JLabel text = new JLabel("<html><div style='text-align:center'><b style='font-size:15pt'>EVIA Paradigma " + App.VERSION + "</b><br>"
                 + "Visual block programming with classes and C++20 generation<br><br>"
                 + "Java " + System.getProperty("java.version") + "<br>"
-                + "github.com/sbrutyan01/EVIA-Paradigma</div></html>", SwingConstants.CENTER);
+                + "github.com/sbrutyan01/EVIA-Paradigma<br>MIT License</div></html>", SwingConstants.CENTER);
         p.add(text, BorderLayout.CENTER);
         JOptionPane.showMessageDialog(parent, p, "About EVIA Paradigma", JOptionPane.PLAIN_MESSAGE);
     }

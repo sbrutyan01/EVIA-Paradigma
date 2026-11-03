@@ -5,6 +5,9 @@ import javax.swing.UIManager;
 
 /** Entry point. */
 public final class App {
+    /** Released version, shown by --version and in the About dialog. */
+    public static final String VERSION = "0.1";
+
     public static void main(String[] args) {
         if (args.length > 0) {                       // command-line mode: --run, --gen, --help
             System.setProperty("java.awt.headless", "true");

@@ -6,7 +6,7 @@
 
     <groupId>evia</groupId>
     <artifactId>evia-paradigma</artifactId>
-    <version>1.0</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
     <name>EVIA Paradigma</name>
 
@@ -25,7 +25,7 @@
                 <version>3.14.0</version>
             </plugin>
             <plugin>
-                <!-- makes target/evia-paradigma-1.0.jar runnable with: java -jar -->
+                <!-- makes target/evia-paradigma-0.1.jar runnable with: java -jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
