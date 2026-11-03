@@ -41,6 +41,38 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
 | Any OS with Java 25 | `evia-paradigma-0.3.0.jar` | `java -jar evia-paradigma-0.3.0.jar` |
 
+### Release 0.3.0
+
+[EVIA Paradigma v0.3.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.3.0) ([release notes](docs/release-notes/v0.3.0.md)):
+C99, C11, C17 and C++98 to C++20, structured/goto flow, safe/fast values.
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.3.0-windows-x64.exe` | Windows 10/11 x64 | 28.0 MB |
+| `EVIA-Paradigma-0.3.0-macos-arm64.dmg` | macOS, Apple Silicon | 28.2 MB |
+| `EVIA-Paradigma-0.3.0-macos-x64.dmg` | macOS, Intel | 29.7 MB |
+| `evia-paradigma_0.3.0_amd64.deb` | Ubuntu/Debian amd64 | 22.9 MB |
+| `evia-paradigma-0.3.0.jar` | Any OS with Java 25 | 0.5 MB |
+| `LICENSE` | MIT license | — |
+
+CI ([`build.yml`](.github/workflows/build.yml)): every program in `examples/` and `tests/programs/` in every
+language and mode, compiled with `-Wall -Wextra -Wpedantic -Werror` and compared with the interpreter
+(stdout, stderr, exit code):
+
+| Where | Compiler | Identical to the interpreter | Refused by fast values¹ | Failed |
+|---|---|---|---|---|
+| Linux, all 8 languages | Clang 23.1.5 | 384 of 384 | 64 | 0 |
+| Linux, all 8 languages | GCC 13.3 | 384 of 384 | 64 | 0 |
+| Windows (C99, C17, C++98, C++14, C++20) | llvm-mingw Clang 23.1.4, `-static` | 240 of 240 | 40 | 0 |
+| Linux and Windows | examples, application and Git checks (`check-examples.sh`, `check-app.sh`) | passed | — | 0 |
+
+¹ As intended: those programs keep text in variables, which fast values (plain `double`) don't allow.
+On Windows the programs need no Visual Studio DLLs.
+
+After the release, `main` also has two fixes found by the Windows CI job (they only show with the strict test flags
+`-Wpedantic -Werror`, so the published installers work): whole numbers beyond 32 bits are written as `10000000000.0`
+(on Windows `long` is 32-bit, and C++98 rejects `long long` literals), and the test scripts ignore `\r\n` line endings.
+
 ### Release 0.2.0
 
 [EVIA Paradigma v0.2.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.2.0) ([release notes](docs/release-notes/v0.2.0.md))
