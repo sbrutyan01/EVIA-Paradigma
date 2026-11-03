@@ -96,7 +96,7 @@ final class PalettePanel extends JPanel {
                 - Drag on empty space to select
                   several, Ctrl+click to add
                 - Ctrl+G: group selection into
-                  a custom block
+                  a class
                 - Right-click for more options
 
                 Loops (For, While, Do-While):

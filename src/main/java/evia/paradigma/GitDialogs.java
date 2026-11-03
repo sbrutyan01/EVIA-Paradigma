@@ -91,7 +91,7 @@ final class GitDialogs {
         JPanel center = new JPanel(new BorderLayout(6, 6));
         center.setBorder(BorderFactory.createEmptyBorder(10, 10, 4, 10));
         JPanel top = new JPanel(new BorderLayout());
-        top.add(new JLabel("Changes (all of them are committed):"), BorderLayout.NORTH);
+        top.add(new JLabel("Changes (all of these will be committed):"), BorderLayout.NORTH);
         top.add(new JScrollPane(files), BorderLayout.CENTER);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(new JLabel("Message" + (Settings.vimKeys() ? "  (Vim keys: Esc, then :w to commit, :q to cancel)" : "") + ":"),
@@ -145,7 +145,7 @@ final class GitDialogs {
     }
 
     static void showText(Component parent, String title, String text) {
-        JTextArea a = new JTextArea(text, 24, 90);
+        JTextArea a = new JTextArea(text, Math.min(24, Math.max(6, (int) text.lines().count() + 1)), 90);
         a.setEditable(false);
         a.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         a.setCaretPosition(0);

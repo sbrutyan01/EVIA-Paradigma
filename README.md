@@ -21,6 +21,12 @@ in **project folders** under **Git/GitHub**, edit everything with **Vim**, and t
 program into a single **C++20** file built with **Clang 23**. Pure Swing, no external
 libraries; a Maven project for NetBeans and Java 25.
 
+<p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
+
+**Contents:** [Download](#download) · [Tutorial](#tutorial) · [Building from source](#building-from-source) ·
+[Blocks](#blocks) · [Classes](#classes-and-objects) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
+[Vim](#vim) · [C++20](#c20-code-generation) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
+
 ## Download
 
 Get the installer for your system from the [latest release](https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest).
@@ -33,6 +39,127 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 | macOS, Intel | `EVIA-Paradigma-0.2.0-macos-x64.dmg` | Same as above |
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.2.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.2.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
 | Any OS with Java 25 | `evia-paradigma-0.2.0.jar` | `java -jar evia-paradigma-0.2.0.jar` |
+
+### Release 0.2.0
+
+[EVIA Paradigma v0.2.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.2.0) ([release notes](docs/release-notes/v0.2.0.md))
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.2.0-windows-x64.exe` | Windows 10/11 x64 | 27.9 MB |
+| `EVIA-Paradigma-0.2.0-macos-arm64.dmg` | macOS, Apple Silicon | 28.2 MB |
+| `EVIA-Paradigma-0.2.0-macos-x64.dmg` | macOS, Intel | 29.6 MB |
+| `evia-paradigma_0.2.0_amd64.deb` | Ubuntu/Debian amd64 | 22.9 MB |
+| `evia-paradigma-0.2.0.jar` | Any OS with Java 25 | 0.4 MB |
+| `LICENSE` | MIT license | — |
+
+| Check on the release build | Result |
+|---|---|
+| Every installer starts and runs the built-in example | Passed |
+| Examples: interpreter and the Clang 23 build give identical output | Passed |
+| Classes, modules, View C++ source, projects and Git (`scripts/check-app.sh`) | Passed |
+| Release notes on the release page | Yes |
+
+## Tutorial
+
+This walk-through builds a small project with a loop and a class, runs it, looks at the C++ it becomes,
+and puts it under Git. Every picture is the real application (they are regenerated with
+[`scripts/take-screenshots.sh`](scripts/take-screenshots.sh)).
+
+### 1. Create a project
+
+**File → New Project…** (Ctrl+Shift+N). Enter a name and a location; keep *Create a Git repository* checked
+if git is installed.
+
+<p align="center"><img src="docs/screenshots/01-new-project.png" alt="New Project dialog" width="550"></p>
+
+The project opens with a starter program, *Start → Print → End*. The output panel shows that git created
+the repository and the first commit.
+
+<p align="center"><img src="docs/screenshots/02-project-created.png" alt="New project with the starter program and the first commit" width="900"></p>
+
+### 2. Build a loop
+
+Drag blocks from the palette onto the canvas and connect them: drag from a block's bottom port (dark dot)
+to the next block's top port (white dot). Double-click a block to edit its code.
+
+- **Set**: `n = 3`
+- **For**: `i = 1; i <= n; i = i + 1`. Its `body` port goes to **Print** `"step " + i`; wire the end of the
+  body **back into the For block** to start the next pass. Its `done` port goes to **End**.
+
+Press **Run** (F5). Set *Step delay* to watch the active block move.
+
+<p align="center"><img src="docs/screenshots/03-first-run.png" alt="A For loop and its output" width="900"></p>
+
+### 3. Create a class
+
+**Edit → New Class…** (or *+ New class…* in the palette), name it `Counter`. The class window has a
+**Fields** tab and one tab per method.
+
+**Fields**: add `total` and `calls`, both starting at `0`. Every object gets its own copy.
+
+<p align="center"><img src="docs/screenshots/04-class-fields.png" alt="Fields tab of the class window" width="800"></p>
+
+**Methods**: rename the first method to `add` with parameter `x` (press **Apply**), then build its body
+from **Enter** to **Exit**. Inside a method, fields and parameters are written as `this.name`:
+
+<p align="center"><img src="docs/screenshots/05-class-method.png" alt="Method add(x) of class Counter" width="800"></p>
+
+**+ Constructor** adds `init`, which runs once when an object is created (after the fields get their
+initial values). Here it prints `"new counter"`. **+ Method…** adds `show` that prints
+`"total = " + this.total + " after " + this.calls + " calls"`.
+
+<p align="center"><img src="docs/screenshots/06-class-constructor.png" alt="The constructor init" width="800"></p>
+
+### 4. Use the class
+
+The palette now lists `Counter.add(x)` and `Counter.show()`. Drag `Counter.add(x)` into the loop body after
+**Print** and `Counter.show()` between `done` and **End**. Double-click a call block to choose the method,
+the **object** and the arguments. Give both blocks the object name `c` so they share one object:
+
+<p align="center"><img src="docs/screenshots/07-call-dialog.png" alt="Call dialog: method, object and arguments" width="600"></p>
+
+Run it. `c` is created on its first use (so `new counter` is printed then), `add` runs three times,
+and `show` prints the total:
+
+<p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="Program with a Counter object and its output" width="900"></p>
+
+### 5. See the C++ for any block
+
+Right-click a block → **View C++ source**. The generated C++20 opens with exactly that block's lines highlighted:
+
+<p align="center"><img src="docs/screenshots/09-block-menu.png" alt="Right-click menu of a block" width="420"></p>
+
+<p align="center"><img src="docs/screenshots/10-view-source.png" alt="Generated C++ with the call block's lines highlighted" width="900"></p>
+
+**Compile & Run** builds it with Clang and runs it. The compiled program prints the same as the interpreter.
+On Windows the app installs the llvm-mingw Clang for you (no Visual Studio needed).
+
+<p align="center"><img src="docs/screenshots/11-compile-run.png" alt="The generated program compiled with Clang and run" width="900"></p>
+
+### 6. Commit and publish on GitHub
+
+**Git → Commit…** (Ctrl+K) saves and commits all changes. The message box has Vim keys (`Esc`, then `:w` commits).
+
+<p align="center"><img src="docs/screenshots/17-commit.png" alt="Commit dialog" width="520"></p>
+
+**Git → Connect to GitHub…**: type `owner/repo`. *Create repository on GitHub…* opens github.com with the name
+filled in; create it **empty**, press **OK**, and the project is pushed. Git uses the login it already has
+on your computer (Git Credential Manager, an SSH key or `gh auth login`).
+
+<p align="center"><img src="docs/screenshots/18-connect-github.png" alt="Connect to GitHub dialog" width="560"></p>
+
+**Git → History** lists the commits:
+
+<p align="center"><img src="docs/screenshots/19-history.png" alt="Git history" width="650"></p>
+
+### 7. Keep going
+
+- Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
+- **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
+- **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys.
+
+<p align="center"><img src="docs/screenshots/20-help-guide.png" alt="The built-in guide" width="800"></p>
 
 ## Building from source
 
@@ -123,6 +250,19 @@ Programs saved by 0.1.x still open; every custom block becomes a class with one 
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
 | **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Online Documentation, Report an Issue, Check for Updates, About |
 
+<table>
+<tr>
+<td><img src="docs/screenshots/12-menu-file.png" alt="File menu" width="300"></td>
+<td><img src="docs/screenshots/13-menu-edit.png" alt="Edit menu" width="300"></td>
+<td><img src="docs/screenshots/14-menu-run.png" alt="Run menu" width="300"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/15-menu-git.png" alt="Git menu" width="300"></td>
+<td><img src="docs/screenshots/16-menu-help.png" alt="Help menu" width="300"></td>
+<td></td>
+</tr>
+</table>
+
 **Right-click a block → View C++ source** opens the generated C++ with exactly the lines that block became highlighted.
 The same works for a method or class (class window → *View C++*, or right-click a class in the palette).
 
@@ -203,6 +343,11 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
 4. runs [`scripts/check-app.sh`](scripts/check-app.sh): classes and modules (export, import, reload), the
    *View C++ source* line mapping, project creation and the Git commands against a local bare repository.
 
+**If a release ends up without installers** (for example a download failed while it was being built):
+open **Actions → release → Run workflow**, enter the tag (e.g. `v0.2.1`) and run it. It builds that tag's
+sources and attaches the installers to its release. The Clang download retries and, if apt.llvm.org is down,
+falls back to Ubuntu's Clang with a warning.
+
 Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma-0.1.2-CI.pdf) · [SHA-256 checksums](docs/reports/SHA256SUMS-0.1.2.txt)
 
 ## Code map
@@ -226,6 +371,20 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
+
+## Screenshots
+
+All pictures are in [`docs/screenshots`](docs/screenshots). They are taken from the running application by
+[`scripts/take-screenshots.sh`](scripts/take-screenshots.sh), which drives the UI through the tutorial above.
+
+| | |
+|---|---|
+| <img src="docs/screenshots/00-main-window.png" alt="Main window" width="420"> | <img src="docs/screenshots/05-class-method.png" alt="Class window" width="420"> |
+| Main window | Class window: a method |
+| <img src="docs/screenshots/10-view-source.png" alt="View C++ source" width="420"> | <img src="docs/screenshots/11-compile-run.png" alt="Compile and run" width="420"> |
+| View C++ source | Compile & Run with Clang |
+| <img src="docs/screenshots/02-project-created.png" alt="New project" width="420"> | <img src="docs/screenshots/20-help-guide.png" alt="Guide" width="420"> |
+| New project with Git | Help → Guide |
 
 ## License
 
