@@ -1,0 +1,20 @@
+# Maven / Java
+target/
+*.class
+*.jar
+!.mvn/wrapper/*.jar
+
+# NetBeans / IDEs
+nbproject/private/
+nbactions*.xml
+nb-configuration.xml
+.idea/
+*.iml
+.vscode/
+
+# Generated programs and editor files
+*.o
+*.exe
+*.swp
+*~
+.DS_Store
