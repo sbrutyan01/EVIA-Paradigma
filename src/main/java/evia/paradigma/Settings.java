@@ -85,8 +85,10 @@ final class Settings {
     // ================================================================ compiler version
 
     /** What --version reports for the compiler of a command, e.g. "Clang 23.1.4". */
-    record CompilerInfo(String name, int major, String version) {
+    record CompilerInfo(String name, int major, String version, String target) {
         boolean isClang() { return name.equals("Clang"); }
+        /** Clang that targets MSVC needs Visual Studio's C++ library; EVIA Paradigma avoids that. */
+        boolean needsVisualStudio() { return target != null && target.contains("windows-msvc"); }
         boolean isLatestClang() { return isClang() && major >= LATEST_CLANG; }
         String display() { return name + " " + version; }
     }
@@ -111,9 +113,11 @@ final class Settings {
             p.waitFor(10, TimeUnit.SECONDS);
             String out = sb.toString();
             Matcher m;
-            if ((m = CLANG.matcher(out)).find()) return info("Clang", m);
-            if ((m = GCC.matcher(out)).find()) return info("GCC", m);
-            return new CompilerInfo(exe, 0, "(unknown version)");
+            Matcher t = Pattern.compile("(?m)^Target:\\s*(\\S+)").matcher(out);
+            String target = t.find() ? t.group(1) : null;
+            if ((m = CLANG.matcher(out)).find()) return info("Clang", m, target);
+            if ((m = GCC.matcher(out)).find()) return info("GCC", m, target);
+            return new CompilerInfo(exe, 0, "(unknown version)", target);
         } catch (Exception e) {
             return null;
         }
@@ -144,9 +148,9 @@ final class Settings {
         }
     }
 
-    private static CompilerInfo info(String name, Matcher m) {
+    private static CompilerInfo info(String name, Matcher m, String target) {
         String v = m.group(1) + "." + m.group(2) + (m.group(3) != null ? "." + m.group(3) : "");
-        return new CompilerInfo(name, Integer.parseInt(m.group(1)), v);
+        return new CompilerInfo(name, Integer.parseInt(m.group(1)), v, target);
     }
 
     // ================================================================ dialog
@@ -243,6 +247,10 @@ final class Settings {
             label.setText(ToolchainInstaller.supported()
                     ? "Compiler not found - click \"Install Clang...\""
                     : "Compiler not found - install LLVM/Clang " + LATEST_CLANG + " and put clang++ on PATH");
+            label.setForeground(new Color(190, 30, 30));
+        } else if (ci.needsVisualStudio()) {
+            label.setText(ci.display() + " (" + ci.target() + ") - needs Visual Studio's C++ library"
+                    + (ToolchainInstaller.supported() ? ": click \"Install Clang...\" for llvm-mingw" : ""));
             label.setForeground(new Color(190, 30, 30));
         } else if (ci.isLatestClang()) {
             label.setText(ci.display() + "  (latest stable)");

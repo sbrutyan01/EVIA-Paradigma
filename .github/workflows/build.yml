@@ -79,3 +79,15 @@ jobs:
         env:
           CXXFLAGS: -static
         run: scripts/check-examples.sh clang++
+
+      - name: Check the programs need nothing from Visual Studio
+        run: |
+          for exe in build/examples/*.exe; do
+            dlls=$(llvm-objdump -p "$exe" | sed -n 's/.*DLL Name: //p' | tr '\n' ' ')
+            echo "$(basename "$exe"): $dlls"
+            if echo "$dlls" | grep -qiE 'vcruntime|msvcp|msvcr|concrt'; then
+              echo "::error::$exe depends on the Visual Studio C++ runtime"; exit 1
+            fi
+          done
+          clang++ -dumpmachine
+          clang++ -dumpmachine | grep -q windows-gnu
