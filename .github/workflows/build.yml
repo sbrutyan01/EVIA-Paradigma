@@ -41,3 +41,41 @@ jobs:
           path: |
             target/evia-paradigma-*.jar
             build/examples/*.cpp
+
+  # Windows without Visual Studio: Clang from llvm-mingw (its own libc++ and Windows headers),
+  # the same toolchain EVIA Paradigma installs with "Install Clang...".
+  windows-llvm-mingw:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: Download the latest llvm-mingw
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url=$(gh api repos/mstorsjo/llvm-mingw/releases/latest \
+                --jq '.assets[].browser_download_url | select(test("-ucrt-x86_64\\.zip$"))')
+          echo "$url"
+          curl -sSL -o llvm-mingw.zip "$url"
+          7z x -y -o"$RUNNER_TEMP" llvm-mingw.zip > /dev/null
+          bin=$(ls -d "$RUNNER_TEMP"/llvm-mingw-*/bin)
+          echo "$bin" >> "$GITHUB_PATH"
+          "$bin/clang++" --version
+
+      - name: Generate C++, compile with llvm-mingw Clang (-static), compare with the interpreter
+        env:
+          CXXFLAGS: -static
+        run: scripts/check-examples.sh clang++

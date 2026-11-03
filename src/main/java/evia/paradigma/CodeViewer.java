@@ -39,6 +39,7 @@ final class CodeViewer extends JFrame {
     private String baseName = "program";
     private Path savedPath;
     private Process process;
+    private final StringBuilder lastOutput = new StringBuilder();
     private Writer stdin;
 
     CodeViewer() {
@@ -300,17 +301,20 @@ final class CodeViewer extends JFrame {
                     cmd.add(tok.replace("{src}", src.toString()).replace("{exe}", exe.toString()));
                 }
                 append("$ " + String.join(" ", cmd) + "\n");
+                lastOutput.setLength(0);
                 int rc = runProcess(new ProcessBuilder(cmd).directory(dir.toFile()), false);
                 if (rc != 0) {
                     append(">> compilation failed (exit code " + rc + ")\n");
+                    if (ToolchainInstaller.looksLikeMissingToolchain(lastOutput.toString())) toolchainMissing();
                     return;
                 }
                 append(">> compiled, running...\n\n");
                 rc = runProcess(new ProcessBuilder(exe.toString()).directory(dir.toFile()), true);
                 append("\n>> program exited with code " + rc + "\n");
             } catch (IOException e) {
-                append(">> " + e.getMessage() + "\n"
-                        + ">> Install LLVM/Clang " + Settings.LATEST_CLANG + " and put clang++ on PATH,\n"
+                append(">> " + e.getMessage() + "\n");
+                if (ToolchainInstaller.supported()) toolchainMissing();
+                else append(">> Install LLVM/Clang " + Settings.LATEST_CLANG + " and put clang++ on PATH,\n"
                         + "   or change the compiler in Settings.\n");
             } catch (InterruptedException e) {
                 append(">> stopped\n");
@@ -344,9 +348,39 @@ final class CodeViewer extends JFrame {
         try (Reader r = new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8)) {
             char[] buf = new char[4096];
             int n;
-            while ((n = r.read(buf)) > 0) append(new String(buf, 0, n));
+            while ((n = r.read(buf)) > 0) {
+                String chunk = new String(buf, 0, n);
+                if (!interactive && lastOutput.length() < 100_000) lastOutput.append(chunk);
+                append(chunk);
+            }
         }
         return p.waitFor();
+    }
+
+    /**
+     * The compiler or its C++ standard library is missing. On Windows, offer to set up
+     * llvm-mingw (Clang with its own C++ library, no Visual Studio) and compile again.
+     */
+    private void toolchainMissing() {
+        if (!ToolchainInstaller.supported()) {
+            append(">> Clang found no C++ standard library. Install libc++ or libstdc++ (e.g. g++) for your system.\n");
+            return;
+        }
+        append("\n>> Clang can't find a C++ standard library. On Windows Clang needs one:\n"
+                + "   EVIA Paradigma can set up llvm-mingw (Clang + libc++ + Windows headers,\n"
+                + "   no Visual Studio needed) in " + ToolchainInstaller.home() + "\n");
+        SwingUtilities.invokeLater(() -> {
+            int r = JOptionPane.showConfirmDialog(this,
+                    "<html>Clang can't find a C++ standard library.<br><br>"
+                            + "Download and set up <b>llvm-mingw</b> now?<br>"
+                            + "It's Clang with its own C++ library and Windows headers. No Visual Studio needed,<br>"
+                            + "no admin rights, and it doesn't change your PATH.</html>",
+                    "Set up Clang", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (r == JOptionPane.YES_OPTION && ToolchainInstaller.install(this)) {
+                checkCompiler();
+                compileAndRun();
+            }
+        });
     }
 
     private void sendInput() {

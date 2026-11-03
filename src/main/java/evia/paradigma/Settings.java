@@ -36,8 +36,20 @@ final class Settings {
         return PREFS.get("editor", ExternalEditor.defaultCommand());
     }
 
+    /**
+     * The compile command. Unless the user chose another one, the toolchain that
+     * EVIA Paradigma installed itself (llvm-mingw on Windows) is preferred.
+     */
     static String compilerCommand() {
-        return PREFS.get("compiler", DEFAULT_COMPILER);
+        String saved = PREFS.get("compiler", null);
+        String managed = ToolchainInstaller.managedCommand();
+        if ((saved == null || saved.equals(DEFAULT_COMPILER)) && managed != null) return managed;
+        return saved != null ? saved : DEFAULT_COMPILER;
+    }
+
+    static void setCompilerCommand(String command) {
+        PREFS.put("compiler", command);
+        fire();
     }
 
     static void onChange(Runnable r) {
@@ -81,16 +93,14 @@ final class Settings {
 
     private static final Pattern CLANG = Pattern.compile("clang version (\\d+)\\.(\\d+)(?:\\.(\\d+))?");
     private static final Pattern GCC = Pattern.compile("(?:g\\+\\+|gcc)[^\\n]*?(\\d+)\\.(\\d+)(?:\\.(\\d+))?");
-    private static final Pattern MSVC = Pattern.compile("Version (\\d+)\\.(\\d+)\\.(\\d+)");
 
     /** Runs "&lt;compiler&gt; --version"; returns null if the compiler can't be started. */
     static CompilerInfo detectCompiler(String command) {
         List<String> tokens = split(command);
         if (tokens.isEmpty()) return null;
         String exe = tokens.get(0);
-        boolean msvc = exe.toLowerCase().matches(".*(^|[\\\\/])cl(\\.exe)?$");
         try {
-            Process p = new ProcessBuilder(msvc ? List.of(exe) : List.of(exe, "--version"))
+            Process p = new ProcessBuilder(List.of(exe, "--version"))
                     .redirectErrorStream(true).start();
             p.getOutputStream().close();
             StringBuilder sb = new StringBuilder();
@@ -103,10 +113,34 @@ final class Settings {
             Matcher m;
             if ((m = CLANG.matcher(out)).find()) return info("Clang", m);
             if ((m = GCC.matcher(out)).find()) return info("GCC", m);
-            if (msvc && (m = MSVC.matcher(out)).find()) return info("MSVC", m);
             return new CompilerInfo(exe, 0, "(unknown version)");
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * Compiles the C++ runtime with {@code command} to make sure the compiler and its
+     * C++ standard library work. Returns null on success, otherwise the compiler output.
+     */
+    static String testCompile(String command) {
+        try {
+            java.nio.file.Path dir = java.nio.file.Files.createTempDirectory("evia-check");
+            java.nio.file.Path src = dir.resolve("check.cpp");
+            java.nio.file.Path exe = dir.resolve(ExternalEditor.WINDOWS ? "check.exe" : "check");
+            java.nio.file.Files.writeString(src, CppRuntime.SOURCE + "\nint main() { evia_rt::print(evia_rt::S(\"ok\")); }\n");
+            List<String> cmd = new ArrayList<>();
+            for (String t : split(command)) cmd.add(t.replace("{src}", src.toString()).replace("{exe}", exe.toString()));
+            Process p = new ProcessBuilder(cmd).directory(dir.toFile()).redirectErrorStream(true).start();
+            p.getOutputStream().close();
+            String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            if (!p.waitFor(120, TimeUnit.SECONDS)) {
+                p.destroyForcibly();
+                return "compiler timed out";
+            }
+            return p.exitValue() == 0 ? null : out.isBlank() ? "exit code " + p.exitValue() : out.strip();
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 
@@ -125,7 +159,18 @@ final class Settings {
         JButton detectEditor = new JButton("Detect");
         detectEditor.addActionListener(e -> editor.setText(ExternalEditor.defaultCommand()));
         JButton defCompiler = new JButton("Default (Clang)");
-        defCompiler.addActionListener(e -> compiler.setText(DEFAULT_COMPILER));
+        defCompiler.addActionListener(e -> {
+            String managed = ToolchainInstaller.managedCommand();
+            compiler.setText(managed != null ? managed : DEFAULT_COMPILER);
+        });
+        JButton install = new JButton(ToolchainInstaller.managedClang() == null ? "Install Clang..." : "Update Clang...");
+        install.setToolTipText("Download the latest llvm-mingw (Clang with its own C++ library, no Visual Studio needed)");
+        install.addActionListener(e -> {
+            if (ToolchainInstaller.install(p(compiler))) {
+                compiler.setText(ToolchainInstaller.managedCommand());
+                checkCompiler(compiler.getText(), compilerStatus);
+            }
+        });
         JButton check = new JButton("Check");
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
 
@@ -147,10 +192,11 @@ final class Settings {
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         btns.add(defCompiler);
         btns.add(check);
+        if (ToolchainInstaller.supported()) btns.add(install);
         g.gridx = 2; p.add(btns, g);
         g.gridx = 1; g.gridy = 4; g.gridwidth = 2;
         p.add(small("{src} = generated .cpp, {exe} = program. Latest stable Clang is " + LATEST_CLANG
-                + ". MSVC: cl /std:c++20 /EHsc /O2 /Fe:{exe} {src}"), g);
+                + (ToolchainInstaller.supported() ? ". Windows: \"Install Clang...\" sets up llvm-mingw, no Visual Studio needed." : ".")), g);
         g.gridy = 5;
         p.add(compilerStatus, g);
         checkCompiler(compiler.getText(), compilerStatus);
@@ -169,14 +215,34 @@ final class Settings {
         label.setForeground(Color.GRAY);
         new Thread(() -> {
             CompilerInfo ci = detectCompiler(command);
-            SwingUtilities.invokeLater(() -> describe(ci, label));
+            String problem = ci == null ? null : testCompile(command);
+            SwingUtilities.invokeLater(() -> {
+                describe(ci, label);
+                if (problem != null) {
+                    boolean noStdlib = ToolchainInstaller.looksLikeMissingToolchain(problem);
+                    label.setText(ci.display() + (noStdlib
+                            ? "  - found, but it has no C++ standard library"
+                            + (ToolchainInstaller.supported() ? ": click \"Install Clang...\"" : "")
+                            : "  - test compile failed"));
+                    label.setToolTipText("<html><pre>" + problem.replace("&", "&amp;").replace("<", "&lt;") + "</pre></html>");
+                    label.setForeground(new Color(190, 30, 30));
+                } else {
+                    label.setToolTipText(null);
+                }
+            });
         }, "evia-compiler-check").start();
+    }
+
+    private static Component p(Component c) {
+        return SwingUtilities.getWindowAncestor(c) != null ? SwingUtilities.getWindowAncestor(c) : c;
     }
 
     /** Shows a compiler's status: green for Clang 23+, orange for older or other compilers, red if missing. */
     static void describe(CompilerInfo ci, JLabel label) {
         if (ci == null) {
-            label.setText("Compiler not found - install LLVM/Clang " + LATEST_CLANG + " and put clang++ on PATH");
+            label.setText(ToolchainInstaller.supported()
+                    ? "Compiler not found - click \"Install Clang...\""
+                    : "Compiler not found - install LLVM/Clang " + LATEST_CLANG + " and put clang++ on PATH");
             label.setForeground(new Color(190, 30, 30));
         } else if (ci.isLatestClang()) {
             label.setText(ci.display() + "  (latest stable)");

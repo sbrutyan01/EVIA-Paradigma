@@ -76,7 +76,8 @@ final class CppGenerator {
                 .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))).append('\n');
         out.append("// Build:  clang++ -std=c++20 -O2 -o program program.cpp   (made for Clang ")
                 .append(Settings.LATEST_CLANG).append(")\n");
-        out.append("// Also:   g++ -std=c++20 -O2 -o program program.cpp  |  cl /std:c++20 /EHsc /O2 program.cpp\n\n");
+        out.append("// Windows: Clang from llvm-mingw, add -static so the program runs without extra DLLs\n");
+        out.append("// Also:   g++ -std=c++20 -O2 -o program program.cpp\n\n");
         out.append(CppRuntime.SOURCE).append('\n');
 
         out.append("namespace prog {\n");

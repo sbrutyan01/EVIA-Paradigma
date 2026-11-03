@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C++20 generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.1"><img src="https://img.shields.io/badge/version-0.1-blue" alt="version 0.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.1.1-blue" alt="version 0.1.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
@@ -27,11 +27,11 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.1.jar` | `java -jar evia-paradigma-0.1.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.1.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.1.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.1.1-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.1.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.1.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.1.1.jar` | `java -jar evia-paradigma-0.1.1.jar` |
 
 ## Building from source
 
@@ -42,17 +42,19 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.1.jar`.
 
 ### Installing Clang 23
 
 | OS | Command |
 |---|---|
-| Windows | [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases) (self-contained Clang + C++ library), or `winget install LLVM.LLVM` together with Visual Studio Build Tools |
+| Windows | Nothing to do: **Settings → Install Clang…** (also offered automatically on the first compile) downloads the latest [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases), a self-contained Clang with its own C++ library and Windows headers, into `%LOCALAPPDATA%\EVIA Paradigma\llvm-mingw`. No Visual Studio, no admin rights, no PATH changes. Programs are linked with `-static`, so they run on any Windows PC |
 | Ubuntu/Debian | `wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh 23`, then use `clang++-23` |
 | macOS | `brew install llvm` |
 
-**Settings…** shows which compiler was found. It's green for Clang 23 and orange for older versions or other compilers.
+**Settings → Check** test-compiles the C++ runtime with the configured compiler and shows the version. It's green for Clang 23, orange for older versions or other compilers, and red if the compiler or its C++ library is missing.
+
+> **Windows note:** the official LLVM installer (`winget install LLVM.LLVM`) contains only the compiler, without a C++ standard library, so on its own it fails with `'cerrno' file not found`. Use llvm-mingw as described above. EVIA Paradigma detects this and offers to set it up.
 
 ## Blocks
 

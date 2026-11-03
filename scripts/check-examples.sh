@@ -3,7 +3,7 @@
 # built-in interpreter and the compiled program, and require identical stdout, stderr
 # and exit code. An optional examples/NAME.input file is fed to stdin.
 #
-# Usage: scripts/check-examples.sh [compiler] [jar]
+# Usage: [CXXFLAGS=...] scripts/check-examples.sh [compiler] [jar]
 set -euo pipefail
 
 CXX="${1:-clang++}"
@@ -19,7 +19,7 @@ for src in examples/*.evia; do
   [ -f "$input" ] || input=/dev/null
 
   java -jar "$JAR" --gen "$src" -o "$OUT/$name.cpp"
-  "$CXX" -std=c++20 -O2 -Wall -Wextra -Wpedantic -Werror -o "$OUT/$name" "$OUT/$name.cpp"
+  "$CXX" -std=c++20 -O2 -Wall -Wextra -Wpedantic -Werror ${CXXFLAGS:-} -o "$OUT/$name" "$OUT/$name.cpp"
 
   set +e
   java -jar "$JAR" --run "$src" < "$input" > "$OUT/$name.interp.out" 2> "$OUT/$name.interp.err"
