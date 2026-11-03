@@ -48,7 +48,7 @@ case "$KIND" in
       --vendor "Sergey Brutyan (sbrutyan01)" \
       --description "Visual block programming with classes and C++20 generation" \
       --license-file LICENSE \
-      --file-associations packaging/evia-files.properties \
+      --file-associations packaging/evia-files.properties --file-associations packaging/evia-project.properties \
       --icon packaging/icons/evia.png \
       --linux-package-name evia-paradigma \
       --linux-deb-maintainer sbrutyan01@gmail.com \
@@ -70,7 +70,7 @@ case "$KIND" in
       --vendor "Sergey Brutyan (sbrutyan01)" \
       --description "Visual block programming with classes and C++20 generation" \
       --license-file LICENSE \
-      --file-associations packaging/evia-files.properties \
+      --file-associations packaging/evia-files.properties --file-associations packaging/evia-project.properties \
       --icon packaging/icons/evia.ico \
       --win-menu --win-menu-group "EVIA" \
       --win-shortcut --win-shortcut-prompt \
@@ -88,7 +88,7 @@ case "$KIND" in
     jpackage --type app-image "${image_opts[@]}" --app-version "$MACVER" --icon packaging/icons/evia.icns \
       --mac-package-identifier io.github.sbrutyan01.eviaparadigma \
       --mac-package-name "$NAME" \
-      --file-associations packaging/evia-files.properties
+      --file-associations packaging/evia-files.properties --file-associations packaging/evia-project.properties
     APP="$WORK/image/$NAME.app"
     /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
     codesign --force --deep --sign - "$APP"          # ad-hoc signature after editing Info.plist

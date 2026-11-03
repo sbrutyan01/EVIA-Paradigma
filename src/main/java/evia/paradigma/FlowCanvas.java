@@ -28,7 +28,7 @@ public final class FlowCanvas extends JPanel {
     record Link(Block from, int port, Block to) {}
 
     final Library lib;
-    final BlockDef owner;                 // null for the main program
+    final Method owner;                   // null for the main program
 
     private final List<Block> blocks = new ArrayList<>();
     private final Set<Block> selection = new LinkedHashSet<>();
@@ -45,7 +45,7 @@ public final class FlowCanvas extends JPanel {
     private Point bandStart;
     private Rectangle band;
 
-    FlowCanvas(Library lib, BlockDef owner) {
+    FlowCanvas(Library lib, Method owner) {
         super(null);
         this.lib = lib;
         this.owner = owner;
@@ -122,8 +122,14 @@ public final class FlowCanvas extends JPanel {
     }
 
     Block addInstance(BlockDef def, int x, int y) {
-        String args = String.join(", ", def.params);   // sensible default: pass same-named variables
-        return addBlock(nextId, BlockType.CUSTOM, args, def, x, y);
+        return addInstance(def, def.defaultMethod(), x, y);
+    }
+
+    Block addInstance(BlockDef def, Method m, int x, int y) {
+        String args = m == null ? "" : String.join(", ", m.params);   // sensible default: pass same-named variables
+        Block b = addBlock(nextId, BlockType.CUSTOM, args, def, x, y);
+        if (m != null) b.setCall(m.name, "");
+        return b;
     }
 
     Block addBlock(int id, BlockType type, String code, BlockDef def, int x, int y) {
@@ -239,8 +245,8 @@ public final class FlowCanvas extends JPanel {
     void groupSelection() {
         if (locked || selection.isEmpty()) return;
         String name = (String) JOptionPane.showInputDialog(this,
-                "Name of the new custom block (" + selection.size() + " blocks will be moved into it):",
-                "Group into custom block", JOptionPane.PLAIN_MESSAGE, null, null, lib.uniqueName("Group"));
+                "Name of the new class (" + selection.size() + " blocks will be moved into it):",
+                "Group into class", JOptionPane.PLAIN_MESSAGE, null, null, lib.uniqueName("Group"));
         if (name == null) return;
         name = name.trim();
         if (name.isEmpty() || lib.nameTaken(name, null)) {
@@ -322,8 +328,9 @@ public final class FlowCanvas extends JPanel {
 
     void editBlock(Block b) {
         if (locked) return;
-        if (b.def != null && !b.editable()) {
-            lib.openEditor(b.def);
+        if (b.def != null) {
+            InstanceDialog.edit(this, b);
+            blockMoved();
             return;
         }
         if (!b.editable()) return;
@@ -344,7 +351,7 @@ public final class FlowCanvas extends JPanel {
         JPopupMenu menu = new JPopupMenu();
         int n = selection.size();
         if (n > 1) {
-            JMenuItem grp = new JMenuItem("Group " + n + " blocks into custom block...   Ctrl+G");
+            JMenuItem grp = new JMenuItem("Group " + n + " blocks into class...   Ctrl+G");
             grp.addActionListener(e -> groupSelection());
             menu.add(grp);
             JMenuItem del = new JMenuItem("Delete " + n + " blocks");
@@ -352,18 +359,21 @@ public final class FlowCanvas extends JPanel {
             menu.add(del);
         } else {
             if (b.editable()) {
-                JMenuItem edit = new JMenuItem(b.def != null ? "Edit arguments..." : "Edit...");
+                JMenuItem edit = new JMenuItem(b.def != null ? "Method, object and arguments..." : "Edit...");
                 edit.addActionListener(e -> editBlock(b));
                 menu.add(edit);
             }
+            JMenuItem src = new JMenuItem("View C++ source");
+            src.addActionListener(e -> lib.viewSource(b));
+            menu.add(src);
             if (b.def != null) {
-                JMenuItem open = new JMenuItem("Open definition of " + b.def.name + "...");
+                JMenuItem open = new JMenuItem("Open class " + b.def.name + "...");
                 open.addActionListener(e -> lib.openEditor(b.def));
                 menu.add(open);
             }
             if (b.type != BlockType.START && b.type != BlockType.END
                     && b.type != BlockType.ENTER && b.type != BlockType.EXIT) {
-                JMenuItem grp = new JMenuItem("Make custom block from this...");
+                JMenuItem grp = new JMenuItem("Make class from this...");
                 grp.addActionListener(e -> groupSelection());
                 menu.add(grp);
             }
@@ -529,8 +539,11 @@ public final class FlowCanvas extends JPanel {
     Block createFromTransfer(String data, Point p) {
         int x = Math.max(0, p.x - Block.DEFAULT_TOTAL_W / 2), y = Math.max(0, p.y - Block.TOTAL_H / 2);
         if (data.startsWith("DEF:")) {
-            BlockDef d = lib.byId(Integer.parseInt(data.substring(4)));
-            return d == null ? null : addInstance(d, x, y);
+            String[] parts = data.substring(4).split("/", 2);
+            BlockDef d = lib.byId(Integer.parseInt(parts[0]));
+            if (d == null) return null;
+            Method m = parts.length > 1 ? d.method(parts[1]) : d.defaultMethod();
+            return addInstance(d, m != null ? m : d.defaultMethod(), x, y);
         }
         if (data.startsWith("TYPE:")) {
             BlockType t = BlockType.valueOf(data.substring(5));

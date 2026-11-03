@@ -30,7 +30,7 @@ final class Grouper {
         for (Block b : sel) {
             switch (b.type) {
                 case START, END, ENTER, EXIT ->
-                        throw new FlowException(b.type.title + " blocks can't be moved into a custom block");
+                        throw new FlowException(b.type.title + " blocks can't be moved into a class");
                 default -> { }
             }
         }
@@ -46,7 +46,7 @@ final class Grouper {
         }
         if (entries.size() > 1) {
             throw new FlowException("the selection is entered at " + entries.size()
-                    + " different blocks; a custom block can only have one entry point");
+                    + " different blocks; a method can only have one entry point");
         }
         Block entry = entries.isEmpty()
                 ? sel.stream().min(Comparator.comparingInt(Block::getY).thenComparingInt(Block::getX)).orElseThrow()
@@ -72,7 +72,8 @@ final class Grouper {
             minY = Math.min(minY, b.getY());
         }
         BlockDef def = c.lib.create(name);
-        FlowCanvas body = def.body;
+        Method method = def.methods.get(0);
+        FlowCanvas body = method.body;
         for (Block b : List.copyOf(body.getBlocks())) {
             if (b.type == BlockType.EXIT) body.removeBlock(b);   // drop the default exit
         }
@@ -80,10 +81,11 @@ final class Grouper {
         Map<Block, Block> copy = new HashMap<>();
         for (Block b : sel) {
             Block nb = body.addBlock(b.type, b.getCode(), b.def, b.getX() - minX + 60, b.getY() - minY + 120);
+            if (b.def != null) nb.setCall(b.methodName(), b.objectName());
             copy.put(b, nb);
             maxBottom = Math.max(maxBottom, nb.getY() + nb.getHeight());
         }
-        Block enter = def.enter();
+        Block enter = method.enter();
         enter.setLocation(copy.get(entry).getX(), 20);
         body.connect(enter, 0, copy.get(entry));
         for (FlowCanvas.Link l : internal) body.connect(copy.get(l.from()), l.port(), copy.get(l.to()));
@@ -100,6 +102,7 @@ final class Grouper {
 
         // ---- replace the selection with one instance
         Block inst = c.addBlock(BlockType.CUSTOM, "", def, minX, minY);
+        inst.setCall(method.name, "");
         for (FlowCanvas.Link l : incoming) c.connect(l.from(), l.port(), inst);
         for (Block t : targets) c.connect(inst, inst.portIndex(exitName.get(t)), t);
         for (Block b : sel) c.removeBlock(b);

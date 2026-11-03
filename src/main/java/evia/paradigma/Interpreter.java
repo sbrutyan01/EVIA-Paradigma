@@ -85,10 +85,19 @@ final class Interpreter {
                 yield new Compiled(name, null, null);
             }
             case CUSTOM -> {
+                Method m = b.method();
+                if (m == null) throw new FlowException("class " + b.def.name + " has no method to call");
+                if (b.methodName() != null && b.def.method(b.methodName()) == null) {
+                    throw new FlowException("class " + b.def.name + " has no method '" + b.methodName() + "'");
+                }
+                if (m.isConstructor()) throw new FlowException("the constructor " + m.qualified() + " runs by itself when the object is created; it can't be called");
+                if (!b.objectName().isEmpty() && !BlockDef.isIdentifier(b.objectName())) {
+                    throw new FlowException("object name '" + b.objectName() + "' must be a simple name");
+                }
                 List<Expr> args = ExprParser.parseList(code);
-                int want = b.def.params.size();
+                int want = m.params.size();
                 if (args.size() != want) {
-                    throw new FlowException(b.def.signature() + " expects " + want
+                    throw new FlowException(m.qualified() + "(" + String.join(", ", m.params) + ") expects " + want
                             + " argument" + (want == 1 ? "" : "s") + ", got " + args.size());
                 }
                 yield new Compiled(null, null, args);
@@ -144,19 +153,43 @@ final class Interpreter {
      */
     static Block prepare(Library lib) {
         for (BlockDef d : lib.defs()) {
-            List<Block> enters = d.body.getBlocks().stream().filter(b -> b.type == BlockType.ENTER).toList();
-            if (enters.size() != 1) {
-                throw new FlowException(enters.isEmpty() ? null : enters.get(1),
-                        "custom block '" + d.name + "' needs exactly one Enter block");
+            if (d.callable().isEmpty()) throw new FlowException("class " + d.name + " has no method that can be called");
+            Set<String> names = new HashSet<>();
+            for (Method m : d.methods) {
+                if (!BlockDef.isIdentifier(m.name)) throw new FlowException("method name '" + m.name + "' of class " + d.name + " must be a simple name");
+                if (!names.add(m.name)) throw new FlowException("class " + d.name + " has two methods named " + m.name);
+                if (m.isConstructor() && !m.params.isEmpty()) {
+                    throw new FlowException("the constructor " + m.qualified() + " can't have parameters");
+                }
+                List<Block> enters = m.body.getBlocks().stream().filter(b -> b.type == BlockType.ENTER).toList();
+                if (enters.size() != 1) {
+                    throw new FlowException(enters.isEmpty() ? null : enters.get(1),
+                            "method " + m.qualified() + " needs exactly one Enter block");
+                }
+                if (m.exitNames().isEmpty()) {
+                    throw new FlowException(enters.get(0), "method " + m.qualified() + " has no Exit block");
+                }
+                compileAll(m.body.getBlocks());
+                computeLoopBodies(m.body.getBlocks());
             }
-            if (d.exitNames().isEmpty()) {
-                throw new FlowException(enters.get(0), "custom block '" + d.name + "' has no Exit block");
+            d.fieldInits.clear();
+            Set<String> fieldNames = new HashSet<>();
+            for (BlockDef.Field f : d.fields) {
+                if (!BlockDef.isIdentifier(f.name())) throw new FlowException("field name '" + f.name() + "' of class " + d.name + " must be a simple name");
+                if (!fieldNames.add(f.name())) throw new FlowException("class " + d.name + " declares field " + f.name() + " twice");
+                try {
+                    d.fieldInits.add(ExprParser.parse(f.init().isBlank() ? "0" : f.init()));
+                } catch (FlowException e) {
+                    throw new FlowException("initial value of field " + d.name + "." + f.name() + ": " + e.getMessage());
+                }
             }
-            compileAll(d.body.getBlocks());
-            computeLoopBodies(d.body.getBlocks());
+            List<Block> all = new ArrayList<>();
+            for (Method m : d.methods) all.addAll(m.body.getBlocks());
+            checkObjectNames(all);
         }
         compileAll(lib.main.getBlocks());
         computeLoopBodies(lib.main.getBlocks());
+        checkObjectNames(lib.main.getBlocks());
 
         Block start = null;
         for (Block b : lib.main.getBlocks()) {
@@ -189,6 +222,18 @@ final class Interpreter {
         }
     }
 
+    /** Within one program (or one class), an object name always refers to an object of the same class. */
+    private static void checkObjectNames(List<Block> blocks) {
+        Map<String, BlockDef> classOf = new HashMap<>();
+        for (Block b : blocks) {
+            if (b.def == null || b.objectName().isEmpty()) continue;
+            BlockDef prev = classOf.putIfAbsent(b.objectName(), b.def);
+            if (prev != null && prev != b.def) {
+                throw new FlowException(b, "object " + b.objectName() + " is a " + prev.name + " elsewhere, not a " + b.def.name);
+            }
+        }
+    }
+
     private static void compileAll(List<Block> blocks) {
         for (Block b : blocks) {
             try {
@@ -204,7 +249,7 @@ final class Interpreter {
     /** An object: the fields of one custom block instance, plus the objects nested inside it. */
     private static final class Obj {
         final Map<String, Object> fields = new HashMap<>();
-        final Map<Block, Obj> children = new HashMap<>();
+        final Map<Object, Obj> children = new HashMap<>();   // key: the calling block, or "obj:" + object name
     }
 
     /** Thrown to stop the program (End block or Stop button). */
@@ -217,11 +262,11 @@ final class Interpreter {
     /** Variable scope while executing one graph: program variables + the current object's fields. */
     private final class Scope implements Expr.Env {
         final Obj obj;
-        final BlockDef def;   // null at program level
+        final Method method;   // null at program level
 
-        Scope(Obj obj, BlockDef def) {
+        Scope(Obj obj, Method method) {
             this.obj = obj;
-            this.def = def;
+            this.method = method;
         }
 
         @Override
@@ -245,7 +290,7 @@ final class Interpreter {
         }
 
         private void requireObject() {
-            if (def == null) throw new FlowException("'this' can only be used inside a custom block");
+            if (method == null) throw new FlowException("'this' can only be used inside a class method");
         }
     }
 
@@ -322,12 +367,12 @@ final class Interpreter {
             }
 
             if (nxt == null) {
-                if (scope.def == null) {
+                if (scope.method == null) {
                     host.print("(warning: " + cur.title() + " block has no outgoing connection - program ends)");
                     return null;
                 }
-                throw new FlowException(cur, "custom block '" + scope.def.name
-                        + "': this path ends without reaching an Exit block");
+                throw new FlowException(cur, "method " + scope.method.qualified()
+                        + ": this path ends without reaching an Exit block");
             }
             if (nxt == cur && cur.type.isLoop()) selfPass = true;
             prev = cur;
@@ -345,28 +390,56 @@ final class Interpreter {
         return loop.next[0] != null ? loop.next[0] : loop;
     }
 
-    /** Calls a custom block: evaluate arguments, bind them to the object's fields, run the body. */
+    /**
+     * Calls a method: find or create the object (fields get their initial values, then the
+     * constructor runs), evaluate the arguments, bind them to the parameters and run the body.
+     */
     private Block call(Block inst, Compiled c, Scope scope, int depth, Host host) {
         if (depth + 1 > MAX_DEPTH) {
-            throw new FlowException(inst, "too many nested calls of custom blocks (endless recursion?)");
+            throw new FlowException(inst, "too many nested method calls (endless recursion?)");
         }
+        Method m = inst.method();
+        // a named object is shared by all blocks with that name; otherwise every block has its own
+        Object key = inst.objectName().isEmpty() ? inst : "obj:" + inst.objectName();
+        Obj obj = scope.obj.children.get(key);
+        if (obj == null) {
+            obj = new Obj();
+            scope.obj.children.put(key, obj);
+            construct(inst, obj, depth, host);
+        }
+
         List<Object> values = new ArrayList<>();
         for (Expr arg : c.args()) values.add(Expr.eval(arg, scope));
+        for (int i = 0; i < m.params.size(); i++) obj.fields.put(m.params.get(i), values.get(i));
 
-        // every instance (per enclosing object) is its own object with its own fields
-        Obj obj = scope.obj.children.computeIfAbsent(inst, k -> new Obj());
-        List<String> params = inst.def.params;
-        for (int i = 0; i < params.size(); i++) obj.fields.put(params.get(i), values.get(i));
-
-        String exit = runGraph(inst.def.enter(), new Scope(obj, inst.def), depth + 1, host);
+        String exit = runGraph(m.enter(), new Scope(obj, m), depth + 1, host);
         int port = inst.portIndex(exit);
         if (port < 0) throw new FlowException(inst, "unknown exit '" + exit + "'");
         Block nxt = inst.next[port];
-        if (nxt == null && scope.def == null) {
-            host.print("(warning: exit '" + exit + "' of " + inst.def.name + " is not connected - program ends)");
+        if (nxt == null && scope.method == null) {
+            host.print("(warning: exit '" + exit + "' of " + m.qualified() + " is not connected - program ends)");
             throw new Halt();
         }
         return nxt;
+    }
+
+    /** A new object: declared fields get their initial values in order, then the constructor runs. */
+    private void construct(Block inst, Obj obj, int depth, Host host) {
+        BlockDef d = inst.def;
+        Method ctor = d.constructor();
+        Scope self = new Scope(obj, ctor != null ? ctor : inst.method());
+        for (int i = 0; i < d.fields.size(); i++) {
+            BlockDef.Field f = d.fields.get(i);
+            try {
+                obj.fields.put(f.name(), Expr.eval(d.fieldInits.get(i), self));
+            } catch (FlowException e) {
+                throw new FlowException(inst, "initial value of field " + d.name + "." + f.name() + ": " + e.getMessage());
+            }
+        }
+        if (ctor != null) {
+            if (depth + 1 > MAX_DEPTH) throw new FlowException(inst, "too many nested method calls (endless recursion?)");
+            runGraph(ctor.enter(), new Scope(obj, ctor), depth + 1, host);
+        }
     }
 
     Map<String, Object> variables() {

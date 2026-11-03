@@ -1,0 +1,143 @@
+<html>
+<body style="font-family: sans-serif; font-size: 12pt; margin: 10px">
+
+<a name="start"></a>
+<h1>EVIA Paradigma guide</h1>
+<p>EVIA Paradigma is visual programming: drag blocks from the palette onto the canvas, wire them
+together and press <b>Run</b>. The same program can be turned into C++20 and compiled with Clang.</p>
+<ol>
+  <li>Drag <b>Start</b>, a few blocks and <b>End</b> onto the canvas.</li>
+  <li>Drag from the small circle at the bottom of a block (its output port) to another block to wire them.</li>
+  <li>Double-click a block to edit its code.</li>
+  <li>Press <b>Run</b> (F5). Output appears in the panel below; the running block is highlighted.</li>
+  <li>Use <b>Run &gt; Generate C++</b> (F7) to see, save, compile and run the program as C++20.</li>
+</ol>
+
+<a name="blocks"></a>
+<h2>Blocks</h2>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Block</th><th>Code</th><th>What it does</th></tr>
+<tr><td>Start / End</td><td>-</td><td>Where the main program begins and stops.</td></tr>
+<tr><td>Set</td><td><code>x = x + 1</code></td><td>Assigns a variable (or a field: <code>this.count = 0</code>).</td></tr>
+<tr><td>Input</td><td><code>n</code></td><td>Asks for a value and stores it.</td></tr>
+<tr><td>Print</td><td><code>"x = " + x</code></td><td>Prints the value of an expression.</td></tr>
+<tr><td>If / Else</td><td><code>x &gt; 10</code></td><td>Two outputs: <i>then</i> and <i>else</i>.</td></tr>
+<tr><td>For</td><td><code>i = 1; i &lt;= 10; i = i + 1</code></td><td>Output <i>body</i> runs while the condition holds; wire the end of the body back to the For block. <i>done</i> continues after the loop.</td></tr>
+<tr><td>While</td><td><code>n &gt; 0</code></td><td>Checks before every pass.</td></tr>
+<tr><td>Do-While</td><td><code>n &gt; 0</code></td><td>Runs the body once, then checks.</td></tr>
+<tr><td>Enter / Exit</td><td>exit name</td><td>Only inside a class method: where it begins and the ways it can end.</td></tr>
+</table>
+
+<a name="expressions"></a>
+<h2>Expressions</h2>
+<p>Values are numbers or text. Operators, from lowest to highest priority:</p>
+<ul>
+  <li><code>||</code> &nbsp; <code>&amp;&amp;</code></li>
+  <li><code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code> (texts compare alphabetically)</li>
+  <li><code>+</code> <code>-</code> (<code>+</code> joins text if either side is text)</li>
+  <li><code>*</code> <code>/</code> <code>%</code></li>
+  <li>unary <code>-</code> and <code>!</code>, parentheses</li>
+</ul>
+<p>Text uses double quotes and <code>\"</code>, <code>\\</code>, <code>\n</code> escapes. A condition is true
+when it is a non-zero number or a non-empty text.</p>
+
+<a name="classes"></a>
+<h2>Classes and objects</h2>
+<p>A <b>class</b> bundles <b>fields</b> (data each object keeps) and <b>methods</b> (block programs that work on
+it). Create one with <b>Edit &gt; New Class</b>, the palette's <i>+ New class</i>, or select blocks and press
+<b>Ctrl+G</b> to turn them into a class.</p>
+<ul>
+  <li><b>Fields</b> tab: name and initial value of each field. Initial values are expressions and may use program
+  variables and earlier fields. Inside methods a field is <code>this.name</code>.</li>
+  <li>One tab per <b>method</b>: its name, parameters and body. The body starts at <b>Enter</b> and ends at an
+  <b>Exit</b>. Each distinct Exit name becomes an output port of the calling block, e.g. <i>yes</i> / <i>no</i>.
+  Parameters arrive as fields: a parameter <code>n</code> is read as <code>this.n</code>.</li>
+  <li><b>Constructor</b>: a method named <code>init</code> (button <i>+ Constructor</i>). When an object is
+  created its fields get their initial values first, then <code>init</code> runs once.</li>
+</ul>
+<p>Drag a method from the <i>Classes</i> section of the palette onto the canvas to call it. Right-click the
+block, or double-click it, to choose the <b>method</b>, the <b>object</b> and the <b>arguments</b>.
+Blocks with the same <b>object name</b> share one object (and its fields); a block with no object name has
+an object of its own. Objects are created the first time they are used.</p>
+
+<a name="modules"></a>
+<h2>Modules</h2>
+<p>A module (<code>*.eviam</code>) is a file of classes that several programs can use.</p>
+<ul>
+  <li><b>File &gt; Export Classes as Module</b> moves classes into a module file. The program then refers to
+  the module, and saving the program also saves the module.</li>
+  <li><b>File &gt; Import Module</b> adds the classes of a module to the open program.</li>
+  <li>The class window shows where a class is stored.</li>
+</ul>
+
+<a name="projects"></a>
+<h2>Projects</h2>
+<p><b>File &gt; New Project</b> creates a folder with everything a program needs:</p>
+<pre>
+MyProject/
+  MyProject.eviaproj   project settings
+  main.evia            the main program
+  modules/             class modules
+  build/               generated C++ (not committed)
+  README.md
+  .gitignore
+</pre>
+<p>Open it again with <b>File &gt; Open Project</b> (choose the folder or the .eviaproj file). In a project,
+modules are imported from and exported to <code>modules/</code>, and <b>Generate C++</b> also writes
+<code>build/&lt;name&gt;.cpp</code>.</p>
+
+<a name="git"></a>
+<h2>Git and GitHub</h2>
+<p>The <b>Git</b> menu runs the git installed on your computer and uses the login it already has
+(Git Credential Manager, an SSH key or <code>gh auth login</code>). EVIA Paradigma never asks for or stores
+passwords or tokens.</p>
+<ul>
+  <li><b>Initialize Repository</b>: <code>git init</code> on branch <code>main</code> (new projects do this automatically when git is installed).</li>
+  <li><b>Commit</b> (Ctrl+K): saves the program and commits every change; the message editor has Vim keys.</li>
+  <li><b>Connect to GitHub</b>: enter <code>owner/repo</code> or a clone URL. <i>Create repository on GitHub</i>
+  opens github.com in your browser with the name filled in; create it empty, then press OK.</li>
+  <li><b>Push</b> / <b>Pull</b>: send commits to GitHub / get new ones (fast-forward only, so nothing is merged behind your back).</li>
+  <li><b>History</b> shows the last commits; <b>Open on GitHub</b> opens the repository page.</li>
+</ul>
+<p>Install git from <a href="https://git-scm.com/downloads">git-scm.com</a> if the menu says it is missing.</p>
+
+<a name="cpp"></a>
+<h2>C++ code</h2>
+<p><b>Run &gt; Generate C++</b> turns the whole program into one C++20 file. Classes become <code>struct</code>s
+with their fields and methods, loops become <code>for</code>/<code>while</code>/<code>do</code>, and if/else
+become <code>if</code>. Right-click a block or a class and choose <b>View C++ source</b> to see exactly the code
+it became, highlighted.</p>
+<p>The code window can save the file, compile it with Clang and run it. On Windows EVIA Paradigma can install
+the free llvm-mingw Clang toolchain; Visual Studio is not needed.</p>
+
+<a name="keys"></a>
+<h2>Keyboard shortcuts</h2>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><td>Ctrl+N</td><td>New program</td></tr>
+<tr><td>Ctrl+Shift+N</td><td>New project</td></tr>
+<tr><td>Ctrl+O</td><td>Open program</td></tr>
+<tr><td>Ctrl+S / Ctrl+Shift+S</td><td>Save / Save As</td></tr>
+<tr><td>Ctrl+A</td><td>Select all blocks</td></tr>
+<tr><td>Delete</td><td>Delete the selected blocks</td></tr>
+<tr><td>Ctrl+G</td><td>Group selected blocks into a class</td></tr>
+<tr><td>F5 / Shift+F5</td><td>Run / Stop</td></tr>
+<tr><td>F7</td><td>Generate C++</td></tr>
+<tr><td>Ctrl+K</td><td>Git commit</td></tr>
+<tr><td>F1</td><td>This guide</td></tr>
+<tr><td>Shift+click, drag a rectangle</td><td>Select several blocks</td></tr>
+<tr><td>Right-click a block</td><td>Block menu (edit, View C++ source, delete ...)</td></tr>
+</table>
+
+<a name="vim"></a>
+<h2>Vim keys</h2>
+<p>Code fields, the C++ window and the commit message editor use Vim keys (turn them off in
+<b>Settings</b>). Text starts in insert mode; <b>Esc</b> switches to normal mode.</p>
+<ul>
+  <li>Moving: <code>h j k l</code>, <code>w b e</code>, <code>0 ^ $</code>, <code>gg G</code>, <code>%</code>, <code>f t</code></li>
+  <li>Editing: <code>i a I A o O</code>, <code>x</code>, <code>dd</code>, <code>cw</code>, <code>yy</code>, <code>p</code>, <code>u</code>, <code>Ctrl+R</code>, <code>.</code></li>
+  <li>Visual: <code>v</code>, <code>V</code>; search: <code>/text</code>, <code>n N</code>, <code>*</code></li>
+  <li>Commands: <code>:w</code> accept/save, <code>:q</code> close, <code>:wq</code>, <code>:s/a/b/g</code>, <code>:make</code> compile and run (C++ window), <code>:vim</code> open in real Vim</li>
+</ul>
+
+</body>
+</html>

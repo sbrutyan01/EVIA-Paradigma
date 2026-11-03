@@ -6,7 +6,7 @@
 
     <groupId>evia</groupId>
     <artifactId>evia-paradigma</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
     <name>EVIA Paradigma</name>
 
@@ -18,6 +18,20 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- the example programs are bundled for File > Open Example -->
+            <resource>
+                <directory>examples</directory>
+                <targetPath>evia/paradigma/examples</targetPath>
+                <includes>
+                    <include>*.evia</include>
+                    <include>modules/*.eviam</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

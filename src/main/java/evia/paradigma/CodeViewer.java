@@ -134,7 +134,15 @@ final class CodeViewer extends JFrame {
 
     /** Shows freshly generated code. Asks before throwing away edits made here. */
     void show(String cppCode, String name) {
-        if (isVisible() && isDirty()) {
+        show(cppCode, name, null);
+    }
+
+    /**
+     * Shows generated code with the given line ranges ([from, to), 0-based) marked, scrolled to the
+     * first one - used by "View C++ source" on a block, method or class.
+     */
+    void show(String cppCode, String name, java.util.List<int[]> mark) {
+        if (isVisible() && isDirty() && !cppCode.equals(generated)) {
             int r = JOptionPane.showConfirmDialog(this, "You edited the C++ code. Replace it with the newly generated code?",
                     "Generate C++", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (r != JOptionPane.YES_OPTION) {
@@ -145,12 +153,50 @@ final class CodeViewer extends JFrame {
         generated = cppCode;
         baseName = name;
         savedPath = null;
-        setText(cppCode);
+        if (!cppCode.equals(codePane.getText())) setText(cppCode);
+        for (Object tag : marks) codePane.getHighlighter().removeHighlight(tag);
+        marks.clear();
         codePane.setCaretPosition(0);
         updateTitle();
         setVisible(true);
         toFront();
+        if (mark != null && !mark.isEmpty()) markLines(mark);
         codePane.requestFocusInWindow();
+    }
+
+    private static final Color MARK = new Color(255, 236, 140);
+    private final List<Object> marks = new ArrayList<>();
+
+    private void markLines(java.util.List<int[]> ranges) {
+        javax.swing.text.Element root = codePane.getDocument().getDefaultRootElement();
+        javax.swing.text.Highlighter.HighlightPainter painter =
+                new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(MARK);
+        int firstOffset = -1;
+        for (int[] r : ranges) {
+            int from = Math.min(r[0], root.getElementCount() - 1), to = Math.min(r[1], root.getElementCount()) - 1;
+            if (from < 0 || to < from) continue;
+            int start = root.getElement(from).getStartOffset(), end = root.getElement(to).getEndOffset();
+            try {
+                marks.add(codePane.getHighlighter().addHighlight(start, Math.min(end, codePane.getDocument().getLength()), painter));
+            } catch (javax.swing.text.BadLocationException ignored) {
+                // stale range
+            }
+            if (firstOffset < 0) firstOffset = start;
+        }
+        if (firstOffset < 0) return;
+        int caret = firstOffset;
+        codePane.setCaretPosition(caret);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                java.awt.geom.Rectangle2D r = codePane.modelToView2D(caret);
+                if (r == null) return;
+                Rectangle vis = codePane.getVisibleRect();
+                int top = Math.max(0, (int) r.getY() - vis.height / 4);
+                codePane.scrollRectToVisible(new Rectangle(0, top, 1, vis.height));
+            } catch (javax.swing.text.BadLocationException ignored) {
+                // nothing to scroll to
+            }
+        });
     }
 
     private boolean isDirty() {

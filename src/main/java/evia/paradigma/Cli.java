@@ -51,6 +51,7 @@ final class Cli {
                             Usage:
                               java -jar evia-paradigma.jar                           start the editor
                               java -jar evia-paradigma.jar --run  program.evia       run a program
+                                                          (or a project folder / .eviaproj)
                               java -jar evia-paradigma.jar --gen  program.evia [-o program.cpp]
                                                                                      generate C++20
                               java -jar evia-paradigma.jar --example out.evia        save the example
@@ -103,7 +104,14 @@ final class Cli {
 
     private static Library load(String file) throws IOException {
         Library lib = newLibrary();
-        ProgramIO.load(lib, Path.of(file));
+        Path path = Path.of(file);
+        // a project folder or *.eviaproj file means its main program
+        if (java.nio.file.Files.isDirectory(path) || file.endsWith(Project.EXT)) {
+            Project p = java.nio.file.Files.isDirectory(path) ? Project.inFolder(path) : Project.load(path);
+            if (p == null) throw new IOException(file + " is not an EVIA Paradigma project (no " + Project.EXT + " file)");
+            path = p.mainProgram();
+        }
+        ProgramIO.load(lib, path);
         return lib;
     }
 

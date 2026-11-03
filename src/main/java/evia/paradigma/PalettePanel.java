@@ -49,8 +49,8 @@ final class PalettePanel extends JPanel {
         }
 
         add(Box.createVerticalStrut(10));
-        add(header("Custom blocks"));
-        JButton newBtn = new JButton("+ New custom block...");
+        add(header("Classes"));
+        JButton newBtn = new JButton("+ New class...");
         newBtn.setAlignmentX(LEFT_ALIGNMENT);
         newBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         newBtn.addActionListener(e -> newDefinition(this, lib));
@@ -58,27 +58,33 @@ final class PalettePanel extends JPanel {
         add(Box.createVerticalStrut(6));
 
         if (lib.defs().isEmpty()) {
-            add(note("None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a custom block."));
+            add(note("None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a class."));
         }
         for (BlockDef d : lib.defs()) {
-            boolean self = d == target.owner;
-            String tip = "<html><b>" + d.signature() + "</b><br>exits: " + String.join(", ", d.exitNames())
-                    + "<br>Drag to place an object of it. Double-click to open the definition."
-                    + (self ? "<br><i>Placing it inside itself makes it recursive.</i>" : "") + "</html>";
-            add(item(d.signature(), d.color, tip, "DEF:" + d.id, () -> lib.openEditor(d), d));
-            add(Box.createVerticalStrut(5));
+            boolean self = target.owner != null && target.owner.cls == d;
+            for (Method m : d.callable()) {
+                boolean simple = d.callable().size() == 1 && m.name.equals("run");
+                String label = simple ? d.signature() : d.name + "." + m.signature();
+                String tip = "<html><b>" + d.name + "." + m.signature() + "</b>"
+                        + (d.module != null ? " &nbsp;<i>(module " + java.nio.file.Path.of(d.module).getFileName() + ")</i>" : "")
+                        + "<br>exits: " + String.join(", ", m.exitNames())
+                        + "<br>Drag to call it. Double-click to open the class."
+                        + (self ? "<br><i>Calling it from its own class makes it recursive.</i>" : "") + "</html>";
+                add(item(label, d.color, tip, "DEF:" + d.id + "/" + m.name, () -> lib.openEditor(d), d));
+                add(Box.createVerticalStrut(5));
+            }
         }
 
         add(Box.createVerticalStrut(12));
         add(note(target.isBody() ? """
-                Inside a custom block:
+                Inside a method:
                 - Enter: where it starts
                 - Exit: leaves it; each exit
                   name is an output port
                 - this.x = field of this object
                   (parameters are fields too;
-                  fields start at 0 and keep
-                  their value between calls)
+                  fields keep their value
+                  between calls)
                 - plain names = program
                   variables"""
                 : """
@@ -172,10 +178,13 @@ final class PalettePanel extends JPanel {
             private void popup(MouseEvent e) {
                 if (def == null) return;
                 JPopupMenu m = new JPopupMenu();
-                JMenuItem open = new JMenuItem("Open definition...");
+                JMenuItem open = new JMenuItem("Open class...");
                 open.addActionListener(ev -> lib.openEditor(def));
                 m.add(open);
-                JMenuItem del = new JMenuItem("Delete definition");
+                JMenuItem src = new JMenuItem("View C++ source");
+                src.addActionListener(ev -> lib.viewSource(def));
+                m.add(src);
+                JMenuItem del = new JMenuItem("Delete class");
                 del.addActionListener(ev -> deleteDefinition(def));
                 m.add(del);
                 m.show(item, e.getX(), e.getY());
@@ -186,11 +195,11 @@ final class PalettePanel extends JPanel {
 
     private void deleteDefinition(BlockDef d) {
         if (lib.isUsed(d)) {
-            JOptionPane.showMessageDialog(this, "'" + d.name + "' is still used somewhere. Delete its objects first.",
+            JOptionPane.showMessageDialog(this, "'" + d.name + "' is still used somewhere. Delete the blocks that call it first.",
                     "Delete", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (JOptionPane.showConfirmDialog(this, "Delete the custom block '" + d.name + "'?", "Delete",
+        if (JOptionPane.showConfirmDialog(this, "Delete the class '" + d.name + "'?", "Delete",
                 JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             lib.remove(d);
         }
@@ -198,12 +207,12 @@ final class PalettePanel extends JPanel {
 
     /** Asks for a name, creates an empty definition and opens its editor. */
     static void newDefinition(Component parent, Library lib) {
-        String name = (String) JOptionPane.showInputDialog(parent, "Name of the new custom block:",
-                "New custom block", JOptionPane.PLAIN_MESSAGE, null, null, lib.uniqueName("MyBlock"));
+        String name = (String) JOptionPane.showInputDialog(parent, "Name of the new class:",
+                "New class", JOptionPane.PLAIN_MESSAGE, null, null, lib.uniqueName("MyBlock"));
         if (name == null) return;
         name = name.trim();
         if (name.isEmpty() || lib.nameTaken(name, null)) {
-            JOptionPane.showMessageDialog(parent, "Choose a unique, non-empty name.", "New custom block",
+            JOptionPane.showMessageDialog(parent, "Choose a unique, non-empty name.", "New class",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }

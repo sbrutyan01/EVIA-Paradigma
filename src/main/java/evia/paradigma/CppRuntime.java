@@ -144,7 +144,7 @@ final class CppRuntime {
                 DepthGuard() {
                     if (++depth > 400) {
                         --depth;
-                        throw std::runtime_error("too many nested calls of custom blocks (endless recursion?)");
+                        throw std::runtime_error("too many nested method calls (endless recursion?)");
                     }
                 }
                 ~DepthGuard() { --depth; }

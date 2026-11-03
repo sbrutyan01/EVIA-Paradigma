@@ -28,6 +28,11 @@ case "$1" in
     <icon name="evia-paradigma"/>
     <glob pattern="*.evia"/>
   </mime-type>
+  <mime-type type="application/x-evia-paradigma-project">
+    <comment>EVIA Paradigma project</comment>
+    <icon name="evia-paradigma"/>
+    <glob pattern="*.eviaproj"/>
+  </mime-type>
 </mime-info>
 XML
     ln -sf "$APP/bin/EVIA Paradigma" /usr/bin/evia-paradigma

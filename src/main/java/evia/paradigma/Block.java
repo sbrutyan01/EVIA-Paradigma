@@ -12,8 +12,8 @@ import java.util.Objects;
 
 /**
  * A draggable block on a canvas: a rounded body, one input port on top,
- * and output ports at the bottom. A CUSTOM block is an instance (object) of a
- * {@link BlockDef}; its output ports are the definition's Exit names.
+ * and output ports at the bottom. A CUSTOM block calls a method of an object
+ * of a {@link BlockDef} class; its output ports are that method's Exit names.
  */
 public final class Block extends JComponent {
     static final int MIN_W = 170, MAX_W = 360, H = 54, PORT_R = 6, PAD = 8;
@@ -26,7 +26,9 @@ public final class Block extends JComponent {
 
     final int id;
     final BlockType type;
-    final BlockDef def;                        // non-null only for CUSTOM
+    final BlockDef def;                        // non-null only for CUSTOM: the class
+    private String methodName;                 // CUSTOM: method to call (null = the class's default method)
+    private String objectName = "";            // CUSTOM: blocks with the same object name share one object
     java.util.Set<Block> loopBody = java.util.Set.of();   // loops only: set by Interpreter.prepare
     Block[] next;                              // next[i] = block connected to output port i
     private List<String> ports;                // port names (CUSTOM only)
@@ -44,7 +46,7 @@ public final class Block extends JComponent {
         this.def = def;
         if (type == BlockType.CUSTOM) {
             Objects.requireNonNull(def, "custom block without definition");
-            ports = def.exitNames();
+            ports = exitNamesOf(method());
             next = new Block[ports.size()];
         } else {
             ports = List.of();
@@ -87,9 +89,36 @@ public final class Block extends JComponent {
         return compiled;
     }
 
-    /** Keep connections when the definition's exits change: match old and new ports by name. */
+    /** The method this block calls (CUSTOM only); falls back to the default method if the name is unknown. */
+    Method method() {
+        if (def == null) return null;
+        Method m = methodName == null ? null : def.method(methodName);
+        return m != null ? m : def.defaultMethod();
+    }
+
+    /** The method name as stored (may name a method that no longer exists). */
+    String methodName() {
+        return methodName;
+    }
+
+    String objectName() {
+        return objectName;
+    }
+
+    /** Which method of which object this block calls. */
+    void setCall(String method, String object) {
+        methodName = method;
+        objectName = object == null ? "" : object.trim();
+        refresh();
+    }
+
+    private static List<String> exitNamesOf(Method m) {
+        return m == null ? List.of() : m.exitNames();
+    }
+
+    /** Keep connections when the method's exits change: match old and new ports by name. */
     private void syncPorts() {
-        List<String> names = def.exitNames();
+        List<String> names = exitNamesOf(method());
         if (names.equals(ports)) return;
         Block[] nx = new Block[names.size()];
         for (int i = 0; i < names.size(); i++) {
@@ -109,7 +138,8 @@ public final class Block extends JComponent {
     }
 
     String title() {
-        return def != null ? def.name : type.title.toUpperCase();
+        if (def == null) return type.title.toUpperCase();
+        return objectName.isEmpty() ? def.name : objectName + " : " + def.name;
     }
 
     Color color() {
@@ -118,11 +148,17 @@ public final class Block extends JComponent {
 
     /** Whether double-click edits the code (a custom block without parameters has nothing to edit). */
     boolean editable() {
-        return type.hasCode && !(def != null && def.params.isEmpty());
+        return type.hasCode;
     }
 
     private String displayCode() {
-        if (def != null) return def.params.isEmpty() ? "" : "(" + code + ")";
+        if (def != null) {
+            Method m = method();
+            if (m == null) return "(no method)";
+            boolean showName = def.callable().size() > 1 || !m.name.equals("run");
+            if (showName) return "." + m.name + "(" + code + ")";
+            return m.params.isEmpty() ? "" : "(" + code + ")";
+        }
         return type.hasCode ? code.replace('\n', ' ') : "";
     }
 
@@ -142,9 +178,11 @@ public final class Block extends JComponent {
     private void updateTooltip() {
         String esc = code.replace("&", "&amp;").replace("<", "&lt;");
         if (def != null) {
-            setToolTipText("<html><b>" + def.signature() + "</b> &nbsp;(custom block)<br>exits: "
+            Method m = method();
+            setToolTipText("<html><b>" + (objectName.isEmpty() ? "" : objectName + " : ") + def.name + "</b>"
+                    + (m == null ? "" : "." + m.signature()) + " &nbsp;(class)<br>exits: "
                     + String.join(", ", ports) + "<br>"
-                    + (editable() ? "Double-click to edit arguments" : "Double-click to open the definition")
+                    + "Double-click to choose method, object and arguments"
                     + "</html>");
         } else if (type.hasCode) {
             setToolTipText("<html><b>" + type.title + "</b>: <code>" + esc + "</code><br>Double-click to edit</html>");

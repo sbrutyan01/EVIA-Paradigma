@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * All custom block definitions of the open program, plus the main canvas.
+ * All classes of the open program (including those from modules), plus the main canvas.
  * Keeps instances in sync when a definition changes (name, params, color, exits).
  */
 final class Library {
@@ -34,18 +34,39 @@ final class Library {
         return null;
     }
 
-    /** New empty definition (with its Enter and one Exit block). */
+    BlockDef byName(String name) {
+        for (BlockDef d : defs) if (d.name.equals(name)) return d;
+        return null;
+    }
+
+    /** New class with one method "run" (its Enter and one Exit block). */
     BlockDef create(String name) {
-        BlockDef d = create(nextId, name, PALETTE[(nextId - 1) % PALETTE.length], List.of());
-        d.body.addBlock(BlockType.ENTER, "", null, 60, 30);
-        d.body.addBlock(BlockType.EXIT, "next", null, 60, 260);
+        BlockDef d = createEmpty(name, null);
+        newMethod(d, "run", List.of());
         changed();
         return d;
     }
 
-    /** Low-level create, used by loading; the body starts empty. */
+    /** New method with an Enter and an Exit block. */
+    Method newMethod(BlockDef d, String name, List<String> params) {
+        Method m = d.addMethod(name, params);
+        m.body.addBlock(BlockType.ENTER, "", null, 60, 30);
+        m.body.addBlock(BlockType.EXIT, "next", null, 60, 260);
+        return m;
+    }
+
+    /** A class with no fields or methods yet (used by loading and modules). */
+    BlockDef createEmpty(String name, Color color) {
+        BlockDef d = new BlockDef(this, nextId, name, color != null ? color : PALETTE[(nextId - 1) % PALETTE.length]);
+        nextId++;
+        defs.add(d);
+        return d;
+    }
+
+    /** Compatibility helper: a class with one method "run" with these parameters and an empty body. */
     BlockDef create(int id, String name, Color color, List<String> params) {
-        BlockDef d = new BlockDef(this, id, name, color, params);
+        BlockDef d = new BlockDef(this, id, name, color);
+        d.addMethod("run", params);
         defs.add(d);
         nextId = Math.max(nextId, id + 1);
         return d;
@@ -56,11 +77,19 @@ final class Library {
         changed();
     }
 
-    /** True if some block outside the definition's own body is an instance of it. */
+    /** True if some block outside the class's own methods uses it. */
     boolean isUsed(BlockDef d) {
         for (FlowCanvas c : canvases()) {
-            if (c.owner == d) continue;
+            if (c.owner != null && c.owner.cls == d) continue;
             for (Block b : c.getBlocks()) if (b.def == d) return true;
+        }
+        return false;
+    }
+
+    /** True if a block anywhere calls this method. */
+    boolean isUsed(Method m) {
+        for (FlowCanvas c : canvases()) {
+            for (Block b : c.getBlocks()) if (b.def == m.cls && b.method() == m) return true;
         }
         return false;
     }
@@ -68,7 +97,14 @@ final class Library {
     List<FlowCanvas> canvases() {
         List<FlowCanvas> out = new ArrayList<>();
         if (main != null) out.add(main);
-        for (BlockDef d : defs) out.add(d.body);
+        for (BlockDef d : defs) for (Method m : d.methods) out.add(m.body);
+        return out;
+    }
+
+    /** Module files referenced by classes, in first-use order. */
+    List<String> modules() {
+        List<String> out = new ArrayList<>();
+        for (BlockDef d : defs) if (d.module != null && !out.contains(d.module)) out.add(d.module);
         return out;
     }
 
@@ -123,5 +159,12 @@ final class Library {
 
     void openEditor(BlockDef d) {
         editorOpener.accept(d);
+    }
+
+    /** Shows the generated C++ for a block, a method or a class. */
+    Consumer<Object> sourceViewer = o -> {};
+
+    void viewSource(Object blockMethodOrClass) {
+        sourceViewer.accept(blockMethodOrClass);
     }
 }

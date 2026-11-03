@@ -8,7 +8,7 @@ public enum BlockType {
     START("Start", new Color(126, 200, 128), false, 1, false, "",
             "Program starts here (only one allowed)."),
     SET("Set", new Color(132, 172, 240), true, 1, true, "x = 0",
-            "Assign a variable:  name = expression   (inside a custom block: this.field = expression)"),
+            "Assign a variable:  name = expression   (inside a method: this.field = expression)"),
     INPUT("Input", new Color(196, 160, 230), true, 1, true, "n",
             "Ask the user for a value and store it in a variable:  name"),
     PRINT("Print", new Color(242, 202, 112), true, 1, true, "\"Hello\"",
@@ -28,13 +28,13 @@ public enum BlockType {
 
     // ---- only inside custom block definitions
     ENTER("Enter", new Color(112, 204, 196), false, 1, false, "",
-            "Where the custom block starts executing (one per definition)."),
+            "Where the method starts executing (one per method)."),
     EXIT("Exit", new Color(112, 204, 196), true, 0, true, "next",
-            "Leaves the custom block. Each distinct exit name becomes an output port."),
+            "Leaves the method. Each distinct exit name becomes an output port of the calling block."),
 
     // ---- an object: an instance of a user-defined block
     CUSTOM("Custom", Color.GRAY, true, -1, true, "",
-            "Arguments for the custom block, separated by commas");
+            "Arguments for the method, separated by commas");
 
     final String title;
     final Color color;
