@@ -1,0 +1,16 @@
+Package: APPLICATION_PACKAGE
+Version: APPLICATION_VERSION_WITH_RELEASE
+Section: APPLICATION_SECTION
+Maintainer: APPLICATION_MAINTAINER
+Priority: optional
+Architecture: APPLICATION_ARCH
+Provides: APPLICATION_PACKAGE
+Description: APPLICATION_DESCRIPTION
+ EVIA Paradigma is a visual block-programming editor with class-like custom
+ blocks, Vim editing and C++20 code generation for Clang. It bundles its own
+ Java runtime.
+Depends: libc6, libgcc-s1, libstdc++6, zlib1g, libasound2t64 | libasound2, libfreetype6, libfontconfig1, libx11-6, libxext6, libxi6, libxrender1, libxtst6, xdg-utils
+Recommends: clang | g++
+Suggests: vim-gtk3 | vim
+Installed-Size: APPLICATION_INSTALLED_SIZE
+APPLICATION_HOMEPAGE

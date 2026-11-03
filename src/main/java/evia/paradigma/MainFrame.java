@@ -311,10 +311,16 @@ final class MainFrame extends JFrame {
         if (worker != null) return;
         JFileChooser fc = chooser();
         if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+        openFile(fc.getSelectedFile());
+    }
+
+    /** Opens a program file (also used when the OS opens a double-clicked .evia file). */
+    void openFile(File file) {
+        if (worker != null) return;
         closeEditors();
         try {
-            ProgramIO.load(lib, fc.getSelectedFile().toPath());
-            currentFile = fc.getSelectedFile();
+            ProgramIO.load(lib, file.toPath());
+            currentFile = file;
             setTitle(APP + " - " + currentFile.getName());
             console.setText("");
         } catch (IOException e) {
