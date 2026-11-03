@@ -6,6 +6,10 @@ import javax.swing.UIManager;
 /** Entry point. */
 public final class App {
     public static void main(String[] args) {
+        if (args.length > 0) {                       // command-line mode: --run, --gen, --help
+            System.setProperty("java.awt.headless", "true");
+            System.exit(Cli.run(args));
+        }
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

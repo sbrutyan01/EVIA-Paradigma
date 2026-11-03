@@ -29,6 +29,7 @@ final class MainFrame extends JFrame {
 
     MainFrame() {
         super(APP);
+        AppIcon.apply(this);
         lib.main = canvas;
         lib.editorOpener = this::openEditor;
         lib.addListener(this::closeEditorsOfDeletedDefs);
@@ -70,6 +71,9 @@ final class MainFrame extends JFrame {
         tb.add(speed);
         tb.addSeparator();
         tb.add(button("Clear output", e -> console.setText("")));
+        tb.add(Box.createHorizontalGlue());
+        tb.add(button("Settings...", e -> Settings.showDialog(this)));
+        tb.add(button("About", e -> AppIcon.showAbout(this)));
 
         // ---- console
         console.setEditable(false);
@@ -89,7 +93,10 @@ final class MainFrame extends JFrame {
         JSplitPane right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, canvasScroll, consoleScroll);
         right.setResizeWeight(0.78);
 
-        JScrollPane paletteScroll = new JScrollPane(new PalettePanel(lib, canvas));
+        JPanel paletteBox = new JPanel(new BorderLayout());
+        paletteBox.add(brand(), BorderLayout.NORTH);
+        paletteBox.add(new PalettePanel(lib, canvas), BorderLayout.CENTER);
+        JScrollPane paletteScroll = new JScrollPane(paletteBox);
         paletteScroll.setBorder(BorderFactory.createEmptyBorder());
         paletteScroll.setPreferredSize(new Dimension(220, 100));
 
@@ -105,6 +112,23 @@ final class MainFrame extends JFrame {
         getContentPane().add(status, BorderLayout.SOUTH);
 
         ProgramIO.loadExample(lib);
+    }
+
+    /** EVIA logo and name at the top of the palette; click for About. */
+    private JComponent brand() {
+        JLabel l = new JLabel(" EVIA Paradigma");
+        l.setFont(l.getFont().deriveFont(Font.BOLD, 15f));
+        java.util.List<Image> icons = AppIcon.icons();
+        for (Image img : icons) {
+            if (img.getWidth(null) == 40) l.setIcon(new ImageIcon(img));
+        }
+        l.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 10));
+        l.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        l.setToolTipText("About EVIA Paradigma");
+        l.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override public void mouseClicked(java.awt.event.MouseEvent e) { AppIcon.showAbout(MainFrame.this); }
+        });
+        return l;
     }
 
     private static JButton button(String text, java.awt.event.ActionListener l) {
@@ -256,7 +280,8 @@ final class MainFrame extends JFrame {
     private void reportError(FlowException e) {
         Block b = e.block;
         BlockDef where = b == null ? null : b.canvas().owner;
-        console.append(">> error" + (where != null ? " in custom block '" + where.name + "'" : "")
+        boolean named = e.getMessage() != null && e.getMessage().startsWith("custom block '");
+        console.append(">> error" + (where != null && !named ? " in custom block '" + where.name + "'" : "")
                 + ": " + e.getMessage() + "\n");
         if (b != null) {
             b.canvas().setError(b);

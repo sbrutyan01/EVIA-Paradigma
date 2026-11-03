@@ -1,6 +1,8 @@
 package evia.paradigma;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -11,66 +13,95 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Shows the generated C++ and can save it, or compile and run it with an
- * external compiler. The program's output appears below; text typed in the
- * input line is sent to the program's stdin (for Input blocks).
+ * C++ editor for the generated program. The code can be edited with Vim keys
+ * (or in the real Vim via "Edit in Vim"), saved, and compiled and run with Clang.
+ *
+ * <p>Vim commands: {@code :w} save, {@code :w file.cpp} save as, {@code :q} close,
+ * {@code :wq}/{@code :x} save and close, {@code :make} or {@code :run} compile and run,
+ * {@code :vim} open in real Vim.
  */
 final class CodeViewer extends JFrame {
-    private static final String DEFAULT_CMD = "g++ -std=c++20 -O2 -Wall -o {exe} {src}";
-    private static final Preferences PREFS = Preferences.userNodeForPackage(CodeViewer.class);
-    private static final boolean WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
-
     private final JTextPane codePane = new JTextPane();
+    private final JLabel modeLine = new JLabel(" ");
+    private final JLabel compilerLabel = new JLabel(" ");
+    private final JCheckBox vimBox = new JCheckBox("Vim keys", Settings.vimKeys());
     private final JTextArea output = new JTextArea();
     private final JTextField inputField = new JTextField();
-    private final JTextField cmdField = new JTextField(PREFS.get("compileCmd", DEFAULT_CMD), 34);
     private final JButton runBtn = new JButton("Compile & Run");
     private final JButton stopBtn = new JButton("Stop");
-    private String code = "";
+    private final VimKeys vim;
+    private final Timer rehighlight;
+    private String generated = "";
     private String baseName = "program";
+    private Path savedPath;
     private Process process;
     private Writer stdin;
 
     CodeViewer() {
-        super("Generated C++20 - EVIA Paradigma");
+        super("C++20 - EVIA Paradigma");
+        AppIcon.apply(this);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
-        setSize(1000, 820);
+        setSize(1060, 860);
 
+        // ---- toolbar
         JToolBar tb = new JToolBar();
         tb.setFloatable(false);
-        JButton save = new JButton("Save .cpp...");
-        save.addActionListener(e -> save());
-        JButton copy = new JButton("Copy");
-        copy.addActionListener(e -> Toolkit.getDefaultToolkit().getSystemClipboard()
-                .setContents(new StringSelection(code), null));
-        tb.add(save);
-        tb.add(copy);
+        tb.add(button("Save .cpp...", e -> saveAs()));
+        tb.add(button("Copy", e -> Toolkit.getDefaultToolkit().getSystemClipboard()
+                .setContents(new StringSelection(codePane.getText()), null)));
+        tb.add(button("Edit in Vim...", e -> editInVim()));
+        tb.add(vimBox);
         tb.addSeparator();
         tb.add(new JLabel(" Compiler: "));
-        cmdField.setToolTipText("<html>Command used to compile. {src} = source file, {exe} = program file.<br>"
-                + "MSVC example: <code>cl /std:c++20 /EHsc /O2 /Fe:{exe} {src}</code></html>");
-        tb.add(cmdField);
-        JButton reset = new JButton("Default");
-        reset.addActionListener(e -> cmdField.setText(DEFAULT_CMD));
-        tb.add(reset);
-        tb.addSeparator();
+        tb.add(compilerLabel);
+        tb.add(Box.createHorizontalStrut(8));
+        tb.add(button("Settings...", e -> Settings.showDialog(this)));
+        tb.add(Box.createHorizontalGlue());
         runBtn.addActionListener(e -> compileAndRun());
         stopBtn.addActionListener(e -> stop());
         stopBtn.setEnabled(false);
         tb.add(runBtn);
         tb.add(stopBtn);
 
-        codePane.setEditable(false);
+        // ---- code editor with Vim keys and a Vim-like mode line
         codePane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         codePane.setBackground(new Color(250, 250, 247));
         JScrollPane codeScroll = new JScrollPane(codePane);
         codeScroll.getVerticalScrollBar().setUnitIncrement(16);
+        modeLine.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+        modeLine.setOpaque(true);
+        modeLine.setBackground(new Color(235, 236, 240));
+        modeLine.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+        JPanel codePanel = new JPanel(new BorderLayout());
+        codePanel.add(codeScroll, BorderLayout.CENTER);
+        codePanel.add(modeLine, BorderLayout.SOUTH);
 
+        vim = VimKeys.install(codePane, new VimKeys.Host() {
+            @Override public boolean ex(String cmd) { return exCommand(cmd); }
+            @Override public void status(String text) { modeLine.setText(text.isEmpty() ? " " : text); }
+        }, false);
+        vim.setEnabled(Settings.vimKeys());
+        vimBox.addActionListener(e -> Settings.setVimKeys(vimBox.isSelected()));
+        Settings.onChange(() -> {
+            vimBox.setSelected(Settings.vimKeys());
+            vim.setEnabled(Settings.vimKeys());
+            modeLine.setText(Settings.vimKeys() ? "NORMAL" : " ");
+            checkCompiler();
+        });
+
+        rehighlight = new Timer(350, e -> highlight());
+        rehighlight.setRepeats(false);
+        codePane.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { edited(); }
+            @Override public void removeUpdate(DocumentEvent e) { edited(); }
+            @Override public void changedUpdate(DocumentEvent e) {}
+        });
+
+        // ---- output + stdin
         output.setEditable(false);
         output.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         output.setBackground(new Color(30, 32, 38));
@@ -87,20 +118,93 @@ final class CodeViewer extends JFrame {
         bottom.add(new JScrollPane(output), BorderLayout.CENTER);
         bottom.add(inputRow, BorderLayout.SOUTH);
 
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, codeScroll, bottom);
-        split.setResizeWeight(0.7);
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, codePanel, bottom);
+        split.setResizeWeight(0.72);
         getContentPane().add(tb, BorderLayout.NORTH);
         getContentPane().add(split, BorderLayout.CENTER);
+        checkCompiler();
     }
 
+    private static JButton button(String text, java.awt.event.ActionListener l) {
+        JButton b = new JButton(text);
+        b.addActionListener(l);
+        return b;
+    }
+
+    /** Shows freshly generated code. Asks before throwing away edits made here. */
     void show(String cppCode, String name) {
-        code = cppCode;
+        if (isVisible() && isDirty()) {
+            int r = JOptionPane.showConfirmDialog(this, "You edited the C++ code. Replace it with the newly generated code?",
+                    "Generate C++", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (r != JOptionPane.YES_OPTION) {
+                toFront();
+                return;
+            }
+        }
+        generated = cppCode;
         baseName = name;
-        codePane.setText(code);
-        highlight();
+        savedPath = null;
+        setText(cppCode);
         codePane.setCaretPosition(0);
+        updateTitle();
         setVisible(true);
         toFront();
+        codePane.requestFocusInWindow();
+    }
+
+    private boolean isDirty() {
+        return !codePane.getText().equals(generated);
+    }
+
+    private void setText(String s) {
+        vim.withoutUndo(() -> codePane.setText(s));
+        vim.resetUndo();
+        highlight();
+    }
+
+    private void edited() {
+        rehighlight.restart();
+        SwingUtilities.invokeLater(this::updateTitle);
+    }
+
+    private void updateTitle() {
+        String file = savedPath != null ? savedPath.getFileName().toString() : baseName + ".cpp";
+        setTitle(file + (isDirty() ? " [edited]" : "") + " - C++20 - EVIA Paradigma");
+    }
+
+    // ================================================================ ex commands (:w :q :make ...)
+
+    private boolean exCommand(String cmd) {
+        if (cmd.equals("w") || cmd.equals("w!")) {
+            save();
+        } else if (cmd.startsWith("w ")) {
+            saveTo(Path.of(cmd.substring(2).trim()));
+        } else if (cmd.equals("q") || cmd.equals("q!") || cmd.equals("close")) {
+            setVisible(false);
+        } else if (cmd.equals("wq") || cmd.equals("x")) {
+            if (save()) setVisible(false);
+        } else if (cmd.equals("make") || cmd.equals("run") || cmd.equals("make!")) {
+            compileAndRun();
+        } else if (cmd.equals("vim") || cmd.equals("gvim")) {
+            SwingUtilities.invokeLater(this::editInVim);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    // ================================================================ real Vim
+
+    private void editInVim() {
+        String s = ExternalEditor.edit(this, codePane.getText(), (savedPath != null ? savedPath.getFileName().toString() : baseName + ".cpp"));
+        if (s != null && !s.equals(codePane.getText())) {
+            int caret = Math.min(codePane.getCaretPosition(), s.length());
+            vim.withoutUndo(() -> codePane.setText(s));
+            vim.resetUndo();
+            highlight();
+            codePane.setCaretPosition(caret);
+            updateTitle();
+        }
     }
 
     // ================================================================ syntax highlighting
@@ -108,26 +212,31 @@ final class CodeViewer extends JFrame {
     private static final Set<String> KEYWORDS = Set.of("auto", "bool", "break", "case", "catch", "char", "class",
             "const", "constexpr", "default", "delete", "double", "else", "for", "goto", "if", "inline", "int",
             "long", "namespace", "new", "return", "static_cast", "struct", "switch", "template", "throw", "try",
-            "using", "void", "while", "nullptr", "true", "false", "this", "operator", "sizeof");
+            "using", "void", "while", "nullptr", "true", "false", "this", "operator", "sizeof", "noexcept");
     private static final Pattern TOKENS = Pattern.compile(
-            "(//[^\\n]*)|(\"(?:\\\\.|[^\"\\\\])*\")|('(?:\\\\.|[^'\\\\])*')|(^\\s*#\\w+)|\\b([A-Za-z_]\\w*)\\b|(^L\\d+:)",
+            "(//[^\\n]*)|(\"(?:\\\\.|[^\"\\\\\\n])*\")|('(?:\\\\.|[^'\\\\\\n])*')|(^\\s*#\\w+)|\\b([A-Za-z_]\\w*)\\b|(^L\\d+:)",
             Pattern.MULTILINE);
 
     private void highlight() {
+        String code = codePane.getText();
         StyledDocument doc = codePane.getStyledDocument();
+        SimpleAttributeSet plain = style(new Color(25, 25, 30), false, false);
         SimpleAttributeSet comment = style(new Color(110, 130, 110), false, true);
         SimpleAttributeSet string = style(new Color(160, 80, 30), false, false);
         SimpleAttributeSet keyword = style(new Color(30, 70, 170), true, false);
         SimpleAttributeSet pre = style(new Color(140, 60, 150), false, false);
         SimpleAttributeSet label = style(new Color(190, 30, 60), true, false);
-        Matcher m = TOKENS.matcher(code);
-        while (m.find()) {
-            if (m.group(1) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), comment, false);
-            else if (m.group(2) != null || m.group(3) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), string, false);
-            else if (m.group(4) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), pre, false);
-            else if (m.group(5) != null && KEYWORDS.contains(m.group(5))) doc.setCharacterAttributes(m.start(5), m.group(5).length(), keyword, false);
-            else if (m.group(6) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), label, false);
-        }
+        vim.withoutUndo(() -> {
+            doc.setCharacterAttributes(0, doc.getLength(), plain, true);
+            Matcher m = TOKENS.matcher(code);
+            while (m.find()) {
+                if (m.group(1) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), comment, false);
+                else if (m.group(2) != null || m.group(3) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), string, false);
+                else if (m.group(4) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), pre, false);
+                else if (m.group(5) != null && KEYWORDS.contains(m.group(5))) doc.setCharacterAttributes(m.start(5), m.group(5).length(), keyword, false);
+                else if (m.group(6) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), label, false);
+            }
+        });
     }
 
     private static SimpleAttributeSet style(Color c, boolean bold, boolean italic) {
@@ -140,22 +249,41 @@ final class CodeViewer extends JFrame {
 
     // ================================================================ save
 
-    private void save() {
-        JFileChooser fc = new JFileChooser();
-        fc.setSelectedFile(new File(baseName + ".cpp"));
-        if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+    private boolean save() {
+        if (savedPath == null) return saveAs();
+        return saveTo(savedPath);
+    }
+
+    private boolean saveAs() {
+        JFileChooser fc = new JFileChooser(savedPath != null ? savedPath.toFile() : null);
+        fc.setSelectedFile(savedPath != null ? savedPath.toFile() : new File(baseName + ".cpp"));
+        if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return false;
+        return saveTo(fc.getSelectedFile().toPath());
+    }
+
+    private boolean saveTo(Path p) {
         try {
-            Files.writeString(fc.getSelectedFile().toPath(), code, StandardCharsets.UTF_8);
+            Files.writeString(p, codePane.getText(), StandardCharsets.UTF_8);
+            savedPath = p.toAbsolutePath();
+            updateTitle();
+            modeLine.setText("\"" + p.getFileName() + "\" written");
+            return true;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Save failed", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
     }
 
     // ================================================================ compile & run
 
+    private void checkCompiler() {
+        Settings.checkCompiler(Settings.compilerCommand(), compilerLabel);
+    }
+
     private void compileAndRun() {
         if (process != null) return;
-        PREFS.put("compileCmd", cmdField.getText().trim());
+        String code = codePane.getText();
+        String command = Settings.compilerCommand();
         output.setText("");
         runBtn.setEnabled(false);
         stopBtn.setEnabled(true);
@@ -163,12 +291,12 @@ final class CodeViewer extends JFrame {
         Thread t = new Thread(() -> {
             try {
                 Path dir = Files.createTempDirectory("evia-cpp");
-                Path src = dir.resolve("program.cpp");
-                Path exe = dir.resolve(WINDOWS ? "program.exe" : "program");
+                Path src = dir.resolve(baseName.replaceAll("[^A-Za-z0-9_-]", "_") + ".cpp");
+                Path exe = dir.resolve(ExternalEditor.WINDOWS ? "program.exe" : "program");
                 Files.writeString(src, code, StandardCharsets.UTF_8);
 
                 List<String> cmd = new ArrayList<>();
-                for (String tok : cmdField.getText().trim().split("\\s+")) {
+                for (String tok : Settings.split(command)) {
                     cmd.add(tok.replace("{src}", src.toString()).replace("{exe}", exe.toString()));
                 }
                 append("$ " + String.join(" ", cmd) + "\n");
@@ -182,8 +310,8 @@ final class CodeViewer extends JFrame {
                 append("\n>> program exited with code " + rc + "\n");
             } catch (IOException e) {
                 append(">> " + e.getMessage() + "\n"
-                        + ">> Is the compiler installed and on PATH? On Windows install MinGW-w64 (e.g. via MSYS2)\n"
-                        + "   or use MSVC from a Developer Command Prompt and change the compiler command.\n");
+                        + ">> Install LLVM/Clang " + Settings.LATEST_CLANG + " and put clang++ on PATH,\n"
+                        + "   or change the compiler in Settings.\n");
             } catch (InterruptedException e) {
                 append(">> stopped\n");
             } finally {
@@ -200,7 +328,6 @@ final class CodeViewer extends JFrame {
         t.start();
     }
 
-    /** Starts a process, streams its output into the output pane, waits for it. */
     private int runProcess(ProcessBuilder pb, boolean interactive) throws IOException, InterruptedException {
         pb.redirectErrorStream(true);
         Process p = pb.start();

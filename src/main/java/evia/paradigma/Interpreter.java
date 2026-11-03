@@ -239,7 +239,8 @@ final class Interpreter {
                     host.print("(warning: " + cur.title() + " block has no outgoing connection - program ends)");
                     return null;
                 }
-                throw new FlowException(cur, "this path ends without reaching an Exit block");
+                throw new FlowException(cur, "custom block '" + scope.def.name
+                        + "': this path ends without reaching an Exit block");
             }
             cur = nxt;
         }

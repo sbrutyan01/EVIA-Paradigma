@@ -1,0 +1,23 @@
+# EVIA Paradigma program v2
+D|1|Factorial|ffaa78|n
+B|M|1|START|300|20||-1
+B|M|2|INPUT|300|115|n|-1
+B|M|3|CUSTOM|300|215|n|1
+B|M|4|PRINT|300|320|n+%2B+%22%21+%3D+%22+%2B+result|-1
+B|M|5|END|300|420||-1
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5
+B|1|1|ENTER|200|20||-1
+B|1|2|IF|200|115|this.n+%3C%3D+1|-1
+B|1|3|SET|40|240|result+%3D+1|-1
+B|1|4|CUSTOM|360|240|this.n+-+1|1
+B|1|5|SET|360|345|result+%3D+result+*+this.n|-1
+B|1|6|EXIT|200|470|next|-1
+L|1|1|0|2
+L|1|2|0|3
+L|1|2|1|4
+L|1|3|0|6
+L|1|4|0|5
+L|1|5|0|6

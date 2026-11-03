@@ -20,6 +20,7 @@ final class DefinitionEditor extends JFrame {
         this.def = def;
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setSize(1050, 720);
+        AppIcon.apply(this);
 
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
         top.add(new JLabel("Name:"));

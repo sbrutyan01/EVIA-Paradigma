@@ -330,22 +330,13 @@ public final class FlowCanvas extends JPanel {
         String prompt = b.def != null
                 ? "Arguments for " + b.def.signature() + "  (comma separated):"
                 : b.type.hint;
-        String code = b.getCode();
-        while (true) {
-            Object r = JOptionPane.showInputDialog(this, prompt, "Edit " + b.title(),
-                    JOptionPane.PLAIN_MESSAGE, null, null, code);
-            if (r == null) return;
-            code = r.toString().trim();
-            String err = Interpreter.check(b, code);
-            if (err == null) {
-                b.setCode(code);
-                b.setError(false);
-                blockMoved();
-                if (b.type == BlockType.EXIT) changed();
-                return;
-            }
-            JOptionPane.showMessageDialog(this, err, "Invalid code", JOptionPane.ERROR_MESSAGE);
-        }
+        String code = CodeEditDialog.show(this, "Edit " + b.title(), prompt, b.getCode(),
+                c -> Interpreter.check(b, c));
+        if (code == null) return;
+        b.setCode(code);
+        b.setError(false);
+        blockMoved();
+        if (b.type == BlockType.EXIT) changed();
     }
 
     void showBlockMenu(Block b, int x, int y) {
