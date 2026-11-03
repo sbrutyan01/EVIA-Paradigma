@@ -1,0 +1,41 @@
+#!/bin/sh
+# postinst for evia-paradigma: menu entry, icon, .evia MIME type and a command on PATH.
+# Plain files plus optional cache refreshes, so it also works without a desktop session.
+set -e
+
+APP=/opt/evia-paradigma
+
+case "$1" in
+  configure)
+    for f in "$APP"/lib/*.desktop; do
+      [ -f "$f" ] || continue
+      install -D -m 644 "$f" /usr/share/applications/evia-paradigma.desktop
+    done
+    for f in "$APP"/lib/*.png; do
+      [ -f "$f" ] || continue
+      install -D -m 644 "$f" /usr/share/icons/hicolor/512x512/apps/evia-paradigma.png
+    done
+    if [ -f /usr/share/applications/evia-paradigma.desktop ]; then
+      sed -i 's|^Icon=.*|Icon=evia-paradigma|; s|^Exec=.*|Exec="/opt/evia-paradigma/bin/EVIA Paradigma" %f|' \
+        /usr/share/applications/evia-paradigma.desktop
+    fi
+    mkdir -p /usr/share/mime/packages
+    cat > /usr/share/mime/packages/evia-paradigma.xml <<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-evia-paradigma">
+    <comment>EVIA Paradigma program</comment>
+    <icon name="evia-paradigma"/>
+    <glob pattern="*.evia"/>
+  </mime-type>
+</mime-info>
+XML
+    ln -sf "$APP/bin/EVIA Paradigma" /usr/bin/evia-paradigma
+
+    if command -v update-mime-database > /dev/null 2>&1; then update-mime-database /usr/share/mime || true; fi
+    if command -v update-desktop-database > /dev/null 2>&1; then update-desktop-database -q /usr/share/applications || true; fi
+    if command -v gtk-update-icon-cache > /dev/null 2>&1; then gtk-update-icon-cache -q -t /usr/share/icons/hicolor || true; fi
+    ;;
+esac
+
+exit 0
