@@ -23,8 +23,8 @@ echo "Packaging $NAME $VERSION for $KIND using $(jpackage --version)"
 # ---- 1. application image: launcher + jar + minimal runtime (java.base, java.desktop, java.prefs)
 image_opts=(
   --name "$NAME"
-  --vendor "Sergey (sbrutyan01)"
-  --copyright "Copyright (c) 2026 Sergey (sbrutyan01). MIT License."
+  --vendor "Sergey Brutyan (sbrutyan01)"
+  --copyright "Copyright (c) 2026 Sergey Brutyan (sbrutyan01). MIT License."
   --description "Visual block programming with classes and C++20 generation"
   --input dist/input
   --main-jar "$(basename "$JAR")"
@@ -45,7 +45,7 @@ case "$KIND" in
     jpackage --type app-image "${image_opts[@]}" --app-version "$VERSION" --icon packaging/icons/evia.png
     smoke_test "$WORK/image/$NAME/bin/$NAME"
     jpackage --type deb --app-image "$WORK/image/$NAME" --name "$NAME" --app-version "$VERSION" \
-      --vendor "Sergey (sbrutyan01)" \
+      --vendor "Sergey Brutyan (sbrutyan01)" \
       --description "Visual block programming with classes and C++20 generation" \
       --license-file LICENSE \
       --file-associations packaging/evia-files.properties \
@@ -67,7 +67,7 @@ case "$KIND" in
       --add-launcher evia=packaging/evia-cli.properties
     smoke_test "$WORK/image/$NAME/evia.exe"
     jpackage --type exe --app-image "$WORK/image/$NAME" --name "$NAME" --app-version "$VERSION" \
-      --vendor "Sergey (sbrutyan01)" \
+      --vendor "Sergey Brutyan (sbrutyan01)" \
       --description "Visual block programming with classes and C++20 generation" \
       --license-file LICENSE \
       --file-associations packaging/evia-files.properties \
