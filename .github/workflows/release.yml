@@ -37,12 +37,24 @@ jobs:
       - name: Install Clang ${{ env.CLANG_VERSION }}
         if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')
         run: |
-          wget -qO llvm.sh https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh "$CLANG_VERSION"
+          # apt.llvm.org is sometimes unreachable: retry, then fall back to Ubuntu's Clang
+          for i in 1 2 3 4 5; do
+            if wget -qO llvm.sh https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh "$CLANG_VERSION"; then
+              echo "CXX=clang++-$CLANG_VERSION" >> "$GITHUB_ENV"
+              break
+            fi
+            echo "apt.llvm.org attempt $i failed"; sleep 30
+          done
+          if ! grep -q '^CXX=' "$GITHUB_ENV"; then
+            echo "::warning::apt.llvm.org unreachable - checking with Ubuntu's clang++ instead of Clang $CLANG_VERSION"
+            sudo apt-get install -y clang
+            echo "CXX=clang++" >> "$GITHUB_ENV"
+          fi
       - name: Verify generated C++ against the interpreter
         if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')
-        run: scripts/check-examples.sh "clang++-$CLANG_VERSION"
+        run: |
+          "$CXX" --version
+          scripts/check-examples.sh "$CXX"
       - uses: actions/upload-artifact@v4
         with:
           name: jar
