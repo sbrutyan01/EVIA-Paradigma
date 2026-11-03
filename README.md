@@ -149,6 +149,8 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    compiles it with `-Wall -Wextra -Wpedantic -Werror`, and requires the compiled program and the interpreter to produce
    identical stdout, stderr and exit codes.
 
+CI reports: [v0.1.2 (PDF)](docs/reports/EVIA-Paradigma-0.1.2-CI.pdf)
+
 ## Code map
 
 | File | Role |
