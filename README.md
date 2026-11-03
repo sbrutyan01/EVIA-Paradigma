@@ -138,4 +138,4 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
 
 ## License
 
-EVIA Paradigma is released under the [MIT License](LICENSE). Copyright (c) 2026 Sergey (sbrutyan01).
+EVIA Paradigma is released under the [MIT License](LICENSE). Copyright (c) 2026 Sergey Brutyan (sbrutyan01).
