@@ -30,9 +30,9 @@ for src in examples/*.evia; do
   echo $? > "$OUT/$name.cpp.rc"
   set -e
 
-  if diff -u "$OUT/$name.interp.out" "$OUT/$name.cpp.out" \
-     && diff -u "$OUT/$name.interp.err" "$OUT/$name.cpp.err" \
-     && diff -u "$OUT/$name.interp.rc" "$OUT/$name.cpp.rc"; then
+  if diff -u --strip-trailing-cr "$OUT/$name.interp.out" "$OUT/$name.cpp.out" \
+     && diff -u --strip-trailing-cr "$OUT/$name.interp.err" "$OUT/$name.cpp.err" \
+     && diff -u --strip-trailing-cr "$OUT/$name.interp.rc" "$OUT/$name.cpp.rc"; then
     echo "ok    $name ($(wc -l < "$OUT/$name.cpp.out") lines of output)"
   else
     echo "FAIL  $name: interpreter and compiled C++ differ"

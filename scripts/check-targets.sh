@@ -57,13 +57,15 @@ for src in examples/*.evia tests/programs/*.evia; do
         fi
         "./$OUT/$id$EXE" < "$input" > "$OUT/$id.out" 2> "$OUT/$id.err"
         echo $? > "$OUT/$id.rc"
-        if cmp -s "$OUT/$name.expected.out" "$OUT/$id.out" && cmp -s "$OUT/$name.expected.err" "$OUT/$id.err" \
-           && cmp -s "$OUT/$name.expected.rc" "$OUT/$id.rc"; then
+        # Windows: line endings may be \r\n on one side (sed in Git Bash drops \r), so ignore them
+        if diff -q --strip-trailing-cr "$OUT/$name.expected.out" "$OUT/$id.out" > /dev/null \
+           && diff -q --strip-trailing-cr "$OUT/$name.expected.err" "$OUT/$id.err" > /dev/null \
+           && diff -q --strip-trailing-cr "$OUT/$name.expected.rc" "$OUT/$id.rc" > /dev/null; then
           ok=$((ok + 1))
         else
           echo "FAIL  $id: differs from the interpreter"
-          diff "$OUT/$name.expected.out" "$OUT/$id.out" | head -n 10
-          diff "$OUT/$name.expected.err" "$OUT/$id.err" | head -n 5
+          diff --strip-trailing-cr "$OUT/$name.expected.out" "$OUT/$id.out" | head -n 10
+          diff --strip-trailing-cr "$OUT/$name.expected.err" "$OUT/$id.err" | cat -A | head -n 5
           echo "  exit code: expected $(cat "$OUT/$name.expected.rc"), got $(cat "$OUT/$id.rc")"
           failed=$((failed + 1))
         fi

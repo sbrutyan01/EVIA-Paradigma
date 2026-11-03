@@ -1244,8 +1244,10 @@ final class CodeGenerator {
         return sb.toString();
     }
 
+    /** A number literal; whole numbers outside int range get ".0" (a long long literal isn't C++98, and long is 32-bit on Windows). */
     private static String number(double d) {
-        if (d == Math.rint(d) && Math.abs(d) < 1e15) return Long.toString((long) d);
+        if (d == Math.rint(d) && Math.abs(d) <= Integer.MAX_VALUE) return Long.toString((long) d);
+        if (d == Math.rint(d) && Math.abs(d) < 1e15) return (long) d + ".0";
         return Double.toString(d);
     }
 
