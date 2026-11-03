@@ -93,6 +93,10 @@ final class PalettePanel extends JPanel {
                   a custom block
                 - Right-click for more options
 
+                Loops (For, While, Do-While):
+                  wire the end of the body back
+                  into the loop block
+
                 Expressions:
                   + - * / %  == != < <= > >=
                   && || !  ( )  "strings"  this.x"""));

@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C++20 generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.1.1-blue" alt="version 0.1.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.1.2-blue" alt="version 0.1.2"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
@@ -27,11 +27,11 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.1.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.1.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.1.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.1.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.1.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.1.1.jar` | `java -jar evia-paradigma-0.1.1.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.1.2-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.1.2-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.1.2-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.1.2_amd64.deb` | `sudo apt install ./evia-paradigma_0.1.2_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.1.2.jar` | `java -jar evia-paradigma-0.1.2.jar` |
 
 ## Building from source
 
@@ -42,7 +42,7 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.1.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.2.jar`.
 
 ### Installing Clang 23
 
@@ -58,8 +58,26 @@ Command line: `mvn package` then `java -jar target/evia-paradigma-0.1.1.jar`.
 
 ## Blocks
 
-**Start**, **Set** (`x = expr`), **Input** (`name`), **Print** (`expr`),
-**If** (`condition`; left port = true, right port = false), **End**.
+**Start**, **Set** (`x = expr`), **Input** (`name`), **Print** (`expr`), **End**.
+
+### Flow control
+
+| Block | Code | Ports | Generated C++ |
+|---|---|---|---|
+| **If / Else** | `x < 10` | `then`, `else`. Wire both to the same block to join them | `if (…) { … } else { … }` |
+| **For** | `i = 1; i <= 10; i = i + 1` (init; condition; step, each part optional) | `body`, `done` | `for (…; …; …) { … }` |
+| **While** | `x < 10`, checked before each pass | `body`, `done` | `while (…) { … }` |
+| **Do-While** | `x < 10`, checked after each pass, so the body runs at least once | `body`, `done` | `do { … } while (…);` |
+
+To close a loop, **wire the end of its body back into the loop block**. Arriving there from the body
+starts the next pass (For runs its step, then the condition). Arriving from anywhere else enters the loop
+(For runs its init; Do-While goes straight into the body). Loops nest naturally: an inner For starts over
+on each pass of the outer loop. An If/Else whose branches both lead back to the loop block works like `continue`.
+
+When the wiring is block-structured, *Generate C++* writes real nested `if/else`, `for`, `while` and `do-while`
+statements (see [`examples/loops.evia`](examples/loops.evia)). Free-form wiring, such as jumping out of the middle of a
+loop or into one, is still allowed: that part of the program is generated with labels and `goto`, and it
+behaves exactly like the interpreter.
 
 Expressions: numbers, `"strings"`, variables, `+ - * / %`, `== != < <= > >=`, `&& || !`, `( )`,
 `true`/`false`, `this.field`.

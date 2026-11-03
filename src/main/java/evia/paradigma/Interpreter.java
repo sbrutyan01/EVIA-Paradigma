@@ -1,6 +1,10 @@
 package evia.paradigma;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,8 +33,18 @@ final class Interpreter {
         boolean cancelled();
     }
 
-    /** Pre-parsed block contents: var for SET/INPUT/EXIT, expr for SET/PRINT/IF, args for CUSTOM. */
-    record Compiled(String var, Expr expr, List<Expr> args) {}
+    /**
+     * Pre-parsed block contents: var for SET/INPUT/EXIT; expr for SET/PRINT and the condition of
+     * IF/FOR/WHILE/DO_WHILE (null in a FOR means "always"); args for CUSTOM; init and step for FOR.
+     */
+    record Compiled(String var, Expr expr, List<Expr> args, Assign init, Assign step) {
+        Compiled(String var, Expr expr, List<Expr> args) {
+            this(var, expr, args, null, null);
+        }
+    }
+
+    /** name = expression (the init and step parts of a For block). */
+    record Assign(String var, Expr expr) {}
 
     static final int MAX_STEPS = 2_000_000;
     static final int MAX_DEPTH = 400;
@@ -54,7 +68,17 @@ final class Interpreter {
                 if (!VAR.matcher(name).matches()) throw new FlowException("expected a variable name");
                 yield new Compiled(name, null, null);
             }
-            case PRINT, IF -> new Compiled(null, ExprParser.parse(code), null);
+            case PRINT, IF, WHILE, DO_WHILE -> new Compiled(null, ExprParser.parse(code), null);
+            case FOR -> {
+                List<String> parts = splitTopLevel(code, ';');
+                if (parts.size() != 3) {
+                    throw new FlowException("expected  init; condition; step   e.g.  i = 1; i <= 10; i = i + 1");
+                }
+                Assign init = assignOrNull(parts.get(0), "init");
+                Expr cond = parts.get(1).isBlank() ? null : ExprParser.parse(parts.get(1));
+                Assign step = assignOrNull(parts.get(2), "step");
+                yield new Compiled(null, cond, null, init, step);
+            }
             case EXIT -> {
                 String name = code.trim();
                 if (!BlockDef.isIdentifier(name)) throw new FlowException("exit name must be a simple name, e.g. next, done, yes");
@@ -70,6 +94,36 @@ final class Interpreter {
                 yield new Compiled(null, null, args);
             }
         };
+    }
+
+    private static Assign assignOrNull(String part, String what) {
+        if (part.isBlank()) return null;
+        Matcher m = ASSIGN.matcher(part);
+        if (!m.matches()) throw new FlowException("the " + what + " part must look like  name = expression");
+        return new Assign(m.group(1), ExprParser.parse(m.group(2)));
+    }
+
+    /** Splits on {@code sep}, ignoring separators inside "string literals". */
+    static List<String> splitTopLevel(String s, char sep) {
+        List<String> out = new ArrayList<>();
+        StringBuilder cur = new StringBuilder();
+        boolean quoted = false;
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (ch == '\\' && quoted && i + 1 < s.length()) {
+                cur.append(ch).append(s.charAt(++i));
+                continue;
+            }
+            if (ch == '"') quoted = !quoted;
+            if (ch == sep && !quoted) {
+                out.add(cur.toString());
+                cur.setLength(0);
+            } else {
+                cur.append(ch);
+            }
+        }
+        out.add(cur.toString());
+        return out;
     }
 
     /** Returns an error message, or null if the code is valid for this block. */
@@ -99,8 +153,10 @@ final class Interpreter {
                 throw new FlowException(enters.get(0), "custom block '" + d.name + "' has no Exit block");
             }
             compileAll(d.body.getBlocks());
+            computeLoopBodies(d.body.getBlocks());
         }
         compileAll(lib.main.getBlocks());
+        computeLoopBodies(lib.main.getBlocks());
 
         Block start = null;
         for (Block b : lib.main.getBlocks()) {
@@ -111,6 +167,26 @@ final class Interpreter {
         }
         if (start == null) throw new FlowException("no Start block - drag one from the palette");
         return start;
+    }
+
+    /**
+     * For every loop block: the blocks reachable from its 'body' port without passing through
+     * the loop block itself. Arriving at the loop from one of these is "the next pass";
+     * arriving from anywhere else is entering the loop (For runs its init, Do-While its body).
+     */
+    static void computeLoopBodies(List<Block> blocks) {
+        for (Block loop : blocks) {
+            if (!loop.type.isLoop()) continue;
+            Set<Block> body = new HashSet<>();
+            Deque<Block> todo = new ArrayDeque<>();
+            if (loop.next[0] != null && loop.next[0] != loop) todo.push(loop.next[0]);
+            while (!todo.isEmpty()) {
+                Block b = todo.pop();
+                if (b == loop || !body.add(b)) continue;
+                for (Block n : b.next) if (n != null) todo.push(n);
+            }
+            loop.loopBody = body;
+        }
     }
 
     private static void compileAll(List<Block> blocks) {
@@ -189,6 +265,8 @@ final class Interpreter {
      * or a missing connection.
      */
     private String runGraph(Block cur, Scope scope, int depth, Host host) {
+        Block prev = null;
+        boolean selfPass = false;          // a loop with an empty body continues with itself
         while (true) {
             if (host.cancelled()) throw new Halt();
             if (++steps > MAX_STEPS) throw new FlowException(cur, "step limit exceeded (infinite loop?)");
@@ -200,8 +278,17 @@ final class Interpreter {
                 if (cur.type == BlockType.END) throw new Halt();
                 if (cur.type == BlockType.EXIT) return c.var();
 
+                boolean nextPass = selfPass || (prev != null && cur.loopBody.contains(prev));
+                selfPass = false;
                 nxt = switch (cur.type) {
                     case START, ENTER -> cur.next[0];
+                    case FOR -> {
+                        Assign a = nextPass ? c.step() : c.init();
+                        if (a != null) scope.set(a.var(), Expr.eval(a.expr(), scope));
+                        yield test(cur, c, scope);
+                    }
+                    case WHILE -> test(cur, c, scope);
+                    case DO_WHILE -> nextPass ? test(cur, c, scope) : body(cur);
                     case SET -> {
                         scope.set(c.var(), Expr.eval(c.expr(), scope));
                         yield cur.next[0];
@@ -242,8 +329,20 @@ final class Interpreter {
                 throw new FlowException(cur, "custom block '" + scope.def.name
                         + "': this path ends without reaching an Exit block");
             }
+            if (nxt == cur && cur.type.isLoop()) selfPass = true;
+            prev = cur;
             cur = nxt;
         }
+    }
+
+    /** Loop condition: 'body' if true (or the loop itself if the body is empty), else 'done'. */
+    private Block test(Block loop, Compiled c, Scope scope) {
+        boolean go = c.expr() == null || Expr.truthy(Expr.eval(c.expr(), scope));
+        return go ? body(loop) : loop.next[1];
+    }
+
+    private static Block body(Block loop) {
+        return loop.next[0] != null ? loop.next[0] : loop;
     }
 
     /** Calls a custom block: evaluate arguments, bind them to the object's fields, run the body. */

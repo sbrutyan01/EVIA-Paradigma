@@ -3,7 +3,7 @@ D|1|IsEven|96d2f0|v
 D|2|Average|ffaa78|x
 B|M|1|START|400|20||-1
 B|M|2|SET|400|115|i+%3D+1|-1
-B|M|3|IF|400|215|i+%3C%3D+6|-1
+B|M|3|WHILE|400|215|i+%3C%3D+6|-1
 B|M|4|CUSTOM|330|330|i|1
 B|M|5|PRINT|200|450|i+%2B+%22+is+even%22|-1
 B|M|6|CUSTOM|200|555|i|2

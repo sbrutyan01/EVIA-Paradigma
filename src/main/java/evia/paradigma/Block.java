@@ -27,6 +27,7 @@ public final class Block extends JComponent {
     final int id;
     final BlockType type;
     final BlockDef def;                        // non-null only for CUSTOM
+    java.util.Set<Block> loopBody = java.util.Set.of();   // loops only: set by Interpreter.prepare
     Block[] next;                              // next[i] = block connected to output port i
     private List<String> ports;                // port names (CUSTOM only)
     private String code;
@@ -184,13 +185,15 @@ public final class Block extends JComponent {
     }
 
     private String portLabel(int i) {
-        if (type == BlockType.IF) return i == 0 ? "T" : "F";
+        if (type == BlockType.IF) return i == 0 ? "then" : "else";
+        if (type.isLoop()) return i == 0 ? "body" : "done";
         if (def != null && next.length > 1) return ports.get(i);
         return null;
     }
 
     private Color portColor(int i) {
         if (type == BlockType.IF) return i == 0 ? new Color(60, 170, 70) : new Color(210, 60, 50);
+        if (type.isLoop()) return i == 0 ? new Color(60, 170, 70) : new Color(90, 90, 100);
         return Color.DARK_GRAY;
     }
 
@@ -254,7 +257,7 @@ public final class Block extends JComponent {
             drawPort(g, p, c);
             String label = portLabel(i);
             if (label != null) {
-                g.setColor(type == BlockType.IF ? c.darker() : new Color(40, 40, 50));
+                g.setColor(type == BlockType.IF || type.isLoop() ? c.darker() : new Color(40, 40, 50));
                 g.drawString(label, p.x + PORT_R + 3, p.y - 3);
             }
         }

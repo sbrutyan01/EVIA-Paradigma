@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.BitSet;
 
 /**
  * Translates a block program into a single C++20 source file.
@@ -174,32 +175,295 @@ final class CppGenerator {
     private final class GraphWriter {
         final BlockDef owner;                    // null = main program
         final List<String> lines = new ArrayList<>();
-        final Set<Integer> targets = new HashSet<>();
+        final Set<String> targets = new HashSet<>();
 
         GraphWriter(BlockDef owner) {
             this.owner = owner;
         }
 
+        /** Structured C++ when the wiring allows it, otherwise labels and goto. */
         void write(Block entry) {
+            Set<Block> reachable = reachable(entry);
+            int unreachable = (owner == null ? lib.main : owner.body).getBlocks().size() - reachable.size();
+            if (unreachable > 0) out.append("    // (").append(unreachable).append(" unreachable block(s) skipped)\n");
+            List<String> structured = new Structurer(entry, reachable).emit();
+            if (structured != null) {
+                for (String l : structured) out.append(l).append('\n');
+                return;
+            }
+            out.append("    // (wiring is not block-structured here, so this uses labels)\n");
             List<Block> order = layout(entry);
             for (int i = 0; i < order.size(); i++) {
                 Block b = order.get(i);
                 Block after = i + 1 < order.size() ? order.get(i + 1) : null;
-                lines.add("\u0000" + b.id);
+                label("L" + b.id);
                 line("// " + comment(describe(b)));
                 emitBlock(b, after);
             }
-            int unreachable = (owner == null ? lib.main : owner.body).getBlocks().size() - order.size();
-            if (unreachable > 0) out.append("    // (").append(unreachable).append(" unreachable block(s) skipped)\n");
             for (String l : lines) {
                 if (l.startsWith("\u0000")) {
-                    int id = Integer.parseInt(l.substring(1));
-                    if (targets.contains(id)) out.append("L").append(id).append(":\n");
+                    String name = l.substring(1);
+                    if (targets.contains(name)) out.append(name).append(":\n");
                 } else {
                     out.append(l).append('\n');
                 }
             }
         }
+
+        // ============================================================ structured mode
+
+        /** Thrown when the graph can't be written as nested if/else, loops and switch. */
+        private static final class Unstructured extends RuntimeException {
+            Unstructured() {
+                super(null, null, false, false);
+            }
+        }
+
+        /**
+         * Writes a graph as nested C++ statements. If/else and multi-exit custom blocks continue at
+         * their immediate post-dominator (the join point). A loop block's body must be a closed
+         * region: nothing jumps into it except through the loop block, nothing jumps out of it
+         * except back to the loop block (or a return/throw). Anything else is "unstructured".
+         */
+        private final class Structurer {
+            final Block entry;
+            final List<Block> nodes;
+            final Map<Block, Integer> index = new HashMap<>();
+            final Map<Block, Set<Block>> preds = new HashMap<>();
+            BitSet[] pdom;
+            final Set<Block> emitted = new HashSet<>();
+            final List<String> outLines = new ArrayList<>();
+            int indent = 1;
+
+            Structurer(Block entry, Set<Block> reachable) {
+                this.entry = entry;
+                this.nodes = new ArrayList<>(reachable);
+                for (int i = 0; i < nodes.size(); i++) index.put(nodes.get(i), i);
+                for (Block b : nodes) {
+                    for (Block n : b.next) if (n != null) preds.computeIfAbsent(n, k -> new HashSet<>()).add(b);
+                }
+            }
+
+            List<String> emit() {
+                try {
+                    postDominators();
+                    seq(entry, null, null);
+                    return outLines;
+                } catch (Unstructured u) {
+                    return null;
+                }
+            }
+
+            /** Successor indices; nodes.size() stands for "leaves the function". */
+            List<Integer> succ(Block b) {
+                List<Integer> r = new ArrayList<>();
+                int exit = nodes.size();
+                if (b.type == BlockType.END || b.type == BlockType.EXIT) {
+                    r.add(exit);
+                    return r;
+                }
+                for (Block n : b.next) r.add(n == null ? exit : index.get(n));
+                if (b.next.length == 0) r.add(exit);
+                return r;
+            }
+
+            void postDominators() {
+                int n = nodes.size(), exit = n;
+                pdom = new BitSet[n + 1];
+                for (int i = 0; i <= n; i++) {
+                    pdom[i] = new BitSet(n + 1);
+                    if (i == exit) pdom[i].set(exit);
+                    else pdom[i].set(0, n + 1);
+                }
+                boolean changed = true;
+                while (changed) {
+                    changed = false;
+                    for (int i = 0; i < n; i++) {
+                        BitSet nw = null;
+                        for (int s : succ(nodes.get(i))) {
+                            if (nw == null) nw = (BitSet) pdom[s].clone();
+                            else nw.and(pdom[s]);
+                        }
+                        if (nw == null) nw = new BitSet(n + 1);
+                        nw.set(i);
+                        if (!nw.equals(pdom[i])) {
+                            pdom[i] = nw;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            /** Immediate post-dominator, or null when the paths only meet at the end of the function. */
+            Block ipdom(Block b) {
+                int i = index.get(b);
+                BitSet strict = (BitSet) pdom[i].clone();
+                strict.clear(i);
+                int want = strict.cardinality();
+                for (int d = strict.nextSetBit(0); d >= 0; d = strict.nextSetBit(d + 1)) {
+                    if (pdom[d].cardinality() == want) return d == nodes.size() ? null : nodes.get(d);
+                }
+                return null;
+            }
+
+            void add(String s) {
+                outLines.add("    ".repeat(indent) + s);
+            }
+
+            /** Emits blocks from {@code b} until {@code stop} (a join point or the enclosing loop block). */
+            void seq(Block b, Block stop, Block loop) {
+                while (b != null && b != stop) {
+                    if (loop != null && b != loop && !loop.loopBody.contains(b)) throw new Unstructured();
+                    if (!emitted.add(b)) throw new Unstructured();
+                    Interpreter.Compiled c = b.compiled();
+                    add("// " + comment(describe(b)));
+                    switch (b.type) {
+                        case START, ENTER -> { }
+                        case SET -> add(target(c.var(), b) + " = " + expr(c.expr(), b) + ";");
+                        case PRINT -> add("print(" + expr(c.expr(), b) + ");");
+                        case INPUT -> add(target(c.var(), b) + " = input(" + cppString(c.var()) + ");");
+                        case END -> {
+                            add("return;");
+                            return;
+                        }
+                        case EXIT -> {
+                            add("return " + owner.exitNames().indexOf(c.var()) + ";   // exit '" + c.var() + "'");
+                            return;
+                        }
+                        case IF -> {
+                            b = ifElse(b, c, stop, loop);
+                            continue;
+                        }
+                        case CUSTOM -> {
+                            if (b.next.length > 1) {
+                                b = multiExit(b, c, stop, loop);
+                                continue;
+                            }
+                            add(call(b, c) + ";");
+                        }
+                        case FOR, WHILE, DO_WHILE -> {
+                            loopBlock(b, c);
+                            if (b.next[1] == null) {
+                                add(missing(b, 1));
+                                return;
+                            }
+                            b = b.next[1];
+                            continue;
+                        }
+                    }
+                    if (b.next.length == 0 || b.next[0] == null) {
+                        add(missing(b, 0));
+                        return;
+                    }
+                    b = b.next[0];
+                }
+            }
+
+            /** if (cond) { then } else { else }, continuing at the join point. */
+            Block ifElse(Block b, Interpreter.Compiled c, Block stop, Block loop) {
+                Block join = ipdom(b);
+                checkJoin(join, loop);
+                Block inner = join != null ? join : stop;
+                String cond = "truthy(" + expr(c.expr(), b) + ")";
+                Block yes = b.next[0], no = b.next[1];
+                boolean yesEmpty = yes != null && yes == inner, noEmpty = no != null && no == inner;
+                if (yesEmpty && noEmpty) {
+                    add("(void) " + cond + ";");
+                } else if (yesEmpty) {
+                    add("if (!" + cond + ") {");
+                    branch(b, 1, inner, loop);
+                    add("}");
+                } else {
+                    add("if (" + cond + ") {");
+                    branch(b, 0, inner, loop);
+                    if (!noEmpty) {
+                        add("} else {");
+                        branch(b, 1, inner, loop);
+                    }
+                    add("}");
+                }
+                return join;
+            }
+
+            /** A custom block with several exits: switch on the exit index. */
+            Block multiExit(Block b, Interpreter.Compiled c, Block stop, Block loop) {
+                Block join = ipdom(b);
+                checkJoin(join, loop);
+                Block inner = join != null ? join : stop;
+                add("switch (" + call(b, c) + ") {");
+                for (int i = 0; i < b.next.length; i++) {
+                    add("    case " + i + ": {   // " + comment(b.portName(i)));
+                    indent++;
+                    branch(b, i, inner, loop);
+                    indent--;
+                    add("        break;");
+                    add("    }");
+                }
+                add("    default: throw std::logic_error(\"bad exit index\");");
+                add("}");
+                return join;
+            }
+
+            /** One branch of an if/else or switch: output {@code port} of {@code from}. */
+            void branch(Block from, int port, Block stop, Block loop) {
+                indent++;
+                Block start = from.next[port];
+                if (start == null) add(missing(from, port));
+                else seq(start, stop, loop);
+                indent--;
+            }
+
+            /** for / while / do-while; the body must be a closed region of the graph. */
+            void loopBlock(Block l, Interpreter.Compiled c) {
+                Set<Block> body = l.loopBody;
+                if (l.next[1] != null && body.contains(l.next[1])) throw new Unstructured();
+                for (Block x : body) {
+                    for (Block n : x.next) if (n != null && n != l && !body.contains(n)) throw new Unstructured();
+                    for (Block p : preds.getOrDefault(x, Set.of())) if (p != l && !body.contains(p)) throw new Unstructured();
+                }
+                String cond = c.expr() == null ? "" : "truthy(" + expr(c.expr(), l) + ")";
+                switch (l.type) {
+                    case FOR -> add("for (" + assign(c.init(), l) + "; " + cond + "; " + assign(c.step(), l) + ") {");
+                    case WHILE -> add("while (" + cond + ") {");
+                    default -> add("do {");
+                }
+                Block first = l.next[0];
+                if (first != null && first != l) {
+                    indent++;
+                    seq(first, l, l);
+                    indent--;
+                }
+                add(l.type == BlockType.DO_WHILE ? "} while (" + cond + ");" : "}");
+            }
+
+            void checkJoin(Block join, Block loop) {
+                if (loop != null && join != null && join != loop && !loop.loopBody.contains(join)) throw new Unstructured();
+            }
+        }
+
+        String assign(Interpreter.Assign a, Block b) {
+            return a == null ? "" : target(a.var(), b) + " = " + expr(a.expr(), b);
+        }
+
+        String call(Block b, Interpreter.Compiled c) {
+            StringBuilder call = new StringBuilder("obj(o" + b.id + ").call(");
+            for (int i = 0; i < c.args().size(); i++) call.append(i == 0 ? "" : ", ").append(expr(c.args().get(i), b));
+            return call.append(')').toString();
+        }
+
+        Set<Block> reachable(Block entry) {
+            Set<Block> seen = new LinkedHashSet<>();
+            Deque<Block> todo = new ArrayDeque<>();
+            todo.push(entry);
+            while (!todo.isEmpty()) {
+                Block b = todo.pop();
+                if (!seen.add(b)) continue;
+                for (Block n : b.next) if (n != null && !seen.contains(n)) todo.push(n);
+            }
+            return seen;
+        }
+
+        // ============================================================ label (goto) mode
 
         /** Orders blocks so that each block is followed by its first successor whenever possible. */
         List<Block> layout(Block entry) {
@@ -224,6 +488,10 @@ final class CppGenerator {
             return order;
         }
 
+        void label(String name) {
+            lines.add("\u0000" + name);
+        }
+
         void emitBlock(Block b, Block after) {
             Interpreter.Compiled c = b.compiled();
             switch (b.type) {
@@ -242,21 +510,18 @@ final class CppGenerator {
                 }
                 case IF -> {
                     String cond = "truthy(" + expr(c.expr(), b) + ")";
-                    if (b.next[0] != null && b.next[0] == after) {
+                    if (b.next[0] != null && b.next[0] == after && !isBackEdge(b, after)) {
                         line("if (!" + cond + ") " + go(b, 1, null));
                     } else {
                         line("if (" + cond + ") " + go(b, 0, null));
                         line(go(b, 1, after));
                     }
                 }
+                case FOR, WHILE, DO_WHILE -> loopLabels(b, c, after);
                 case END -> line("return;");
                 case EXIT -> line("return " + owner.exitNames().indexOf(c.var()) + ";   // exit '" + c.var() + "'");
                 case CUSTOM -> {
-                    StringBuilder call = new StringBuilder("obj(o" + b.id + ").call(");
-                    for (int i = 0; i < c.args().size(); i++) {
-                        call.append(i == 0 ? "" : ", ").append(expr(c.args().get(i), b));
-                    }
-                    call.append(')');
+                    String call = call(b, c);
                     if (b.next.length == 1) {
                         line(call + ";");
                         line(go(b, 0, after));
@@ -274,13 +539,54 @@ final class CppGenerator {
             }
         }
 
+        /**
+         * A loop block as labels: Ln = entering the loop, Ln_next = the next pass (wires coming
+         * back from the body), Ln_test = the condition.
+         */
+        void loopLabels(Block l, Interpreter.Compiled c, Block after) {
+            String id = "L" + l.id;
+            String cond = c.expr() == null ? null : "truthy(" + expr(c.expr(), l) + ")";
+            String toBody = l.next[0] == null || l.next[0] == l ? jump(id + "_next") : go(l, 0, null);
+            switch (l.type) {
+                case FOR -> {
+                    if (c.init() != null) line(assign(c.init(), l) + ";");
+                    line(jump(id + "_test"));
+                    label(id + "_next");
+                    if (c.step() != null) line(assign(c.step(), l) + ";");
+                    label(id + "_test");
+                    if (cond != null) line("if (!" + cond + ") " + go(l, 1, null));
+                    line(toBody);
+                }
+                case WHILE -> {
+                    label(id + "_next");
+                    line("if (!" + cond + ") " + go(l, 1, null));
+                    line(toBody);
+                }
+                default -> {
+                    line(toBody);
+                    label(id + "_next");
+                    line("if (" + cond + ") " + toBody);
+                    line(go(l, 1, after));
+                }
+            }
+        }
+
+        String jump(String label) {
+            targets.add(label);
+            return "goto " + label + ";";
+        }
+
+        boolean isBackEdge(Block from, Block to) {
+            return to != null && to.type.isLoop() && (to.loopBody.contains(from) || from == to);
+        }
+
         /** Code to continue from output {@code port} of {@code b}; empty when it simply falls through. */
         String go(Block b, int port, Block after) {
             Block t = b.next[port];
             if (t == null) return missing(b, port);
+            if (isBackEdge(b, t)) return jump("L" + t.id + "_next");
             if (t == after) return "";
-            targets.add(t.id);
-            return "goto L" + t.id + ";";
+            return jump("L" + t.id);
         }
 
         /** Same behaviour as the interpreter for an unconnected output. */

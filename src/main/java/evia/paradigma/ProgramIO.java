@@ -144,7 +144,7 @@ final class ProgramIO {
         FlowCanvas c = lib.main;
         Block start = c.addBlock(1, BlockType.START, "", null, 400, 20);
         Block setI = c.addBlock(2, BlockType.SET, "i = 1", null, 400, 115);
-        Block loop = c.addBlock(3, BlockType.IF, "i <= 6", null, 400, 215);
+        Block loop = c.addBlock(3, BlockType.WHILE, "i <= 6", null, 400, 215);
         Block test = c.addBlock(4, BlockType.CUSTOM, "i", isEven, 330, 330);
         Block pEven = c.addBlock(5, BlockType.PRINT, "i + \" is even\"", null, 200, 450);
         Block mean = c.addBlock(6, BlockType.CUSTOM, "i", avg, 200, 555);

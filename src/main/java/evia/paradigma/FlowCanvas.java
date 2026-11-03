@@ -461,6 +461,7 @@ public final class FlowCanvas extends JPanel {
         for (Link l : links()) {
             Color c = l.from().type == BlockType.IF
                     ? (l.port() == 0 ? new Color(50, 150, 60) : new Color(200, 60, 50))
+                    : l.from().type.isLoop() && l.port() == 0 ? new Color(50, 150, 60)
                     : new Color(70, 75, 90);
             g.setColor(c);
             CubicCurve2D curve = linkShape(l.from().outPort(l.port()), l.to().inPort());
