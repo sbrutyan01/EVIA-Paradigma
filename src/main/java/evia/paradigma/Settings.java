@@ -52,6 +52,59 @@ final class Settings {
         fire();
     }
 
+    /** The language and generation mode used by Generate code (and by projects that don't set their own). */
+    static Target target() {
+        return Target.parse(PREFS.get("target", null));
+    }
+
+    static void setTarget(Target t) {
+        if (t.equals(target())) return;
+        PREFS.put("target", t.key());
+        fire();
+    }
+
+    /**
+     * The compile command for a target, derived from the C++ compiler setting: the matching
+     * C compiler for C (clang++ -> clang, g++ -> gcc, c++ -> cc), the target's -std= flag,
+     * and -lm for C's math library.
+     */
+    static String commandFor(Target t) {
+        return commandFor(compilerCommand(), t);
+    }
+
+    static String commandFor(String cxxCommand, Target t) {
+        List<String> tokens = split(cxxCommand);
+        if (tokens.isEmpty()) return cxxCommand;
+        List<String> out = new ArrayList<>();
+        String exe = tokens.get(0);
+        if (t.isC()) {
+            int slash = Math.max(exe.lastIndexOf('/'), exe.lastIndexOf('\\'));
+            String dir = exe.substring(0, slash + 1), name = exe.substring(slash + 1);
+            if (name.contains("clang++")) name = name.replace("clang++", "clang");
+            else if (name.contains("g++")) name = name.replace("g++", "gcc");
+            else if (name.contains("c++")) name = name.replace("c++", "cc");
+            exe = dir + name;
+        }
+        out.add(exe);
+        boolean std = false;
+        for (String tok : tokens.subList(1, tokens.size())) {
+            if (tok.startsWith("-std=")) {
+                out.add("-std=" + t.lang().std);
+                std = true;
+            } else {
+                out.add(tok);
+            }
+        }
+        if (!std) out.add(1, "-std=" + t.lang().std);
+        if (t.isC() && !out.contains("-lm")) out.add("-lm");
+        StringBuilder sb = new StringBuilder();
+        for (String tok : out) {
+            if (!sb.isEmpty()) sb.append(' ');
+            sb.append(tok.contains(" ") ? "\"" + tok + "\"" : tok);
+        }
+        return sb.toString();
+    }
+
     static void onChange(Runnable r) {
         listeners.add(r);
     }
@@ -128,11 +181,18 @@ final class Settings {
      * C++ standard library work. Returns null on success, otherwise the compiler output.
      */
     static String testCompile(String command) {
+        return testCompile(command, false);
+    }
+
+    /** Test-compiles a tiny program: the C++ runtime, or for C a program using the C library and math. */
+    static String testCompile(String command, boolean c) {
         try {
             java.nio.file.Path dir = java.nio.file.Files.createTempDirectory("evia-check");
-            java.nio.file.Path src = dir.resolve("check.cpp");
+            java.nio.file.Path src = dir.resolve(c ? "check.c" : "check.cpp");
             java.nio.file.Path exe = dir.resolve(ExternalEditor.WINDOWS ? "check.exe" : "check");
-            java.nio.file.Files.writeString(src, CppRuntime.SOURCE + "\nint main() { evia_rt::print(evia_rt::S(\"ok\")); }\n");
+            java.nio.file.Files.writeString(src, c
+                    ? "#include <math.h>\n#include <stdio.h>\nint main(void) { printf(\"%g\\n\", fmod(7.5, 2)); return 0; }\n"
+                    : CppRuntime.SOURCE + "\nint main() { evia_rt::print(evia_rt::S(\"ok\")); }\n");
             List<String> cmd = new ArrayList<>();
             for (String t : split(command)) cmd.add(t.replace("{src}", src.toString()).replace("{exe}", exe.toString()));
             Process p = new ProcessBuilder(cmd).directory(dir.toFile()).redirectErrorStream(true).start();
@@ -191,7 +251,7 @@ final class Settings {
         g.gridx = 1; g.gridy = 2; g.gridwidth = 2;
         p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
         g.gridx = 0; g.gridy = 3; g.gridwidth = 1;
-        p.add(new JLabel("C++ compiler:"), g);
+        p.add(new JLabel("Compiler (C++):"), g);
         g.gridx = 1; p.add(compiler, g);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         btns.add(defCompiler);
@@ -199,9 +259,11 @@ final class Settings {
         if (ToolchainInstaller.supported()) btns.add(install);
         g.gridx = 2; p.add(btns, g);
         g.gridx = 1; g.gridy = 4; g.gridwidth = 2;
-        p.add(small("{src} = generated .cpp, {exe} = program. Latest stable Clang is " + LATEST_CLANG
+        p.add(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."), g);
+        g.gridy++;
+        p.add(small("Latest stable Clang is " + LATEST_CLANG
                 + (ToolchainInstaller.supported() ? ". Windows: \"Install Clang...\" sets up llvm-mingw, no Visual Studio needed." : ".")), g);
-        g.gridy = 5;
+        g.gridy++;
         p.add(compilerStatus, g);
         checkCompiler(compiler.getText(), compilerStatus);
 
@@ -215,11 +277,15 @@ final class Settings {
     }
 
     static void checkCompiler(String command, JLabel label) {
+        checkCompiler(command, label, false);
+    }
+
+    static void checkCompiler(String command, JLabel label, boolean c) {
         label.setText("Checking compiler...");
         label.setForeground(Color.GRAY);
         new Thread(() -> {
             CompilerInfo ci = detectCompiler(command);
-            String problem = ci == null ? null : testCompile(command);
+            String problem = ci == null ? null : testCompile(command, c);
             SwingUtilities.invokeLater(() -> {
                 describe(ci, label);
                 if (problem != null) {

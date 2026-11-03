@@ -9,10 +9,11 @@ import java.nio.file.Path;
  * Command-line mode, for scripts, CI and Vim users:
  * <pre>
  * java -jar evia-paradigma.jar --run program.evia            run with the interpreter (stdin/stdout)
- * java -jar evia-paradigma.jar --gen program.evia [-o x.cpp]  write C++20 (stdout if no -o)
+ * java -jar evia-paradigma.jar --gen program.evia [-o x.cpp] [--lang c++20] [--flow structured] [--values safe]
+ *                                                             write C or C++ (stdout if no -o)
  * java -jar evia-paradigma.jar --example out.evia             save the built-in example program
  * </pre>
- * Output and errors are identical to the generated C++ program, so the two can be compared.
+ * Output and errors are identical to the generated program, so the two can be compared.
  */
 final class Cli {
     private Cli() {}
@@ -28,8 +29,35 @@ final class Cli {
                 }
                 case "--gen" -> {
                     need(args, 2);
-                    String code = CppGenerator.generate(load(args[1]));
-                    if (args.length >= 4 && args[2].equals("-o")) Files.writeString(Path.of(args[3]), code, StandardCharsets.UTF_8);
+                    Target t = Target.DEFAULT;
+                    String output = null;
+                    for (int i = 2; i < args.length; i++) {
+                        String opt = args[i];
+                        if (i + 1 >= args.length) throw new IllegalArgumentException(opt + " needs a value (see --help)");
+                        String v = args[++i];
+                        switch (opt) {
+                            case "-o" -> output = v;
+                            case "--lang" -> {
+                                Target.Lang l = Target.langOf(v);
+                                if (l == null) throw new IllegalArgumentException("unknown language " + v
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20)");
+                                t = t.withLang(l);
+                            }
+                            case "--flow" -> t = t.withFlow(switch (v.toLowerCase()) {
+                                case "structured" -> Target.Flow.STRUCTURED;
+                                case "goto" -> Target.Flow.GOTO;
+                                default -> throw new IllegalArgumentException("--flow is structured or goto");
+                            });
+                            case "--values" -> t = t.withValues(switch (v.toLowerCase()) {
+                                case "safe" -> Target.Values.SAFE;
+                                case "fast" -> Target.Values.FAST;
+                                default -> throw new IllegalArgumentException("--values is safe or fast");
+                            });
+                            default -> throw new IllegalArgumentException("unknown option " + opt + " (see --help)");
+                        }
+                    }
+                    String code = CodeGenerator.generate(load(args[1]), t);
+                    if (output != null) Files.writeString(Path.of(output), code, StandardCharsets.UTF_8);
                     else out.print(code);
                     return 0;
                 }
@@ -46,17 +74,24 @@ final class Cli {
                 }
                 default -> {
                     out.println("""
-                            EVIA Paradigma - visual block programming with C++20 generation
+                            EVIA Paradigma - visual block programming with C and C++ generation
 
                             Usage:
                               java -jar evia-paradigma.jar                           start the editor
                               java -jar evia-paradigma.jar --run  program.evia       run a program
                                                           (or a project folder / .eviaproj)
-                              java -jar evia-paradigma.jar --gen  program.evia [-o program.cpp]
-                                                                                     generate C++20
+                              java -jar evia-paradigma.jar --gen  program.evia [options]
+                                                                                     generate C or C++
+                                  -o FILE              write to FILE (default: standard output)
+                                  --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default)
+                                  --flow MODE          structured (default): if/else, loops, switch
+                                                       goto: every block a label, wires are jumps
+                                  --values MODE        safe (default): numbers and text, the interpreter's checks
+                                                       fast: plain double numbers, text only in Print, no checks
                               java -jar evia-paradigma.jar --example out.evia        save the example
-                            Build generated code with Clang %d:
-                              clang++ -std=c++20 -O2 -o program program.cpp""".formatted(Settings.LATEST_CLANG));
+                            Build generated code with Clang %d, e.g.:
+                              clang++ -std=c++20 -O2 -o program program.cpp
+                              clang -std=c11 -O2 -o program program.c -lm""".formatted(Settings.LATEST_CLANG));
                     return args[0].equals("--help") || args[0].equals("-h") ? 0 : 2;
                 }
             }

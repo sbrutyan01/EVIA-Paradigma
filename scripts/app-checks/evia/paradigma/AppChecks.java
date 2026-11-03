@@ -42,7 +42,7 @@ public class AppChecks {
         }
 
         // ---------- source map
-        CppGenerator.Result r = CppGenerator.generateWithMap(lib);
+        CodeGenerator.Result r = CodeGenerator.generateWithMap(lib);
         String[] lines = r.code().split("\n", -1);
         int withCode = 0, total = 0;
         for (FlowCanvas c : lib.canvases()) for (Block b : c.getBlocks()) {
@@ -64,6 +64,33 @@ public class AppChecks {
         List<int[]> mr = r.sourceMap().get(lib.byName("Counter").method("isBig"));
         check(mr != null && lines[mr.get(0)[0]].contains("Counter::m_isBig"), "method maps to its definition: " + (mr == null ? "-" : lines[mr.get(0)[0]]));
         check(r.sourceMap().get(lib.byName("Account")) != null, "class has ranges");
+
+        // ---------- other languages: View source line mapping, targets, compile commands
+        for (String key : new String[]{"c11/structured/safe", "c99/goto/safe", "c++98/structured/safe", "c++14/goto/safe"}) {
+            Target tg = Target.parse(key);
+            CodeGenerator.Result rc = CodeGenerator.generateWithMap(lib, tg);
+            String[] cl = rc.code().split("\n", -1);
+            StringBuilder st = new StringBuilder();
+            for (int[] x : rc.sourceMap().get(setCount)) for (int i = x[0]; i < x[1]; i++) st.append(cl[i]).append('\n');
+            boolean okLines = st.toString().contains("this.count = this.count") && st.toString().contains(tg.isC() ? "rt_set(&self->f_count" : "f_count =");
+            check(okLines, key + ": Set block maps to its assignment");
+            int covered = 0;
+            for (FlowCanvas c : lib.canvases()) for (Block b : c.getBlocks()) if (rc.sourceMap().get(b) != null) covered++;
+            check(covered == total, key + ": every block has lines (" + covered + "/" + total + ")");
+        }
+        check(Target.parse("c17/goto/fast").equals(new Target(Target.Lang.C17, Target.Flow.GOTO, Target.Values.FAST))
+                && Target.parse(Target.parse("c++11/structured/fast").key()).key().equals("c++11/structured/fast")
+                && Target.parse("nonsense").equals(Target.DEFAULT), "target keys round-trip");
+        check(Settings.commandFor("clang++ -std=c++20 -O2 -o {exe} {src}", Target.parse("c11"))
+                .equals("clang -std=c11 -O2 -o {exe} {src} -lm"), "C compile command from the C++ one");
+        check(Settings.commandFor("\"C:/Program Files/llvm/bin/clang++.exe\" -O2 -static -o {exe} {src}", Target.parse("c++14"))
+                .equals("\"C:/Program Files/llvm/bin/clang++.exe\" -std=c++14 -O2 -static -o {exe} {src}"), "-std added, quoted path kept");
+        try {
+            CodeGenerator.generate(lib, Target.parse("c11/structured/fast"));
+            check(false, "fast values refuse text in fields");
+        } catch (FlowException e) {
+            check(e.getMessage().contains("fast values only hold numbers"), "fast values refuse text in fields: " + e.getMessage());
+        }
 
         // ---------- export / import modules round trip
         Path prog = tmp.resolve("p/prog.evia");

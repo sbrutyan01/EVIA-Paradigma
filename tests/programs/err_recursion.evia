@@ -1,0 +1,17 @@
+# EVIA Paradigma program v3
+C|R|96d2f0
+M|R|go|d
+B|R:go|1|ENTER|300|20||-|-|
+B|R:go|2|IF|300|115|this.d+%3C+100000|-|-|
+B|R:go|3|CUSTOM|120|300|this.d+%2B+1|R|go|
+B|R:go|4|EXIT|120|400|next|-|-|
+B|R:go|5|EXIT|480|300|next|-|-|
+L|R:go|1|0|2
+L|R:go|2|0|3
+L|R:go|3|0|4
+L|R:go|2|1|5
+B|M|1|START|300|20||-|-|
+B|M|2|CUSTOM|300|115|0|R|go|
+B|M|3|END|300|210||-|-|
+L|M|1|0|2
+L|M|2|0|3

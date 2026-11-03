@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *   MyProject.eviaproj   name, main program, version
  *   main.evia            the main program
  *   modules/             class modules (*.eviam) the program imports
- *   build/               generated C++ and compiled programs (ignored by git)
+ *   build/               generated C/C++ code and compiled programs (ignored by git)
  *   README.md
  *   .gitignore
  * </pre>
@@ -49,9 +49,21 @@ final class Project {
         return dir.resolve("build");
     }
 
-    /** The program file name for generated C++, e.g. build/MyProject.cpp. */
-    Path cppFile() {
-        return buildDir().resolve(safeName(name()) + ".cpp");
+    /** Where Generate code writes the program, e.g. build/MyProject.cpp or build/MyProject.c. */
+    Path codeFile(Target t) {
+        return buildDir().resolve(safeName(name()) + t.ext());
+    }
+
+    /** The project's language and generation mode, or null when it uses the application's choice. */
+    Target target() {
+        String k = props.getProperty("target");
+        return k == null ? null : Target.parse(k);
+    }
+
+    void setTarget(Target t) throws IOException {
+        if (t.key().equals(props.getProperty("target"))) return;
+        props.setProperty("target", t.key());
+        save();
     }
 
     static String safeName(String name) {
@@ -80,7 +92,7 @@ final class Project {
         p.props.setProperty("created-with", "EVIA Paradigma " + App.VERSION);
         p.save();
         Files.writeString(dir.resolve(".gitignore"), """
-                # EVIA Paradigma: generated C++ and compiled programs
+                # EVIA Paradigma: generated code and compiled programs
                 build/
                 *.exe
                 *.o
@@ -94,15 +106,16 @@ final class Project {
 
                 * `main.evia` - the main program (open the project folder or `%s` in EVIA Paradigma)
                 * `modules/` - class modules (`*.eviam`) used by the program
-                * `build/` - generated C++20 (not committed)
+                * `build/` - generated C or C++ code (not committed)
 
                 Run it with the **Run** button, or from a terminal:
 
                 ```
                 evia --run main.evia
-                evia --gen main.evia -o build/%s.cpp
+                evia --gen main.evia -o build/%s.cpp                 (C++20)
+                evia --gen main.evia --lang c11 -o build/%s.c        (C11; also c99, c17, c++98 ... c++20)
                 ```
-                """.formatted(name, p.file.getFileName(), safeName(name)), StandardCharsets.UTF_8);
+                """.formatted(name, p.file.getFileName(), safeName(name), safeName(name)), StandardCharsets.UTF_8);
         return p;
     }
 

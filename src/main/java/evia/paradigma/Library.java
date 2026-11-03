@@ -161,7 +161,7 @@ final class Library {
         editorOpener.accept(d);
     }
 
-    /** Shows the generated C++ for a block, a method or a class. */
+    /** Shows the generated C or C++ code for a block, a method or a class. */
     Consumer<Object> sourceViewer = o -> {};
 
     void viewSource(Object blockMethodOrClass) {

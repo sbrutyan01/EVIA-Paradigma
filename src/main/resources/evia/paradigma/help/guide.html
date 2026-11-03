@@ -4,13 +4,14 @@
 <a name="start"></a>
 <h1>EVIA Paradigma guide</h1>
 <p>EVIA Paradigma is visual programming: drag blocks from the palette onto the canvas, wire them
-together and press <b>Run</b>. The same program can be turned into C++20 and compiled with Clang.</p>
+together and press <b>Run</b>. The same program can be turned into C (C99, C11, C17) or C++ (C++98 to C++20)
+and compiled with Clang.</p>
 <ol>
   <li>Drag <b>Start</b>, a few blocks and <b>End</b> onto the canvas.</li>
   <li>Drag from the small circle at the bottom of a block (its output port) to another block to wire them.</li>
   <li>Double-click a block to edit its code.</li>
   <li>Press <b>Run</b> (F5). Output appears in the panel below; the running block is highlighted.</li>
-  <li>Use <b>Run &gt; Generate C++</b> (F7) to see, save, compile and run the program as C++20.</li>
+  <li>Choose a <b>Language</b> in the toolbar and press <b>Generate code</b> (F7) to see, save, compile and run the program.</li>
 </ol>
 
 <a name="blocks"></a>
@@ -78,13 +79,13 @@ MyProject/
   MyProject.eviaproj   project settings
   main.evia            the main program
   modules/             class modules
-  build/               generated C++ (not committed)
+  build/               generated code (not committed)
   README.md
   .gitignore
 </pre>
 <p>Open it again with <b>File &gt; Open Project</b> (choose the folder or the .eviaproj file). In a project,
-modules are imported from and exported to <code>modules/</code>, and <b>Generate C++</b> also writes
-<code>build/&lt;name&gt;.cpp</code>.</p>
+modules are imported from and exported to <code>modules/</code>, and <b>Generate code</b> also writes
+<code>build/&lt;name&gt;.c</code> or <code>.cpp</code>. The project remembers its language.</p>
 
 <a name="git"></a>
 <h2>Git and GitHub</h2>
@@ -102,13 +103,31 @@ passwords or tokens.</p>
 <p>Install git from <a href="https://git-scm.com/downloads">git-scm.com</a> if the menu says it is missing.</p>
 
 <a name="cpp"></a>
-<h2>C++ code</h2>
-<p><b>Run &gt; Generate C++</b> turns the whole program into one C++20 file. Classes become <code>struct</code>s
-with their fields and methods, loops become <code>for</code>/<code>while</code>/<code>do</code>, and if/else
-become <code>if</code>. Right-click a block or a class and choose <b>View C++ source</b> to see exactly the code
-it became, highlighted.</p>
-<p>The code window can save the file, compile it with Clang and run it. On Windows EVIA Paradigma can install
-the free llvm-mingw Clang toolchain; Visual Studio is not needed.</p>
+<h2>Generated code: C and C++</h2>
+<p><b>Generate code</b> (F7) turns the whole program into one source file. Three drop-down lists in the toolbar
+(and in the code window) choose what you get; <b>Run &gt; Code Language and Mode</b> has the same choices.
+Changing them in the code window generates the code again.</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>List</th><th>Choices</th><th>What changes</th></tr>
+<tr><td>Language</td><td>C99, C11, C17<br>C++98, C++11, C++14, C++17, C++20</td>
+<td>C: a <code>struct</code> per class and functions <code>Class_m_method(self, ...)</code>, a small runtime with only
+the helpers the program uses. C++: a <code>struct</code> per class with member functions; C++98 uses plain pointers,
+C++11/14 <code>std::unique_ptr</code>, C++17/20 <code>std::variant</code> and <code>std::to_chars</code>.</td></tr>
+<tr><td>Flow</td><td>Structured<br>Goto</td>
+<td>Structured: <code>if</code>/<code>else</code>, <code>for</code>, <code>while</code>, <code>do</code>/<code>while</code>
+and <code>switch</code> (labels only where the wiring is not block-structured). Goto: every block is a label and every
+wire a jump, closest to the diagram.</td></tr>
+<tr><td>Values</td><td>Safe<br>Fast</td>
+<td>Safe: numbers and text with exactly the interpreter's checks (undefined variables, division by zero, text that is
+not a number, endless recursion). Fast: plain <code>double</code> variables and fields, text only in <b>Print</b>, no
+runtime checks. A program that keeps text in a variable can't use Fast values; Generate code says which block.</td></tr>
+</table>
+<p>Every combination is tested to give the same output as the interpreter (with Fast values: for programs that run without errors).
+Right-click a block, a method or a class and choose <b>View source code</b> to see the code it became, highlighted,
+in the language you chose.</p>
+<p>The code window can save the file, compile it and run it. For C it uses the matching C compiler (clang, gcc), the
+right <code>-std=</code> and <code>-lm</code>. On Windows EVIA Paradigma can install the free llvm-mingw Clang toolchain;
+Visual Studio is not needed.</p>
 
 <a name="keys"></a>
 <h2>Keyboard shortcuts</h2>
@@ -121,22 +140,22 @@ the free llvm-mingw Clang toolchain; Visual Studio is not needed.</p>
 <tr><td>Delete</td><td>Delete the selected blocks</td></tr>
 <tr><td>Ctrl+G</td><td>Group selected blocks into a class</td></tr>
 <tr><td>F5 / Shift+F5</td><td>Run / Stop</td></tr>
-<tr><td>F7</td><td>Generate C++</td></tr>
+<tr><td>F7</td><td>Generate code</td></tr>
 <tr><td>Ctrl+K</td><td>Git commit</td></tr>
 <tr><td>F1</td><td>This guide</td></tr>
 <tr><td>Shift+click, drag a rectangle</td><td>Select several blocks</td></tr>
-<tr><td>Right-click a block</td><td>Block menu (edit, View C++ source, delete ...)</td></tr>
+<tr><td>Right-click a block</td><td>Block menu (edit, View source code, delete ...)</td></tr>
 </table>
 
 <a name="vim"></a>
 <h2>Vim keys</h2>
-<p>Code fields, the C++ window and the commit message editor use Vim keys (turn them off in
+<p>Code fields, the code window and the commit message editor use Vim keys (turn them off in
 <b>Settings</b>). Text starts in insert mode; <b>Esc</b> switches to normal mode.</p>
 <ul>
   <li>Moving: <code>h j k l</code>, <code>w b e</code>, <code>0 ^ $</code>, <code>gg G</code>, <code>%</code>, <code>f t</code></li>
   <li>Editing: <code>i a I A o O</code>, <code>x</code>, <code>dd</code>, <code>cw</code>, <code>yy</code>, <code>p</code>, <code>u</code>, <code>Ctrl+R</code>, <code>.</code></li>
   <li>Visual: <code>v</code>, <code>V</code>; search: <code>/text</code>, <code>n N</code>, <code>*</code></li>
-  <li>Commands: <code>:w</code> accept/save, <code>:q</code> close, <code>:wq</code>, <code>:s/a/b/g</code>, <code>:make</code> compile and run (C++ window), <code>:vim</code> open in real Vim</li>
+  <li>Commands: <code>:w</code> accept/save, <code>:q</code> close, <code>:wq</code>, <code>:s/a/b/g</code>, <code>:make</code> compile and run (code window), <code>:vim</code> open in real Vim</li>
 </ul>
 
 </body>

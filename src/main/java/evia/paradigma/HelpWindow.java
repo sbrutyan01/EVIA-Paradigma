@@ -23,7 +23,7 @@ final class HelpWindow extends JFrame {
             {"Modules", "modules"},
             {"Projects", "projects"},
             {"Git and GitHub", "git"},
-            {"C++ code", "cpp"},
+            {"C and C++ code", "cpp"},
             {"Keyboard shortcuts", "keys"},
             {"Vim keys", "vim"},
     };

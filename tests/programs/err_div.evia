@@ -1,0 +1,10 @@
+# EVIA Paradigma program v3
+B|M|1|START|300|20||-|-|
+B|M|2|SET|300|115|x+%3D+0|-|-|
+B|M|3|PRINT|300|210|%22before%22|-|-|
+B|M|4|PRINT|300|305|10+%2F+x|-|-|
+B|M|5|END|300|400||-|-|
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5

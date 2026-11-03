@@ -181,7 +181,7 @@ final class PalettePanel extends JPanel {
                 JMenuItem open = new JMenuItem("Open class...");
                 open.addActionListener(ev -> lib.openEditor(def));
                 m.add(open);
-                JMenuItem src = new JMenuItem("View C++ source");
+                JMenuItem src = new JMenuItem("View source code");
                 src.addActionListener(ev -> lib.viewSource(def));
                 m.add(src);
                 JMenuItem del = new JMenuItem("Delete class");

@@ -17,8 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * C++ editor for the generated program. The code can be edited with Vim keys
- * (or in the real Vim via "Edit in Vim"), saved, and compiled and run with Clang.
+ * Editor for the generated C or C++ program. The language and generation mode are chosen in
+ * the drop-down lists at the top (changing them regenerates the code). The code can be edited
+ * with Vim keys (or in the real Vim via "Edit in Vim"), saved, and compiled and run with Clang.
  *
  * <p>Vim commands: {@code :w} save, {@code :w file.cpp} save as, {@code :q} close,
  * {@code :wq}/{@code :x} save and close, {@code :make} or {@code :run} compile and run,
@@ -37,13 +38,16 @@ final class CodeViewer extends JFrame {
     private final Timer rehighlight;
     private String generated = "";
     private String baseName = "program";
+    private Target target = Settings.target();
+    /** Generates the program again for the current target (set by the main window). */
+    private Runnable regenerate;
     private Path savedPath;
     private Process process;
     private final StringBuilder lastOutput = new StringBuilder();
     private Writer stdin;
 
     CodeViewer() {
-        super("C++20 - EVIA Paradigma");
+        super("Generated code - EVIA Paradigma");
         AppIcon.apply(this);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setSize(1060, 860);
@@ -51,11 +55,13 @@ final class CodeViewer extends JFrame {
         // ---- toolbar
         JToolBar tb = new JToolBar();
         tb.setFloatable(false);
-        tb.add(button("Save .cpp...", e -> saveAs()));
+        tb.add(button("Save...", e -> saveAs()));
         tb.add(button("Copy", e -> Toolkit.getDefaultToolkit().getSystemClipboard()
                 .setContents(new StringSelection(codePane.getText()), null)));
         tb.add(button("Edit in Vim...", e -> editInVim()));
         tb.add(vimBox);
+        tb.addSeparator();
+        tb.add(new TargetBar());
         tb.addSeparator();
         tb.add(new JLabel(" Compiler: "));
         tb.add(compilerLabel);
@@ -91,7 +97,11 @@ final class CodeViewer extends JFrame {
             vimBox.setSelected(Settings.vimKeys());
             vim.setEnabled(Settings.vimKeys());
             modeLine.setText(Settings.vimKeys() ? "NORMAL" : " ");
-            checkCompiler();
+            if (!Settings.target().equals(target) && isVisible() && regenerate != null) {
+                SwingUtilities.invokeLater(regenerate);   // the drop-down lists changed: generate again
+            } else {
+                checkCompiler();
+            }
         });
 
         rehighlight = new Timer(350, e -> highlight());
@@ -133,22 +143,36 @@ final class CodeViewer extends JFrame {
     }
 
     /** Shows freshly generated code. Asks before throwing away edits made here. */
+    void setRegenerator(Runnable r) {
+        regenerate = r;
+    }
+
     void show(String cppCode, String name) {
         show(cppCode, name, null);
+    }
+
+    void show(String code, String name, java.util.List<int[]> mark) {
+        show(code, name, mark, Settings.target());
     }
 
     /**
      * Shows generated code with the given line ranges ([from, to), 0-based) marked, scrolled to the
      * first one - used by "View C++ source" on a block, method or class.
      */
-    void show(String cppCode, String name, java.util.List<int[]> mark) {
+    void show(String cppCode, String name, java.util.List<int[]> mark, Target t) {
         if (isVisible() && isDirty() && !cppCode.equals(generated)) {
-            int r = JOptionPane.showConfirmDialog(this, "You edited the C++ code. Replace it with the newly generated code?",
-                    "Generate C++", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int r = JOptionPane.showConfirmDialog(this, "You edited the code. Replace it with the newly generated code?",
+                    "Generate code", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (r != JOptionPane.YES_OPTION) {
                 toFront();
                 return;
             }
+        }
+        boolean newTarget = !t.equals(target);
+        target = t;
+        if (newTarget) {
+            checkCompiler();
+            if (process == null) output.setText("");   // the old output belongs to the other language
         }
         generated = cppCode;
         baseName = name;
@@ -215,8 +239,8 @@ final class CodeViewer extends JFrame {
     }
 
     private void updateTitle() {
-        String file = savedPath != null ? savedPath.getFileName().toString() : baseName + ".cpp";
-        setTitle(file + (isDirty() ? " [edited]" : "") + " - C++20 - EVIA Paradigma");
+        String file = savedPath != null ? savedPath.getFileName().toString() : baseName + target.ext();
+        setTitle(file + (isDirty() ? " [edited]" : "") + " - " + target.describe() + " - EVIA Paradigma");
     }
 
     // ================================================================ ex commands (:w :q :make ...)
@@ -243,7 +267,7 @@ final class CodeViewer extends JFrame {
     // ================================================================ real Vim
 
     private void editInVim() {
-        String s = ExternalEditor.edit(this, codePane.getText(), (savedPath != null ? savedPath.getFileName().toString() : baseName + ".cpp"));
+        String s = ExternalEditor.edit(this, codePane.getText(), (savedPath != null ? savedPath.getFileName().toString() : baseName + target.ext()));
         if (s != null && !s.equals(codePane.getText())) {
             int caret = Math.min(codePane.getCaretPosition(), s.length());
             vim.withoutUndo(() -> codePane.setText(s));
@@ -303,7 +327,7 @@ final class CodeViewer extends JFrame {
 
     private boolean saveAs() {
         JFileChooser fc = new JFileChooser(savedPath != null ? savedPath.toFile() : null);
-        fc.setSelectedFile(savedPath != null ? savedPath.toFile() : new File(baseName + ".cpp"));
+        fc.setSelectedFile(savedPath != null ? savedPath.toFile() : new File(baseName + target.ext()));
         if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return false;
         return saveTo(fc.getSelectedFile().toPath());
     }
@@ -324,13 +348,13 @@ final class CodeViewer extends JFrame {
     // ================================================================ compile & run
 
     private void checkCompiler() {
-        Settings.checkCompiler(Settings.compilerCommand(), compilerLabel);
+        Settings.checkCompiler(Settings.commandFor(target), compilerLabel, target.isC());
     }
 
     private void compileAndRun() {
         if (process != null) return;
         String code = codePane.getText();
-        String command = Settings.compilerCommand();
+        String command = Settings.commandFor(target);
         output.setText("");
         runBtn.setEnabled(false);
         stopBtn.setEnabled(true);
@@ -338,7 +362,7 @@ final class CodeViewer extends JFrame {
         Thread t = new Thread(() -> {
             try {
                 Path dir = Files.createTempDirectory("evia-cpp");
-                Path src = dir.resolve(baseName.replaceAll("[^A-Za-z0-9_-]", "_") + ".cpp");
+                Path src = dir.resolve(baseName.replaceAll("[^A-Za-z0-9_-]", "_") + target.ext());
                 Path exe = dir.resolve(ExternalEditor.WINDOWS ? "program.exe" : "program");
                 Files.writeString(src, code, StandardCharsets.UTF_8);
 

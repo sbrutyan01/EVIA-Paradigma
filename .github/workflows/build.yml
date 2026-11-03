@@ -45,8 +45,14 @@ jobs:
           "$CXX" --version
           scripts/check-examples.sh "$CXX"
 
-      - name: Classes, modules, View C++ source, projects and Git integration
+      - name: Classes, modules, View source code, projects and Git integration
         run: scripts/check-app.sh
+
+      - name: "Every language and mode (C99..C++20 x structured/goto x safe/fast) with Clang"
+        run: CC="${CXX/clang++/clang}" CXX="$CXX" scripts/check-targets.sh
+
+      - name: "Every language and mode with GCC"
+        run: CC=gcc CXX=g++ scripts/check-targets.sh
 
       - name: Upload the application and generated C++
         uses: actions/upload-artifact@v4
@@ -94,9 +100,15 @@ jobs:
           CXXFLAGS: -static
         run: scripts/check-examples.sh clang++
 
+      - name: "C and C++ standards with llvm-mingw Clang (-static, no Visual Studio)"
+        env:
+          CXXFLAGS: -static
+          LANGS: c99 c17 c++98 c++14 c++20
+        run: CC=clang CXX=clang++ scripts/check-targets.sh
+
       - name: Check the programs need nothing from Visual Studio
         run: |
-          for exe in build/examples/*.exe; do
+          for exe in build/examples/*.exe build/targets/*.exe; do
             dlls=$(llvm-objdump -p "$exe" | sed -n 's/.*DLL Name: //p' | tr '\n' ' ')
             echo "$(basename "$exe"): $dlls"
             if echo "$dlls" | grep -qiE 'vcruntime|msvcp|msvcr|concrt'; then

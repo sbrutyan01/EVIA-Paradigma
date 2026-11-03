@@ -8,24 +8,25 @@
 <h1 align="center">EVIA Paradigma</h1>
 
 <p align="center">
-  Visual block programming in Java Swing — with classes, a Vim-powered editor and C++20 generation for Clang.
+  Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.2.0-blue" alt="version 0.2.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.3.0-blue" alt="version 0.3.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
 Drag blocks onto a canvas, wire them together, run the program. Define **classes** with
 fields, a constructor and methods, share them between programs as **modules**, keep your work
 in **project folders** under **Git/GitHub**, edit everything with **Vim**, and turn the
-program into a single **C++20** file built with **Clang 23**. Pure Swing, no external
+program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23**,
+with structured or goto control flow and safe or fast values. Pure Swing, no external
 libraries; a Maven project for NetBeans and Java 25.
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
 **Contents:** [Download](#download) · [Tutorial](#tutorial) · [Building from source](#building-from-source) ·
 [Blocks](#blocks) · [Classes](#classes-and-objects) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
-[Vim](#vim) · [C++20](#c20-code-generation) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
+[Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
 
 ## Download
 
@@ -34,11 +35,11 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.2.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.2.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.2.0-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.2.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.2.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.2.0.jar` | `java -jar evia-paradigma-0.2.0.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.3.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.3.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.3.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.3.0.jar` | `java -jar evia-paradigma-0.3.0.jar` |
 
 ### Release 0.2.0
 
@@ -62,7 +63,7 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 ## Tutorial
 
-This walk-through builds a small project with a loop and a class, runs it, looks at the C++ it becomes,
+This walk-through builds a small project with a loop and a class, runs it, looks at the C and C++ it becomes,
 and puts it under Git. Every picture is the real application (they are regenerated with
 [`scripts/take-screenshots.sh`](scripts/take-screenshots.sh)).
 
@@ -124,9 +125,10 @@ and `show` prints the total:
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="Program with a Counter object and its output" width="900"></p>
 
-### 5. See the C++ for any block
+### 5. See the code for any block
 
-Right-click a block → **View C++ source**. The generated C++20 opens with exactly that block's lines highlighted:
+Right-click a block → **View source code**. The generated code opens with exactly that block's lines highlighted
+(here C++20, the default):
 
 <p align="center"><img src="docs/screenshots/09-block-menu.png" alt="Right-click menu of a block" width="420"></p>
 
@@ -137,7 +139,23 @@ On Windows the app installs the llvm-mingw Clang for you (no Visual Studio neede
 
 <p align="center"><img src="docs/screenshots/11-compile-run.png" alt="The generated program compiled with Clang and run" width="900"></p>
 
-### 6. Commit and publish on GitHub
+### 6. Choose C or another C++ standard
+
+Pick a **Language** in the drop-down list (in the code window or the main toolbar); the code is generated again
+at once, and the same block stays highlighted. **Flow** and **Values** choose how it is written
+(see [C and C++ code generation](#c-and-c-code-generation)).
+
+<p align="center"><img src="docs/screenshots/21-language-dropdown.png" alt="Language drop-down list: C99, C11, C17, C++98, C++11, C++14, C++17, C++20" width="800"></p>
+
+The same program in **C11**, compiled with `clang -std=c11` and run: the output is identical.
+
+<p align="center"><img src="docs/screenshots/22-c11-compile-run.png" alt="The program as C11, compiled and run" width="900"></p>
+
+**C++17** with **Goto** flow (every block a label, every wire a jump) and **Fast** values (plain `double`):
+
+<p align="center"><img src="docs/screenshots/23-cpp17-goto-fast.png" alt="C++17 with goto flow and fast values" width="900"></p>
+
+### 7. Commit and publish on GitHub
 
 **Git → Commit…** (Ctrl+K) saves and commits all changes. The message box has Vim keys (`Esc`, then `:w` commits).
 
@@ -153,7 +171,7 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 <p align="center"><img src="docs/screenshots/19-history.png" alt="Git history" width="650"></p>
 
-### 7. Keep going
+### 8. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
@@ -163,14 +181,14 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 ## Building from source
 
-**Requirements:** JDK 25, LLVM/Clang 23 (latest stable) for compiling generated C++, and Vim/gVim (optional, for editing in the real Vim).
+**Requirements:** JDK 25, LLVM/Clang 23 (latest stable) for compiling generated C and C++, and Vim/gVim (optional, for editing in the real Vim).
 
 1. Clone: `git clone https://github.com/sbrutyan01/EVIA-Paradigma.git`
 2. NetBeans → **File → Open Project…** → select the folder. Make sure the project uses JDK 25
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.2.0.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.3.0.jar`.
 
 ### Installing Clang 23
 
@@ -190,7 +208,7 @@ Command line: `mvn package` then `java -jar target/evia-paradigma-0.2.0.jar`.
 
 ### Flow control
 
-| Block | Code | Ports | Generated C++ |
+| Block | Code | Ports | Generated code (structured flow) |
 |---|---|---|---|
 | **If / Else** | `x < 10` | `then`, `else`. Wire both to the same block to join them | `if (…) { … } else { … }` |
 | **For** | `i = 1; i <= 10; i = i + 1` (init; condition; step, each part optional) | `body`, `done` | `for (…; …; …) { … }` |
@@ -202,7 +220,7 @@ starts the next pass (For runs its step, then the condition). Arriving from anyw
 (For runs its init; Do-While goes straight into the body). Loops nest naturally: an inner For starts over
 on each pass of the outer loop. An If/Else whose branches both lead back to the loop block works like `continue`.
 
-When the wiring is block-structured, *Generate C++* writes real nested `if/else`, `for`, `while` and `do-while`
+When the wiring is block-structured, *Generate code* writes real nested `if/else`, `for`, `while` and `do-while`
 statements (see [`examples/loops.evia`](examples/loops.evia)). Free-form wiring, such as jumping out of the middle of a
 loop or into one, is still allowed: that part of the program is generated with labels and `goto`, and it
 behaves exactly like the interpreter.
@@ -246,7 +264,7 @@ Programs saved by 0.1.x still open; every custom block becomes a class with one 
 |---|---|
 | **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, Exit |
 | **Edit** | Select All, Delete, New Class…, Group Selection into Class (Ctrl+G), Open Class, Settings… |
-| **Run** | Run (F5), Stop (Shift+F5), Generate C++ (F7), Clear Output |
+| **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
 | **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Online Documentation, Report an Issue, Check for Updates, About |
 
@@ -263,8 +281,11 @@ Programs saved by 0.1.x still open; every custom block becomes a class with one 
 </tr>
 </table>
 
-**Right-click a block → View C++ source** opens the generated C++ with exactly the lines that block became highlighted.
-The same works for a method or class (class window → *View C++*, or right-click a class in the palette).
+**Right-click a block → View source code** opens the generated code, in the chosen language, with exactly the lines
+that block became highlighted. The same works for a method or class (class window → *View code*, or right-click a class
+in the palette).
+
+<p align="center"><img src="docs/screenshots/24-menu-code-language.png" alt="Run → Code Language and Mode" width="560"></p>
 
 ## Projects and GitHub
 
@@ -275,7 +296,7 @@ MyProject/
   MyProject.eviaproj   project settings
   main.evia            the main program
   modules/             class modules (*.eviam)
-  build/               generated C++ (ignored by git)
+  build/               generated C or C++ code (ignored by git)
   README.md
   .gitignore
 ```
@@ -293,40 +314,67 @@ an SSH key or `gh auth login`); EVIA Paradigma never asks for or stores password
 
 Vim is the text editor throughout EVIA Paradigma:
 
-- **The C++ editor** and **block code dialogs** use built-in Vim keys (toggle with the *Vim keys* checkbox or in Settings):
+- **The code window** and **block code dialogs** use built-in Vim keys (toggle with the *Vim keys* checkbox or in Settings):
   - NORMAL, INSERT, VISUAL, VISUAL LINE modes, with counts
   - motions: `h j k l w W b B e E ge 0 ^ $ gg G f F t T ; , % { } n N`
   - operators: `d c y > <`, doubled, and text objects `iw aw i" a" i' i( a( i{ a{ i[ a[`
   - commands: `x X s S D C Y p P J r ~ u Ctrl-R .`, `i a I A o O`
   - registers: `"a`–`"z`, `"+` (system clipboard)
   - search: `/ ? * #`, and `:N`, `:s/a/b/g`, `:%s/…`, `:'<,'>s/…` (Java regex syntax)
-  - in the C++ editor: `:w`, `:w file.cpp`, `:q`, `:wq`, `:make` (compile & run), `:vim` (open in real Vim)
+  - in the code window: `:w`, `:w file.cpp`, `:q`, `:wq`, `:make` (compile & run), `:vim` (open in real Vim)
   - in block dialogs: Enter or `:w` accepts; Esc in NORMAL mode or `:q` cancels
 - **Edit in Vim…** opens the code in the real Vim or gVim. Save and quit (`:wq`) and the changes come back.
   The command is set in Settings and detected automatically, e.g. `gvim -f {file}`.
 - **Git commit messages:** `git config --global core.editor vim`
 
-## C++20 code generation
+## C and C++ code generation
 
-**Generate C++** checks the program the same way Run does, then writes one self-contained C++20 file. In the C++ editor you can
-edit it, **Save .cpp**, or **Compile & Run** with Clang. Text typed into **Input** goes to the program's stdin.
+**Generate code** (F7) checks the program the same way Run does, then writes one self-contained source file. Three
+drop-down lists in the main toolbar and in the code window choose the output (also **Run → Code Language and Mode**,
+and `--lang` / `--flow` / `--values` on the [command line](#command-line)). A project remembers its choice. In the code
+window you can edit the code, **Save** it, or **Compile & Run** it; text typed into **Input** goes to the program's stdin.
 
-| Block program | Generated C++ |
+| Language | Standard | Classes become | Values (safe) | Objects |
+|---|---|---|---|---|
+| **C99**, **C11**, **C17** | ISO C 1999 / 2011 / 2018 | `struct Name` + functions `Name_m_method(Name *self, ...)`, `Name_new()` | `Value` (kind, number, text); text in a scratch arena | pointers, created on first use |
+| **C++98** | ISO C++ 1998 | `struct` with member functions; not copyable | classic `Value` class | raw pointers, deleted by the owner |
+| **C++11**, **C++14** | ISO C++ 2011 / 2014 | `struct` with member initializers | classic `Value` class | `std::unique_ptr` (`make_unique` in C++14) |
+| **C++17**, **C++20** | ISO C++ 2017 / 2020 | `struct` with member initializers | `std::variant`, `std::to_chars` | `std::unique_ptr` |
+
+| Flow | Generated control flow |
 |---|---|
-| Class | `struct Name` with a constructor (field initial values, then `m_init()`) and one `int m_method(params...)` per method, returning the index of the Exit taken |
-| Fields, parameters | members `f_x` (declared fields get their initial values, others start at 0) |
-| Objects | `obj_name` members for named objects, `o_method_N` for blocks with their own object; `std::unique_ptr`, created on first use |
-| Program variables | globals `v_x`; reading one before it's assigned throws, as in the interpreter |
-| Wires | nested `if`/`else`, `for`, `while`, `do`/`while` and `switch` when block-structured, otherwise labels and `goto` |
-| Values | small embedded runtime (`evia_rt::Value`: number or string) with the interpreter's exact semantics |
+| **Structured** (default) | nested `if`/`else`, `for`, `while`, `do`/`while` and `switch` (for calls with several exits); labels and `goto` only where the wiring isn't block-structured |
+| **Goto** | every block is a label and every wire a jump (fall-through where possible), closest to the block diagram |
+
+| Values | Variables and fields | Checks |
+|---|---|---|
+| **Safe** (default) | numbers or text, exactly like the interpreter | undefined variables, division by zero, text that isn't a number, endless recursion (400 nested calls), field initial values |
+| **Fast** | plain `double`; text only in **Print** (`"total = " + x` is printed piece by piece) | none: the code is what you would write by hand. A program that keeps text in a variable, an argument or a comparison is refused with the block that does it |
+
+- Number output is identical in every language: whole numbers without `.0`, others like Java (`0.30000000000000004`,
+  `1.0E-4`, `6.666666666666666E9`).
+- The C runtime contains only the helpers the program uses, so the code compiles cleanly with
+  `-Wall -Wextra -Wpedantic -Werror`. C needs `-lm`; EVIA Paradigma adds it, the matching C compiler (`clang`, `gcc`)
+  and `-std=` to the compile command automatically.
+- Every combination is tested in CI (see below): 8 languages × 2 flows × 2 value modes, with Clang and GCC.
+
+```
+clang   -std=c11   -O2 -o program program.c -lm
+clang++ -std=c++98 -O2 -o program program.cpp
+```
 
 ## Command line
 
 ```
 java -jar evia-paradigma.jar --run program.evia              # run with the interpreter
 java -jar evia-paradigma.jar --run MyProject                 # a project folder runs its main program
-java -jar evia-paradigma.jar --gen program.evia -o prog.cpp  # generate C++20
+java -jar evia-paradigma.jar --gen program.evia -o prog.cpp  # generate C++20 (structured, safe values)
 clang++ -std=c++20 -O2 -o prog prog.cpp && ./prog
+
+# other languages and modes
+java -jar evia-paradigma.jar --gen program.evia --lang c11 -o prog.c
+java -jar evia-paradigma.jar --gen program.evia --lang c++98 --flow goto --values fast -o prog.cpp
+clang -std=c11 -O2 -o prog prog.c -lm && ./prog
 ```
 
 This lets you write a program in the editor and then generate and build it from Vim (`:!java -jar … --gen %`)
@@ -341,7 +389,12 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    compiles it with `-Wall -Wextra -Wpedantic -Werror`, and requires the compiled program and the interpreter to produce
    identical stdout, stderr and exit codes,
 4. runs [`scripts/check-app.sh`](scripts/check-app.sh): classes and modules (export, import, reload), the
-   *View C++ source* line mapping, project creation and the Git commands against a local bare repository.
+   *View source code* line mapping (C and C++), project creation and the Git commands against a local bare repository,
+5. runs [`scripts/check-targets.sh`](scripts/check-targets.sh) with Clang 23 and with GCC: every program in `examples/`
+   and [`tests/programs/`](tests/programs) (numbers, text, objects, recursion, unstructured wiring and every runtime
+   error) in all 32 combinations of language (C99 … C++20), flow and values, compiled with
+   `-Wall -Wextra -Wpedantic -Werror` and compared with the interpreter (stdout, stderr, exit code). The Windows job
+   does the same with llvm-mingw Clang and `-static` and checks that no program needs a Visual Studio DLL.
 
 **If a release ends up without installers** (for example a download failed while it was being built):
 open **Actions → release → Run workflow**, enter the tag (e.g. `v0.2.1`) and run it. It builds that tag's
@@ -365,8 +418,10 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExprParser.java` / `Expr.java` | Recursive-descent parser → AST (sealed interface + records) → evaluator |
 | `Interpreter.java` | Compile pass, then execution with per-object state |
 | `ProgramIO.java` | `.evia` programs and `.eviam` modules (format v3; v2 still loads) and the built-in example |
-| `CppGenerator.java` / `CppRuntime.java` | C++20 generation and the embedded runtime |
-| `CodeViewer.java` | C++ editor: Vim keys, save, compile & run |
+| `CodeGenerator.java` | C and C++ generation: structured or goto flow, safe or fast values, source map for *View source code* |
+| `Runtimes.java` / `CppRuntime.java` | The embedded runtimes: C (only the pieces a program uses), C++98–14, C++17/20, fast values |
+| `Target.java` / `TargetBar.java` | Language / flow / values choice and its drop-down lists |
+| `CodeViewer.java` | Code window: Vim keys, save, compile & run with the matching compiler and `-std=` |
 | `VimKeys.java` | Vim emulation for Swing text components |
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
@@ -381,8 +436,10 @@ All pictures are in [`docs/screenshots`](docs/screenshots). They are taken from 
 |---|---|
 | <img src="docs/screenshots/00-main-window.png" alt="Main window" width="420"> | <img src="docs/screenshots/05-class-method.png" alt="Class window" width="420"> |
 | Main window | Class window: a method |
-| <img src="docs/screenshots/10-view-source.png" alt="View C++ source" width="420"> | <img src="docs/screenshots/11-compile-run.png" alt="Compile and run" width="420"> |
-| View C++ source | Compile & Run with Clang |
+| <img src="docs/screenshots/10-view-source.png" alt="View source code" width="420"> | <img src="docs/screenshots/11-compile-run.png" alt="Compile and run" width="420"> |
+| View source code (C++20) | Compile & Run with Clang |
+| <img src="docs/screenshots/22-c11-compile-run.png" alt="C11" width="420"> | <img src="docs/screenshots/23-cpp17-goto-fast.png" alt="C++17 goto fast" width="420"> |
+| The same program as C11 | C++17, goto flow, fast values |
 | <img src="docs/screenshots/02-project-created.png" alt="New project" width="420"> | <img src="docs/screenshots/20-help-guide.png" alt="Guide" width="420"> |
 | New project with Git | Help → Guide |
 

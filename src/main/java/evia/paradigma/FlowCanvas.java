@@ -363,7 +363,7 @@ public final class FlowCanvas extends JPanel {
                 edit.addActionListener(e -> editBlock(b));
                 menu.add(edit);
             }
-            JMenuItem src = new JMenuItem("View C++ source");
+            JMenuItem src = new JMenuItem("View source code");
             src.addActionListener(e -> lib.viewSource(b));
             menu.add(src);
             if (b.def != null) {

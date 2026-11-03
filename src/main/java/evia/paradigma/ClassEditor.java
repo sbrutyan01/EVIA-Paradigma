@@ -55,7 +55,7 @@ final class ClassEditor extends JFrame {
             Rectangle v = lib.main.getVisibleRect();
             lib.main.select(lib.main.addInstance(def, v.x + 60, v.y + 60));
         });
-        JButton source = new JButton("View C++");
+        JButton source = new JButton("View code");
         source.addActionListener(e -> lib.viewSource(def));
         top.add(addMethod);
         top.add(addCtor);
@@ -206,7 +206,7 @@ final class ClassEditor extends JFrame {
         params.addActionListener(e -> doApply.run());
         JButton delete = new JButton("Delete method");
         delete.addActionListener(e -> deleteMethod(m));
-        JButton src = new JButton("View C++");
+        JButton src = new JButton("View code");
         src.addActionListener(e -> lib.viewSource(m));
 
         JPanel head = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));

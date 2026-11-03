@@ -87,18 +87,18 @@ final class MainFrame extends JFrame {
         tb.add(button("New class...", e -> newClass()));
         tb.add(button("Group into class", e -> canvas.groupSelection()));
         tb.addSeparator();
-        tb.add(button("Generate C++", e -> generateCpp()));
+        tb.add(button("Generate code", e -> generateCode()));
+        tb.add(new TargetBar());
         tb.addSeparator();
         tb.add(new JButton(runAction));
         tb.add(new JButton(stopAction));
         tb.addSeparator();
         tb.add(new JLabel(" Step delay: "));
         speed.setMaximumSize(new Dimension(160, 30));
+        speed.setPreferredSize(new Dimension(130, 30));
         speed.setToolTipText("Delay between blocks (0 = full speed)");
         speed.addChangeListener(e -> status.setText("Step delay: " + speed.getValue() + " ms"));
         tb.add(speed);
-        tb.addSeparator();
-        tb.add(button("Clear output", e -> console.setText("")));
 
         // ---- console
         console.setEditable(false);
@@ -135,6 +135,15 @@ final class MainFrame extends JFrame {
         getContentPane().add(main, BorderLayout.CENTER);
         getContentPane().add(status, BorderLayout.SOUTH);
 
+        Settings.onChange(() -> {
+            if (project != null) {
+                try {
+                    project.setTarget(Settings.target());
+                } catch (IOException e) {
+                    status.setText("Could not save the language in the project: " + e.getMessage());
+                }
+            }
+        });
         installMacHandlers();
         ProgramIO.loadExample(lib);
         markSaved();
@@ -189,7 +198,8 @@ final class MainFrame extends JFrame {
         run.add(new JMenuItem(runAction));
         run.add(new JMenuItem(stopAction));
         run.addSeparator();
-        run.add(item("Generate C++", KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), e -> generateCpp()));
+        run.add(item("Generate Code", KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), e -> generateCode()));
+        run.add(targetMenu());
         run.add(item("Clear Output", null, e -> console.setText("")));
         bar.add(run);
 
@@ -243,6 +253,44 @@ final class MainFrame extends JFrame {
         if (key != null) i.setAccelerator(key);
         i.addActionListener(l);
         return i;
+    }
+
+    /** Run > Code: the same choices as the drop-down lists (language, flow, values) as radio items. */
+    private JMenu targetMenu() {
+        JMenu m = new JMenu("Code Language and Mode");
+        m.addMenuListener(new javax.swing.event.MenuListener() {
+            @Override public void menuSelected(javax.swing.event.MenuEvent e) {
+                m.removeAll();
+                Target cur = Settings.target();
+                ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
+                for (Target.Lang l : Target.Lang.values()) {
+                    if (l == Target.Lang.CPP98) m.addSeparator();
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + l.note + ")", l == cur.lang());
+                    i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
+                    g1.add(i);
+                    m.add(i);
+                }
+                m.addSeparator();
+                for (Target.Flow f : Target.Flow.values()) {
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(f.display + " flow"
+                            + (f == Target.Flow.STRUCTURED ? "   (if/else, loops, switch)" : "   (labels and jumps)"), f == cur.flow());
+                    i.addActionListener(ev -> Settings.setTarget(Settings.target().withFlow(f)));
+                    g2.add(i);
+                    m.add(i);
+                }
+                m.addSeparator();
+                for (Target.Values v : Target.Values.values()) {
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(v.display + " values"
+                            + (v == Target.Values.SAFE ? "   (numbers and text, all checks)" : "   (double numbers, no checks)"), v == cur.values());
+                    i.addActionListener(ev -> Settings.setTarget(Settings.target().withValues(v)));
+                    g3.add(i);
+                    m.add(i);
+                }
+            }
+            @Override public void menuDeselected(javax.swing.event.MenuEvent e) { }
+            @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
+        });
+        return m;
     }
 
     private JMenuItem gitItem(JMenuItem i) {
@@ -470,48 +518,60 @@ final class MainFrame extends JFrame {
         if (codeViewer == null) {
             codeViewer = new CodeViewer();
             codeViewer.setLocationRelativeTo(this);
+            codeViewer.setRegenerator(() -> {
+                if (lastSourceView != null) viewSource(lastSourceView);
+                else generateCode();
+            });
         }
         return codeViewer;
     }
 
-    private void generateCpp() {
+    /** What the code window shows: null = the whole program, else the block/method/class whose lines are marked. */
+    private Object lastSourceView;
+
+    private void generateCode() {
         if (worker != null) return;
         for (FlowCanvas c : lib.canvases()) c.clearMarks();
+        Target t = Settings.target();
         try {
-            String code = CppGenerator.generate(lib);
-            codeViewer().show(code, programName());
+            String code = CodeGenerator.generate(lib, t);
+            lastSourceView = null;
+            codeViewer().show(code, programName(), null, t);
             String where = "";
             if (project != null) {
+                Path file = project.codeFile(t);
                 try {
                     Files.createDirectories(project.buildDir());
-                    Files.writeString(project.cppFile(), code, StandardCharsets.UTF_8);
-                    where = " Saved to " + project.dir.relativize(project.cppFile()) + ".";
+                    Files.writeString(file, code, StandardCharsets.UTF_8);
+                    where = " Saved to " + project.dir.relativize(file) + ".";
                 } catch (IOException e) {
-                    where = " (could not write " + project.cppFile() + ": " + e.getMessage() + ")";
+                    where = " (could not write " + file + ": " + e.getMessage() + ")";
                 }
             }
-            status.setText("Generated " + code.lines().count() + " lines of C++20." + where);
+            status.setText("Generated " + code.lines().count() + " lines of " + t.describe() + "." + where);
         } catch (FlowException e) {
             console.setText("");
             reportError(e);
         }
     }
 
-    /** "View C++ source" on a block, method or class: the generated code with its lines marked. */
+    /** "View source code" on a block, method or class: the generated code with its lines marked. */
     private void viewSource(Object what) {
         if (worker != null) return;
         for (FlowCanvas c : lib.canvases()) c.clearMarks();
+        Target t = Settings.target();
         try {
-            CppGenerator.Result r = CppGenerator.generateWithMap(lib);
+            CodeGenerator.Result r = CodeGenerator.generateWithMap(lib, t);
             List<int[]> ranges = r.sourceMap().get(what);
-            codeViewer().show(r.code(), programName(), ranges);
+            lastSourceView = what;
+            codeViewer().show(r.code(), programName(), ranges, t);
             if (ranges == null || ranges.isEmpty()) {
                 status.setText(what instanceof Block
-                        ? "This block is not reachable from Start/Enter, so it produces no C++ code."
-                        : "No C++ code for this.");
+                        ? "This block is not reachable from Start/Enter, so it produces no code."
+                        : "No code for this.");
             } else {
                 int lines = ranges.stream().mapToInt(x -> x[1] - x[0]).sum();
-                status.setText("Highlighted " + lines + " line(s) of C++ generated from " + describe(what) + ".");
+                status.setText("Highlighted " + lines + " line(s) of " + t.lang() + " generated from " + describe(what) + ".");
             }
         } catch (FlowException e) {
             console.setText("");
@@ -572,6 +632,7 @@ final class MainFrame extends JFrame {
         closeEditors();
         currentFile = file;
         project = p;
+        if (p != null && p.target() != null) Settings.setTarget(p.target());   // the project's language
         console.setText("");
         markSaved();
         updateTitle();
@@ -832,6 +893,7 @@ final class MainFrame extends JFrame {
         }
         try {
             Project proj = Project.create(Path.of(location.getText().trim()), name.getText().trim());
+            proj.setTarget(Settings.target());
             canvas.clear();
             lib.clear();
             starterProgram(canvas, proj.name());

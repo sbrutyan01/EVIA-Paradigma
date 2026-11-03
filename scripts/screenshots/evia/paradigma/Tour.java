@@ -198,6 +198,30 @@ public class Tour {
         waitFor(() -> out.getText().contains("exited with code") || out.getText().contains("failed") ? Boolean.TRUE : null, "compile");
         settle(800);
         capture(cv, "11-compile-run");
+
+        // ---- 5b. choose another language in the drop-down list: the code is generated again
+        JComboBox<?> langBox = find(cv.getContentPane(), JComboBox.class).get(0);
+        ui(langBox::showPopup);
+        settle(500);
+        Point lb = langBox.getLocationOnScreen();
+        capture(new Rectangle(cv.getX(), cv.getY(), Math.min(cv.getWidth(), lb.x - cv.getX() + 560), lb.y - cv.getY() + 360), "21-language-dropdown");
+        ui(langBox::hidePopup);
+        ui(() -> Settings.setTarget(Settings.target().withLang(Target.Lang.C11)));
+        waitFor(() -> cv.getTitle().contains("C11") ? Boolean.TRUE : null, "C11 code");
+        settle(500);
+        click(cv.getContentPane(), "Compile & Run");
+        waitFor(() -> out.getText().contains("exited with code") || out.getText().contains("failed") ? Boolean.TRUE : null, "compile C");
+        settle(800);
+        capture(cv, "22-c11-compile-run");
+        ui(() -> Settings.setTarget(new Target(Target.Lang.CPP17, Target.Flow.GOTO, Target.Values.FAST)));
+        waitFor(() -> cv.getTitle().contains("C++17") ? Boolean.TRUE : null, "C++17 code");
+        settle(500);
+        click(cv.getContentPane(), "Compile & Run");
+        waitFor(() -> out.getText().contains("exited with code") || out.getText().contains("failed") ? Boolean.TRUE : null, "compile C++17");
+        settle(800);
+        capture(cv, "23-cpp17-goto-fast");
+        ui(() -> Settings.setTarget(Target.DEFAULT));
+        settle(500);
         ui(() -> cv.setVisible(false));
 
         // ---- 6. save, menus
@@ -205,6 +229,18 @@ public class Tour {
         menuShot(f, 0, "12-menu-file");
         menuShot(f, 1, "13-menu-edit");
         menuShot(f, 2, "14-menu-run");
+        // Run > Code Language and Mode (the same choices as the drop-down lists)
+        JMenu runMenu = f.getJMenuBar().getMenu(2);
+        JMenu sub = null;
+        for (Component c : runMenu.getMenuComponents()) if (c instanceof JMenu m && m.getText().startsWith("Code")) sub = m;
+        JMenu codeMenu = sub;
+        ui(() -> MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{
+                f.getJMenuBar(), runMenu, runMenu.getPopupMenu(), codeMenu, codeMenu.getPopupMenu()}));
+        settle(700);
+        JPopupMenu sp = codeMenu.getPopupMenu();
+        Point sl = sp.getLocationOnScreen();
+        capture(new Rectangle(f.getX(), f.getY(), sl.x + sp.getWidth() + 20 - f.getX(), sl.y + sp.getHeight() + 20 - f.getY()), "24-menu-code-language");
+        ui(() -> MenuSelectionManager.defaultManager().clearSelectedPath());
         menuShot(f, 3, "15-menu-git");
         menuShot(f, 4, "16-menu-help");
 
