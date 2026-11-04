@@ -52,6 +52,11 @@ final class Settings {
         fire();
     }
 
+    /** True (default): the mouse wheel zooms block diagrams; false: it scrolls and Ctrl+wheel zooms. */
+    static boolean wheelZooms() {
+        return PREFS.getBoolean("wheelZooms", true);
+    }
+
     /** The language and generation mode used by Generate code (and by projects that don't set their own). */
     static Target target() {
         return Target.parse(PREFS.get("target", null));
@@ -217,6 +222,9 @@ final class Settings {
 
     static void showDialog(Component parent) {
         JCheckBox vim = new JCheckBox("Vim keys in code editors (NORMAL / INSERT / VISUAL modes)", vimKeys());
+        JCheckBox wheel = new JCheckBox("<html>Mouse wheel zooms block diagrams<br><font size='-2' color='#777777'>"
+                + "Shift+wheel scrolls sideways, Ctrl+wheel up and down. Off: the wheel scrolls and Ctrl+wheel zooms.</font></html>",
+                wheelZooms());
         JTextField editor = new JTextField(editorCommand(), 42);
         JTextField compiler = new JTextField(compilerCommand(), 42);
         JLabel compilerStatus = new JLabel(" ");
@@ -244,13 +252,16 @@ final class Settings {
         g.insets = new Insets(4, 4, 4, 4);
         g.gridx = 0; g.gridy = 0; g.gridwidth = 3;
         p.add(vim, g);
-        g.gridy = 1; g.gridwidth = 1;
+        g.gridy = 1;
+        p.add(wheel, g);
+        g.gridy = 2;
+        g.gridwidth = 1;
         p.add(new JLabel("External editor (Vim):"), g);
         g.gridx = 1; p.add(editor, g);
         g.gridx = 2; p.add(detectEditor, g);
-        g.gridx = 1; g.gridy = 2; g.gridwidth = 2;
+        g.gridx = 1; g.gridy = 3; g.gridwidth = 2;
         p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
-        g.gridx = 0; g.gridy = 3; g.gridwidth = 1;
+        g.gridx = 0; g.gridy = 4; g.gridwidth = 1;
         p.add(new JLabel("Compiler (C++):"), g);
         g.gridx = 1; p.add(compiler, g);
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -258,7 +269,7 @@ final class Settings {
         btns.add(check);
         if (ToolchainInstaller.supported()) btns.add(install);
         g.gridx = 2; p.add(btns, g);
-        g.gridx = 1; g.gridy = 4; g.gridwidth = 2;
+        g.gridx = 1; g.gridy = 5; g.gridwidth = 2;
         p.add(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."), g);
         g.gridy++;
         p.add(small("Latest stable Clang is " + LATEST_CLANG
@@ -273,6 +284,7 @@ final class Settings {
         PREFS.put("editor", editor.getText().trim());
         PREFS.put("compiler", compiler.getText().trim().isEmpty() ? DEFAULT_COMPILER : compiler.getText().trim());
         PREFS.putBoolean("vimKeys", vim.isSelected());
+        PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
     }
 

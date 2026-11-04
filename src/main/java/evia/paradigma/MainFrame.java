@@ -133,7 +133,7 @@ final class MainFrame extends JFrame {
 
         getContentPane().add(tb, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
-        getContentPane().add(status, BorderLayout.SOUTH);
+        getContentPane().add(statusBar(), BorderLayout.SOUTH);
 
         Settings.onChange(() -> {
             if (project != null) {
@@ -193,6 +193,29 @@ final class MainFrame extends JFrame {
                 KeyStroke.getKeyStroke(KeyEvent.VK_A, MENU), KeyStroke.getKeyStroke(KeyEvent.VK_G, MENU)}) {
             canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(ks);
         }
+
+        JMenu view = menu("View", KeyEvent.VK_V);
+        view.add(item("Zoom In", KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, MENU), e -> canvas.zoomIn()));
+        view.add(item("Zoom Out", KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, MENU), e -> canvas.zoomOut()));
+        view.add(item("Actual Size (100%)", KeyStroke.getKeyStroke(KeyEvent.VK_0, MENU), e -> canvas.zoomReset()));
+        view.add(item("Fit Diagram in Window", KeyStroke.getKeyStroke(KeyEvent.VK_9, MENU), e -> canvas.zoomToFit()));
+        view.addSeparator();
+        JMenuItem wheelHelp = new JMenuItem("Mouse wheel zooms toward the pointer (setting in Settings)");
+        wheelHelp.setEnabled(false);
+        view.add(wheelHelp);
+        bar.add(view);
+        // the "+" and "-" keys of the number pad and Ctrl+Shift+= (Ctrl++) zoom too
+        InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getRootPane().getActionMap();
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, MENU), "zoomIn");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, MENU | InputEvent.SHIFT_DOWN_MASK), "zoomIn");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, MENU), "zoomOut");
+        am.put("zoomIn", new AbstractAction() {
+            @Override public void actionPerformed(java.awt.event.ActionEvent e) { canvas.zoomIn(); }
+        });
+        am.put("zoomOut", new AbstractAction() {
+            @Override public void actionPerformed(java.awt.event.ActionEvent e) { canvas.zoomOut(); }
+        });
 
         JMenu run = menu("Run", KeyEvent.VK_R);
         run.add(new JMenuItem(runAction));
@@ -349,6 +372,34 @@ final class MainFrame extends JFrame {
         } catch (RuntimeException ignored) {
             // not on this platform
         }
+    }
+
+    /** Status text on the left, zoom control (- 100% +) on the right. */
+    private JComponent statusBar() {
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.add(status, BorderLayout.CENTER);
+        JPanel zoomBox = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+        JButton out = smallButton("\u2212", "Zoom out (Ctrl+-, or the mouse wheel)", e -> canvas.zoomOut());
+        JButton pct = smallButton("100%", "Actual size (Ctrl+0). Ctrl+9 fits the diagram in the window.", e -> canvas.zoomReset());
+        JButton in = smallButton("+", "Zoom in (Ctrl+=, or the mouse wheel)", e -> canvas.zoomIn());
+        pct.setPreferredSize(new Dimension(58, pct.getPreferredSize().height));
+        canvas.onZoom(() -> pct.setText(Math.round(canvas.zoom() * 100) + "%"));
+        zoomBox.add(out);
+        zoomBox.add(pct);
+        zoomBox.add(in);
+        zoomBox.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 6));
+        bar.add(zoomBox, BorderLayout.EAST);
+        return bar;
+    }
+
+    private static JButton smallButton(String text, String tip, java.awt.event.ActionListener l) {
+        JButton b = new JButton(text);
+        b.setToolTipText(tip);
+        b.setMargin(new Insets(0, 6, 0, 6));
+        b.setFocusable(false);
+        b.setFont(b.getFont().deriveFont(11f));
+        b.addActionListener(l);
+        return b;
     }
 
     /** EVIA logo and name at the top of the palette; click for About. */

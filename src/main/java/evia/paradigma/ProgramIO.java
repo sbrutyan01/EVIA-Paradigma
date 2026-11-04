@@ -88,7 +88,7 @@ final class ProgramIO {
 
     private static void canvasLines(FlowCanvas c, String scope, List<String> lines) {
         for (Block b : c.getBlocks()) {
-            lines.add(String.join("|", "B", scope, "" + b.id, b.type.name(), "" + b.getX(), "" + b.getY(), enc(b.getCode()),
+            lines.add(String.join("|", "B", scope, "" + b.id, b.type.name(), "" + b.modelX(), "" + b.modelY(), enc(b.getCode()),
                     b.def == null ? "-" : enc(b.def.name),
                     b.def == null || b.methodName() == null ? "-" : enc(b.methodName()),
                     b.def == null ? "" : enc(b.objectName())));

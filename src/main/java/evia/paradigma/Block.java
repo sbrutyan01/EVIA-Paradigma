@@ -36,6 +36,8 @@ public final class Block extends JComponent {
     private Interpreter.Compiled compiled;     // parse cache
 
     private int w = MIN_W;                     // body width (grows with the code text)
+    /** Position in diagram units (what files store); the component sits at this times the canvas zoom. */
+    private int mx, my;
     private boolean selected, active, error;
     private final FlowCanvas canvas;
 
@@ -167,7 +169,32 @@ public final class Block extends JComponent {
         int need = Math.max(cm.stringWidth(displayCode()), tm.stringWidth(title())) + 26;
         if (next.length > 2) need = Math.max(need, next.length * 64);
         w = Math.max(MIN_W, Math.min(MAX_W, need));
-        setSize(w + 2 * PAD, TOTAL_H);
+        applyZoom();
+    }
+
+    // ================================================================ position (diagram units)
+
+    int modelX() { return mx; }
+    int modelY() { return my; }
+
+    /** Bounds in diagram units, independent of the zoom. */
+    Rectangle modelBounds() {
+        return new Rectangle(mx, my, w + 2 * PAD, TOTAL_H);
+    }
+
+    /** Moves the block to a position in diagram units. */
+    void place(int x, int y) {
+        mx = x;
+        my = y;
+        applyZoom();
+    }
+
+    /** Puts the component where the zoom says (called when the block or the zoom changes). */
+    void applyZoom() {
+        double z = canvas.zoom();
+        setBounds((int) Math.round(mx * z), (int) Math.round(my * z),
+                (int) Math.ceil((w + 2 * PAD) * z), (int) Math.ceil(TOTAL_H * z));
+        repaint();
     }
 
     void setSelected(boolean v) { selected = v; repaint(); }
@@ -203,19 +230,24 @@ public final class Block extends JComponent {
         return new Point(x, PAD + H);
     }
 
+    /** Input port in diagram units. */
     Point inPort() {
         Point p = inPortLocal();
-        p.translate(getX(), getY());
+        p.translate(mx, my);
         return p;
     }
 
+    /** Output port i in diagram units. */
     Point outPort(int i) {
         Point p = outPortLocal(i);
-        p.translate(getX(), getY());
+        p.translate(mx, my);
         return p;
     }
 
-    private int outPortAt(Point local) {
+    /** The output port under a point of this component (pixels), or -1. */
+    private int outPortAt(Point pixel) {
+        double z = canvas.zoom();
+        java.awt.geom.Point2D local = new java.awt.geom.Point2D.Double(pixel.x / z, pixel.y / z);
         for (int i = 0; i < next.length; i++) {
             if (local.distance(outPortLocal(i)) <= PORT_R + 4) return i;
         }
@@ -242,6 +274,8 @@ public final class Block extends JComponent {
         Graphics2D g = (Graphics2D) g0.create();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g.scale(canvas.zoom(), canvas.zoom());   // drawn in diagram units
 
         Color base = color();
         RoundRectangle2D body = new RoundRectangle2D.Float(PAD, PAD, w, H, 14, 14);
@@ -364,7 +398,9 @@ public final class Block extends JComponent {
             if (connecting) {
                 canvas.updateConnect(toCanvas(e));
             } else if (dragOffset != null && selected) {
-                canvas.moveSelectionBy(e.getX() - dragOffset.x, e.getY() - dragOffset.y);
+                double z = canvas.zoom();
+                canvas.moveSelectionBy((int) Math.round((e.getX() - dragOffset.x) / z),
+                        (int) Math.round((e.getY() - dragOffset.y) / z));
                 moved = true;
             }
         }

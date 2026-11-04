@@ -49,12 +49,12 @@ final class Grouper {
                     + " different blocks; a method can only have one entry point");
         }
         Block entry = entries.isEmpty()
-                ? sel.stream().min(Comparator.comparingInt(Block::getY).thenComparingInt(Block::getX)).orElseThrow()
+                ? sel.stream().min(Comparator.comparingInt(Block::modelY).thenComparingInt(Block::modelX)).orElseThrow()
                 : entries.iterator().next();
 
         // distinct outside targets, left to right, each gets an exit name
         List<Block> targets = outgoing.stream().map(FlowCanvas.Link::to).distinct()
-                .sorted(Comparator.comparingInt(Block::getX)).toList();
+                .sorted(Comparator.comparingInt(Block::modelX)).toList();
         Map<Block, String> exitName = new LinkedHashMap<>();
         Set<String> used = new LinkedHashSet<>();
         for (Block t : targets) {
@@ -68,8 +68,8 @@ final class Grouper {
         // ---- build the definition body
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxBottom = 0;
         for (Block b : sel) {
-            minX = Math.min(minX, b.getX());
-            minY = Math.min(minY, b.getY());
+            minX = Math.min(minX, b.modelX());
+            minY = Math.min(minY, b.modelY());
         }
         BlockDef def = c.lib.create(name);
         Method method = def.methods.get(0);
@@ -80,13 +80,13 @@ final class Grouper {
 
         Map<Block, Block> copy = new HashMap<>();
         for (Block b : sel) {
-            Block nb = body.addBlock(b.type, b.getCode(), b.def, b.getX() - minX + 60, b.getY() - minY + 120);
+            Block nb = body.addBlock(b.type, b.getCode(), b.def, b.modelX() - minX + 60, b.modelY() - minY + 120);
             if (b.def != null) nb.setCall(b.methodName(), b.objectName());
             copy.put(b, nb);
-            maxBottom = Math.max(maxBottom, nb.getY() + nb.getHeight());
+            maxBottom = Math.max(maxBottom, nb.modelY() + nb.modelBounds().height);
         }
         Block enter = method.enter();
-        enter.setLocation(copy.get(entry).getX(), 20);
+        enter.place(copy.get(entry).modelX(), 20);
         body.connect(enter, 0, copy.get(entry));
         for (FlowCanvas.Link l : internal) body.connect(copy.get(l.from()), l.port(), copy.get(l.to()));
 

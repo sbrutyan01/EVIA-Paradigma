@@ -135,7 +135,7 @@ public class Tour {
             Block[] eb = enterExit(add);
             Block s1 = add.body.addBlock(BlockType.SET, "this.total = this.total + this.x", null, 60, 125);
             Block s2 = add.body.addBlock(BlockType.SET, "this.calls = this.calls + 1", null, 60, 220);
-            eb[1].setLocation(60, 330);
+            eb[1].place(60, 330);
             add.body.connect(eb[0], 0, s1); add.body.connect(s1, 0, s2); add.body.connect(s2, 0, eb[1]);
             wire(show, BlockType.PRINT, "\"total = \" + this.total + \" after \" + this.calls + \" calls\"");
             lib.changed();
@@ -163,7 +163,7 @@ public class Tour {
             add.setCall("add", "c"); add.setCode("i");
             Block show = main.addInstance(d, d.method("show"), 540, 315);
             show.setCall("show", "c");
-            end.setLocation(540, 420);
+            end.place(540, 420);
             main.connect(pr, 0, add); main.connect(add, 0, loop);
             main.connect(loop, 1, show); main.connect(show, 0, end);
             calls[0] = add; calls[1] = show;
@@ -176,6 +176,26 @@ public class Tour {
         later(f, "run");
         settle(1500);
         capture(f, "08-run-with-class");
+
+        // ---- 4b. zoom with the mouse wheel, toward the pointer
+        Point toward = new Point();
+        ui(() -> toward.setLocation(calls[0].getX() + calls[0].getWidth() / 2, calls[0].getY()));
+        for (int i = 0; i < 5; i++) {
+            Point here = new Point(toward);
+            ui(() -> main.dispatchEvent(new java.awt.event.MouseWheelEvent(main, java.awt.event.MouseEvent.MOUSE_WHEEL,
+                    System.currentTimeMillis(), 0, here.x, here.y, 0, 0, 0, false,
+                    java.awt.event.MouseWheelEvent.WHEEL_UNIT_SCROLL, 3, -1, -1.0)));
+            ui(() -> {   // the pointer stays where it is on screen: follow the block
+                toward.setLocation(calls[0].getX() + calls[0].getWidth() / 2, calls[0].getY());
+            });
+        }
+        settle(500);
+        capture(f, "25-zoom-in");
+        ui(() -> main.setZoom(0.6, null));
+        settle(500);
+        capture(f, "26-zoom-out");
+        ui(main::zoomReset);
+        settle(300);
 
         // ---- 5. right-click -> View C++ source
         ui(() -> main.showBlockMenu(calls[0], 150, 40));
@@ -228,9 +248,9 @@ public class Tour {
         ui(() -> { try { call(f, "save"); } catch (Exception e) { throw new RuntimeException(e); } });
         menuShot(f, 0, "12-menu-file");
         menuShot(f, 1, "13-menu-edit");
-        menuShot(f, 2, "14-menu-run");
+        menuShot(f, 3, "14-menu-run");
         // Run > Code Language and Mode (the same choices as the drop-down lists)
-        JMenu runMenu = f.getJMenuBar().getMenu(2);
+        JMenu runMenu = f.getJMenuBar().getMenu(3);
         JMenu sub = null;
         for (Component c : runMenu.getMenuComponents()) if (c instanceof JMenu m && m.getText().startsWith("Code")) sub = m;
         JMenu codeMenu = sub;
@@ -241,8 +261,8 @@ public class Tour {
         Point sl = sp.getLocationOnScreen();
         capture(new Rectangle(f.getX(), f.getY(), sl.x + sp.getWidth() + 20 - f.getX(), sl.y + sp.getHeight() + 20 - f.getY()), "24-menu-code-language");
         ui(() -> MenuSelectionManager.defaultManager().clearSelectedPath());
-        menuShot(f, 3, "15-menu-git");
-        menuShot(f, 4, "16-menu-help");
+        menuShot(f, 4, "15-menu-git");
+        menuShot(f, 5, "16-menu-help");
 
         // ---- 7. git commit and connect
         later(f, "gitCommit");
@@ -286,7 +306,7 @@ public class Tour {
     static void wire(Method m, BlockType t, String code) {
         Block[] eb = enterExit(m);
         Block mid = m.body.addBlock(t, code, null, 60, 125);
-        eb[1].setLocation(60, 230);
+        eb[1].place(60, 230);
         m.body.connect(eb[0], 0, mid); m.body.connect(mid, 0, eb[1]);
     }
 }

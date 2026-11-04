@@ -8,6 +8,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -45,6 +46,11 @@ public final class FlowCanvas extends JPanel {
     private Point bandStart;
     private Rectangle band;
 
+    /** Scale of the diagram on screen: 1 = 100 %. Block positions are stored in diagram units. */
+    private double zoom = 1;
+    static final double MIN_ZOOM = 0.25, MAX_ZOOM = 3.0;
+    private final List<Runnable> zoomListeners = new ArrayList<>();
+
     FlowCanvas(Library lib, Method owner) {
         super(null);
         this.lib = lib;
@@ -79,6 +85,7 @@ public final class FlowCanvas extends JPanel {
         };
         addMouseListener(m);
         addMouseMotionListener(m);
+        addMouseWheelListener(this::wheel);
 
         bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete", this::deleteSelection);
         bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "delete", this::deleteSelection);
@@ -134,7 +141,7 @@ public final class FlowCanvas extends JPanel {
 
     Block addBlock(int id, BlockType type, String code, BlockDef def, int x, int y) {
         Block b = new Block(this, id, type, code, def);
-        b.setLocation(x, y);
+        b.place(x, y);
         add(b);
         setComponentZOrder(b, 0);
         blocks.add(b);
@@ -225,15 +232,16 @@ public final class FlowCanvas extends JPanel {
         for (Block b : blocks) addToSelection(b);
     }
 
+    /** Moves the selected blocks by (dx, dy) diagram units, never past the top or left edge. */
     void moveSelectionBy(int dx, int dy) {
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         for (Block b : selection) {
-            minX = Math.min(minX, b.getX());
-            minY = Math.min(minY, b.getY());
+            minX = Math.min(minX, b.modelX());
+            minY = Math.min(minY, b.modelY());
         }
         dx = Math.max(dx, -minX);
         dy = Math.max(dy, -minY);
-        for (Block b : selection) b.setLocation(b.getX() + dx, b.getY() + dy);
+        for (Block b : selection) b.place(b.modelX() + dx, b.modelY() + dy);
         blockMoved();
     }
 
@@ -296,23 +304,107 @@ public final class FlowCanvas extends JPanel {
     void blockMoved() {
         int w = 1000, h = 800;
         for (Block b : blocks) {
-            w = Math.max(w, b.getX() + b.getWidth() + 200);
-            h = Math.max(h, b.getY() + b.getHeight() + 200);
+            Rectangle r = b.modelBounds();
+            w = Math.max(w, r.x + r.width + 200);
+            h = Math.max(h, r.y + r.height + 200);
         }
-        setPreferredSize(new Dimension(w, h));
+        setPreferredSize(new Dimension((int) Math.ceil(w * zoom), (int) Math.ceil(h * zoom)));
         revalidate();
         repaint();
+    }
+
+    // ================================================================ zoom
+
+    double zoom() {
+        return zoom;
+    }
+
+    void onZoom(Runnable r) {
+        zoomListeners.add(r);
+    }
+
+    /**
+     * Sets the zoom, keeping the diagram point under {@code anchor} (canvas pixels, e.g. the mouse)
+     * where it is on screen; with no anchor, the middle of the visible area stays put.
+     */
+    void setZoom(double z, Point anchor) {
+        z = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z));
+        if (Math.abs(z - 1) < 0.02) z = 1;   // snap to 100 %
+        if (z == zoom) return;
+        JViewport vp = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        Rectangle view = getVisibleRect();
+        if (anchor == null) anchor = new Point(view.x + view.width / 2, view.y + view.height / 2);
+        Point onScreen = new Point(anchor.x - view.x, anchor.y - view.y);   // anchor within the viewport
+        double ax = anchor.x / zoom, ay = anchor.y / zoom;                  // anchor in diagram units
+        zoom = z;
+        for (Block b : blocks) b.applyZoom();
+        blockMoved();
+        if (vp != null) {
+            vp.setViewSize(getPreferredSize());
+            Dimension size = getPreferredSize(), ext = vp.getExtentSize();
+            int vx = (int) Math.round(ax * zoom) - onScreen.x, vy = (int) Math.round(ay * zoom) - onScreen.y;
+            vx = Math.max(0, Math.min(vx, Math.max(0, size.width - ext.width)));
+            vy = Math.max(0, Math.min(vy, Math.max(0, size.height - ext.height)));
+            vp.setViewPosition(new Point(vx, vy));
+        }
+        for (Runnable r : List.copyOf(zoomListeners)) r.run();
+    }
+
+    void zoomIn() { setZoom(zoom * 1.25, null); }
+    void zoomOut() { setZoom(zoom / 1.25, null); }
+    void zoomReset() { setZoom(1, null); }
+
+    /** Zoom so that all blocks fit the visible area (at most 100 %). */
+    void zoomToFit() {
+        if (blocks.isEmpty()) {
+            zoomReset();
+            return;
+        }
+        Rectangle all = null;
+        for (Block b : blocks) all = all == null ? b.modelBounds() : all.union(b.modelBounds());
+        JViewport vp = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        Dimension ext = vp != null ? vp.getExtentSize() : getVisibleRect().getSize();
+        double z = Math.min(1.0, Math.min((ext.width - 40.0) / (all.x + all.width), (ext.height - 40.0) / (all.y + all.height)));
+        setZoom(z, null);
+        if (vp != null) vp.setViewPosition(new Point(0, 0));
+    }
+
+    /**
+     * Mouse wheel: zooms toward the mouse (Shift+wheel scrolls sideways, Ctrl+wheel up and down).
+     * With "Mouse wheel zooms" off in Settings it scrolls, and Ctrl+wheel zooms.
+     */
+    private void wheel(MouseWheelEvent e) {
+        boolean ctrl = e.isControlDown() || e.isMetaDown();
+        boolean zoomGesture = Settings.wheelZooms() ? !ctrl && !e.isShiftDown() : ctrl;
+        if (zoomGesture) {
+            setZoom(zoom * Math.pow(1.1, -e.getPreciseWheelRotation()), e.getPoint());
+            return;
+        }
+        JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, this);
+        if (sp == null) return;
+        // let the scroll pane scroll: without Ctrl, and Shift keeps meaning "sideways"
+        MouseWheelEvent plain = new MouseWheelEvent(sp, e.getID(), e.getWhen(),
+                e.isShiftDown() ? InputEvent.SHIFT_DOWN_MASK : 0,
+                SwingUtilities.convertPoint(this, e.getPoint(), sp).x, SwingUtilities.convertPoint(this, e.getPoint(), sp).y,
+                e.getXOnScreen(), e.getYOnScreen(), e.getClickCount(), false, e.getScrollType(), e.getScrollAmount(),
+                e.getWheelRotation(), e.getPreciseWheelRotation());
+        sp.dispatchEvent(plain);
+    }
+
+    /** A canvas pixel position in diagram units. */
+    Point toModel(Point p) {
+        return new Point((int) Math.round(p.x / zoom), (int) Math.round(p.y / zoom));
     }
 
     void beginConnect(Block from, int port, Point p) {
         connFrom = from;
         connPort = port;
-        connPoint = p;
+        connPoint = toModel(p);
         repaint();
     }
 
     void updateConnect(Point p) {
-        connPoint = p;
+        connPoint = toModel(p);
         repaint();
     }
 
@@ -409,8 +501,9 @@ public final class FlowCanvas extends JPanel {
         return true;
     }
 
-    private Link linkAt(Point p) {
-        BasicStroke hit = new BasicStroke(10f);
+    private Link linkAt(Point pixel) {
+        Point p = toModel(pixel);
+        BasicStroke hit = new BasicStroke((float) (10 / zoom));
         for (Link l : links()) {
             Shape s = linkShape(l.from().outPort(l.port()), l.to().inPort());
             if (hit.createStrokedShape(s).contains(p)) return l;
@@ -446,7 +539,7 @@ public final class FlowCanvas extends JPanel {
 
     private boolean laneIsFree(int x, int top, int bottom) {
         Rectangle lane = new Rectangle(x - 8, top, 16, bottom - top);
-        for (Block b : blocks) if (lane.intersects(b.getBounds())) return false;
+        for (Block b : blocks) if (lane.intersects(b.modelBounds())) return false;
         return true;
     }
 
@@ -456,17 +549,29 @@ public final class FlowCanvas extends JPanel {
         Graphics2D g = (Graphics2D) g0.create();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // dot grid
+        // dot grid, every 20 diagram units (thinned out when zoomed far out)
         g.setColor(isBody() ? new Color(200, 225, 222) : new Color(214, 218, 228));
         Rectangle clip = g.getClipBounds();
-        int step = 20;
-        for (int x = clip.x / step * step; x < clip.x + clip.width; x += step) {
-            for (int y = clip.y / step * step; y < clip.y + clip.height; y += step) {
-                g.fillRect(x, y, 2, 2);
+        double step = 20 * zoom;
+        while (step < 10) step *= 2;
+        int dot = zoom >= 0.75 ? 2 : 1;
+        for (int i = (int) (clip.x / step); i * step < clip.x + clip.width; i++) {
+            for (int j = (int) (clip.y / step); j * step < clip.y + clip.height; j++) {
+                g.fillRect((int) Math.round(i * step), (int) Math.round(j * step), dot, dot);
             }
         }
 
-        // connections
+        // selection rectangle (canvas pixels)
+        if (band != null) {
+            g.setColor(new Color(30, 90, 210, 30));
+            g.fill(band);
+            g.setColor(new Color(30, 90, 210, 160));
+            g.setStroke(new BasicStroke(1f));
+            g.draw(band);
+        }
+
+        // connections, in diagram units
+        g.scale(zoom, zoom);
         g.setStroke(new BasicStroke(2.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         for (Link l : links()) {
             Color c = l.from().type == BlockType.IF
@@ -485,15 +590,6 @@ public final class FlowCanvas extends JPanel {
             g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                     1f, new float[]{6f, 5f}, 0f));
             g.draw(linkShape(connFrom.outPort(connPort), connPoint));
-        }
-
-        // selection rectangle
-        if (band != null) {
-            g.setColor(new Color(30, 90, 210, 30));
-            g.fill(band);
-            g.setColor(new Color(30, 90, 210, 160));
-            g.setStroke(new BasicStroke(1f));
-            g.draw(band);
         }
         g.dispose();
     }
@@ -536,7 +632,8 @@ public final class FlowCanvas extends JPanel {
     }
 
     /** Creates a block from a palette transfer string centered at p; null if not allowed here. */
-    Block createFromTransfer(String data, Point p) {
+    Block createFromTransfer(String data, Point pixel) {
+        Point p = toModel(pixel);
         int x = Math.max(0, p.x - Block.DEFAULT_TOTAL_W / 2), y = Math.max(0, p.y - Block.TOTAL_H / 2);
         if (data.startsWith("DEF:")) {
             String[] parts = data.substring(4).split("/", 2);

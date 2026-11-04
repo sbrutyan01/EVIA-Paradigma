@@ -11,11 +11,11 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.3.0-blue" alt="version 0.3.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.3.1-blue" alt="version 0.3.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
-Drag blocks onto a canvas, wire them together, run the program. Define **classes** with
+Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run the program. Define **classes** with
 fields, a constructor and methods, share them between programs as **modules**, keep your work
 in **project folders** under **Git/GitHub**, edit everything with **Vim**, and turn the
 program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23**,
@@ -25,7 +25,7 @@ libraries; a Maven project for NetBeans and Java 25.
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
 **Contents:** [Download](#download) · [Tutorial](#tutorial) · [Building from source](#building-from-source) ·
-[Blocks](#blocks) · [Classes](#classes-and-objects) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
+[Blocks](#blocks) · [Classes](#classes-and-objects) · [Zoom](#zoom) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
 [Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
 
 ## Download
@@ -35,11 +35,11 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.3.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.3.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.3.0-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.3.0.jar` | `java -jar evia-paradigma-0.3.0.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.3.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.3.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.3.1-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.3.1.jar` | `java -jar evia-paradigma-0.3.1.jar` |
 
 ### Release 0.3.0
 
@@ -69,7 +69,7 @@ language and mode, compiled with `-Wall -Wextra -Wpedantic -Werror` and compared
 ¹ As intended: those programs keep text in variables, which fast values (plain `double`) don't allow.
 On Windows the programs need no Visual Studio DLLs.
 
-After the release, `main` also has two fixes found by the Windows CI job (they only show with the strict test flags
+Release 0.3.1 also has two fixes found by the Windows CI job (they only show with the strict test flags
 `-Wpedantic -Werror`, so the published installers work): whole numbers beyond 32 bits are written as `10000000000.0`
 (on Windows `long` is 32-bit, and C++98 rejects `long long` literals), and the test scripts ignore `\r\n` line endings.
 
@@ -120,7 +120,7 @@ to the next block's top port (white dot). Double-click a block to edit its code.
 - **For**: `i = 1; i <= n; i = i + 1`. Its `body` port goes to **Print** `"step " + i`; wire the end of the
   body **back into the For block** to start the next pass. Its `done` port goes to **End**.
 
-Press **Run** (F5). Set *Step delay* to watch the active block move.
+Press **Run** (F5). Set *Step delay* to watch the active block move. Turn the mouse wheel over the diagram to [zoom](#zoom) in and out.
 
 <p align="center"><img src="docs/screenshots/03-first-run.png" alt="A For loop and its output" width="900"></p>
 
@@ -220,7 +220,7 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.3.0.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.3.1.jar`.
 
 ### Installing Clang 23
 
@@ -290,12 +290,39 @@ also saves the modules it uses. [`examples/classes.evia`](examples/classes.evia)
 
 Programs saved by 0.1.x still open; every custom block becomes a class with one method `run`.
 
+## Zoom
+
+Turn the **mouse wheel** over a block diagram (the main program or a method in a class window) to zoom in or out,
+from 25% to 300%. The point under the pointer stays where it is, so you zoom into what you're looking at. Blocks,
+text and wires are drawn sharply at every size; positions in the saved files don't depend on the zoom.
+
+| Input | Does |
+|---|---|
+| Mouse wheel | Zoom in (up) or out (down) toward the pointer |
+| Shift+wheel / Ctrl+wheel | Scroll sideways / up and down |
+| Ctrl+= / Ctrl+- | Zoom in / out (also the number pad's + and -) |
+| Ctrl+0 | Actual size, 100% |
+| Ctrl+9 | Fit the whole diagram in the window |
+| `− 100% +` (bottom right) | Zoom out, back to 100%, zoom in |
+
+Prefer the classic behavior? Turn off **Settings → Mouse wheel zooms block diagrams**: then the wheel scrolls and
+Ctrl+wheel zooms.
+
+<table>
+<tr>
+<td><img src="docs/screenshots/25-zoom-in.png" alt="Zoomed in to 161%" width="440"></td>
+<td><img src="docs/screenshots/26-zoom-out.png" alt="Zoomed out to 60%" width="440"></td>
+</tr>
+<tr><td align="center">Zoomed in (161%)</td><td align="center">Zoomed out (60%)</td></tr>
+</table>
+
 ## Menus
 
 | Menu | Items |
 |---|---|
 | **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, Exit |
 | **Edit** | Select All, Delete, New Class…, Group Selection into Class (Ctrl+G), Open Class, Settings… |
+| **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
 | **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Online Documentation, Report an Issue, Check for Updates, About |
@@ -422,7 +449,10 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    identical stdout, stderr and exit codes,
 4. runs [`scripts/check-app.sh`](scripts/check-app.sh): classes and modules (export, import, reload), the
    *View source code* line mapping (C and C++), project creation and the Git commands against a local bare repository,
-5. runs [`scripts/check-targets.sh`](scripts/check-targets.sh) with Clang 23 and with GCC: every program in `examples/`
+5. runs [`scripts/check-zoom.sh`](scripts/check-zoom.sh) on the real main window under Xvfb: wheel zoom keeps the
+   point under the pointer in place, stops at 25% and 300%, Shift/Ctrl+wheel scroll, saved files don't change with
+   the zoom, dragging and dropping land in the right place,
+6. runs [`scripts/check-targets.sh`](scripts/check-targets.sh) with Clang 23 and with GCC: every program in `examples/`
    and [`tests/programs/`](tests/programs) (numbers, text, objects, recursion, unstructured wiring and every runtime
    error) in all 32 combinations of language (C99 … C++20), flow and values, compiled with
    `-Wall -Wextra -Wpedantic -Werror` and compared with the interpreter (stdout, stderr, exit code). The Windows job

@@ -35,7 +35,7 @@ final class Method {
     List<String> exitNames() {
         return body.getBlocks().stream()
                 .filter(b -> b.type == BlockType.EXIT)
-                .sorted(Comparator.comparingInt(Block::getX).thenComparingInt(b -> b.id))
+                .sorted(Comparator.comparingInt(Block::modelX).thenComparingInt(b -> b.id))
                 .map(b -> b.getCode().trim())
                 .distinct()
                 .toList();

@@ -48,6 +48,11 @@ jobs:
       - name: Classes, modules, View source code, projects and Git integration
         run: scripts/check-app.sh
 
+      - name: Zoom with the mouse wheel (real main window under Xvfb)
+        run: |
+          command -v xvfb-run > /dev/null || sudo apt-get install -y xvfb
+          scripts/check-zoom.sh
+
       - name: "Every language and mode (C99..C++20 x structured/goto x safe/fast) with Clang"
         run: CC="${CXX/clang++/clang}" CXX="$CXX" scripts/check-targets.sh
 
