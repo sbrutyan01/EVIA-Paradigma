@@ -114,6 +114,6 @@
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA-Beispielprogramme</a>, auch unter File, Open Example, FPGA Boards</li>",
  "<tr><td>FPGA-Designs in Simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 von 27</td></tr>",
  "<li><b>Tutorial als PDF.</b> Hilfe, Tutorial öffnet die ganze Anleitung in einer von sieben Sprachen.</li>",
- "Neu in 0.6.5: MQTT. Fünf Blöcke veröffentlichen die Zahlen eines Programms bei einem Broker und lesen Befehle zurück: auf einem PIC32MX mit WLAN-Modul an UART2, auf einem ESP32 mit dessen eigenem WLAN und in Run gegen einen Broker auf deinem Rechner. Der erzeugte Client wird gegen einen echten Broker geprüft; ein WLAN-Modul oder ein Chip war dabei nicht im Spiel.",
+ "Neu in 0.6.5: MQTT. Fünf Blöcke veröffentlichen die Zahlen eines Programms bei einem Broker und lesen Befehle zurück: auf einem PIC32MX mit WLAN-Modul an UART2, auf einem ESP32 mit dessen eigenem WLAN und in Run gegen einen Broker auf deinem Rechner. Der erzeugte Client wird gegen einen echten Broker geprüft; ein WLAN-Modul oder ein Chip war dabei nicht im Spiel. Dazu kommen zwei Beispiele, eines davon für das PIC32 Ethernet Starter Kit II.",
  "<li><b>Einstellungen holen die Werkzeuge.</b> arduino-cli, avr-gcc und die FPGA-Sammlung landen im eigenen Ordner der App; XC32 öffnet die Seite von Microchip.</li>"
 ]

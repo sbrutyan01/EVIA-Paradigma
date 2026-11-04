@@ -460,8 +460,8 @@
   "<li><b>Учебник в PDF.</b> Help, Tutorial открывает всё руководство на любом из семи языков.</li>"
  ],
  [
-  "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. The generated client is checked against a real broker; no WiFi module or chip was part of that.",
-  "Новое в 0.6.5: MQTT. Пять блоков публикуют числа программы брокеру и читают команды обратно: на PIC32MX с модулем WiFi на UART2, на ESP32 с собственным WiFi и в Run — брокеру на вашем компьютере. Сгенерированный клиент проверяется на настоящем брокере; ни модуля WiFi, ни микросхемы в этой проверке не было."
+  "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that.",
+  "Новое в 0.6.5: MQTT. Пять блоков публикуют числа программы брокеру и читают команды обратно: на PIC32MX с модулем WiFi на UART2, на ESP32 с собственным WiFi и в Run — брокеру на вашем компьютере. Сгенерированный клиент проверяется на настоящем брокере; ни модуля WiFi, ни микросхемы в этой проверке не было. К нему идут два примера, один — для PIC32 Ethernet Starter Kit II."
  ],
  [
   "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",

@@ -70,11 +70,14 @@ MQTT blocks, and Settings fetches the outside tools.
 - **Five MQTT blocks** (Connect, Publish, Subscribe, Has Message, Read) in the *Board* group: on a PIC32MX with a
   WiFi module on UART2, on an ESP32 with its own WiFi, and in **Run** against a broker on your computer. See
   [MQTT](#mqtt-send-the-numbers-somewhere).
+- **Two examples** under **File → Open Example → Arduino and ESP32 Boards**: *MQTT: publish a value, read a command
+  back*, and *MQTT on the PIC32 Ethernet Starter Kit II*, where SW1 goes to the broker and LED1 follows what comes
+  back. The starter kit is a board of its own in the **Board** list (MX795F512L, LED1 on RD0).
 - **Settings fetches the tools:** arduino-cli, avr-gcc and the OSS CAD Suite are downloaded into EVIA Paradigma's own
   folder; XC32 opens Microchip's page, because its licence does not allow passing the compiler on.
 - **Tested** by compiling the generated MQTT client and running it against a real broker (`scripts/check-mqtt.sh`),
-  and by compiling the PIC32 output against Microchip's headers (162 of 162). No WiFi module, ESP32 or PIC32 chip was
-  part of that; Ethernet MQTT on the MX695/795 chips is not supported yet.
+  compiling the ESP32 sketch as C++, and compiling the PIC32 output against Microchip's headers (180 of 180). No WiFi
+  module, ESP32 or PIC32 chip was part of that; Ethernet MQTT on the MX695/795 chips is not supported yet.
 
 ### Release 0.6.1
 
@@ -186,7 +189,7 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **Build and Upload** in the code window (arduino-cli, or avr-gcc + avrdude); **Board** list next to the language.
 - **Run simulates an Uno**: pin changes in the output, a button and an analog signal, repeatable virtual time.
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
-- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class, UART, SPI, I2C).
+- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class, UART, SPI, I2C, and the two MQTT programs).
 - [Website](https://sbrutyan01.github.io/EVIA-Paradigma/): light and dark themes (follows the system; **Light / Dark**
   buttons in the header), a bigger logo and name, the board features and this release's test results.
 
@@ -468,7 +471,8 @@ Choose SystemVerilog, Verilog-2001 or VHDL and an Artix-7 or GateMate board; see
 
 ### 11. Send the numbers on with MQTT
 
-Open **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**; see [MQTT](#mqtt-send-the-numbers-somewhere)
+Open **File → Open Example → Arduino and ESP32 Boards → MQTT: publish a value, read a command back** (or the
+starter-kit one below it); see [MQTT](#mqtt-send-the-numbers-somewhere)
 above. Run answers from a broker on your computer, a PIC32 uses a WiFi module on UART2, an ESP32 uses its own WiFi.
 
 ### 12. Keep going

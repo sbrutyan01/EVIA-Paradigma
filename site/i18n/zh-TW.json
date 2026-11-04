@@ -114,6 +114,6 @@
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA 範例程式</a>，也可在 File、Open Example、FPGA Boards 中找到</li>",
  "<tr><td>模擬中的 FPGA 設計（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27 項中的 27 項</td></tr>",
  "<li><b>PDF 教學。</b> Help, Tutorial 可用七種語言中的任一種開啟完整教學。</li>",
- "0.6.5 新增：MQTT。五個積木把程式的數字發布給代理伺服器並讀回命令：UART2 接 WiFi 模組的 PIC32MX、自帶 WiFi 的 ESP32，以及對著你電腦上代理伺服器執行的 Run。產生的用戶端對著真實代理伺服器檢查過，但沒有 WiFi 模組或晶片參與。",
+ "0.6.5 新增：MQTT。五個積木把程式的數字發布給代理伺服器並讀回命令：UART2 接 WiFi 模組的 PIC32MX、自帶 WiFi 的 ESP32，以及對著你電腦上代理伺服器執行的 Run。產生的用戶端對著真實代理伺服器檢查過，但沒有 WiFi 模組或晶片參與。隨附兩個範例，其中一個用於 PIC32 Ethernet Starter Kit II。",
  "<li><b>設定會下載工具。</b> arduino-cli、avr-gcc 與 FPGA 套件會下載到應用程式自己的資料夾；XC32 會開啟 Microchip 的頁面。</li>"
 ]
