@@ -64,7 +64,18 @@ a dark mode, the look and fonts of IntelliJ IDEA, and the guide in Russian and A
 - **IntelliJ look:** [FlatLaf](https://github.com/JFormDesigner/FlatLaf) themes, **Inter** for the interface and
   **JetBrains Mono** for code and blocks, both bundled, so the app looks the same on Windows, macOS and Linux.
 - **Guide in three languages:** **Help → Guide** has an English / Русский / Հայերեն list above the topics.
-- The jar now contains FlatLaf (about 3 MB in all); `java -jar` still runs it.
+- The jar now contains FlatLaf and the fonts (2.4 MB); `java -jar` still runs it.
+- **Tests:** 416 of 416 programs identical on Linux (Clang 23.1.6, GCC 13.3), 260 of 260 on Windows (llvm-mingw Clang
+  23.1.4, WinLibs GCC 16.2), boards 100 passed, application, guide, font, theme and zoom checks passed.
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.4.1-windows-x64.exe` | Windows 10/11 x64 | 30.1 MB |
+| `EVIA-Paradigma-0.4.1-macos-arm64.dmg` | macOS, Apple Silicon | 31.5 MB |
+| `EVIA-Paradigma-0.4.1-macos-x64.dmg` | macOS, Intel | 33.0 MB |
+| `evia-paradigma_0.4.1_amd64.deb` | Ubuntu/Debian amd64 | 26.0 MB |
+| `evia-paradigma-0.4.1.jar` | Any OS with Java 25 | 2.4 MB |
+| `LICENSE` | MIT license | , |
 
 <p align="center"><img src="docs/screenshots/32-dark-theme.png" alt="EVIA Paradigma in the dark theme" width="900"></p>
 
