@@ -178,6 +178,9 @@
         ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in
         about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator
         and checked against the interpreter.</p>
+      <p>New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are
+        blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device
+        headers, but has not yet been built with XC32 or run on a chip.</p>
     </div>
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
@@ -269,7 +272,7 @@
       <tr><td>Arduino Uno and Mega 2560 sketches in simavr</td><td>arduino-cli, arduino:avr</td><td>15 of 15</td></tr>
     </tbody>
   </table>
-  <p class="fine">The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings).
+  <p class="fine">The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144).
     Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window.
     See <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>.</p>
 </section>

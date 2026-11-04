@@ -37,13 +37,16 @@ final class MainFrame extends JFrame {
             {"expressions.evia", "Expressions"},
             {"example.evia", "Even/odd and average"},
     };
-    /** Programs for Arduino and ESP32 boards (they use the Board blocks; Run simulates an Uno). */
+    /** Programs for Arduino, ESP32, AVR and PIC32 boards (they use the Board blocks; Run simulates an Uno). */
     static final String[][] BOARD_EXAMPLES = {
             {"boards/blink.evia", "Blink the built-in LED"},
             {"boards/button.evia", "Button: read a pin, light the LED"},
             {"boards/fade.evia", "Fade an LED with PWM"},
             {"boards/analog_meter.evia", "Analog meter (A0)"},
             {"boards/led_class.evia", "Led class: an object with a pin"},
+            {"boards/uart_echo.evia", "UART: send a byte, read it back"},
+            {"boards/spi_loopback.evia", "SPI: transfer a byte"},
+            {"boards/i2c_memory.evia", "I2C: write and read a device register"},
     };
     static final String[] EXAMPLE_FILES = {"modules/counter.eviam"};
 

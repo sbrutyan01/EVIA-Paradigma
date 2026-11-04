@@ -380,13 +380,15 @@ final class Settings {
                 checkCompiler(compiler.getText(), compilerStatus);
             }
         });
-        JComboBox<Board> boardBox = new JComboBox<>(Board.values());
+        JComboBox<Board> boardBox = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(b -> !b.isPic32()).toArray(Board[]::new));
         boardBox.setSelectedItem(board());
         JTextField port = new JTextField(serialPort(), 14);
         port.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
         JTextField cli = new JTextField(arduinoCli(), 30);
         JTextField avrGcc = new JTextField(avrGcc(), 30);
         JTextField avrdude = new JTextField(avrdude(), 30);
+        JTextField xc32 = new JTextField(xc32(), 30);
+        JTextField pic32Up = new JTextField(pic32Upload(), 30);
         JButton check = new JButton("Check");
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
 
@@ -444,7 +446,15 @@ final class Settings {
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("avrdude:"), g);
         g.gridx = 1; p.add(avrdude, g);
+        g.gridy++; g.gridx = 0;
+        p.add(new JLabel("xc32-gcc:"), g);
+        g.gridx = 1; p.add(xc32, g);
+        g.gridy++; g.gridx = 0;
+        p.add(new JLabel("PIC32 upload:"), g);
+        g.gridx = 1; p.add(pic32Up, g);
         g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."), g);
+        g.gridy++;
         p.add(small("<html>Arduino sketches build with arduino-cli (cores: arduino:avr, esp32:esp32); bare-metal AVR C with avr-gcc,<br>"
                 + "uploaded with avrdude. Leonardo / Micro: press reset just before uploading bare-metal code.</html>"), g);
         checkCompiler(compiler.getText(), compilerStatus);
@@ -460,6 +470,8 @@ final class Settings {
         PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
         PREFS.put("avrGcc", avrGcc.getText().trim().isEmpty() ? "avr-gcc" : avrGcc.getText().trim());
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
+        PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
+        PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
         PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
     }

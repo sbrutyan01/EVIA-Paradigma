@@ -139,6 +139,45 @@ public class AppChecks {
             check(e.getMessage().contains("board constant"), "board constants can't be assigned");
         }
 
+        // ---------- UART / SPI / I2C blocks and PIC32
+        check(Target.parse("pic32").lang() == Target.Lang.PIC32 && Target.parse("pic32/goto").values() == Target.Values.FAST
+                && Target.parse(Target.parse("pic32").key()).lang() == Target.Lang.PIC32, "pic32 target (always fast values)");
+        check(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).count() == 9
+                && Board.forLang(Board.UNO, Target.Lang.PIC32).isPic32() && !Board.UNO.supports(Target.Lang.PIC32)
+                && Board.parse("pic32mx250f128b").isPic32(), "PIC32 boards");
+        for (String name : new String[] {"uart_echo", "spi_loopback", "i2c_memory"}) {
+            Library bus = newLib();
+            ProgramIO.load(bus, Path.of("examples/boards/" + name + ".evia"));
+            List<String> out = new ArrayList<>();
+            new Interpreter().run(Interpreter.prepare(bus), new Interpreter.Host() {
+                @Override public void step(Block b) {}
+                @Override public void print(String text) { out.add(text); }
+                @Override public String input(String var) { return null; }
+                @Override public boolean cancelled() { return false; }
+                @Override public void board(String e) {}
+            });
+            String last = out.get(out.size() - 1);
+            check(switch (name) {
+                case "uart_echo" -> last.equals("received 72, 105, 10");
+                case "spi_loopback" -> last.equals("sent 120, received 120");
+                default -> last.equals("device 81: -1");
+            }, name + " runs in the simulator: " + out);
+            for (String lang : new String[] {"arduino", "avr", "pic32"}) {
+                String code = CodeGenerator.generate(bus, Target.parse(lang));
+                String call = switch (name) {
+                    case "uart_echo" -> "uartOpen(";
+                    case "spi_loopback" -> "spiTransfer(";
+                    default -> "i2cRead(";
+                };
+                check(code.contains(call) && code.contains("int main") == !lang.equals("arduino"), name + " generates " + lang + " code");
+            }
+        }
+        {
+            String pic = CodeGenerator.generate(board, Target.parse("pic32"));
+            check(pic.contains("#pragma config") && pic.contains("int main(void)") && pic.contains("-mprocessor=32MX250F128B")
+                    && !pic.contains("i2cRead") && !pic.contains("analogRead"), "PIC32 C: only the pieces it uses");
+        }
+
         // ---------- compiler family (Clang or GCC)
         check(Settings.family("clang++ -O2") == ToolchainInstaller.Kind.CLANG && Settings.family("\"C:/w/mingw64/bin/g++.exe\" -O2") == ToolchainInstaller.Kind.GCC,
                 "compiler family from the command");

@@ -184,6 +184,10 @@
   "AVR C пишет программу для ATmega328P, ATmega2560 или ATmega32U4 без ядра Arduino: порты, таймеры, ШИМ, АЦП и UART настраиваются на понятном C. avr-gcc собирает её примерно в 4 КБ, а Upload загружает на плату через avrdude. Каждый пример запускается в симуляторе simavr и сверяется с интерпретатором."
  ],
  [
+  "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
+  "Новое в 0.5: PIC32 C делает то же для девяти микросхем PIC32MX с Microchip XC32, а UART, SPI и I2C стали блоками, в Run и во всех трёх языках для плат. Код PIC32 проверен по заголовочным файлам Microchip, но ещё не собирался XC32 и не запускался на микросхеме."
+ ],
+ [
   "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
   "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
  ],
@@ -356,8 +360,8 @@
   "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
  ],
  [
-  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок без предупреждений). Плюс проверки приложения, модулей, проектов, Git и масштабирования колесом мыши в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Плюс проверки приложения, модулей, проектов, Git и масштабирования колесом мыши в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
  ],
  [
   "<h2 id=\"docs-h\">Documentation</h2>",

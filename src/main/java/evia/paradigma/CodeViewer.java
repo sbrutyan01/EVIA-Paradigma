@@ -391,7 +391,8 @@ final class CodeViewer extends JFrame {
     /** Shows whether arduino-cli (Arduino) or avr-gcc (AVR C) is installed. */
     private void checkBoardTools() {
         boolean arduino = target.lang() == Target.Lang.ARDUINO;
-        String tool = arduino ? Settings.arduinoCli() : Settings.avrGcc();
+        boolean pic = target.lang() == Target.Lang.PIC32;
+        String tool = arduino ? Settings.arduinoCli() : pic ? Settings.xc32() : Settings.avrGcc();
         compilerLabel.setText("Checking " + tool + "...");
         compilerLabel.setForeground(Theme.muted());
         Object token = Settings.newCheck(compilerLabel);
@@ -410,7 +411,7 @@ final class CodeViewer extends JFrame {
             String v = version;
             SwingUtilities.invokeLater(() -> {
                 if (!Settings.isLatestCheck(compilerLabel, token)) return;
-                String name = arduino ? "arduino-cli" : "avr-gcc";
+                String name = arduino ? "arduino-cli" : pic ? "xc32-gcc" : "avr-gcc";
                 if (v == null) {
                     compilerLabel.setText(name + " not found - see Build for how to install it");
                     compilerLabel.setForeground(Theme.error());
@@ -432,7 +433,7 @@ final class CodeViewer extends JFrame {
         Target tg = target;
         Board board = Settings.board(tg.lang());
         String port = Settings.serialPort();
-        if (upload && port.isBlank()) {
+        if (upload && port.isBlank() && (tg.lang() != Target.Lang.PIC32 || Settings.pic32Upload().contains("{device}"))) {
             port = JOptionPane.showInputDialog(this, "Serial port of the " + board.display + " (e.g. "
                     + (ExternalEditor.WINDOWS ? "COM3" : "/dev/ttyACM0") + "):", "Upload", JOptionPane.QUESTION_MESSAGE);
             if (port == null || port.isBlank()) return;
@@ -458,6 +459,21 @@ final class CodeViewer extends JFrame {
                     if (upload) {
                         steps.add(List.of(cli, "upload", "--fqbn", board.fqbn, "-p", thePort, "--input-dir",
                                 dir.resolve("build").toString(), sketch.toString()));
+                    }
+                } else if (tg.lang() == Target.Lang.PIC32) {
+                    Path src = dir.resolve("program.c"), elf = dir.resolve("program.elf"), hex = dir.resolve("program.hex");
+                    Files.writeString(src, code, StandardCharsets.UTF_8);
+                    String gcc = Settings.xc32();
+                    tool = gcc;
+                    steps.add(List.of(gcc, "-mprocessor=" + board.pic, "-std=gnu99", "-Os", "-Wall", "-Wextra",
+                            "-Wl,--defsym=_min_heap_size=2048", "-o", elf.toString(), src.toString(), "-lm"));
+                    steps.add(List.of(sibling(gcc, "bin2hex"), elf.toString()));
+                    if (upload) {
+                        List<String> u = new ArrayList<>();
+                        for (String part : Settings.split(Settings.pic32Upload())) {
+                            u.add(part.replace("{hex}", hex.toString()).replace("{device}", thePort));
+                        }
+                        steps.add(u);
                     }
                 } else {
                     Path src = dir.resolve("program.c"), elf = dir.resolve("program.elf"), hex = dir.resolve("program.hex");
@@ -486,11 +502,12 @@ final class CodeViewer extends JFrame {
                     }
                     lastOutput.setLength(0);
                 }
-                append(upload ? ">> uploaded to the " + board.display + " on " + thePort
+                append(upload ? ">> uploaded to the " + board.display + (thePort.isEmpty() ? "" : " on " + thePort)
                         + ". Open a serial monitor at 115200 baud to see Print and answer Input.\n"
                         : ">> built for the " + board.display + ". Upload sends it to the board.\n");
             } catch (IOException e) {
-                append(">> " + e.getMessage() + "\n" + installHelp(tg.lang() == Target.Lang.ARDUINO && !Settings.avrdude().equals(tool)));
+                append(">> " + e.getMessage() + "\n" + (tg.lang() == Target.Lang.PIC32 ? PIC32_HELP
+                        : installHelp(tg.lang() == Target.Lang.ARDUINO && !Settings.avrdude().equals(tool))));
             } catch (InterruptedException e) {
                 append(">> stopped\n");
             } finally {
@@ -512,6 +529,12 @@ final class CodeViewer extends JFrame {
         String name = gcc.substring(slash + 1).replace("gcc", tool);
         return gcc.substring(0, slash + 1) + name;
     }
+
+    private static final String PIC32_HELP = """
+            >> PIC32 C builds with Microchip's free XC32 compiler (https://www.microchip.com/xc32) and loads the .hex
+               with a programmer tool of your choice, e.g. pic32prog (https://github.com/sergev/pic32prog) or MPLAB IPE.
+               Set the xc32-gcc path and the upload command ({hex}, {device}) in Settings.
+            """;
 
     private static String installHelp(boolean arduino) {
         if (arduino) {

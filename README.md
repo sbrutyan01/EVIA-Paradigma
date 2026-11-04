@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-blue" alt="version 0.4.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.5.0-blue" alt="version 0.5.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -32,8 +32,8 @@ in **project folders** under **Git/GitHub**, edit everything with **Vim**, and t
 program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23** or **GCC**,
 with structured or goto control flow and safe or fast values. The same diagrams program **Arduino and ESP32 boards**:
 pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
--S2, -S3, -C3, -C6, -H2) or bare-metal **AVR C** that drives the chip's registers directly, and **Run** simulates the
-board on your computer. Java Swing with the [FlatLaf](https://github.com/JFormDesigner/FlatLaf) IntelliJ look (light and dark); a Maven project for NetBeans and Java 25.
+-S2, -S3, -C3, -C6, -H2), bare-metal **AVR C** or bare-metal **PIC32 C** (nine PIC32MX chips) that drive the chip's
+registers directly, with **UART, SPI and I2C** blocks, and **Run** simulates the board on your computer. Java Swing with the [FlatLaf](https://github.com/JFormDesigner/FlatLaf) IntelliJ look (light and dark); a Maven project for NetBeans and Java 25.
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
@@ -48,11 +48,27 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.4.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.4.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.4.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.4.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.4.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.4.1.jar` | `java -jar evia-paradigma-0.4.1.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.5.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.5.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.5.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.5.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.5.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.5.0.jar` | `java -jar evia-paradigma-0.5.0.jar` |
+
+### Release 0.5.0
+
+[Release notes](docs/release-notes/v0.5.0.md): PIC32MX chips and the UART, SPI and I2C blocks.
+
+- **UART, SPI and I2C blocks** (UART Open / Write / Read, SPI Open / Transfer, I2C Open / Write / Read) in the *Board*
+  group. They work in **Run** (a simulated loopback UART, SPI and an I2C device at address 80), in Arduino sketches
+  (Serial, SPI.h, Wire.h) and in bare-metal AVR C (USART, SPI and TWI registers).
+- **PIC32 C**: a new language for nine PIC32MX chips, bare-metal C for Microchip's XC32 (no Harmony or plib):
+  MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L),
+  MX5xx/6xx/7xx (695F512L, 795F512L). Clock, pins, PWM, ADC, UART, SPI and I2C are set up through the registers.
+- **Build and Upload** for PIC32: xc32-gcc, xc32-bin2hex and an upload command you choose (pic32prog by default).
+  `--lang pic32 --board KEY` on the command line.
+- **Tested** against a PC compiler and Microchip's real device headers (144 combinations, `-Werror`), and the bus code of
+  the Arduino and AVR outputs in simavr. PIC32 output is **not** yet built with XC32 or run on a chip: see
+  [PIC32 notes](#arduino-and-esp32-boards).
 
 ### Release 0.4.1
 
@@ -91,7 +107,7 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **Build and Upload** in the code window (arduino-cli, or avr-gcc + avrdude); **Board** list next to the language.
 - **Run simulates an Uno**: pin changes in the output, a button and an analog signal, repeatable virtual time.
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
-- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class).
+- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class, UART, SPI, I2C).
 - [Website](https://sbrutyan01.github.io/EVIA-Paradigma/): light and dark themes (follows the system; **Light / Dark**
   buttons in the header), a bigger logo and name, the board features and this release's test results.
 
@@ -544,13 +560,14 @@ clang++ -std=c++98 -O2 -o program program.cpp
 
 ## Arduino and ESP32 boards
 
-Two more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
+Three more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
 only in Print). Print and Input go over the serial port at 115200 baud.
 
 | Language | Boards | Output | Build and upload |
 |---|---|---|---|
 | **Arduino** | Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini (5 V, 16 MHz); ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2 | one sketch, `program/program.ino`, with `setup()` and `loop()`; text in flash (`F()`) on AVR boards | `arduino-cli compile` / `upload` with the `arduino:avr` and `esp32:esp32` cores |
 | **AVR C** | the six AVR boards: ATmega328P (Uno, Nano, Pro Mini), ATmega2560 (Mega 2560), ATmega32U4 (Leonardo, Micro) | bare-metal C: no Arduino core. `pinMode`, `digitalWrite`, `analogRead`, `analogWrite`, `millis` and `delay` written against the chip's registers, with Arduino's pin numbers, timer setup and a 115200-baud UART (USART1 on pins 0/1 for the ATmega32U4) | `avr-gcc -mmcu=… -Os`, `avr-objcopy`, `avrdude` |
+| **PIC32 C** | nine PIC32MX chips: MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) | bare-metal C for XC32, no Harmony or plib: the same Arduino-style functions written against the registers. 30 MHz from the internal oscillator, UART1 at 115200 baud, 10-bit ADC, PWM on the output compare modules | `xc32-gcc -mprocessor=32MX… -Os`, `xc32-bin2hex`, then an upload command (default `pic32prog {hex}`) |
 
 The generated code is the same for every board of a language. Pins are written as `LED_BUILTIN`, `A0` and so on, and
 each board's headers say where they are. The **Board** list next to the language (and in Settings, with the serial port
@@ -567,16 +584,38 @@ and the tool paths) only decides what **Build** and **Upload** in the code windo
 | **Analog Write** | `5, brightness` | PWM duty 0..255 |
 | **Delay** | `500` | waits this many milliseconds |
 | **Millis** | `t` | milliseconds since the program started |
+| **UART Open** | `9600` | starts the serial port of the UART blocks at this baud rate |
+| **UART Write** | `65` | sends one byte (0..255) |
+| **UART Read** | `c` | next received byte, or -1 if none |
+| **SPI Open** | `1000000` | SPI master at this clock in Hz (mode 0, MSB first) |
+| **SPI Transfer** | `reply = 66` | sends a byte, stores the byte received at the same time |
+| **I2C Open** | `100000` | I2C master at this clock in Hz |
+| **I2C Write** | `80, 0, 42` | address (7-bit), register, value |
+| **I2C Read** | `v = 80, 0` | stores the register's value, or -1 if nothing answers at that address |
 
 **Run** simulates an Arduino Uno, so board programs can be tried without a board:
 - every pin change appears in the output (`board [500 ms] pin 13 HIGH`), separately from the program's output;
 - time is virtual and only Delay moves it, so runs are repeatable (the main window also really waits, unless the speed
   slider is at full speed);
 - a button on each input pin is pressed during the second half of every 2 seconds;
-- analog pins read a slow wave 0..1023..0.
+- analog pins read a slow wave 0..1023..0;
+- the UART's transmitter is wired to its receiver, so UART Write bytes come back from UART Read (and also appear as output
+  text); SPI's input is wired to its output; one I2C device with 256 registers (all 0) answers at address 80, other
+  addresses do not answer. Using SPI or I2C before its Open block is an error.
 
 On a board the program runs once from `setup()`, and the pins keep their state afterwards. Desktop C and C++
 can't use the Board blocks; Generate code names the block.
+
+**PIC32 pins** are fixed per chip family and listed at the top of the generated file. MX1xx/2xx: UART1 on RB13 (RX) and
+RB3 (TX), SPI1 on RA1 (in), RA4 (out) and RB14 (clock), I2C1 on RB8 (SCL) and RB9 (SDA), PWM on RB15, RB8, RB9 and RB2.
+MX3xx to MX7xx: UART1 on RF2 and RF3 (RF8 on some packages), SPI2 on RG7, RG8 and RG6, I2C1 on RG2 and RG3 (RA14 and RA15
+on 100-pin chips), PWM on RD0..RD4. Pin numbers are `16 * port + bit`, and `RA0` ... `RG15` are defined.
+
+**What is checked for PIC32, and what is not:** CI compiles every example for the boards of all three families with a PC
+gcc (`-Wall -Wextra -Werror`, syntax only) against Microchip's real device headers, which proves that every register and
+bit name exists with the right type. It does **not** run the program, and nothing here has built it with XC32 or run it on
+a chip, so pin assignments, `#pragma config` names for a particular part, and timing are unproven. Treat the first
+build on real hardware as a test, and please report what you find.
 
 <p align="center"><img src="docs/screenshots/31-language-list.png" alt="The Language list with Arduino and AVR C" width="800"></p>
 
@@ -607,6 +646,8 @@ java -jar evia-paradigma.jar --gen blink.evia --lang arduino -o blink/blink.ino
 arduino-cli compile --fqbn esp32:esp32:esp32s3 blink
 java -jar evia-paradigma.jar --gen blink.evia --lang avr -o blink.c
 avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o blink.elf blink.c -lm && avr-objcopy -O ihex blink.elf blink.hex
+java -jar evia-paradigma.jar --gen blink.evia --lang pic32 --board pic32mx795f512l -o blink.c
+xc32-gcc -mprocessor=32MX795F512L -std=gnu99 -Os -o blink.elf blink.c -lm && xc32-bin2hex blink.elf   # then pic32prog blink.hex
 java -jar evia-paradigma.jar --run blink.evia                # simulated Uno; pin changes go to stderr
 ```
 
@@ -635,6 +676,10 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
 7. the **boards** job runs [`scripts/check-boards.sh`](scripts/check-boards.sh): the board examples as bare-metal AVR C
    (avr-gcc 14, `-Werror`) for the ATmega328P, ATmega2560 and ATmega32U4, each run in simavr and compared with the
    interpreter (UART output, LED switching); and as Arduino sketches built with arduino-cli for all 12 boards.
+8. the **pic32** job runs [`scripts/check-pic32.sh`](scripts/check-pic32.sh): every board example, for the boards of the
+   three PIC32MX families and both flows, compiled syntax-only with gcc (`-Wall -Wextra -Werror`) against Microchip's
+   real device headers (fetched from the Pinguino project; they are not part of this repository). There is no XC32
+   compiler or chip in CI.
 
 The website is built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) whenever `site/`, the screenshots,
 the tutorial example or the code generator change, and when a release is published:
@@ -673,7 +718,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
-| `Board.java` / `BoardSim.java` | The 12 boards (arduino-cli names, AVR chips); the simulated Uno used by Run |
+| `Board.java` / `BoardSim.java` | The 21 boards (arduino-cli names, AVR chips, PIC32MX chips); the simulated board used by Run |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds the Russian and Armenian texts |

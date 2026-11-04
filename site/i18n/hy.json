@@ -184,6 +184,10 @@
   "AVR C-ն ծրագիրը գրում է ATmega328P, ATmega2560 կամ ATmega32U4-ի համար՝ առանց Arduino միջուկի. պորտերը, թայմերները, PWM-ը, ԱԹՓ-ն և UART-ը կարգավորվում են ընթեռնելի C-ով։ avr-gcc-ն այն կառուցում է մոտ 4 ԿԲ-ով, իսկ Upload-ը avrdude-ով բեռնում է այն տախտակի վրա։ Յուրաքանչյուր օրինակ գործարկվում է simavr սիմուլյատորում և համեմատվում ինտերպրետատորի հետ։"
  ],
  [
+  "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
+  "Նորություն 0.5-ում. PIC32 C-ն նույնն անում է ինը PIC32MX չիպի համար Microchip-ի XC32-ով, իսկ UART-ը, SPI-ն և I2C-ն դարձել են բլոկներ՝ Run-ում և տախտակների բոլոր երեք լեզուներում։ PIC32-ի կոդը ստուգվել է Microchip-ի վերնագրային ֆայլերով, բայց դեռ չի կառուցվել XC32-ով և չի աշխատել չիպի վրա։"
+ ],
+ [
   "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
   "alt=\"blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։\""
  ],
@@ -356,8 +360,8 @@
   "<td>Arduino Uno և Mega 2560 սքեթչներ simavr-ում</td>"
  ],
  [
-  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-  "Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի և մկնիկի անիվով մասշտաբավորման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>-ում։"
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ PIC32-ի օրինակները կոմպիլացվում են (միայն շարահյուսություն) Microchip-ի վերնագրերով (144-ից 144)։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի և մկնիկի անիվով մասշտաբավորման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>-ում։"
  ],
  [
   "<h2 id=\"docs-h\">Documentation</h2>",

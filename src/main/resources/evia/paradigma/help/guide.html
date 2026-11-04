@@ -32,7 +32,7 @@ English, Russian or Armenian.</p>
 <tr><td>Do-While</td><td><code>n &gt; 0</code></td><td>Runs the body once, then checks.</td></tr>
 <tr><td>Enter / Exit</td><td>exit name</td><td>Only inside a class method: where it begins and the ways it can end.</td></tr>
 </table>
-<p>The <b>Board</b> blocks (Pin Mode, Digital Write, Digital Read, Analog Read, Analog Write, Delay, Millis) are for
+<p>The <b>Board</b> blocks (Pin Mode, Digital Write, Digital Read, Analog Read, Analog Write, Delay, Millis, UART, SPI, I2C) are for
 microcontrollers; see <a href="#boards">Arduino and ESP32 boards</a>.</p>
 
 <a name="expressions"></a>
@@ -138,7 +138,7 @@ right <code>-std=</code> and <code>-lm</code>. <b>Settings</b> chooses the compi
 
 <a name="boards"></a>
 <h2>Arduino and ESP32 boards</h2>
-<p>Two more languages make code for microcontrollers. Both use fast values (numbers; text only in Print), and Print and
+<p>Three more languages make code for microcontrollers. Both use fast values (numbers; text only in Print), and Print and
 Input go over the serial port at 115200 baud.</p>
 <table border="1" cellpadding="4" cellspacing="0">
 <tr><th>Language</th><th>Boards</th><th>Built with</th></tr>
@@ -148,6 +148,9 @@ and esp32:esp32 cores.</td></tr>
 <tr><td>AVR C</td><td>the six Arduino AVR boards (ATmega328P, ATmega2560, ATmega32U4)</td>
 <td>Bare-metal C: no Arduino core. Pins, timers, PWM, the ADC and the UART are driven through the chip's registers.
 avr-gcc and avr-libc build it, avrdude uploads it.</td></tr>
+<tr><td>PIC32 C</td><td>nine PIC32MX chips: MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L)</td>
+<td>Bare-metal C for Microchip's XC32: clock, pins, PWM, ADC, UART, SPI and I2C are driven through the registers; no Harmony or plib.
+xc32-gcc builds it, xc32-bin2hex makes the <code>.hex</code>, and an upload command of your choice (pic32prog by default) loads it.</td></tr>
 </table>
 <p>Choose the board in the <b>Board</b> list next to the language (also in Settings). <b>Build</b> in the code window
 compiles for it; <b>Upload</b> builds and sends the program to the board on the serial port set in Settings.</p>
@@ -160,14 +163,27 @@ compiles for it; <b>Upload</b> builds and sends the program to the board on the 
 <tr><td>Analog Write</td><td><code>5, brightness</code></td><td>PWM, 0 (off) .. 255 (always on).</td></tr>
 <tr><td>Delay</td><td><code>500</code></td><td>Waits this many milliseconds.</td></tr>
 <tr><td>Millis</td><td><code>t</code></td><td>Stores the milliseconds since the program started.</td></tr>
+<tr><td>UART Open</td><td><code>9600</code></td><td>Starts the serial port used by the UART blocks, at this baud rate.</td></tr>
+<tr><td>UART Write</td><td><code>65</code></td><td>Sends one byte (0..255).</td></tr>
+<tr><td>UART Read</td><td><code>c</code></td><td>Stores the next received byte, or -1 if none has arrived.</td></tr>
+<tr><td>SPI Open</td><td><code>1000000</code></td><td>Starts the SPI bus as master at this clock in Hz (mode 0, most significant bit first).</td></tr>
+<tr><td>SPI Transfer</td><td><code>reply = 66</code></td><td>Sends a byte and stores the byte that came back at the same time.</td></tr>
+<tr><td>I2C Open</td><td><code>100000</code></td><td>Starts the I2C bus as master at this clock in Hz.</td></tr>
+<tr><td>I2C Write</td><td><code>80, 0, 42</code></td><td>Writes a value to a register of the device at this 7-bit address: address, register, value.</td></tr>
+<tr><td>I2C Read</td><td><code>v = 80, 0</code></td><td>Stores the register's value, or -1 if no device answers at that address.</td></tr>
 </table>
 <p>Pins can be numbers, expressions or the board's names <code>LED_BUILTIN</code>, <code>A0</code> ... <code>A15</code>;
 <code>HIGH</code> and <code>LOW</code> work in any expression. These names can't be used as variables.</p>
+<p>The bus blocks work in Run and in all three board languages. Open a bus before using it; addresses are 7-bit and the
+numbers are decimal (80 is 0x50). On a PIC32 the pins are fixed per chip family and listed at the top of the generated code
+(the chip's own UART1, SPI and I2C1). Run simulates the buses: the UART's transmitter is wired to its receiver, so what
+UART Write sends comes back from UART Read (and also appears as output text), SPI's input is wired to its output, and one
+I2C device with 256 registers answers at address 80.</p>
 <p><b>Run</b> simulates an Arduino Uno: pin changes appear in the output as <code>board [500 ms] pin 13 HIGH</code>,
 time only moves forward in Delay (the main window also really waits, unless the speed slider is at full speed),
 a button on every input pin is pressed during the second half of each 2 seconds, and analog pins read a slow wave
 0..1023..0. The program runs once, as if from <code>setup()</code>; afterwards the pins keep their state.
-<b>File &gt; Open Example &gt; Arduino and ESP32 Boards</b> has blink, button, fade, an analog meter and a Led class.</p>
+<b>File &gt; Open Example &gt; Arduino and ESP32 Boards</b> has blink, button, fade, an analog meter, a Led class, and UART, SPI and I2C examples.</p>
 <p>Desktop languages (C, C++) can't use the Board blocks; Generate code says which block to change.</p>
 
 <a name="keys"></a>

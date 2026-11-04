@@ -123,6 +123,27 @@ jobs:
       - name: "Board examples: AVR C in simavr (328P, 2560, 32U4), Arduino sketches for 12 boards"
         run: scripts/check-boards.sh
 
+  # PIC32MX (bare-metal C for XC32): there is no XC32 or chip in CI, so every example for the boards of
+  # the three chip families is compiled syntax-only with gcc -Wall -Wextra -Werror against the real
+  # device headers (fetched from the Pinguino project; they are not part of this repository).
+  pic32:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: "PIC32 examples against the device headers (MX1xx/2xx, MX3xx/4xx, MX5xx/6xx/7xx)"
+        run: scripts/check-pic32.sh
+
   # Windows without Visual Studio: Clang from llvm-mingw (its own libc++ and Windows headers),
   # the same toolchain EVIA Paradigma installs with "Install Clang...".
   windows-llvm-mingw:

@@ -12,3 +12,7 @@ EVIA Paradigma itself is MIT licensed (see `LICENSE`). The jar and the installer
 "EVIA UI" is Inter with the Armenian letters of Noto Sans Armenian added, because Java does not take missing
 letters from another font. It is built by `scripts/fonts/make-ui-font.py` and renamed, as the OFL asks. The font
 licenses are in `src/main/resources/evia/paradigma/fonts/`.
+
+## Microchip device headers
+
+The PIC32 checks in CI (`scripts/check-pic32.sh`) read Microchip's device headers, fetched at test time from the Pinguino project. They are not part of this repository, the jar or the installers.
