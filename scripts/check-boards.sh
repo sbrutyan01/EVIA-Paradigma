@@ -101,14 +101,16 @@ if [ "${SKIP_ARDUINO:-}" != 1 ] && command -v "$ARDUINO_CLI" > /dev/null; then
     mqtt=no
     grep -q "MQTT_" "$src" && mqtt=yes
     for fqbn in $FQBNS; do
-      case "$mqtt:$fqbn" in yes:esp32:*) ;; yes:*) continue ;; esac   # MQTT needs the ESP32's WiFi
+      # MQTT needs WiFi: the ESP32 boards have it, the ESP32-H2 and the AVR boards do not
+      case "$mqtt:$fqbn" in yes:*esp32h2) continue ;; yes:esp32:*) ;; yes:*) continue ;; esac
       flows=structured
       [ "$fqbn" = "$first_avr" ] || [ "$fqbn" = "$first_esp" ] && flows="structured goto"
       for flow in $flows; do
         dir="$OUT/sketch/$name-${fqbn//[:=]/_}-$flow/program"
         mkdir -p "$dir"
-        board=""; case "$fqbn" in esp32:*) board="--board $fqbn" ;; esac   # the generator checks MQTT against this board
-        java -jar "$JAR" --gen "$src" --lang arduino $board --flow "$flow" -o "$dir/program.ino" 2>/dev/null
+        if ! java -jar "$JAR" --gen "$src" --lang arduino --board "$fqbn" --flow "$flow" -o "$dir/program.ino" 2> "$dir.gen.log"; then
+          fail "$name $flow $fqbn: generate"; grep -v "^Picked up" "$dir.gen.log" | head -3; continue
+        fi
         if ! "$ARDUINO_CLI" compile --fqbn "$fqbn" --warnings all --output-dir "$dir-build" "$dir" > "$dir.log" 2>&1; then
           fail "$name $flow $fqbn: arduino-cli"; grep -E "error|Error" "$dir.log" | head -8; continue
         fi

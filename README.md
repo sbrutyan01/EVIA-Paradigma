@@ -888,8 +888,8 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    compiler or chip in CI.
 9. the **pic32** job also runs [`scripts/check-mqtt.sh`](scripts/check-mqtt.sh): the generated MQTT client is compiled on
    the build machine with its network functions replaced by an ordinary socket and run against a small broker, which
-   checks the CONNECT, the SUBSCRIBE and the published text and numbers and sends messages back. No WiFi module, ESP32
-   or PIC32 chip is part of that.
+   checks the CONNECT, the SUBSCRIBE and the published text and numbers and sends messages back; the ESP32 sketch is
+   compiled as C++ against stub Arduino headers. No WiFi module, ESP32 or PIC32 chip is part of that.
 10. the **fpga** job runs [`scripts/check-fpga.sh`](scripts/check-fpga.sh) with the OSS CAD Suite: nine test programs in all
    three HDLs simulated (Icarus Verilog, GHDL) and compared with the interpreter, every example synthesised with yosys for
    Artix-7, and the GateMate designs placed, routed and packed into a bitstream. There is no Vivado or board in CI.
