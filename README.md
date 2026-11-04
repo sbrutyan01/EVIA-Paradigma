@@ -62,6 +62,14 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
 - Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class).
 
+| CI check | Result |
+|---|---|
+| Board examples as bare-metal AVR C, avr-gcc 14.1, `-Werror`, run in simavr (ATmega328P, ATmega2560, ATmega32U4 × structured/goto) | 30 of 30 identical to the interpreter, LED on the right pin |
+| Arduino sketches, arduino-cli with arduino:avr 1.8.8 and esp32:esp32 3.3.12, 12 boards | 70 of 70 built without warnings; the 15 Uno and Mega 2560 builds identical in simavr |
+| Every language and mode, Clang 23.1.6 and GCC 13.3 (Linux) | 416 of 416 identical, each |
+| C and C++ standards on Windows: llvm-mingw Clang 23.1.4 and WinLibs GCC 16.2, `-static` | 260 of 260 identical, each; no Visual Studio or compiler DLLs |
+| Examples, application, Git and zoom checks | All passed |
+
 ### Release 0.3.1
 
 [EVIA Paradigma v0.3.1](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.3.1) ([release notes](docs/release-notes/v0.3.1.md)):

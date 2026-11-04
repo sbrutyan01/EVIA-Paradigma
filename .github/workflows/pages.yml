@@ -50,7 +50,7 @@ jobs:
         run: |
           # download links: the latest published release (a new version's links appear once it is released)
           export SITE_VERSION=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName || true)
-          echo "download links for ${SITE_VERSION:-the jar's version}"
+          echo "download links for ${SITE_VERSION:-the version of the jar}"
           python3 scripts/build-site.py "$(ls target/evia-paradigma-*.jar | head -n 1)"
 
       - name: Publish to gh-pages

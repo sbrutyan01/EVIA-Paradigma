@@ -236,12 +236,16 @@
   <table class="results">
     <thead><tr><th scope="col">Where</th><th scope="col">Compiler</th><th scope="col">Identical to the interpreter</th></tr></thead>
     <tbody>
-      <tr><td>Linux, all 8 languages</td><td>Clang 23</td><td>384 of 384</td></tr>
-      <tr><td>Linux, all 8 languages</td><td>GCC 13</td><td>384 of 384</td></tr>
-      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>240 of 240</td></tr>
+      <tr><td>Linux, all 8 languages</td><td>Clang 23</td><td>416 of 416</td></tr>
+      <tr><td>Linux, all 8 languages</td><td>GCC 13</td><td>416 of 416</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>260 of 260</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, static</td><td>260 of 260</td></tr>
+      <tr><td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 of 30</td></tr>
+      <tr><td>Arduino Uno and Mega 2560 sketches in simavr</td><td>arduino-cli, arduino:avr</td><td>15 of 15</td></tr>
     </tbody>
   </table>
-  <p class="fine">Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window.
+  <p class="fine">The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings).
+    Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window.
     See <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>.</p>
 </section>
 
