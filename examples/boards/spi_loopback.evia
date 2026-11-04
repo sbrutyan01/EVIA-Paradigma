@@ -1,0 +1,19 @@
+# EVIA Paradigma program v3
+B|M|1|START|300|20||-|-|
+B|M|2|SPI_OPEN|300|110|1000000|-|-|
+B|M|3|PIN_MODE|300|200|10%2C+OUTPUT|-|-|
+B|M|4|FOR|300|290|n+%3D+1%3B+n+%3C%3D+3%3B+n+%3D+n+%2B+1|-|-|
+B|M|5|DIGITAL_WRITE|100|400|10%2C+LOW|-|-|
+B|M|6|SPI_TRANSFER|100|490|reply+%3D+n+%2A+40|-|-|
+B|M|7|DIGITAL_WRITE|100|580|10%2C+HIGH|-|-|
+B|M|8|PRINT|100|670|%22sent+%22+%2B+n+%2A+40+%2B+%22%2C+received+%22+%2B+reply|-|-|
+B|M|9|END|500|400||-|-|
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5
+L|M|5|0|6
+L|M|6|0|7
+L|M|7|0|8
+L|M|8|0|4
+L|M|4|1|9

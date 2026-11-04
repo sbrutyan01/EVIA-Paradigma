@@ -33,7 +33,7 @@ fail() { echo "FAIL  $*"; failed=$((failed + 1)); }
 # runs forever), so for them reaching the time limit is fine.
 simulate() {   # name base mcu led button adc sketch(0/1)
   local name=$1 base=$2 mcu=$3 led=$4 button=$5 adc=$6 sketch=$7 rc
-  "$EVIA_SIM" "$mcu" "$base.hex" --watch "$led" --button "$button" --adc "$adc" --seconds "$([ "$sketch" = 1 ] && echo 30 || echo 120)" \
+  "$EVIA_SIM" "$mcu" "$base.hex" --watch "$led" --button "$button" --adc "$adc" --uart-loop --i2c 80 --seconds "$([ "$sketch" = 1 ] && echo 30 || echo 120)" \
       > "$base.raw" 2> "$base.pins"
   rc=$?
   if [ "$rc" != 0 ] && ! { [ "$sketch" = 1 ] && [ "$rc" = 3 ]; }; then

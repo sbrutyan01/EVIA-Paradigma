@@ -726,7 +726,8 @@ final class CodeGenerator {
                         case SET -> add(assign(c.var(), c.expr(), b) + ";");
                         case PRINT -> add(print(c.expr(), b));
                         case INPUT -> add(input(c.var(), b));
-                        case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS -> add(board(b, c));
+                        case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
+                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> add(board(b, c));
                         case END -> {
                             add("return;");
                             return;
@@ -907,7 +908,8 @@ final class CodeGenerator {
                     line(input(c.var(), b));
                     line(go(b, 0, after));
                 }
-                case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS -> {
+                case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
+                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> {
                     line(board(b, c));
                     line(go(b, 0, after));
                 }
@@ -1112,7 +1114,7 @@ final class CodeGenerator {
 
         // ============================================================ board blocks
 
-        /** A Pin Mode, Digital/Analog Read/Write, Delay or Millis block: Arduino's functions (the bare-metal AVR runtime has the same ones). */
+        /** A pin, time or bus (UART, SPI, I2C) block: Arduino's functions (the bare-metal AVR runtime has the same ones). */
         String board(Block b, Interpreter.Compiled c) {
             if (!EMB) {
                 throw new FlowException(b, "the " + b.type.title + " block runs on a microcontroller: choose Language Arduino or AVR C"
@@ -1136,8 +1138,34 @@ final class CodeGenerator {
                     yield "delay(" + ms + ");";
                 }
                 case MILLIS -> target(c.var(), b) + " = (double) millis();";
+                case UART_OPEN -> "uartOpen(" + hz(c.expr(), b) + ");";
+                case UART_WRITE -> "uartWrite(" + byteOf(c.expr(), b) + ");";
+                case UART_READ -> target(c.var(), b) + " = (double) uartRead();";
+                case SPI_OPEN -> "spiOpen(" + hz(c.expr(), b) + ");";
+                case SPI_TRANSFER -> target(c.var(), b) + " = (double) spiTransfer(" + byteOf(c.expr(), b) + ");";
+                case I2C_OPEN -> "i2cOpen(" + hz(c.expr(), b) + ");";
+                case I2C_WRITE -> "i2cWrite(" + byteOf(c.expr(), b) + ", " + byteOf(c.args().get(0), b) + ", "
+                        + byteOf(c.args().get(1), b) + ");";
+                case I2C_READ -> target(c.var(), b) + " = (double) i2cRead(" + byteOf(c.expr(), b) + ", "
+                        + byteOf(c.args().get(0), b) + ");";
                 default -> throw new IllegalStateException();
             };
+        }
+
+        /** A byte for a bus function: a whole number 0..255 as it is, anything else converted (and cut to 8 bits). */
+        String byteOf(Expr e, Block b) {
+            if (e instanceof Expr.Num n && n.value() == Math.rint(n.value()) && n.value() >= 0 && n.value() <= 255) {
+                return Long.toString((long) n.value());
+            }
+            return "(uint8_t) (long) (" + fastNum(e, b) + ")";
+        }
+
+        /** A clock or baud rate in Hz for a bus function. */
+        String hz(Expr e, Block b) {
+            if (e instanceof Expr.Num n && n.value() == Math.rint(n.value()) && n.value() >= 1 && n.value() <= 100_000_000) {
+                return Long.toString((long) n.value()) + "UL";
+            }
+            return "rt_hz(" + fastNum(e, b) + ")";
         }
 
         /** A pin: a board name (LED_BUILTIN, A0), a whole number, or a number expression. */
@@ -1304,7 +1332,7 @@ final class CodeGenerator {
         for (Block b : blocks) {
             Interpreter.Compiled c = b.compiled();
             boolean assigns = switch (b.type) {
-                case SET, INPUT, DIGITAL_READ, ANALOG_READ, MILLIS -> true;
+                case SET, INPUT, DIGITAL_READ, ANALOG_READ, MILLIS, UART_READ, SPI_TRANSFER, I2C_READ -> true;
                 default -> false;
             };
             if (assigns && c.var() != null) addName(c.var(), owner, b);

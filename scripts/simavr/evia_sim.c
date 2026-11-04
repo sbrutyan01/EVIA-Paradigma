@@ -10,9 +10,14 @@
  *     --button D4      a push button to ground on PD4, pressed during the second half of every
  *                      2-second period - the same button the interpreter's simulated board has
  *     --adc 7          feed ADC channel 7 with the interpreter's analog signal: 0..1023..0 over 4 s
+ *     --uart-loop      wire the UART's TX to its RX (what the interpreter's serial port does)
+ *     --i2c 80         an I2C device at 7-bit address 80 with 256 registers, all 0 at the start - the
+ *                      device the interpreter's simulated board has (SPI needs nothing: the chip's own
+ *                      model already returns the byte it sent)
  *
  * Built against simavr's simulator core (without its ELF loader, so libelf isn't needed).
  */
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +27,7 @@
 #include "avr_ioport.h"
 #include "sim_cycle_timers.h"
 #include "avr_adc.h"
+#include "avr_twi.h"
 
 /* sim_hex.c can also load ELF files; evia_sim only loads HEX, so these are never called. */
 struct elf_firmware_t;
@@ -35,13 +41,62 @@ int elf_read_firmware(const char *file, struct elf_firmware_t *firmware) {
     return -1;
 }
 
+static avr_t *avr;
+static avr_irq_t *uart_in[2];
+static int uart_loop;
+
 static void uart_out(struct avr_irq_t *irq, uint32_t value, void *param) {
     (void) irq;
-    (void) param;
     putchar((int) (value & 0xFF));
+    if (uart_loop && uart_in[(intptr_t) param]) avr_raise_irq(uart_in[(intptr_t) param], value & 0xFF);
 }
 
-static avr_t *avr;
+/* ---- the I2C device: 256 registers; a write is  register, value  and a read continues from the register */
+static uint8_t i2c_regs[256];
+static uint8_t i2c_addr;        /* 8-bit form of the device address (7-bit address << 1) */
+static int i2c_selected;
+static int i2c_index;
+static uint8_t i2c_reg;
+static avr_irq_t *i2c_irq;      /* two IRQs: [TWI_IRQ_INPUT] to the chip, [TWI_IRQ_OUTPUT] from the chip */
+
+static void i2c_hook(struct avr_irq_t *irq, uint32_t value, void *param) {
+    (void) irq;
+    (void) param;
+    avr_twi_msg_irq_t v;
+    v.u.v = value;
+    if (v.u.twi.msg & TWI_COND_STOP) {
+        i2c_selected = 0;
+        i2c_index = 0;
+    }
+    if (v.u.twi.msg & TWI_COND_START) {
+        i2c_selected = 0;
+        i2c_index = 0;
+        if ((v.u.twi.addr & ~1) == i2c_addr) {
+            i2c_selected = v.u.twi.addr;
+            avr_raise_irq(i2c_irq + TWI_IRQ_INPUT, avr_twi_irq_msg(TWI_COND_ACK, i2c_selected, 1));
+        }
+    }
+    if (i2c_selected) {
+        if (v.u.twi.msg & TWI_COND_WRITE) {
+            avr_raise_irq(i2c_irq + TWI_IRQ_INPUT, avr_twi_irq_msg(TWI_COND_ACK, i2c_selected, 1));
+            if (i2c_index == 0) i2c_reg = v.u.twi.data;
+            else i2c_regs[i2c_reg++] = v.u.twi.data;
+            i2c_index++;
+        }
+        if (v.u.twi.msg & TWI_COND_READ) {
+            avr_raise_irq(i2c_irq + TWI_IRQ_INPUT, avr_twi_irq_msg(TWI_COND_READ, i2c_selected, i2c_regs[i2c_reg++]));
+        }
+    }
+}
+
+static void i2c_attach(int addr7) {
+    static const char *names[2] = { [TWI_IRQ_INPUT] = "8>device.out", [TWI_IRQ_OUTPUT] = "32<device.in" };
+    i2c_addr = (uint8_t) (addr7 << 1);
+    i2c_irq = avr_alloc_irq(&avr->irq_pool, 0, 2, names);
+    avr_irq_register_notify(i2c_irq + TWI_IRQ_OUTPUT, i2c_hook, NULL);
+    avr_connect_irq(i2c_irq + TWI_IRQ_INPUT, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_INPUT));
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_OUTPUT), i2c_irq + TWI_IRQ_OUTPUT);
+}
 
 static unsigned long now_ms(void) {
     return (unsigned long) (avr->cycle / (avr->frequency / 1000));
@@ -130,11 +185,23 @@ int main(int argc, char **argv) {
         flags &= ~AVR_UART_FLAG_STDIO;
         avr_ioctl(avr, AVR_IOCTL_UART_SET_FLAGS(names[i]), &flags);
         avr_irq_t *out = avr_io_getirq(avr, AVR_IOCTL_UART_GETIRQ(names[i]), UART_IRQ_OUTPUT);
-        if (out) avr_irq_register_notify(out, uart_out, NULL);
+        if (out) avr_irq_register_notify(out, uart_out, (void *) (intptr_t) i);
+        uart_in[i] = avr_io_getirq(avr, AVR_IOCTL_UART_GETIRQ(names[i]), UART_IRQ_INPUT);
     }
 
-    for (int i = 3; i + 1 < argc; i += 2) {
-        if (!strcmp(argv[i], "--seconds")) {
+    for (int i = 3; i < argc; i += 2) {
+        if (!strcmp(argv[i], "--uart-loop")) {
+            uart_loop = 1;
+            i--;
+            continue;
+        }
+        if (i + 1 >= argc) {
+            fprintf(stderr, "evia_sim: option %s needs a value\n", argv[i]);
+            return 2;
+        }
+        if (!strcmp(argv[i], "--i2c")) {
+            i2c_attach(atoi(argv[i + 1]));
+        } else if (!strcmp(argv[i], "--seconds")) {
             seconds = atof(argv[i + 1]);
         } else if (!strcmp(argv[i], "--watch")) {
             avr_irq_register_notify(pin_irq(argv[i + 1]), pin_changed, argv[i + 1]);

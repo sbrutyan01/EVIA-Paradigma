@@ -90,7 +90,29 @@ final class Interpreter {
                 if (parts.size() != 2) throw new FlowException("expected  pin, value   e.g.  " + b.type.defaultCode);
                 yield new Compiled(null, ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
             }
-            case DELAY -> new Compiled(null, ExprParser.parse(code), null);
+            case DELAY, UART_OPEN, UART_WRITE, SPI_OPEN, I2C_OPEN -> new Compiled(null, ExprParser.parse(code), null);
+            case UART_READ -> {
+                String name = code.trim();
+                if (!VAR.matcher(name).matches()) throw new FlowException("expected a variable name");
+                yield new Compiled(variable(name), null, null);
+            }
+            case SPI_TRANSFER -> {
+                Matcher m = ASSIGN.matcher(code);
+                if (!m.matches()) throw new FlowException("expected  name = byte   e.g.  " + b.type.defaultCode);
+                yield new Compiled(variable(m.group(1)), ExprParser.parse(m.group(2)), null);
+            }
+            case I2C_WRITE -> {
+                List<String> parts = splitTopLevel(code, ',');
+                if (parts.size() != 3) throw new FlowException("expected  address, register, value   e.g.  " + b.type.defaultCode);
+                yield new Compiled(null, ExprParser.parse(parts.get(0)),
+                        List.of(ExprParser.parse(parts.get(1)), ExprParser.parse(parts.get(2))));
+            }
+            case I2C_READ -> {
+                Matcher m = ASSIGN.matcher(code);
+                List<String> parts = m.matches() ? splitTopLevel(m.group(2), ',') : List.of();
+                if (parts.size() != 2) throw new FlowException("expected  name = address, register   e.g.  " + b.type.defaultCode);
+                yield new Compiled(variable(m.group(1)), ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
+            }
             case PRINT, IF, WHILE, DO_WHILE -> new Compiled(null, ExprParser.parse(code), null);
             case FOR -> {
                 List<String> parts = splitTopLevel(code, ';');
@@ -328,12 +350,45 @@ final class Interpreter {
     private int steps;
     private BoardSim board;
 
-    void run(Block start, Host host) {
-        board = new BoardSim(host::board);
+    /**
+     * The serial port is also the console: bytes sent by UART Write show up in the output as lines
+     * (a line ends at byte 10; 13 is dropped), in order with what Print writes.
+     */
+    private static final class SerialHost implements Host {
+        private final Host inner;
+        private final StringBuilder line = new StringBuilder();
+
+        SerialHost(Host inner) { this.inner = inner; }
+
+        void tx(int b) {
+            if (b == 10) flush();
+            else if (b != 13) line.append(b < 32 || b > 126 ? '.' : (char) b);
+        }
+
+        void flush() {
+            if (line.length() > 0) {
+                inner.print(line.toString());
+                line.setLength(0);
+            }
+        }
+
+        @Override public void step(Block b) { inner.step(b); }
+        @Override public void print(String text) { flush(); inner.print(text); }
+        @Override public String input(String varName) { flush(); return inner.input(varName); }
+        @Override public boolean cancelled() { return inner.cancelled(); }
+        @Override public void board(String event) { inner.board(event); }
+        @Override public void sleep(long ms) { inner.sleep(ms); }
+    }
+
+    void run(Block start, Host real) {
+        SerialHost host = new SerialHost(real);
+        board = new BoardSim(host::board, host::tx);
         try {
             runGraph(start, new Scope(new Obj(), null), 0, host);
         } catch (Halt ignored) {
             // normal stop
+        } finally {
+            host.flush();
         }
     }
 
@@ -419,6 +474,39 @@ final class Interpreter {
                     }
                     case MILLIS -> {
                         scope.set(c.var(), (double) board.millis());
+                        yield cur.next[0];
+                    }
+                    case UART_OPEN -> {
+                        board.uartOpen(Expr.num(Expr.eval(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case UART_WRITE -> {
+                        board.uartWrite(Expr.num(Expr.eval(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case UART_READ -> {
+                        scope.set(c.var(), board.uartRead());
+                        yield cur.next[0];
+                    }
+                    case SPI_OPEN -> {
+                        board.spiOpen(Expr.num(Expr.eval(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case SPI_TRANSFER -> {
+                        scope.set(c.var(), board.spiTransfer(Expr.num(Expr.eval(c.expr(), scope))));
+                        yield cur.next[0];
+                    }
+                    case I2C_OPEN -> {
+                        board.i2cOpen(Expr.num(Expr.eval(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case I2C_WRITE -> {
+                        board.i2cWrite(Expr.num(Expr.eval(c.expr(), scope)), Expr.num(Expr.eval(c.args().get(0), scope)),
+                                Expr.num(Expr.eval(c.args().get(1), scope)));
+                        yield cur.next[0];
+                    }
+                    case I2C_READ -> {
+                        scope.set(c.var(), board.i2cRead(Expr.num(Expr.eval(c.expr(), scope)), Expr.num(Expr.eval(c.args().get(0), scope))));
                         yield cur.next[0];
                     }
                     case IF -> Expr.truthy(Expr.eval(c.expr(), scope)) ? cur.next[0] : cur.next[1];

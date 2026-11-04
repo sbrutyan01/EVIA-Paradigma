@@ -1,0 +1,26 @@
+# EVIA Paradigma program v3
+B|M|1|START|300|20||-|-|
+B|M|2|UART_OPEN|300|110|9600|-|-|
+B|M|3|UART_READ|300|200|early|-|-|
+B|M|4|UART_WRITE|300|290|72|-|-|
+B|M|5|UART_WRITE|300|380|105|-|-|
+B|M|6|UART_WRITE|300|470|10|-|-|
+B|M|7|DELAY|300|560|20|-|-|
+B|M|8|UART_READ|300|650|a|-|-|
+B|M|9|UART_READ|300|740|b|-|-|
+B|M|10|UART_READ|300|830|c|-|-|
+B|M|11|PRINT|300|920|%22nothing+yet%3A+%22+%2B+early|-|-|
+B|M|12|PRINT|300|1010|%22received+%22+%2B+a+%2B+%22%2C+%22+%2B+b+%2B+%22%2C+%22+%2B+c|-|-|
+B|M|13|END|300|1100||-|-|
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5
+L|M|5|0|6
+L|M|6|0|7
+L|M|7|0|8
+L|M|8|0|9
+L|M|9|0|10
+L|M|10|0|11
+L|M|11|0|12
+L|M|12|0|13

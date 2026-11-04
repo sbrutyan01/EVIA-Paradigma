@@ -42,6 +42,24 @@ public enum BlockType {
     MILLIS("Millis", new Color(178, 212, 150), true, 1, true, "t",
             "name   Stores the milliseconds since the program started, e.g.  t"),
 
+    // ---- board buses: serial port, SPI and I2C of a microcontroller (simulated when run on the computer)
+    UART_OPEN("UART Open", new Color(100, 176, 208), true, 1, true, "9600",
+            "baud   Starts the board's serial port (the one Print uses), e.g.  9600  or  115200"),
+    UART_WRITE("UART Write", new Color(112, 186, 216), true, 1, true, "65",
+            "byte   Sends one byte 0..255 on the serial port, e.g.  65  or  c + 1"),
+    UART_READ("UART Read", new Color(124, 196, 222), true, 1, true, "c",
+            "name   Stores the next received byte 0..255, or -1 if nothing has arrived, e.g.  c"),
+    SPI_OPEN("SPI Open", new Color(150, 156, 224), true, 1, true, "1000000",
+            "clock   Starts SPI as master, mode 0, most significant bit first, at this clock in Hz, e.g.  1000000. Chip select is a Digital Write."),
+    SPI_TRANSFER("SPI Transfer", new Color(164, 170, 230), true, 1, true, "reply = 66",
+            "name = byte   Sends a byte and stores the byte received at the same time, e.g.  reply = 66"),
+    I2C_OPEN("I2C Open", new Color(204, 150, 210), true, 1, true, "100000",
+            "clock   Starts I2C as master at this clock in Hz, e.g.  100000  or  400000"),
+    I2C_WRITE("I2C Write", new Color(214, 164, 220), true, 1, true, "80, 0, 42",
+            "address, register, value   Writes a byte into a register of the device (7-bit address in decimal, 80 = 0x50), e.g.  80, 0, 42"),
+    I2C_READ("I2C Read", new Color(224, 178, 228), true, 1, true, "v = 80, 0",
+            "name = address, register   Reads a byte from a register of the device; -1 if it does not answer, e.g.  v = 80, 0"),
+
     // ---- only inside custom block definitions
     ENTER("Enter", new Color(112, 204, 196), false, 1, false, "",
             "Where the method starts executing (one per method)."),
@@ -60,10 +78,11 @@ public enum BlockType {
     final String defaultCode;
     final String hint;
 
-    /** Pin and time blocks (the Board group of the palette). */
+    /** Pin, time and bus blocks (the Board group of the palette). */
     boolean isBoard() {
         return switch (this) {
-            case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS -> true;
+            case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
+                 UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> true;
             default -> false;
         };
     }

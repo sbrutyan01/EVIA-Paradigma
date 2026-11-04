@@ -123,6 +123,13 @@ final class EmbeddedRuntime {
             }
             """;
 
+    private static final String HELPERS_HZ = """
+            /* UART, SPI and I2C: a rate in Hz, at least 1. */
+            static unsigned long rt_hz(double d) {
+                return d >= 1 ? (d < 4294967295.0 ? (unsigned long) d : 4294967295UL) : 1UL;
+            }
+            """;
+
     static {
         // ============================================================ Arduino sketch
         piece(ARDUINO, "rt_begin", "", """
@@ -207,6 +214,51 @@ final class EmbeddedRuntime {
                 """);
         piece(ARDUINO, "rt_ms", "", HELPERS_MS);
         piece(ARDUINO, "rt_duty", "", HELPERS_DUTY);
+        piece(ARDUINO, "rt_hz", "", HELPERS_HZ);
+
+        // UART, SPI and I2C: the board's own Serial, SPI and Wire
+        piece(ARDUINO, "uartOpen uartWrite uartRead", "", """
+                /* The serial port is the one Print uses; UART Open changes its speed. */
+                static void uartOpen(unsigned long baud) { Serial.begin(baud); }
+                static void uartWrite(uint8_t b) { Serial.write(b); }
+                static int uartRead(void) { return Serial.read(); }   /* -1 if nothing has arrived */
+                """);
+        piece(ARDUINO, "spiOpen spiTransfer", "", """
+                #include <SPI.h>
+                /* SPI master, mode 0, most significant bit first, on the board's default pins. */
+                static unsigned long rt_spi_hz = 1000000UL;
+                static void spiOpen(unsigned long hz) {
+                    rt_spi_hz = hz;
+                    SPI.begin();
+                }
+                static int spiTransfer(uint8_t b) {
+                    SPI.beginTransaction(SPISettings(rt_spi_hz, MSBFIRST, SPI_MODE0));
+                    int r = SPI.transfer(b);
+                    SPI.endTransaction();
+                    return r;
+                }
+                """);
+        piece(ARDUINO, "i2cOpen i2cWrite i2cRead", "", """
+                #include <Wire.h>
+                /* I2C master on the board's default pins; a device that does not answer reads as -1. */
+                static void i2cOpen(unsigned long hz) {
+                    Wire.begin();
+                    Wire.setClock(hz);
+                }
+                static void i2cWrite(uint8_t addr, uint8_t reg, uint8_t value) {
+                    Wire.beginTransmission(addr);
+                    Wire.write(reg);
+                    Wire.write(value);
+                    Wire.endTransmission();
+                }
+                static int i2cRead(uint8_t addr, uint8_t reg) {
+                    Wire.beginTransmission(addr);
+                    Wire.write(reg);
+                    if (Wire.endTransmission(false) != 0) return -1;
+                    if (Wire.requestFrom(addr, (uint8_t) 1) != 1) return -1;
+                    return Wire.read();
+                }
+                """);
 
         // ============================================================ bare-metal AVR
         piece(AVR, "rt_uart", "", """
@@ -415,6 +467,131 @@ final class EmbeddedRuntime {
                 """);
         piece(AVR, "rt_ms", "", HELPERS_MS);
         piece(AVR, "rt_duty", "", HELPERS_DUTY);
+        piece(AVR, "rt_hz", "", HELPERS_HZ);
+
+        // UART, SPI and I2C (TWI) registers
+        piece(AVR, "uartOpen uartWrite uartRead", "rt_uart", """
+                /* The serial port is the one Print uses (8N1); UART Open changes its speed. */
+                static void uartOpen(unsigned long baud) {
+                    unsigned long div = F_CPU / 4 / baud;     /* double-speed mode: UBRR = F_CPU / (8 * baud) - 1 */
+                    if (rt_sent) {
+                        while (!(RT_UCSRA & _BV(RT_TXC))) {
+                        }
+                    }
+                    if (div < 2) div = 2;
+                    if ((div - 1) / 2 > 4095) {               /* too slow for double speed */
+                        RT_UCSRA = 0;
+                        div = F_CPU / 8 / baud;               /* UBRR = F_CPU / (16 * baud) - 1 */
+                        RT_UBRR = (uint16_t) (div < 3 ? 0 : (div - 1) / 2 > 4095 ? 4095 : (div - 1) / 2);
+                    } else {
+                        RT_UCSRA = _BV(RT_U2X);
+                        RT_UBRR = (uint16_t) ((div - 1) / 2);
+                    }
+                }
+                static void uartWrite(uint8_t b) { rt_putc((char) b); }
+                static int uartRead(void) {
+                    if (!(RT_UCSRA & _BV(RT_RXC))) return -1;   /* nothing has arrived */
+                    return RT_UDR;
+                }
+                """);
+        piece(AVR, "spiOpen spiTransfer", "", """
+                /* ---- SPI master, mode 0, most significant bit first */
+                #if defined(__AVR_ATmega328P__)
+                #define RT_SPI_MASK (_BV(PB2) | _BV(PB3) | _BV(PB5))   /* SS, MOSI, SCK are outputs; MISO is an input */
+                #else
+                #define RT_SPI_MASK (_BV(PB0) | _BV(PB1) | _BV(PB2))
+                #endif
+                static void spiOpen(unsigned long hz) {
+                    /* the smallest divider (2 ... 128) that keeps the clock at or below hz */
+                    static const uint8_t spr[] PROGMEM = { 0, 0, 1, 1, 2, 2, 3 };
+                    static const uint8_t x2[] PROGMEM = { 1, 0, 1, 0, 1, 0, 0 };
+                    uint8_t i = 0;
+                    unsigned long div = 2;
+                    while (i < 6 && F_CPU / div > hz) {
+                        div <<= 1;
+                        i++;
+                    }
+                    DDRB |= RT_SPI_MASK;
+                    SPCR = (uint8_t) (_BV(SPE) | _BV(MSTR) | pgm_read_byte(spr + i));
+                    SPSR = pgm_read_byte(x2 + i) ? _BV(SPI2X) : 0;
+                }
+                static int spiTransfer(uint8_t b) {
+                    SPDR = b;
+                    while (!(SPSR & _BV(SPIF))) {
+                    }
+                    return SPDR;
+                }
+                """);
+        piece(AVR, "i2cOpen i2cWrite i2cRead", "", """
+                /* ---- I2C (TWI) master; a device that does not answer reads as -1 */
+                #define RT_TWI_START 0x08
+                #define RT_TWI_RESTART 0x10
+                #define RT_TWI_W_ACK 0x18
+                #define RT_TWI_DATA_ACK 0x28
+                #define RT_TWI_R_ACK 0x40
+                #define RT_TWI_RDATA_NACK 0x58
+
+                static void i2cOpen(unsigned long hz) {
+                    unsigned long cycles = F_CPU / hz;
+                    uint8_t prescale = 0;
+                    unsigned long bit;
+                #if defined(__AVR_ATmega328P__)
+                    PORTC |= _BV(PC4) | _BV(PC5);     /* pull-ups on SDA and SCL */
+                #else
+                    PORTD |= _BV(PD0) | _BV(PD1);
+                #endif
+                    cycles = cycles > 16 ? cycles - 16 : 0;
+                    while (prescale < 3 && cycles / (2UL << (2 * prescale)) > 255) prescale++;
+                    bit = cycles / (2UL << (2 * prescale));
+                    TWSR = prescale;
+                    TWBR = (uint8_t) (bit > 255 ? 255 : bit);
+                    TWCR = _BV(TWEN);
+                }
+
+                /* One step of the bus; returns the status, or 0 if the bus does not move (stuck low). */
+                static uint8_t rt_twi(uint8_t command) {
+                    unsigned long n = 250000UL;
+                    TWCR = _BV(TWINT) | _BV(TWEN) | command;
+                    while (!(TWCR & _BV(TWINT))) {
+                        if (--n == 0) return 0;
+                    }
+                    return TWSR & 0xF8;
+                }
+
+                static void rt_twi_stop(void) {
+                    unsigned long n = 250000UL;
+                    TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO);
+                    while ((TWCR & _BV(TWSTO)) && --n) {
+                    }
+                }
+
+                /* START, the device's address (write: 0, read: 1) and the register; 0 if the device does not answer. */
+                static uint8_t rt_twi_select(uint8_t addr, uint8_t reg) {
+                    if (rt_twi(_BV(TWSTA)) != RT_TWI_START) return 0;
+                    TWDR = (uint8_t) (addr << 1);
+                    if (rt_twi(0) != RT_TWI_W_ACK) return 0;
+                    TWDR = reg;
+                    return rt_twi(0) == RT_TWI_DATA_ACK;
+                }
+
+                static void i2cWrite(uint8_t addr, uint8_t reg, uint8_t value) {
+                    if (rt_twi_select(addr, reg)) {
+                        TWDR = value;
+                        rt_twi(0);
+                    }
+                    rt_twi_stop();
+                }
+
+                static int i2cRead(uint8_t addr, uint8_t reg) {
+                    int value = -1;
+                    if (rt_twi_select(addr, reg) && rt_twi(_BV(TWSTA)) == RT_TWI_RESTART) {
+                        TWDR = (uint8_t) ((addr << 1) | 1);
+                        if (rt_twi(0) == RT_TWI_R_ACK && rt_twi(0) == RT_TWI_RDATA_NACK) value = TWDR;
+                    }
+                    rt_twi_stop();
+                    return value;
+                }
+                """);
         piece(AVR, "rt_pins rt_pin_count", "", """
                 /* ---- pins, numbered as on the Arduino board: port (high 4 bits: 1 = A ... 12 = L) and bit,
                    and the timer output that can drive the pin with PWM (Arduino's TIMER0A = 1 ... TIMER5C = 18) */

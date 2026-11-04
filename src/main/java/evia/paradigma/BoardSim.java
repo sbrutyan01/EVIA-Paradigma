@@ -14,6 +14,9 @@ import java.util.Set;
  *   <li>Inputs: a button on every INPUT / INPUT_PULLUP pin is pressed during the second half of each
  *       2-second period (INPUT_PULLUP then reads LOW, INPUT reads HIGH); an output pin reads back
  *       what was written. Analog pins read a slow triangle wave 0..1023..0 (2 seconds up, 2 down).</li>
+ *   <li>Buses: the serial port is wired TX to RX (what UART Write sends comes back through UART Read), SPI
+ *       has MISO wired to MOSI (Transfer returns the byte it sent) and I2C has one device at address 80
+ *       (0x50) with 256 registers, all 0 at the start; any other address does not answer.</li>
  * </ul>
  */
 final class BoardSim {
@@ -43,12 +46,14 @@ final class BoardSim {
     }
 
     private final Events events;
+    private final java.util.function.IntConsumer tx;
     private long clock;
     private final Map<Integer, String> mode = new HashMap<>();
     private final Map<Integer, Integer> level = new HashMap<>();
 
-    BoardSim(Events events) {
+    BoardSim(Events events, java.util.function.IntConsumer tx) {
         this.events = events;
+        this.tx = tx;
     }
 
     long millis() {
@@ -102,5 +107,93 @@ final class BoardSim {
     double analogRead(int p) {
         long t = clock % 4096;
         return t < 2048 ? t / 2 : (4095 - t) / 2;
+    }
+
+    // ---------------------------------------------------------------- buses
+
+    private boolean uartOn, spiOn, i2cOn;
+    private final java.util.ArrayDeque<Integer> rx = new java.util.ArrayDeque<>();
+    private final int[] i2cDevice = new int[256];
+
+    /** The address of the simulated I2C device. */
+    static final int I2C_DEVICE = 80;
+
+    private static int whole(double v, int max, String what) {
+        if (Double.isNaN(v) || v < 0 || v > max || v != Math.rint(v)) {
+            throw new FlowException(what + " must be a whole number 0.." + max + ", got " + Expr.str(v));
+        }
+        return (int) v;
+    }
+
+    private static String hex(int v) {
+        return String.format("0x%02X", v);
+    }
+
+    private static int rate(double v, String what) {
+        if (Double.isNaN(v) || v < 1 || v > 100_000_000 || v != Math.rint(v)) {
+            throw new FlowException(what + " must be a whole number of Hz, 1..100000000, got " + Expr.str(v));
+        }
+        return (int) v;
+    }
+
+    void uartOpen(double baud) {
+        int b = rate(baud, "baud");
+        uartOn = true;
+        event("UART open " + b + " baud");
+    }
+
+    void uartWrite(double v) {
+        int b = whole(v, 255, "UART byte");
+        rx.addLast(b);
+        tx.accept(b);
+        event("UART send " + b + (b >= 32 && b < 127 ? " '" + (char) b + "'" : ""));
+    }
+
+    /** The next received byte, or -1. */
+    double uartRead() {
+        Integer b = rx.pollFirst();
+        return b == null ? -1 : b;
+    }
+
+    void spiOpen(double hz) {
+        int f = rate(hz, "SPI clock");
+        spiOn = true;
+        event("SPI open " + f + " Hz, mode 0");
+    }
+
+    double spiTransfer(double v) {
+        if (!spiOn) throw new FlowException("SPI Transfer needs an SPI Open block before it");
+        int b = whole(v, 255, "SPI byte");
+        event("SPI send " + b + ", received " + b);
+        return b;
+    }
+
+    void i2cOpen(double hz) {
+        int f = rate(hz, "I2C clock");
+        i2cOn = true;
+        event("I2C open " + f + " Hz");
+    }
+
+    void i2cWrite(double addr, double reg, double v) {
+        if (!i2cOn) throw new FlowException("I2C Write needs an I2C Open block before it");
+        int a = whole(addr, 127, "I2C address"), r = whole(reg, 255, "I2C register"), b = whole(v, 255, "I2C value");
+        if (a != I2C_DEVICE) {
+            event("I2C " + hex(a) + " does not answer");
+            return;
+        }
+        i2cDevice[r] = b;
+        event("I2C write " + hex(a) + "[" + r + "] = " + b);
+    }
+
+    /** A register of the device, or -1 if the address does not answer. */
+    double i2cRead(double addr, double reg) {
+        if (!i2cOn) throw new FlowException("I2C Read needs an I2C Open block before it");
+        int a = whole(addr, 127, "I2C address"), r = whole(reg, 255, "I2C register");
+        if (a != I2C_DEVICE) {
+            event("I2C " + hex(a) + " does not answer");
+            return -1;
+        }
+        event("I2C read " + hex(a) + "[" + r + "] = " + i2cDevice[r]);
+        return i2cDevice[r];
     }
 }
