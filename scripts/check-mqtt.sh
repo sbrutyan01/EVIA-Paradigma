@@ -42,5 +42,14 @@ check client "command 42"
 check client "command -3.5"
 check client "missing -1"
 
+# 2. the ESP32 sketch: C++ against stub headers, so a mistake shows up without an ESP32 or its board core
+java -jar "$JAR" --gen examples/boards/mqtt_sensor.evia --lang arduino --board esp32 -o "$OUT/sketch.cpp" > /dev/null
+if "${CXX:-c++}" -std=gnu++17 -I scripts/mqtt/arduino-stubs -include scripts/mqtt/arduino-stubs/Arduino.h \
+      -Wall -Wextra -fsyntax-only "$OUT/sketch.cpp" 2> "$OUT/sketch.log"; then
+  echo "ok    the ESP32 sketch compiles as C++"
+else
+  echo "FAIL  the ESP32 sketch does not compile"; head -10 "$OUT/sketch.log"; fails=$((fails + 1))
+fi
+
 if [ "$fails" = 0 ]; then echo "all MQTT checks passed"; else echo "$fails MQTT check(s) failed"; cat "$OUT/broker.log" "$OUT/client.log"; fi
 exit $((fails > 0))

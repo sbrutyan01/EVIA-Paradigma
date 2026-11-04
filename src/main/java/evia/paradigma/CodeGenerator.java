@@ -1204,7 +1204,11 @@ final class CodeGenerator {
         void mqttCheck(Block b) {
             Board board = Settings.board(t.lang());
             if (t.lang() == Target.Lang.PIC32) return;
-            if (t.lang() == Target.Lang.ARDUINO && board.fqbn.startsWith("esp32:")) return;
+            if (t.lang() == Target.Lang.ARDUINO && board.fqbn.startsWith("esp32:")) {
+                if (board != Board.ESP32_H2) return;
+                throw new FlowException(b, "the " + b.type.title + " block needs WiFi, and the ESP32-H2 has none"
+                        + " (it is a 802.15.4 and Bluetooth chip): choose another ESP32 board, or Language PIC32 C.");
+            }
             throw new FlowException(b, "the " + b.type.title + " block needs a network: choose an ESP32 board, or Language PIC32 C"
                     + " (an AVR board has one serial port, which Print already uses). Run simulates a broker on the computer.");
         }
