@@ -342,6 +342,11 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
   .brand img { width: 88px; height: 88px; border-radius: 16px; }
   .top nav { gap: 14px; }
   .top-tools { justify-content: flex-start; }
+  /* the language pill becomes separate chips so seven of them wrap instead of overflowing */
+  .site-langs { border: 0; border-radius: 0; overflow: visible; flex-wrap: wrap; gap: 6px; }
+  .site-langs a, .site-langs a + a { border: 1.5px solid var(--ink); border-radius: 999px; }
+  .top nav .site-langs a { padding: 3px 10px; font-size: 14px; }
+  .site-language { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .hero { padding: 44px 0 40px; }
   .hero-text, .bench { padding: 0 16px; }
   .results { display: block; overflow-x: auto; }
