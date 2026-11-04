@@ -10,6 +10,7 @@
   "<a href=\"#download\">下载</a>",
   "<a href=\"#docs\">文档</a>",
   "aria-label=\"网站语言\"",
+  "<span class=\"site-language-label\">网站语言</span>",
   "aria-label=\"颜色主题\"",
   "</svg>浅色</button>",
   "</svg>深色</button>",

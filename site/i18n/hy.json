@@ -44,6 +44,10 @@
   "aria-label=\"Կայքի լեզուն\""
  ],
  [
+  "<span class=\"site-language-label\">Language</span>",
+  "<span class=\"site-language-label\">Կայքի լեզուն</span>"
+ ],
+ [
   "aria-label=\"Color theme\"",
   "aria-label=\"Գունային թեմա\""
  ],

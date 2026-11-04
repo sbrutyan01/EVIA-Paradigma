@@ -10,6 +10,7 @@
   "<a href=\"#download\">Herunterladen</a>",
   "<a href=\"#docs\">Dokumentation</a>",
   "aria-label=\"Seitensprache\"",
+  "<span class=\"site-language-label\">Sprache</span>",
   "aria-label=\"Farbschema\"",
   "</svg>Hell</button>",
   "</svg>Dunkel</button>",

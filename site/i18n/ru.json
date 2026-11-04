@@ -44,6 +44,10 @@
   "aria-label=\"Язык сайта\""
  ],
  [
+  "<span class=\"site-language-label\">Language</span>",
+  "<span class=\"site-language-label\">Язык сайта</span>"
+ ],
+ [
   "aria-label=\"Color theme\"",
   "aria-label=\"Цветовая тема\""
  ],

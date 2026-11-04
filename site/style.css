@@ -155,6 +155,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
+.site-language { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-basis: 100%; }
+.site-language-label { color: var(--muted); font-size: 14.5px; font-weight: 600; }
 .site-langs { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
 .top nav .site-langs a { padding: 4px 11px; font-size: 14.5px; font-weight: 600; text-decoration: none; color: var(--ink); }
 .site-langs a + a { border-left: 1.5px solid var(--ink); }
@@ -333,6 +335,7 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
   body { font-size: 17px; }
   .top { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px; }
   .top nav { gap: 14px; }
+  .site-language { justify-content: flex-start; }
   .hero { padding: 44px 0 40px; }
   .hero-text, .bench { padding: 0 16px; }
   .results { display: block; overflow-x: auto; }

@@ -10,6 +10,7 @@
   "<a href=\"#download\">ダウンロード</a>",
   "<a href=\"#docs\">ドキュメント</a>",
   "aria-label=\"サイトの言語\"",
+  "<span class=\"site-language-label\">サイトの言語</span>",
   "aria-label=\"カラーテーマ\"",
   "</svg>ライト</button>",
   "</svg>ダーク</button>",
