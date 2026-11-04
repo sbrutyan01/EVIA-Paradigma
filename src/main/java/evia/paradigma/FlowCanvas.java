@@ -62,17 +62,20 @@ public final class FlowCanvas extends JPanel {
         MouseAdapter m = new MouseAdapter() {
             @Override public void mousePressed(MouseEvent e) {
                 requestFocusInWindow();
+                if (panPress(e)) return;
                 if (maybePopup(e)) return;
                 if (!e.isShiftDown() && !e.isControlDown() && !e.isMetaDown()) clearSelection();
                 if (SwingUtilities.isLeftMouseButton(e)) bandStart = e.getPoint();
             }
             @Override public void mouseDragged(MouseEvent e) {
+                if (panDrag(e)) return;
                 if (bandStart == null) return;
                 band = new Rectangle(bandStart);
                 band.add(e.getPoint());
                 repaint();
             }
             @Override public void mouseReleased(MouseEvent e) {
+                if (panRelease(e)) return;
                 if (band != null) {
                     for (Block b : blocks) if (band.intersects(b.getBounds())) addToSelection(b);
                 }
@@ -90,6 +93,43 @@ public final class FlowCanvas extends JPanel {
         bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "delete", this::deleteSelection);
         bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "selectAll", this::selectAll);
         bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK), "group", this::groupSelection);
+    }
+
+    // ================================================================ panning with the middle mouse button
+
+    private Point panFrom;      // mouse position on screen when the middle button went down
+    private Point panView;      // the viewport's top-left corner then
+
+    /** Middle button down (on the canvas or a block): starts moving the canvas. Returns true if the event was used. */
+    boolean panPress(MouseEvent e) {
+        if (!SwingUtilities.isMiddleMouseButton(e)) return false;
+        JViewport vp = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        if (vp == null) return true;
+        panFrom = e.getLocationOnScreen();
+        panView = vp.getViewPosition();
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return true;
+    }
+
+    /** Dragging with the middle button: the canvas follows the mouse. */
+    boolean panDrag(MouseEvent e) {
+        if (panFrom == null) return SwingUtilities.isMiddleMouseButton(e);
+        JViewport vp = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, this);
+        if (vp == null) return true;
+        Point now = e.getLocationOnScreen();
+        Dimension view = vp.getExtentSize();
+        int x = Math.max(0, Math.min(getWidth() - view.width, panView.x - (now.x - panFrom.x)));
+        int y = Math.max(0, Math.min(getHeight() - view.height, panView.y - (now.y - panFrom.y)));
+        vp.setViewPosition(new Point(x, y));
+        return true;
+    }
+
+    boolean panRelease(MouseEvent e) {
+        if (panFrom == null) return false;
+        panFrom = null;
+        panView = null;
+        setCursor(Cursor.getDefaultCursor());
+        return true;
     }
 
     private void bindKey(KeyStroke ks, String name, Runnable r) {

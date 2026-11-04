@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.0-blue" alt="version 0.6.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.1-blue" alt="version 0.6.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -50,9 +50,13 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.0.jar` | `java -jar evia-paradigma-0.6.0.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.1.jar` | `java -jar evia-paradigma-0.6.1.jar` |
+
+### Release 0.6.1
+
+Press the **middle mouse button** on the canvas (or on a block) and drag to move the canvas. See [docs/release-notes/v0.6.1.md](docs/release-notes/v0.6.1.md).
 
 ### Release 0.6.0
 
@@ -488,6 +492,7 @@ text and wires are drawn sharply at every size; positions in the saved files don
 |---|---|
 | Mouse wheel | Zoom in (up) or out (down) toward the pointer |
 | Shift+wheel / Ctrl+wheel | Scroll sideways / up and down |
+| Middle button + drag | Move the canvas (also when you start on a block) |
 | Ctrl+= / Ctrl+- | Zoom in / out (also the number pad's + and -) |
 | Ctrl+0 | Actual size, 100% |
 | Ctrl+9 | Fit the whole diagram in the window |

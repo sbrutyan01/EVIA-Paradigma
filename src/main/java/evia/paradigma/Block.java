@@ -371,6 +371,7 @@ public final class Block extends JComponent {
         @Override
         public void mousePressed(MouseEvent e) {
             canvas.requestFocusInWindow();
+            if (canvas.panPress(e)) return;
             if (e.isPopupTrigger()) {
                 popup(e);
                 return;
@@ -395,6 +396,7 @@ public final class Block extends JComponent {
 
         @Override
         public void mouseDragged(MouseEvent e) {
+            if (canvas.panDrag(e)) return;
             if (connecting) {
                 canvas.updateConnect(toCanvas(e));
             } else if (dragOffset != null && selected) {
@@ -407,6 +409,7 @@ public final class Block extends JComponent {
 
         @Override
         public void mouseReleased(MouseEvent e) {
+            if (canvas.panRelease(e)) return;
             if (connecting) {
                 connecting = false;
                 canvas.endConnect(toCanvas(e));

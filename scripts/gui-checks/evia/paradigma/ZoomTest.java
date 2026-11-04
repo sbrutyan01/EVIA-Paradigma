@@ -83,6 +83,26 @@ public class ZoomTest {
         ui(() -> pos3[0] = vp.getViewPosition());
         check(c.zoom() == keep && pos3[0].x != pos2[0].x, "Shift+wheel scrolls sideways (" + pos2[0].x + " -> " + pos3[0].x + ")");
 
+        // the middle mouse button moves the canvas, on empty canvas and on a block (the mouse moves with the content)
+        for (int round = 0; round < 2; round++) {
+            Component src = round == 0 ? c : (Component) lib.main.getBlocks().get(0);
+            Point[] start = new Point[1], end = new Point[1];
+            ui(() -> start[0] = vp.getViewPosition());
+            final int dx = start[0].x >= 30 ? 30 : -30, dy = start[0].y >= 20 ? 20 : -20;   // mouse moves right/down: the view moves left/up
+            Point[] origin = new Point[1];
+            ui(() -> origin[0] = src.getLocationOnScreen());
+            int bx = 5, by = 5;
+            ui(() -> src.dispatchEvent(new MouseEvent(src, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON2_DOWN_MASK,
+                    bx, by, origin[0].x + bx, origin[0].y + by, 1, false, MouseEvent.BUTTON2)));
+            ui(() -> src.dispatchEvent(new MouseEvent(src, MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(), InputEvent.BUTTON2_DOWN_MASK,
+                    bx + dx, by + dy, origin[0].x + bx + dx, origin[0].y + by + dy, 0, false, MouseEvent.NOBUTTON)));
+            ui(() -> end[0] = vp.getViewPosition());
+            ui(() -> src.dispatchEvent(new MouseEvent(src, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), 0,
+                    bx + dx, by + dy, origin[0].x + bx + dx, origin[0].y + by + dy, 1, false, MouseEvent.BUTTON2)));
+            check(end[0].x == start[0].x - dx && end[0].y == start[0].y - dy,
+                    "middle-button drag on " + (round == 0 ? "the canvas" : "a block") + " moves the view (" + start[0].x + "," + start[0].y + " -> " + end[0].x + "," + end[0].y + ")");
+        }
+
         // saved positions don't depend on the zoom
         ProgramIO.save(lib, after);
         check(Files.readString(before).equals(Files.readString(after)), "saved file is identical at " + Math.round(c.zoom() * 100) + "%");
