@@ -1,0 +1,386 @@
+[
+ [
+  "<title>EVIA Paradigma: visual programming that compiles to C and C++</title>",
+  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C и C++</title>"
+ ],
+ [
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).\"",
+  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на C или C++ (от C99 до C++20), который собирается Clang или GCC, или в код для плат Arduino и ESP32. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT).\""
+ ],
+ [
+  "content=\"Draw a program as blocks. Get C or C++.\"",
+  "content=\"Нарисуйте программу из блоков. Получите C или C++.\""
+ ],
+ [
+  ">Skip to content</a>",
+  ">Перейти к содержимому</a>"
+ ],
+ [
+  "aria-label=\"EVIA Paradigma home\"",
+  "aria-label=\"EVIA Paradigma: на главную\""
+ ],
+ [
+  "aria-label=\"Main\"",
+  "aria-label=\"Главное меню\""
+ ],
+ [
+  "<a href=\"#features\">Features</a>",
+  "<a href=\"#features\">Возможности</a>"
+ ],
+ [
+  "<a href=\"#tutorial\">Tutorial</a>",
+  "<a href=\"#tutorial\">Учебник</a>"
+ ],
+ [
+  "<a href=\"#download\">Download</a>",
+  "<a href=\"#download\">Скачать</a>"
+ ],
+ [
+  "<a href=\"#docs\">Docs</a>",
+  "<a href=\"#docs\">Документация</a>"
+ ],
+ [
+  "aria-label=\"Site language\"",
+  "aria-label=\"Язык сайта\""
+ ],
+ [
+  "aria-label=\"Color theme\"",
+  "aria-label=\"Цветовая тема\""
+ ],
+ [
+  "</svg>Light</button>",
+  "</svg>Светлая</button>"
+ ],
+ [
+  "</svg>Dark</button>",
+  "</svg>Тёмная</button>"
+ ],
+ [
+  "<h1>Draw a program.<br>Get C or C++.</h1>",
+  "<h1>Нарисуйте программу.<br>Получите C или C++.</h1>"
+ ],
+ [
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. Wire blocks on a canvas, run them, then turn them into one readable source file in C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program Arduino and ESP32 boards.",
+  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Соединяйте блоки на холсте, запускайте их, а затем превращайте в один читаемый исходный файл на C99, C11, C17 или C++98–C++20 и собирайте его с помощью Clang или GCC. Те же блоки программируют платы Arduino и ESP32."
+ ],
+ [
+  "href=\"#download\">Download {{VERSION}}</a>",
+  "href=\"#download\">Скачать {{VERSION}}</a>"
+ ],
+ [
+  ">Source on GitHub</a>",
+  ">Исходный код на GitHub</a>"
+ ],
+ [
+  "Windows, macOS and Linux. Free and open source, MIT license.",
+  "Windows, macOS и Linux. Бесплатно, открытый исходный код, лицензия MIT."
+ ],
+ [
+  "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
+  "alt=\"Блок-схема: Start, Set n = 3, цикл For от 1 до n, который печатает шаг и вызывает c.add(i) у объекта Counter, затем c.show() и End.\""
+ ],
+ [
+  "aria-label=\"Generated code options\"",
+  "aria-label=\"Параметры генерируемого кода\""
+ ],
+ [
+  "aria-label=\"Language\"",
+  "aria-label=\"Язык\""
+ ],
+ [
+  "aria-label=\"Flow\"",
+  "aria-label=\"Поток управления\""
+ ],
+ [
+  "aria-label=\"Values\"",
+  "aria-label=\"Значения\""
+ ],
+ [
+  "aria-label=\"Program output\"",
+  "aria-label=\"Вывод программы\""
+ ],
+ [
+  "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
+  "data-note=\"Схема слева на {lang}: {fn} из сгенерированного файла ({lines} строк).\""
+ ],
+ [
+  ">The diagram on the left, as the generator writes it.</span>",
+  ">Схема слева в том виде, в каком её пишет генератор.</span>"
+ ],
+ [
+  "All 32 versions print the same output as the built-in interpreter.",
+  "Все 32 варианта выводят то же, что и встроенный интерпретатор."
+ ],
+ [
+  "<h2 id=\"features-h\">What it does</h2>",
+  "<h2 id=\"features-h\">Что умеет программа</h2>"
+ ],
+ [
+  "<h3>Programs are blocks and wires</h3>",
+  "<h3>Программа — это блоки и связи</h3>"
+ ],
+ [
+  "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
+  "Start, Set, Input, Print, If/Else, For, While и Do-While — это блоки, а связи между ними задают порядок выполнения. Нажмите Run, и выполняемый блок подсвечивается. Выражения работают с числами и текстом: <code>&amp;&amp; || !</code>, сравнения и обычная арифметика."
+ ],
+ [
+  "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
+  "alt=\"Цикл For, собранный из блоков, и его вывод: step 1, step 2, step 3.\""
+ ],
+ [
+  "<h3>Classes, objects and modules</h3>",
+  "<h3>Классы, объекты и модули</h3>"
+ ],
+ [
+  "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
+  "У класса есть поля с начальными значениями, конструктор и методы, и каждый метод — отдельная блок-схема от Enter до Exit. Каждый Exit становится выходом вызывающего блока. Блоки с одинаковым именем объекта работают с одним объектом. Классы можно сохранить как модули (<code>.eviam</code>) и подключать в другие программы."
+ ],
+ [
+  "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
+  "alt=\"Окно класса Counter: вкладки полей, конструктора и методов; метод add(x) прибавляет x к this.total.\""
+ ],
+ [
+  "<h3>Eight languages, two ways to write them</h3>",
+  "<h3>Восемь языков и два стиля кода</h3>"
+ ],
+ [
+  "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
+  "Выберите на панели инструментов C99, C11, C17, C++98, C++11, C++14, C++17 или C++20. <b>Structured</b> пишет if/else, циклы и switch; <b>Goto</b> превращает каждый блок в метку, а каждую связь — в переход. Значения <b>Safe</b> хранят текст и сохраняют все проверки интерпретатора; значения <b>Fast</b> — это простые <code>double</code> без проверок во время выполнения. Среда выполнения C содержит только то, что использует программа, поэтому код компилируется без предупреждений с <code>-Wall -Wextra -Wpedantic -Werror</code>."
+ ],
+ [
+  "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
+  "alt=\"Окно кода: программа на C11, скомпилированная Clang и запущенная.\""
+ ],
+ [
+  "<h3>See the code of any block</h3>",
+  "<h3>Код любого блока</h3>"
+ ],
+ [
+  "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
+  "Щёлкните блок правой кнопкой и выберите View source code: откроется сгенерированный файл, в котором подсвечены именно те строки, в которые превратился блок. Так же это работает для целого метода или класса, на любом выбранном языке. Compile &amp; Run тут же собирает код с помощью Clang или GCC; в Windows программа сама устанавливает llvm-mingw или WinLibs GCC, Visual Studio не нужна."
+ ],
+ [
+  "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
+  "alt=\"Сгенерированный C++ с подсвеченными строками блока c.add(i), скомпилированный Clang и запущенный.\""
+ ],
+ [
+  "<h3>Arduino and ESP32 boards</h3>",
+  "<h3>Платы Arduino и ESP32</h3>"
+ ],
+ [
+  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
+  "Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе."
+ ],
+ [
+  "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
+  "alt=\"Пример blink с блоками Board в палитре; в выводе видно, как имитируемый пин 13 переключается каждые 500 мс.\""
+ ],
+ [
+  "<h3>Bare metal, down to the registers</h3>",
+  "<h3>Без Arduino, прямо на регистрах</h3>"
+ ],
+ [
+  "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
+  "AVR C пишет программу для ATmega328P, ATmega2560 или ATmega32U4 без ядра Arduino: порты, таймеры, ШИМ, АЦП и UART настраиваются на понятном C. avr-gcc собирает её примерно в 4 КБ, а Upload загружает на плату через avrdude. Каждый пример запускается в симуляторе simavr и сверяется с интерпретатором."
+ ],
+ [
+  "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
+  "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
+ ],
+ [
+  "<h3>Zoom with the mouse wheel</h3>",
+  "<h3>Масштаб колесом мыши</h3>"
+ ],
+ [
+  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.",
+  "Прокрутите колесо над схемой, чтобы менять масштаб от 25% до 300% в сторону указателя. Блоки, текст и связи остаются чёткими, а редактировать можно при любом масштабе. Ctrl+0 возвращает 100%, Ctrl+9 вписывает всю схему."
+ ],
+ [
+  "alt=\"The diagram zoomed in to 161 percent.\"",
+  "alt=\"Схема в масштабе 161%.\""
+ ],
+ [
+  "<h3>Projects, Git and GitHub</h3>",
+  "<h3>Проекты, Git и GitHub</h3>"
+ ],
+ [
+  "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
+  "File, New Project создаёт папку с программой, папкой модулей, README и Git-репозиторием. Commit, push и pull — в меню Git; Connect to GitHub публикует проект под той учётной записью, которую уже использует ваш git. Программа никогда не запрашивает и не хранит пароль."
+ ],
+ [
+  "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
+  "alt=\"Окно Connect to GitHub с именем репозитория sbrutyan01/CounterDemo.\""
+ ],
+ [
+  "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
+  "<b>Vim повсюду.</b> В полях кода, окне кода и сообщениях коммитов работают клавиши Vim; Edit in Vim открывает настоящий Vim."
+ ],
+ [
+  "<b>Command line.</b>",
+  "<b>Командная строка.</b>"
+ ],
+ [
+  "</code> and <code>evia --gen",
+  "</code> и <code>evia --gen"
+ ],
+ [
+  "</code> for scripts and Makefiles.",
+  "</code> для скриптов и Makefile."
+ ],
+ [
+  "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
+  "<b>Clang или GCC.</b> Переключаются в Settings; в Windows любой из них устанавливается сам, Visual Studio не нужна."
+ ],
+ [
+  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key.",
+  "<b>Встроенное руководство.</b> Help, Guide (F1) описывает каждый блок, выражения, возможности классов, сочетания клавиш и клавиши Vim."
+ ],
+ [
+  "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
+  "<h2 id=\"tutorial-h\">Первая программа за восемь шагов</h2>"
+ ],
+ [
+  "The full walk-through, with every screenshot, is in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
+  "Полный пошаговый учебник со всеми снимками экрана — <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.ru.md\">на GitHub</a>."
+ ],
+ [
+  "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
+  "<h3>Создайте проект</h3><p>File, New Project. Оставьте отмеченным Create a Git repository.</p>"
+ ],
+ [
+  "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
+  "<h3>Соберите цикл</h3><p>Перетащите Set, For и Print на холст, соедините их и нажмите Run.</p>"
+ ],
+ [
+  "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
+  "<h3>Создайте класс</h3><p>Edit, New Class: задайте классу Counter поля total и calls.</p>"
+ ],
+ [
+  "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
+  "<h3>Используйте класс</h3><p>Перетащите Counter.add(x) в цикл и назовите объект c.</p>"
+ ],
+ [
+  "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
+  "<h3>Посмотрите код</h3><p>Правый щелчок по блоку, View source code.</p>"
+ ],
+ [
+  "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
+  "<h3>Выберите язык</h3><p>Переключитесь на C11 или любой стандарт C++, и код сгенерируется заново.</p>"
+ ],
+ [
+  "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
+  "<h3>Коммит и публикация</h3><p>Git, Commit, затем Connect to GitHub.</p>"
+ ],
+ [
+  "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
+  "<h3>Что дальше</h3><p>Модули, примеры и руководство (F1).</p>"
+ ],
+ [
+  "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
+  "<h2 id=\"download-h\">Скачать EVIA Paradigma {{VERSION}}</h2>"
+ ],
+ [
+  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows).",
+  "Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама)."
+ ],
+ [
+  "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
+  "<th scope=\"col\">Система</th><th scope=\"col\">Файл</th><th scope=\"col\">Примечания</th>"
+ ],
+ [
+  "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
+  "Пока без цифровой подписи: в предупреждении SmartScreen выберите «Подробнее», затем «Выполнить в любом случае»."
+ ],
+ [
+  "Not notarized yet: the first time, right-click the app and choose Open.",
+  "Пока без нотаризации: при первом запуске щёлкните приложение правой кнопкой и выберите «Открыть»."
+ ],
+ [
+  "<td>As above.</td>",
+  "<td>Как выше.</td>"
+ ],
+ [
+  "<td>Any system with Java 25</td>",
+  "<td>Любая система с Java 25</td>"
+ ],
+ [
+  ">All releases and release notes</a>",
+  ">Все выпуски и примечания к ним</a>"
+ ],
+ [
+  "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
+  "<h2 id=\"tested-h\">Проверено собственным интерпретатором</h2>"
+ ],
+ [
+  "On every change, CI generates every example and test program in all 32 combinations of language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 32 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками, запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
+ ],
+ [
+  "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
+  "<th scope=\"col\">Где</th><th scope=\"col\">Компилятор</th><th scope=\"col\">Совпадает с интерпретатором</th>"
+ ],
+ [
+  "<td>Linux, all 8 languages</td>",
+  "<td>Linux, все 8 языков</td>"
+ ],
+ [
+  "<td>416 of 416</td>",
+  "<td>416 из 416</td>"
+ ],
+ [
+  "<td>260 of 260</td>",
+  "<td>260 из 260</td>"
+ ],
+ [
+  "<td>30 of 30</td>",
+  "<td>30 из 30</td>"
+ ],
+ [
+  "<td>15 of 15</td>",
+  "<td>15 из 15</td>"
+ ],
+ [
+  ", static</td>",
+  ", статически</td>"
+ ],
+ [
+  "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
+  "<td>Примеры для плат, AVR C без Arduino в simavr (ATmega328P, 2560, 32U4)</td>"
+ ],
+ [
+  "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
+  "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
+ ],
+ [
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок без предупреждений). Плюс проверки приложения, модулей, проектов, Git и масштабирования колесом мыши в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
+ ],
+ [
+  "<h2 id=\"docs-h\">Documentation</h2>",
+  "<h2 id=\"docs-h\">Документация</h2>"
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.ru.md\">Учебник на русском</a> и <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (на английском): возможности, меню, языки, командная строка</li>"
+ ],
+ [
+  ">Release notes</a> for every version; what's new in",
+  ">Примечания к выпускам</a> для каждой версии; что нового в"
+ ],
+ [
+  ">Example programs</a>, also under File, Open Example (board programs in",
+  ">Примеры программ</a>, также в File, Open Example (программы для плат — в"
+ ],
+ [
+  ">Report a problem or ask for a feature</a>",
+  ">Сообщить о проблеме или предложить идею</a>"
+ ],
+ [
+  "Copyright 2026 Sergey Brutyan. Released under the",
+  "© 2026 Сергей Брутян. Распространяется по"
+ ],
+ [
+  ">MIT license</a>.",
+  ">лицензии MIT</a>."
+ ]
+]

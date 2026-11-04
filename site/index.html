@@ -15,6 +15,9 @@
   // the theme chosen with the header switch (otherwise the system's), before the page is drawn
   try { var t = localStorage.getItem("evia-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
+<link rel="alternate" hreflang="en" href="https://sbrutyan01.github.io/EVIA-Paradigma/">
+<link rel="alternate" hreflang="ru" href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">
+<link rel="alternate" hreflang="hy" href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,6 +36,11 @@
     <a href="#download">Download</a>
     <a href="#docs">Docs</a>
     <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+    <div class="site-langs" role="group" aria-label="Site language">
+      <a href="./" hreflang="en" lang="en" title="English">EN</a>
+      <a href="ru/" hreflang="ru" lang="ru" title="Русский">RU</a>
+      <a href="hy/" hreflang="hy" lang="hy" title="Հայերեն">ՀԱՅ</a>
+    </div>
     <div class="themes" role="group" aria-label="Color theme">
       <button type="button" data-theme-choice="light" aria-pressed="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -100,7 +108,7 @@
         <pre id="output" aria-label="Program output"></pre>
       </div>
     </div>
-    <figcaption id="bench-caption"><span id="sample-note">The diagram on the left, as the generator writes it.</span>
+    <figcaption id="bench-caption"><span id="sample-note" data-note="The diagram on the left as {lang}: {fn} from the generated {lines}-line file.">The diagram on the left, as the generator writes it.</span>
       All 32 versions print the same output as the built-in interpreter.</figcaption>
   </figure>
 </section>

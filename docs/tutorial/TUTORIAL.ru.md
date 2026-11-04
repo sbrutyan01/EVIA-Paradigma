@@ -1,0 +1,158 @@
+# EVIA Paradigma: учебник
+
+[English](../../README.md#tutorial) · **Русский** · [Հայերեն](TUTORIAL.hy.md) · [Сайт](https://sbrutyan01.github.io/EVIA-Paradigma/ru/)
+
+В этом учебнике мы соберём небольшой проект с циклом и классом, запустим его, посмотрим, в какой код на C и C++
+он превращается, и поместим его в Git. В конце мы запрограммируем плату Arduino или ESP32. Все снимки экрана сделаны
+в настоящем приложении. Интерфейс программы на английском, поэтому названия меню и кнопок даны так, как они
+выглядят на экране.
+
+Скачать EVIA Paradigma: [последний выпуск](https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest)
+(установщики для Windows, macOS и Linux уже содержат Java).
+
+## 1. Создайте проект
+
+**File → New Project…** (Ctrl+Shift+N). Введите имя и папку; если git установлен, оставьте отмеченным
+*Create a Git repository*.
+
+<p align="center"><img src="../screenshots/01-new-project.png" alt="Окно New Project" width="550"></p>
+
+Проект откроется с начальной программой *Start → Print → End*. Панель вывода показывает, что git создал
+репозиторий и первый коммит.
+
+<p align="center"><img src="../screenshots/02-project-created.png" alt="Новый проект с начальной программой и первым коммитом" width="900"></p>
+
+## 2. Соберите цикл
+
+Перетаскивайте блоки из палитры на холст и соединяйте их: тяните от нижнего порта блока (тёмная точка)
+к верхнему порту следующего блока (белая точка). Двойной щелчок по блоку открывает его код для редактирования.
+
+- **Set**: `n = 3`
+- **For**: `i = 1; i <= n; i = i + 1`. Его порт `body` ведёт к **Print** `"step " + i`; конец тела цикла
+  соедините **обратно с блоком For**, чтобы начался следующий проход. Порт `done` ведёт к **End**.
+
+Нажмите **Run** (F5). Задайте *Step delay*, чтобы видеть, как перемещается активный блок. Колесо мыши над схемой
+[меняет масштаб](../../README.md#zoom).
+
+<p align="center"><img src="../screenshots/03-first-run.png" alt="Цикл For и его вывод" width="900"></p>
+
+## 3. Создайте класс
+
+**Edit → New Class…** (или *+ New class…* в палитре), назовите его `Counter`. В окне класса есть вкладка
+**Fields** и по одной вкладке на каждый метод.
+
+**Fields**: добавьте `total` и `calls`, оба с начальным значением `0`. У каждого объекта свои копии полей.
+
+<p align="center"><img src="../screenshots/04-class-fields.png" alt="Вкладка Fields окна класса" width="800"></p>
+
+**Методы**: переименуйте первый метод в `add` с параметром `x` (нажмите **Apply**), затем соберите его тело
+от **Enter** до **Exit**. Внутри метода поля и параметры записываются как `this.имя`:
+
+<p align="center"><img src="../screenshots/05-class-method.png" alt="Метод add(x) класса Counter" width="800"></p>
+
+**+ Constructor** добавляет `init` — он выполняется один раз при создании объекта (после того как поля получили
+начальные значения). Здесь он печатает `"new counter"`. **+ Method…** добавляет `show`, который печатает
+`"total = " + this.total + " after " + this.calls + " calls"`.
+
+<p align="center"><img src="../screenshots/06-class-constructor.png" alt="Конструктор init" width="800"></p>
+
+## 4. Используйте класс
+
+Теперь в палитре есть `Counter.add(x)` и `Counter.show()`. Перетащите `Counter.add(x)` в тело цикла после
+**Print**, а `Counter.show()` — между `done` и **End**. Двойной щелчок по блоку вызова позволяет выбрать метод,
+**объект** и аргументы. Дайте обоим блокам имя объекта `c`, чтобы они работали с одним объектом:
+
+<p align="center"><img src="../screenshots/07-call-dialog.png" alt="Окно вызова: метод, объект и аргументы" width="600"></p>
+
+Запустите программу. Объект `c` создаётся при первом использовании (тогда и печатается `new counter`), `add`
+выполняется три раза, а `show` печатает итог:
+
+<p align="center"><img src="../screenshots/08-run-with-class.png" alt="Программа с объектом Counter и её вывод" width="900"></p>
+
+## 5. Посмотрите код любого блока
+
+Правый щелчок по блоку → **View source code**. Откроется сгенерированный код, в котором подсвечены именно строки
+этого блока (здесь C++20, язык по умолчанию):
+
+<p align="center"><img src="../screenshots/09-block-menu.png" alt="Контекстное меню блока" width="420"></p>
+
+<p align="center"><img src="../screenshots/10-view-source.png" alt="Сгенерированный C++ с подсвеченными строками блока вызова" width="900"></p>
+
+**Compile & Run** собирает код с помощью Clang или GCC и запускает его. Скомпилированная программа печатает то же,
+что и интерпретатор. В Windows программа сама устанавливает компилятор: llvm-mingw (Clang) или WinLibs (GCC),
+Visual Studio не нужна. Выбор компилятора — в **Settings**.
+
+<p align="center"><img src="../screenshots/11-compile-run.png" alt="Сгенерированная программа, скомпилированная Clang и запущенная" width="900"></p>
+
+## 6. Выберите C или другой стандарт C++
+
+Выберите **Language** в выпадающем списке (в окне кода или на главной панели инструментов) — код сразу
+генерируется заново, а тот же блок остаётся подсвеченным. **Flow** и **Values** задают стиль кода:
+**Structured** — if/else, циклы и switch, **Goto** — каждый блок становится меткой, а каждая связь — переходом;
+**Safe** — числа и текст со всеми проверками интерпретатора, **Fast** — простые `double` без проверок.
+
+<p align="center"><img src="../screenshots/21-language-dropdown.png" alt="Список Language: C99, C11, C17, C++98, C++11, C++14, C++17, C++20" width="800"></p>
+
+Та же программа на **C11**, скомпилированная `clang -std=c11` и запущенная: вывод тот же.
+
+<p align="center"><img src="../screenshots/22-c11-compile-run.png" alt="Программа на C11, скомпилированная и запущенная" width="900"></p>
+
+**C++17** с потоком **Goto** и значениями **Fast**:
+
+<p align="center"><img src="../screenshots/23-cpp17-goto-fast.png" alt="C++17 с потоком goto и значениями fast" width="900"></p>
+
+## 7. Сделайте коммит и опубликуйте на GitHub
+
+**Git → Commit…** (Ctrl+K) сохраняет все изменения и делает коммит. В поле сообщения работают клавиши Vim
+(`Esc`, затем `:w` — коммит).
+
+<p align="center"><img src="../screenshots/17-commit.png" alt="Окно Commit" width="520"></p>
+
+**Git → Connect to GitHub…**: введите `владелец/репозиторий`. *Create repository on GitHub…* открывает github.com
+с уже заполненным именем; создайте **пустой** репозиторий, нажмите **OK** — и проект будет отправлен. Git использует
+вход, который уже настроен на вашем компьютере (Git Credential Manager, SSH-ключ или `gh auth login`).
+
+<p align="center"><img src="../screenshots/18-connect-github.png" alt="Окно Connect to GitHub" width="560"></p>
+
+**Git → History** показывает список коммитов:
+
+<p align="center"><img src="../screenshots/19-history.png" alt="История Git" width="650"></p>
+
+## 8. Запрограммируйте плату Arduino или ESP32
+
+**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. Блоки **Board** (зелёные, в разделе
+*Board* палитры) настраивают пины, читают кнопки и датчики и делают паузы:
+
+| Блок | Код | Что делает |
+|---|---|---|
+| **Pin Mode** | `LED_BUILTIN, OUTPUT` | `OUTPUT`, `INPUT` или `INPUT_PULLUP` |
+| **Digital Write** | `LED_BUILTIN, HIGH` | `HIGH` для любого ненулевого значения, `LOW` для 0 |
+| **Digital Read** | `pressed = 4` | сохраняет 1 (HIGH) или 0 (LOW) |
+| **Analog Read** | `level = A0` | 0..1023 на платах AVR, 0..4095 на ESP32 |
+| **Analog Write** | `5, brightness` | ШИМ, 0..255 |
+| **Delay** | `500` | ждёт столько миллисекунд |
+| **Millis** | `t` | миллисекунды с начала программы |
+
+**Run** (F5) имитирует Arduino Uno: в выводе видно каждое изменение пинов со временем.
+
+<p align="center"><img src="../screenshots/27-board-simulated.png" alt="Пример blink: изменения пинов имитируемой платы в выводе" width="900"></p>
+
+Выберите **Language: Arduino** и плату в списке **Board**, затем **Generate code** (F7): один скетч подходит для
+любой из 12 плат (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini, ESP32, ESP32-S2, -S3, -C3, -C6, -H2).
+**Build** собирает его через arduino-cli, **Upload** загружает на плату; Print и Input работают через Serial Monitor
+на скорости 115200 бод. **AVR C** пишет ту же программу без ядра Arduino, прямо на регистрах микроконтроллера,
+и собирает её avr-gcc.
+
+<p align="center"><img src="../screenshots/29-avr-build.png" alt="AVR C без Arduino, собранный avr-gcc для Arduino Uno" width="900"></p>
+
+## 9. Что дальше
+
+- Делитесь классами между программами: **File → Export Classes as Module…**, затем **File → Import Module…**
+  в другой программе.
+- В **File → Open Example** есть готовые программы, в том числе `classes.evia` (поля, конструктор, методы, модуль)
+  и примеры для плат.
+- **Help → Guide** (F1) описывает каждый блок, выражения, классы, проекты, Git, сочетания клавиш и клавиши Vim.
+
+<p align="center"><img src="../screenshots/20-help-guide.png" alt="Встроенное руководство" width="800"></p>
+
+Подробнее обо всех возможностях — в [README](../../README.md) (на английском).

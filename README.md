@@ -18,6 +18,12 @@
   <b><a href="https://sbrutyan01.github.io/EVIA-Paradigma/">Website</a></b> ·
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest">Download</a> ·
   <a href="#tutorial">Tutorial</a>
+  <br>
+  Tutorial in other languages: <a href="docs/tutorial/TUTORIAL.ru.md">Русский</a> ·
+  <a href="docs/tutorial/TUTORIAL.hy.md">Հայերեն</a> · Website:
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/">English</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">Русский</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">Հայերեն</a>
 </p>
 
 Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run the program. Define **classes** with
@@ -157,6 +163,8 @@ Release 0.3.1 also has two fixes found by the Windows CI job (they only show wit
 | Release notes on the release page | Yes |
 
 ## Tutorial
+
+*Also in [Russian / на русском](docs/tutorial/TUTORIAL.ru.md) and [Armenian / հայերեն](docs/tutorial/TUTORIAL.hy.md).*
 
 This walk-through builds a small project with a loop and a class, runs it, looks at the C and C++ it becomes,
 and puts it under Git. Every picture is the real application (they are regenerated with
@@ -640,7 +648,8 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `Board.java` / `BoardSim.java` | The 12 boards (arduino-cli names, AVR chips); the simulated Uno used by Run |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
-| `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build |
+| `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds the Russian and Armenian texts |
+| `docs/tutorial/` | The tutorial in Russian and Armenian |
 
 ## Screenshots
 

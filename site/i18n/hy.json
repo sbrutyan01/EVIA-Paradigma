@@ -1,0 +1,386 @@
+[
+ [
+  "<title>EVIA Paradigma: visual programming that compiles to C and C++</title>",
+  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C և C++ կոմպիլյացիայով</title>"
+ ],
+ [
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).\"",
+  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր C կամ C++ (C99-ից մինչև C++20) աղբյուր ֆայլի, որը կառուցվում է Clang-ով կամ GCC-ով, կամ Arduino և ESP32 տախտակների կոդի։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար և բաց կոդով (MIT)։\""
+ ],
+ [
+  "content=\"Draw a program as blocks. Get C or C++.\"",
+  "content=\"Նկարեք ծրագիրը բլոկներով։ Ստացեք C կամ C++։\""
+ ],
+ [
+  ">Skip to content</a>",
+  ">Անցնել բովանդակությանը</a>"
+ ],
+ [
+  "aria-label=\"EVIA Paradigma home\"",
+  "aria-label=\"EVIA Paradigma՝ գլխավոր էջ\""
+ ],
+ [
+  "aria-label=\"Main\"",
+  "aria-label=\"Գլխավոր ընտրացանկ\""
+ ],
+ [
+  "<a href=\"#features\">Features</a>",
+  "<a href=\"#features\">Հնարավորություններ</a>"
+ ],
+ [
+  "<a href=\"#tutorial\">Tutorial</a>",
+  "<a href=\"#tutorial\">Ուսուցում</a>"
+ ],
+ [
+  "<a href=\"#download\">Download</a>",
+  "<a href=\"#download\">Ներբեռնել</a>"
+ ],
+ [
+  "<a href=\"#docs\">Docs</a>",
+  "<a href=\"#docs\">Փաստաթղթեր</a>"
+ ],
+ [
+  "aria-label=\"Site language\"",
+  "aria-label=\"Կայքի լեզուն\""
+ ],
+ [
+  "aria-label=\"Color theme\"",
+  "aria-label=\"Գունային թեմա\""
+ ],
+ [
+  "</svg>Light</button>",
+  "</svg>Լուսավոր</button>"
+ ],
+ [
+  "</svg>Dark</button>",
+  "</svg>Մութ</button>"
+ ],
+ [
+  "<h1>Draw a program.<br>Get C or C++.</h1>",
+  "<h1>Նկարեք ծրագիրը։<br>Ստացեք C կամ C++։</h1>"
+ ],
+ [
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. Wire blocks on a canvas, run them, then turn them into one readable source file in C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program Arduino and ESP32 boards.",
+  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա վերածեք մեկ ընթեռնելի աղբյուր ֆայլի՝ C99, C11, C17 կամ C++98–C++20 լեզվով, և կառուցեք այն Clang-ով կամ GCC-ով։ Նույն բլոկները ծրագրավորում են նաև Arduino և ESP32 տախտակները։"
+ ],
+ [
+  "href=\"#download\">Download {{VERSION}}</a>",
+  "href=\"#download\">Ներբեռնել {{VERSION}}</a>"
+ ],
+ [
+  ">Source on GitHub</a>",
+  ">Կոդը GitHub-ում</a>"
+ ],
+ [
+  "Windows, macOS and Linux. Free and open source, MIT license.",
+  "Windows, macOS և Linux։ Անվճար և բաց կոդով, MIT լիցենզիա։"
+ ],
+ [
+  "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
+  "alt=\"Բլոկ-սխեմա՝ Start, Set n = 3, For ցիկլ 1-ից n, որը տպում է քայլը և կանչում c.add(i)-ը Counter օբյեկտի վրա, հետո c.show() և End։\""
+ ],
+ [
+  "aria-label=\"Generated code options\"",
+  "aria-label=\"Գեներացվող կոդի ընտրանքներ\""
+ ],
+ [
+  "aria-label=\"Language\"",
+  "aria-label=\"Լեզու\""
+ ],
+ [
+  "aria-label=\"Flow\"",
+  "aria-label=\"Կառավարման հոսք\""
+ ],
+ [
+  "aria-label=\"Values\"",
+  "aria-label=\"Արժեքներ\""
+ ],
+ [
+  "aria-label=\"Program output\"",
+  "aria-label=\"Ծրագրի ելքը\""
+ ],
+ [
+  "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
+  "data-note=\"Ձախ կողմի սխեման {lang} լեզվով՝ {fn}, գեներացված {lines} տողանոց ֆայլից։\""
+ ],
+ [
+  ">The diagram on the left, as the generator writes it.</span>",
+  ">Ձախ կողմի սխեման՝ այնպես, ինչպես այն գրում է գեներատորը։</span>"
+ ],
+ [
+  "All 32 versions print the same output as the built-in interpreter.",
+  "Բոլոր 32 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։"
+ ],
+ [
+  "<h2 id=\"features-h\">What it does</h2>",
+  "<h2 id=\"features-h\">Ինչ է անում ծրագիրը</h2>"
+ ],
+ [
+  "<h3>Programs are blocks and wires</h3>",
+  "<h3>Ծրագիրը բլոկներ և կապեր է</h3>"
+ ],
+ [
+  "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
+  "Start, Set, Input, Print, If/Else, For, While և Do-While բլոկներ են, իսկ դրանց միջև կապերը որոշում են կատարման հերթականությունը։ Սեղմեք Run, և կատարվող բլոկը լուսավորվում է։ Արտահայտություններն աշխատում են թվերի և տեքստի հետ՝ <code>&amp;&amp; || !</code>, համեմատություններ և սովորական թվաբանություն։"
+ ],
+ [
+  "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
+  "alt=\"Բլոկներից հավաքված For ցիկլը և դրա ելքը՝ step 1, step 2, step 3։\""
+ ],
+ [
+  "<h3>Classes, objects and modules</h3>",
+  "<h3>Դասեր, օբյեկտներ և մոդուլներ</h3>"
+ ],
+ [
+  "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
+  "Դասն ունի սկզբնական արժեքներով դաշտեր, կոնստրուկտոր և մեթոդներ, և յուրաքանչյուր մեթոդ առանձին բլոկ-սխեմա է՝ Enter-ից մինչև Exit։ Յուրաքանչյուր Exit դառնում է կանչող բլոկի ելք։ Նույն օբյեկտի անունով բլոկներն աշխատում են մեկ օբյեկտի հետ։ Դասերը կարելի է պահել որպես մոդուլներ (<code>.eviam</code>) և ներմուծել այլ ծրագրերում։"
+ ],
+ [
+  "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
+  "alt=\"Counter դասի պատուհանը՝ դաշտերի, կոնստրուկտորի և մեթոդների ներդիրներով, add(x) մեթոդը x-ը գումարում է this.total-ին։\""
+ ],
+ [
+  "<h3>Eight languages, two ways to write them</h3>",
+  "<h3>Ութ լեզու, գրելու երկու եղանակ</h3>"
+ ],
+ [
+  "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
+  "Գործիքագոտուց ընտրեք C99, C11, C17, C++98, C++11, C++14, C++17 կամ C++20։ <b>Structured</b>-ը գրում է if/else, ցիկլեր և switch, իսկ <b>Goto</b>-ն յուրաքանչյուր բլոկ դարձնում է նշիչ, յուրաքանչյուր կապ՝ անցում։ <b>Safe</b> արժեքները պահում են տեքստը և ինտերպրետատորի բոլոր ստուգումները, իսկ <b>Fast</b> արժեքները պարզ <code>double</code>-ներ են՝ առանց կատարման ժամանակի ստուգումների։ C-ի runtime-ը պարունակում է միայն այն, ինչ օգտագործում է ծրագիրը, ուստի կոդը կոմպիլյացվում է առանց նախազգուշացումների <code>-Wall -Wextra -Wpedantic -Werror</code>-ով։"
+ ],
+ [
+  "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
+  "alt=\"Կոդի պատուհանը՝ ծրագիրը C11-ով, կոմպիլյացված Clang-ով և գործարկված։\""
+ ],
+ [
+  "<h3>See the code of any block</h3>",
+  "<h3>Ցանկացած բլոկի կոդը</h3>"
+ ],
+ [
+  "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
+  "Սեղմեք բլոկի վրա մկնիկի աջ կոճակով և ընտրեք View source code։ Կբացվի գեներացված ֆայլը, որտեղ ընդգծված են հենց այն տողերը, որոնց վերածվել է բլոկը։ Նույնն աշխատում է ամբողջ մեթոդի կամ դասի համար՝ ձեր ընտրած ցանկացած լեզվով։ Compile &amp; Run-ը անմիջապես կառուցում է կոդը Clang-ով կամ GCC-ով, իսկ Windows-ում ծրագիրն ինքն է տեղադրում llvm-mingw կամ WinLibs GCC, Visual Studio պետք չէ։"
+ ],
+ [
+  "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
+  "alt=\"Գեներացված C++՝ c.add(i) բլոկի ընդգծված տողերով, կոմպիլյացված Clang-ով և գործարկված։\""
+ ],
+ [
+  "<h3>Arduino and ESP32 boards</h3>",
+  "<h3>Arduino և ESP32 տախտակներ</h3>"
+ ],
+ [
+  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
+  "Pin Mode, Digital Write և Read, Analog Read և Write, Delay և Millis նույնպես բլոկներ են։ Մեկ Arduino սքեթչ կառուցվում է Uno, Nano, Mega 2560, Leonardo, Micro և Pro Mini, ինչպես նաև ESP32, ESP32-S2, -S3, -C3, -C6 և -H2 տախտակների համար։ Run-ը համակարգչի վրա նմանակում է Uno-ն և ցույց է տալիս պինների յուրաքանչյուր փոփոխություն, այնպես որ ծրագիրը կարող եք փորձել դեռ մինչև տախտակը ձեռքի տակ ունենալը։"
+ ],
+ [
+  "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
+  "alt=\"blink օրինակը՝ Board բլոկները գունապնակում, ելքում երևում է, թե ինչպես է նմանակված 13-րդ պինը փոխարկվում 500 մվ-ն մեկ։\""
+ ],
+ [
+  "<h3>Bare metal, down to the registers</h3>",
+  "<h3>Առանց Arduino-ի՝ ուղիղ ռեգիստրներով</h3>"
+ ],
+ [
+  "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
+  "AVR C-ն ծրագիրը գրում է ATmega328P, ATmega2560 կամ ATmega32U4-ի համար՝ առանց Arduino միջուկի. պորտերը, թայմերները, PWM-ը, ԱԹՓ-ն և UART-ը կարգավորվում են ընթեռնելի C-ով։ avr-gcc-ն այն կառուցում է մոտ 4 ԿԲ-ով, իսկ Upload-ը avrdude-ով բեռնում է այն տախտակի վրա։ Յուրաքանչյուր օրինակ գործարկվում է simavr սիմուլյատորում և համեմատվում ինտերպրետատորի հետ։"
+ ],
+ [
+  "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
+  "alt=\"blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։\""
+ ],
+ [
+  "<h3>Zoom with the mouse wheel</h3>",
+  "<h3>Մասշտաբ մկնիկի անիվով</h3>"
+ ],
+ [
+  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.",
+  "Պտտեք անիվը սխեմայի վրա՝ մասշտաբը 25%-ից 300% փոխելու համար՝ դեպի ցուցիչը։ Բլոկները, տեքստը և կապերը մնում են հստակ, և խմբագրել կարելի է ցանկացած մասշտաբով։ Ctrl+0-ն վերադարձնում է 100%-ը, Ctrl+9-ը տեղավորում է ամբողջ սխեման։"
+ ],
+ [
+  "alt=\"The diagram zoomed in to 161 percent.\"",
+  "alt=\"Սխեման՝ 161% մասշտաբով։\""
+ ],
+ [
+  "<h3>Projects, Git and GitHub</h3>",
+  "<h3>Նախագծեր, Git և GitHub</h3>"
+ ],
+ [
+  "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
+  "File, New Project-ը ստեղծում է թղթապանակ՝ ծրագրով, մոդուլների թղթապանակով, README-ով և Git պահոցով։ Commit, push և pull՝ Git ընտրացանկից։ Connect to GitHub-ը հրապարակում է նախագիծն այն հաշվով, որն արդեն օգտագործում է ձեր git-ը։ Ծրագիրը երբեք գաղտնաբառ չի խնդրում և չի պահում։"
+ ],
+ [
+  "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
+  "alt=\"Connect to GitHub պատուհանը՝ sbrutyan01/CounterDemo պահոցի անունով։\""
+ ],
+ [
+  "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
+  "<b>Vim ամենուր։</b> Կոդի դաշտերում, կոդի պատուհանում և commit-ների հաղորդագրություններում աշխատում են Vim ստեղները, իսկ Edit in Vim-ը բացում է իսկական Vim-ը։"
+ ],
+ [
+  "<b>Command line.</b>",
+  "<b>Հրամանային տող։</b>"
+ ],
+ [
+  "</code> and <code>evia --gen",
+  "</code> և <code>evia --gen"
+ ],
+ [
+  "</code> for scripts and Makefiles.",
+  "</code>՝ սկրիպտների և Makefile-երի համար։"
+ ],
+ [
+  "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
+  "<b>Clang կամ GCC։</b> Դրանք փոխվում են Settings-ում, իսկ Windows-ում ցանկացածն ինքն է տեղադրվում, Visual Studio պետք չէ։"
+ ],
+ [
+  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key.",
+  "<b>Ներկառուցված ուղեցույց։</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները։"
+ ],
+ [
+  "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
+  "<h2 id=\"tutorial-h\">Առաջին ծրագիրը ութ քայլով</h2>"
+ ],
+ [
+  "The full walk-through, with every screenshot, is in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
+  "Ամբողջական քայլ առ քայլ ուսուցումը՝ բոլոր սքրինշոթներով, <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md\">GitHub-ում է</a>։"
+ ],
+ [
+  "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
+  "<h3>Ստեղծեք նախագիծ</h3><p>File, New Project։ Թողեք Create a Git repository-ն նշված։</p>"
+ ],
+ [
+  "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
+  "<h3>Կառուցեք ցիկլ</h3><p>Քաշեք Set, For և Print բլոկները կտավի վրա, միացրեք դրանք և սեղմեք Run։</p>"
+ ],
+ [
+  "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
+  "<h3>Ստեղծեք դաս</h3><p>Edit, New Class։ Counter դասին տվեք total և calls դաշտերը։</p>"
+ ],
+ [
+  "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
+  "<h3>Օգտագործեք դասը</h3><p>Քաշեք Counter.add(x)-ը ցիկլի մեջ և օբյեկտն անվանեք c։</p>"
+ ],
+ [
+  "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
+  "<h3>Տեսեք կոդը</h3><p>Աջ սեղմում բլոկի վրա, View source code։</p>"
+ ],
+ [
+  "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
+  "<h3>Ընտրեք լեզուն</h3><p>Անցեք C11-ի կամ C++-ի ցանկացած ստանդարտի, և կոդը նորից կգեներացվի։</p>"
+ ],
+ [
+  "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
+  "<h3>Commit և հրապարակում</h3><p>Git, Commit, ապա Connect to GitHub։</p>"
+ ],
+ [
+  "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
+  "<h3>Շարունակեք</h3><p>Մոդուլներ, օրինակներ և ուղեցույց (F1)։</p>"
+ ],
+ [
+  "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
+  "<h2 id=\"download-h\">Ներբեռնել EVIA Paradigma {{VERSION}}</h2>"
+ ],
+ [
+  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows).",
+  "Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը)։"
+ ],
+ [
+  "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
+  "<th scope=\"col\">Համակարգ</th><th scope=\"col\">Ֆայլ</th><th scope=\"col\">Նշումներ</th>"
+ ],
+ [
+  "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
+  "Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։"
+ ],
+ [
+  "Not notarized yet: the first time, right-click the app and choose Open.",
+  "Դեռ նոտարացված չէ. առաջին անգամ աջ սեղմեք հավելվածի վրա և ընտրեք Open։"
+ ],
+ [
+  "<td>As above.</td>",
+  "<td>Ինչպես վերևում։</td>"
+ ],
+ [
+  "<td>Any system with Java 25</td>",
+  "<td>Ցանկացած համակարգ Java 25-ով</td>"
+ ],
+ [
+  ">All releases and release notes</a>",
+  ">Բոլոր թողարկումները և դրանց նշումները</a>"
+ ],
+ [
+  "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
+  "<h2 id=\"tested-h\">Ստուգված սեփական ինտերպրետատորով</h2>"
+ ],
+ [
+  "On every change, CI generates every example and test program in all 32 combinations of language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 32 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ, գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։"
+ ],
+ [
+  "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
+  "<th scope=\"col\">Որտեղ</th><th scope=\"col\">Կոմպիլյատոր</th><th scope=\"col\">Համընկնում է ինտերպրետատորի հետ</th>"
+ ],
+ [
+  "<td>Linux, all 8 languages</td>",
+  "<td>Linux, բոլոր 8 լեզուները</td>"
+ ],
+ [
+  "<td>416 of 416</td>",
+  "<td>416 / 416</td>"
+ ],
+ [
+  "<td>260 of 260</td>",
+  "<td>260 / 260</td>"
+ ],
+ [
+  "<td>30 of 30</td>",
+  "<td>30 / 30</td>"
+ ],
+ [
+  "<td>15 of 15</td>",
+  "<td>15 / 15</td>"
+ ],
+ [
+  ", static</td>",
+  ", ստատիկ</td>"
+ ],
+ [
+  "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
+  "<td>Տախտակների օրինակներ, AVR C առանց Arduino-ի simavr-ում (ATmega328P, 2560, 32U4)</td>"
+ ],
+ [
+  "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
+  "<td>Arduino Uno և Mega 2560 սքեթչներ simavr-ում</td>"
+ ],
+ [
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի և մկնիկի անիվով մասշտաբավորման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>-ում։"
+ ],
+ [
+  "<h2 id=\"docs-h\">Documentation</h2>",
+  "<h2 id=\"docs-h\">Փաստաթղթեր</h2>"
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md\">Ուսուցում հայերենով</a> և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (անգլերեն)՝ հնարավորություններ, ընտրացանկեր, լեզուներ, հրամանային տող</li>"
+ ],
+ [
+  ">Release notes</a> for every version; what's new in",
+  ">Թողարկումների նշումներ</a> յուրաքանչյուր տարբերակի համար, նորությունները՝"
+ ],
+ [
+  ">Example programs</a>, also under File, Open Example (board programs in",
+  ">Ծրագրերի օրինակներ</a>, նաև File, Open Example-ում (տախտակների ծրագրերը՝"
+ ],
+ [
+  ">Report a problem or ask for a feature</a>",
+  ">Հաղորդել խնդրի մասին կամ առաջարկել գաղափար</a>"
+ ],
+ [
+  "Copyright 2026 Sergey Brutyan. Released under the",
+  "© 2026 Սերգեյ Բրուտյան։ Տարածվում է"
+ ],
+ [
+  ">MIT license</a>.",
+  ">MIT լիցենզիայով</a>։"
+ ]
+]

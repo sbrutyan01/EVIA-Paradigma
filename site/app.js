@@ -39,8 +39,8 @@
     codeEl.innerHTML = highlight(s.code);
     var fn = state.lang.indexOf("c++") === 0 ? "Program::run()" : "run_program()";
     var label = document.querySelector('[data-lang="' + state.lang + '"]').textContent;
-    noteEl.textContent = "The diagram on the left as " + label + ": " + fn + " from the generated "
-      + s.lines + "-line file.";
+    noteEl.textContent = (noteEl.dataset.note || "{lang}: {fn}, {lines}")   // the page's language
+      .replace("{lang}", label).replace("{fn}", fn).replace("{lines}", s.lines);
     document.querySelectorAll("[data-lang]").forEach(function (b) {
       b.setAttribute("aria-selected", b.dataset.lang === state.lang ? "true" : "false");
       b.tabIndex = b.dataset.lang === state.lang ? 0 : -1;

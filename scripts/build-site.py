@@ -42,8 +42,35 @@ with open(out + "/samples.js", "w") as f:
     f.write("window.EVIA_SAMPLES = " + json.dumps(samples) + ";\n")
     f.write("window.EVIA_OUTPUT = " + json.dumps(output) + ";\n")
 with open(out + "/index.html") as f:
-    html = f.read()
+    html = f.read().replace("{{VERSION}}", version)
+
+
+def current(page, lang):
+    """Marks the page's own entry in the language switcher."""
+    return page.replace(f'hreflang="{lang}" lang="{lang}"', f'hreflang="{lang}" lang="{lang}" aria-current="page"', 1)
+
+
 with open(out + "/index.html", "w") as f:
-    f.write(html.replace("{{VERSION}}", version))
+    f.write(current(html, "en"))
+
+# Russian and Armenian pages: site/i18n/<lang>.json holds [English, translation] pairs. Every English
+# text must still be on the page (whitespace may differ), so a changed page can't silently stay half-English.
+for lang in ["ru", "hy"]:
+    page = html.replace('<html lang="en">', f'<html lang="{lang}">', 1)
+    with open(f"site/i18n/{lang}.json", encoding="utf-8") as f:
+        pairs = json.load(f)
+    for en, tr in sorted(pairs, key=lambda p: -len(p[0])):   # longer texts first
+        pattern = r"\s+".join(re.escape(w) for w in en.replace("{{VERSION}}", version).split())
+        page, n = re.subn(pattern, lambda m: tr.replace("{{VERSION}}", version), page)
+        if n == 0:
+            sys.exit(f"site/i18n/{lang}.json: not on the page any more: {en[:80]}")
+    font = {"ru": "NotoSans", "hy": "NotoSansArmenian"}[lang]   # the font the page's own letters need
+    page = page.replace('href="fonts/FamiljenGrotesk.woff"', f'href="fonts/{font}.woff"', 1)
+    # the page lives one folder down: relative links and files are one level up
+    page = re.sub(r'(src|href)="(?!https?:|#|mailto:|/)', r'\1="../', page)
+    os.makedirs(f"{out}/{lang}", exist_ok=True)
+    with open(f"{out}/{lang}/index.html", "w", encoding="utf-8") as f:
+        f.write(current(page, lang))
+shutil.rmtree(out + "/i18n")
 open(out + "/.nojekyll", "w").close()
-print(f"site for {version}: {len(samples)} code samples -> {out}")
+print(f"site for {version}: {len(samples)} code samples, English, Russian and Armenian -> {out}")
