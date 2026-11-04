@@ -47,6 +47,8 @@ final class MainFrame extends JFrame {
             {"boards/uart_echo.evia", "UART: send a byte, read it back"},
             {"boards/spi_loopback.evia", "SPI: transfer a byte"},
             {"boards/i2c_memory.evia", "I2C: write and read a device register"},
+            {"boards/mqtt_sensor.evia", "MQTT: publish a value, read a command back"},
+            {"boards/mqtt_esk2.evia", "MQTT on the PIC32 Ethernet Starter Kit II"},
     };
     /** Programs for FPGA boards (LED0, SW0, BTN0 ... are the pins of Digilent boards; Run simulates them like an Uno). */
     static final String[][] FPGA_EXAMPLES = {

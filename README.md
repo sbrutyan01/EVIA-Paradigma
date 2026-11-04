@@ -446,7 +446,10 @@ password, broker and topics are fixed texts: they are written into the program w
   refuses them too.
 
 The client in the generated file is MQTT 3.1.1 with quality of service 0, about 150 lines of C and no library.
-`examples/boards/mqtt_sensor.evia` publishes a temperature, sends itself a command and reads it back. CI compiles the
+`examples/boards/mqtt_sensor.evia` publishes a temperature, sends itself a command and reads it back, and
+`examples/boards/mqtt_esk2.evia` is written for the **PIC32 Ethernet Starter Kit II**: SW1 (RD6) goes to the broker,
+LED1 (RD0) follows what comes back, LED2 (RD1) follows the button directly, so you can see the round trip. The kit's
+Ethernet port is not used — the WiFi module on UART2 (RF4 / RF5 on the expansion connector) is. CI compiles the
 client on the build machine and runs it against a real broker (`scripts/check-mqtt.sh`); no WiFi module or ESP32 was
 part of that, and MQTT over the Ethernet port of the MX695/795 chips is not supported yet.
 
@@ -707,7 +710,7 @@ only in Print). Print and Input go over the serial port at 115200 baud.
 |---|---|---|---|
 | **Arduino** | Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini (5 V, 16 MHz); ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2 | one sketch, `program/program.ino`, with `setup()` and `loop()`; text in flash (`F()`) on AVR boards | `arduino-cli compile` / `upload` with the `arduino:avr` and `esp32:esp32` cores |
 | **AVR C** | the six AVR boards: ATmega328P (Uno, Nano, Pro Mini), ATmega2560 (Mega 2560), ATmega32U4 (Leonardo, Micro) | bare-metal C: no Arduino core. `pinMode`, `digitalWrite`, `analogRead`, `analogWrite`, `millis` and `delay` written against the chip's registers, with Arduino's pin numbers, timer setup and a 115200-baud UART (USART1 on pins 0/1 for the ATmega32U4) | `avr-gcc -mmcu=… -Os`, `avr-objcopy`, `avrdude` |
-| **PIC32 C** | nine PIC32MX chips: MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) | bare-metal C for XC32, no Harmony or plib: the same Arduino-style functions written against the registers. 30 MHz from the internal oscillator, UART1 at 115200 baud, 10-bit ADC, PWM on the output compare modules | `xc32-gcc -mprocessor=32MX… -Os`, `xc32-bin2hex`, then an upload command (default `pic32prog {hex}`) |
+| **PIC32 C** | nine PIC32MX chips: MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L), plus the PIC32 Ethernet Starter Kit II as a ready-made board (MX795F512L, LED1 on RD0) | bare-metal C for XC32, no Harmony or plib: the same Arduino-style functions written against the registers. 30 MHz from the internal oscillator, UART1 at 115200 baud, 10-bit ADC, PWM on the output compare modules | `xc32-gcc -mprocessor=32MX… -Os`, `xc32-bin2hex`, then an upload command (default `pic32prog {hex}`) |
 
 The generated code is the same for every board of a language. Pins are written as `LED_BUILTIN`, `A0` and so on, and
 each board's headers say where they are. The **Board** list next to the language (and in Settings, with the serial port
@@ -931,7 +934,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
-| `Board.java` / `BoardSim.java` | The 27 boards (arduino-cli names, AVR chips, PIC32MX chips, FPGA boards); the simulated board used by Run |
+| `Board.java` / `BoardSim.java` | The 28 boards (arduino-cli names, AVR chips, PIC32MX chips, FPGA boards); the simulated board used by Run |
 | `HdlGenerator.java` / `Rtl.java` / `Fpga.java` | FPGA: flowchart to state machine, written as SystemVerilog, Verilog-2001 or VHDL; the boards' pins and clocks, constraint files and build commands |
 | `scripts/fpga/` | FPGA checks: test programs, simulation against the interpreter (Icarus Verilog, GHDL), synthesis (yosys, nextpnr) |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |

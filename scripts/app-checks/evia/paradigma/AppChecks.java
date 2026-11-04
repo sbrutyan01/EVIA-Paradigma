@@ -151,7 +151,7 @@ public class AppChecks {
         // ---------- UART / SPI / I2C blocks and PIC32
         check(Target.parse("pic32").lang() == Target.Lang.PIC32 && Target.parse("pic32/goto").values() == Target.Values.FAST
                 && Target.parse(Target.parse("pic32").key()).lang() == Target.Lang.PIC32, "pic32 target (always fast values)");
-        check(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).count() == 9
+        check(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).count() == 10
                 && Board.forLang(Board.UNO, Target.Lang.PIC32).isPic32() && !Board.UNO.supports(Target.Lang.PIC32)
                 && Board.parse("pic32mx250f128b").isPic32(), "PIC32 boards");
         for (String name : new String[] {"uart_echo", "spi_loopback", "i2c_memory"}) {
@@ -296,6 +296,20 @@ public class AppChecks {
                 }
                 Settings.useBoard(null);
             }
+        }
+
+        // ---------- the PIC32 Ethernet Starter Kit II example
+        {
+            Library esk = newLib();
+            ProgramIO.load(esk, Path.of("examples/boards/mqtt_esk2.evia"));
+            String out = run(esk);
+            check(out.contains("LED1 = 1") && out.trim().endsWith("done"), "the ESK II example follows the button through the broker");
+            Settings.useBoard(Board.PIC32_ESK2);
+            String c = CodeGenerator.generate(esk, Target.parse("pic32"));
+            check(c.contains("#define LED_BUILTIN RD0") && c.contains("#define RD6") && c.contains("32MX795F512L")
+                            && c.contains("mqttPublishNum(\"evia/esk2/led\""),
+                    "the ESK II board has LED1 on RD0 and builds for the MX795F512L");
+            Settings.useBoard(null);
         }
 
         // ---------- the toolchains EVIA Paradigma can fetch

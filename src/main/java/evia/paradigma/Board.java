@@ -37,6 +37,7 @@ enum Board {
     PIC32MX460F512L("PIC32MX460F512L (Cerebot MX4cK)", "32MX460F512L", 3, 'L', "RB10"),
     PIC32MX695F512L("PIC32MX695F512L (chipKIT WF32)", "32MX695F512L", 5, 'L', "RF0"),
     PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1"),
+    PIC32_ESK2("PIC32 Ethernet Starter Kit II (MX795F512L)", "32MX795F512L", 5, 'L', "RD0"),
 
     // FPGA boards: the pins, clock and chip are in Fpga
     NEXYS_A7_100T("Digilent Nexys A7-100T (Artix-7)", Fpga::nexysA7100T),
