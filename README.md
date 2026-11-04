@@ -41,6 +41,29 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
 | Any OS with Java 25 | `evia-paradigma-0.3.1.jar` | `java -jar evia-paradigma-0.3.1.jar` |
 
+### Release 0.3.1
+
+[EVIA Paradigma v0.3.1](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.3.1) ([release notes](docs/release-notes/v0.3.1.md)):
+zoom block diagrams with the mouse wheel, plus the two Windows fixes listed under 0.3.0.
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.3.1-windows-x64.exe` | Windows 10/11 x64 | 28.0 MB |
+| `EVIA-Paradigma-0.3.1-macos-arm64.dmg` | macOS, Apple Silicon | 28.2 MB |
+| `EVIA-Paradigma-0.3.1-macos-x64.dmg` | macOS, Intel | 29.7 MB |
+| `evia-paradigma_0.3.1_amd64.deb` | Ubuntu/Debian amd64 | 22.9 MB |
+| `evia-paradigma-0.3.1.jar` | Any OS with Java 25 | 0.5 MB |
+| `LICENSE` | MIT license | — |
+
+| CI check | Result |
+|---|---|
+| Mouse-wheel zoom on the real main window (Linux, virtual display) | All passed |
+| Every language and mode, Clang 23 (Linux) | 384 of 384 identical to the interpreter |
+| Every language and mode, GCC (Linux) | 384 of 384 identical |
+| C and C++ standards, llvm-mingw Clang (Windows, no Visual Studio) | 240 of 240 identical |
+| Examples, application and Git checks | All passed |
+| Installers built for all platforms and attached to the release | Passed |
+
 ### Release 0.3.0
 
 [EVIA Paradigma v0.3.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.3.0) ([release notes](docs/release-notes/v0.3.0.md)):
