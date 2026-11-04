@@ -311,6 +311,8 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
 .doclinks li { margin: 6px 0; }
 .cli { background: var(--console); color: var(--console-ink); border-radius: var(--radius); padding: 16px 18px;
   font: 400 14px/1.6 var(--mono); overflow-x: auto; margin: 0; }
+.steps + .cli { margin-top: 32px; }
+.cli + .fine { margin: 14px 0 0; }
 .cli code { background: none; padding: 0; color: inherit; font: inherit; }
 
 /* footer */
@@ -335,6 +337,9 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
 @media (max-width: 620px) {
   body { font-size: 17px; }
   .top { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+  .top nav { justify-content: flex-start; }
+  .brand { gap: 12px; }
+  .brand img { width: 88px; height: 88px; border-radius: 16px; }
   .top nav { gap: 14px; }
   .top-tools { justify-content: flex-start; }
   .hero { padding: 44px 0 40px; }
@@ -346,5 +351,6 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
   .dl thead { display: none; }
   .dl tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--rule); }
   .dl td { display: block; border: 0; padding: 2px 0; }
+  .dl code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
   .foot { padding: 24px 16px 32px; }
 }

@@ -328,8 +328,8 @@
   "<th scope=\"col\">Где</th><th scope=\"col\">Компилятор</th><th scope=\"col\">Совпадает с интерпретатором</th>"
  ],
  [
-  "<td>Linux, all 8 languages</td>",
-  "<td>Linux, все 8 языков</td>"
+  "<td>Linux, all 8 C and C++ standards</td>",
+  "<td>Linux, все 8 стандартов C и C++</td>"
  ],
  [
   "<td>416 of 416</td>",
@@ -444,8 +444,8 @@
   "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
  ],
  [
-  "The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.",
-  "Открытый список Language на панели инструментов: от C99 до C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL."
+  "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+  "Открытое меню Code Language and Mode: от C99 до C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения."
  ],
  [
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
@@ -454,5 +454,9 @@
  [
   "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
   "<tr><td>Проекты для FPGA в моделировании (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 из 27</td></tr>"
+ ],
+ [
+  "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in English, Russian or Armenian.</li>",
+  "<li><b>Учебник в PDF.</b> Help, Tutorial открывает всё руководство на английском, русском или армянском.</li>"
  ]
 ]

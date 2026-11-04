@@ -156,7 +156,7 @@
         FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target
         cannot keep a block, the error names that block instead of quietly changing what the program means.</p>
     </div>
-    <img src="img/31-language-list.png" loading="lazy" width="1500" height="760" alt="The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.">
+    <img src="img/24-menu-code-language.png" loading="lazy" width="1536" height="1220" alt="The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.">
   </article>
 
   <article class="feature flip">
@@ -232,6 +232,7 @@
     <li><b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.</li>
     <li><b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.</li>
     <li><b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.</li>
+    <li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in English, Russian or Armenian.</li>
   </ul>
 </section>
 
@@ -264,7 +265,7 @@
 # writes blink.sv and blink.xdc
 java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd
 # writes blink.vhd and blink.ccf</code></pre>
-  <p class="section-lede">Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.</p>
+  <p class="fine">Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.</p>
 </section>
 
 <section class="download" id="download" aria-labelledby="download-h">
@@ -296,8 +297,8 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
   <table class="results">
     <thead><tr><th scope="col">Where</th><th scope="col">Compiler</th><th scope="col">Identical to the interpreter</th></tr></thead>
     <tbody>
-      <tr><td>Linux, all 8 languages</td><td>Clang 23</td><td>416 of 416</td></tr>
-      <tr><td>Linux, all 8 languages</td><td>GCC 13</td><td>416 of 416</td></tr>
+      <tr><td>Linux, all 8 C and C++ standards</td><td>Clang 23</td><td>416 of 416</td></tr>
+      <tr><td>Linux, all 8 C and C++ standards</td><td>GCC 13</td><td>416 of 416</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>260 of 260</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, static</td><td>260 of 260</td></tr>
       <tr><td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 of 30</td></tr>

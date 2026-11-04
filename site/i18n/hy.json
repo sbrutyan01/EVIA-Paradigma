@@ -328,8 +328,8 @@
   "<th scope=\"col\">Որտեղ</th><th scope=\"col\">Կոմպիլյատոր</th><th scope=\"col\">Համընկնում է ինտերպրետատորի հետ</th>"
  ],
  [
-  "<td>Linux, all 8 languages</td>",
-  "<td>Linux, բոլոր 8 լեզուները</td>"
+  "<td>Linux, all 8 C and C++ standards</td>",
+  "<td>Linux, C-ի և C++-ի բոլոր 8 ստանդարտները</td>"
  ],
  [
   "<td>416 of 416</td>",
@@ -444,8 +444,8 @@
   "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
  ],
  [
-  "The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.",
-  "Գործիքագոտու Language ցանկը բացված՝ C99-ից մինչև C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL։"
+  "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+  "Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։"
  ],
  [
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
@@ -454,5 +454,9 @@
  [
   "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
   "<tr><td>FPGA նախագծերը սիմուլյացիայում (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27-ից 27</td></tr>"
+ ],
+ [
+  "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in English, Russian or Armenian.</li>",
+  "<li><b>Ուսուցումը PDF-ով։</b> Help, Tutorial-ը բացում է ամբողջ ուղեցույցը անգլերեն, ռուսերեն կամ հայերեն։</li>"
  ]
 ]
