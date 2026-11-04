@@ -56,11 +56,27 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 ### Release 0.6.1
 
-Press the **middle mouse button** on the canvas (or on a block) and drag to move the canvas. See [docs/release-notes/v0.6.1.md](docs/release-notes/v0.6.1.md).
+[EVIA Paradigma v0.6.1](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.1) ([release notes](docs/release-notes/v0.6.1.md)):
+the middle mouse button moves the canvas.
+
+- **Press the wheel and drag** over a diagram to move the canvas: on empty space or on a block, in the main program and
+  in a class window, at every zoom. Blocks are neither moved nor selected by it, and the saved file does not change.
+- The guide's shortcut table (English, Russian, Armenian) and [Zoom](#zoom) list the new gesture.
+- **Tested** by the zoom checks on a real window, which now drag with the middle button on the canvas and on a block and
+  compare the view position.
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.6.1-windows-x64.exe` | Windows 10/11 x64 | 35.4 MB |
+| `evia-paradigma_0.6.1_amd64.deb` | Ubuntu/Debian amd64 | 30.3 MB |
+| `evia-paradigma-0.6.1.jar` | Any OS with Java 25 | 7.9 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
 
 ### Release 0.6.0
 
-[Release notes](docs/release-notes/v0.6.0.md): FPGAs. SystemVerilog, Verilog-2001 and VHDL for Artix-7 and GateMate boards.
+[EVIA Paradigma v0.6.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.0) ([release notes](docs/release-notes/v0.6.0.md)): FPGAs. SystemVerilog, Verilog-2001 and VHDL for Artix-7 and GateMate boards.
 
 - **Three new languages** (`--lang sv|verilog|vhdl`): the flowchart becomes a state machine, one state per block, with
   32-bit whole-number variables, exact `Delay`, `Millis`, PWM, a serial port for Print and the UART blocks, and a
@@ -76,9 +92,18 @@ Press the **middle mouse button** on the canvas (or on a block) and drag to move
   **Not tested:** Vivado, nextpnr-xilinx and any real board.
 - Integer arithmetic in the hardware differs from **Run** in one way (`5 / 2` is 2, not 2.5): see the FPGA section.
 
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.6.0-windows-x64.exe` | Windows 10/11 x64 | 35.4 MB |
+| `evia-paradigma_0.6.0_amd64.deb` | Ubuntu/Debian amd64 | 30.3 MB |
+| `evia-paradigma-0.6.0.jar` | Any OS with Java 25 | 7.9 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
+
 ### Release 0.5.0
 
-[Release notes](docs/release-notes/v0.5.0.md): PIC32MX chips and the UART, SPI and I2C blocks.
+[EVIA Paradigma v0.5.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.5.0) ([release notes](docs/release-notes/v0.5.0.md)): PIC32MX chips and the UART, SPI and I2C blocks.
 
 - **UART, SPI and I2C blocks** (UART Open / Write / Read, SPI Open / Transfer, I2C Open / Write / Read) in the *Board*
   group. They work in **Run** (a simulated loopback UART, SPI and an I2C device at address 80), in Arduino sketches
@@ -92,6 +117,15 @@ Press the **middle mouse button** on the canvas (or on a block) and drag to move
 - **Tested** against a PC compiler and Microchip's real device headers (144 combinations, `-Werror`), and the bus code of
   the Arduino and AVR outputs in simavr. PIC32 output is **not** yet built with XC32 or run on a chip: see
   [PIC32 notes](#arduino-and-esp32-boards).
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.5.0-windows-x64.exe` | Windows 10/11 x64 | 35.3 MB |
+| `evia-paradigma_0.5.0_amd64.deb` | Ubuntu/Debian amd64 | 30.1 MB |
+| `evia-paradigma-0.5.0.jar` | Any OS with Java 25 | 7.8 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
 
 ### Release 0.4.1
 
