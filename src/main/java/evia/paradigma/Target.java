@@ -6,8 +6,9 @@ import java.util.Locale;
  * What code generation produces: the language standard, how control flow is written and how
  * values are represented.
  *
- * @param lang   C99 ... C++20 for the desktop; ARDUINO (a sketch for Arduino AVR and ESP32 boards) and
- *               AVR (bare-metal C for avr-gcc) for microcontrollers, which always use fast values
+ * @param lang   C99 ... C++20 for the desktop; ARDUINO (a sketch for Arduino AVR and ESP32 boards),
+ *               AVR (bare-metal C for avr-gcc) and PIC32 (bare-metal C for xc32-gcc) for microcontrollers,
+ *               which always use fast values
  * @param flow   STRUCTURED: if/else, for, while, do-while and switch where the wiring allows it
  *               (labels only where it doesn't); GOTO: every block is a label, wires are jumps
  * @param values SAFE: dynamic values (number or text) with the interpreter's exact checks;
@@ -28,7 +29,8 @@ record Target(Lang lang, Flow flow, Values values) {
         CPP14("C++14", "c++14", 14, "ISO C++ 2014"), CPP17("C++17", "c++17", 17, "ISO C++ 2017"),
         CPP20("C++20", "c++20", 20, "ISO C++ 2020"),
         ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR and ESP32 boards"),
-        AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core");
+        AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core"),
+        PIC32("PIC32 C", "gnu99", 0, "bare-metal xc32-gcc for PIC32MX, no Harmony");
 
         final String display, std, note;
         final int year;
@@ -44,9 +46,9 @@ record Target(Lang lang, Flow flow, Values values) {
             return this != ARDUINO && !std.startsWith("c++") && !std.startsWith("gnu++");
         }
 
-        /** Runs on a microcontroller (Arduino sketch or bare-metal AVR). */
+        /** Runs on a microcontroller (Arduino sketch, bare-metal AVR or PIC32). */
         boolean embedded() {
-            return this == ARDUINO || this == AVR;
+            return this == ARDUINO || this == AVR || this == PIC32;
         }
 
         /** The name used on the command line and in saved files. */
@@ -54,13 +56,14 @@ record Target(Lang lang, Flow flow, Values values) {
             return switch (this) {
                 case ARDUINO -> "arduino";
                 case AVR -> "avr";
+                case PIC32 -> "pic32";
                 default -> std;
             };
         }
 
         /** "(2011)", or what it runs on for microcontroller targets. */
         String tag() {
-            return embedded() ? (this == ARDUINO ? "AVR, ESP32" : "registers") : note.substring(note.length() - 4);
+            return embedded() ? (this == ARDUINO ? "AVR, ESP32" : this == PIC32 ? "PIC32MX" : "registers") : note.substring(note.length() - 4);
         }
 
         /** 98, 11, 14, 17, 20 for C++ (0 for C); compares chronologically. */
@@ -109,7 +112,7 @@ record Target(Lang lang, Flow flow, Values values) {
     }
 
     String languageName() {
-        return lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : isC() ? "C" : "C++";
+        return lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
     }
 
     String ext() {

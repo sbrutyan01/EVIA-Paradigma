@@ -73,7 +73,7 @@ final class TargetBar extends JPanel {
             values.setToolTipText(t.embedded() ? "Microcontrollers use fast values: numbers only, text only in Print" : valuesTip);
             board.removeAllItems();
             for (Board b : Board.values()) if (b.supports(t.lang())) board.addItem(b);
-            board.setSelectedItem(Board.forLang(Settings.board(), t.lang()));
+            board.setSelectedItem(Settings.board(t.lang()));
             board.setVisible(t.embedded());
             boardLabel.setVisible(t.embedded());
             revalidate();

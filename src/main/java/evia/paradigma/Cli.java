@@ -40,8 +40,15 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr, pic32)");
                                 t = t.withLang(l);
+                            }
+                            case "--board" -> {
+                                Board b = Board.parse(v);
+                                if (!b.key().equals(v.trim().toLowerCase().replace('_', '-')) && !b.fqbn.equals(v.trim())) {
+                                    throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b)");
+                                }
+                                Settings.useBoard(b);
                             }
                             case "--flow" -> t = t.withFlow(switch (v.toLowerCase()) {
                                 case "structured" -> Target.Flow.STRUCTURED;
@@ -85,7 +92,10 @@ final class Cli {
                                   -o FILE              write to FILE (default: standard output)
                                   --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default),
                                                        arduino (a sketch for Arduino AVR and ESP32 boards),
-                                                       avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4)
+                                                       avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4),
+                                                       pic32 (bare-metal C for xc32-gcc: PIC32MX1xx/2xx, 3xx/4xx, 5xx/6xx/7xx)
+                                  --board BOARD        the board or chip the code is for (pic32 needs one of the pic32mx... chips,
+                                                       e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
                                   --values MODE        safe (default): numbers and text, the interpreter's checks
@@ -97,7 +107,8 @@ final class Cli {
                               (or g++ / gcc, GCC %d or newer)
                             Boards:
                               arduino-cli compile --fqbn arduino:avr:uno program      (program/program.ino)
-                              avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o program.elf program.c -lm""".formatted(Settings.LATEST_CLANG, Settings.MIN_GCC));
+                              avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o program.elf program.c -lm
+                              xc32-gcc -mprocessor=32MX250F128B -Os -o program.elf program.c -lm   (then xc32-bin2hex program.elf)""".formatted(Settings.LATEST_CLANG, Settings.MIN_GCC));
                     return args[0].equals("--help") || args[0].equals("-h") ? 0 : 2;
                 }
             }

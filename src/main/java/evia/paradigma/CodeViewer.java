@@ -415,7 +415,7 @@ final class CodeViewer extends JFrame {
                     compilerLabel.setText(name + " not found - see Build for how to install it");
                     compilerLabel.setForeground(Theme.error());
                 } else {
-                    compilerLabel.setText(name + " " + v + "  -  " + Board.forLang(Settings.board(), target.lang()).display);
+                    compilerLabel.setText(name + " " + v + "  -  " + Settings.board(target.lang()).display);
                     compilerLabel.setForeground(Theme.ok());
                 }
             });
@@ -430,7 +430,7 @@ final class CodeViewer extends JFrame {
         if (process != null) return;
         String code = codePane.getText();
         Target tg = target;
-        Board board = Board.forLang(Settings.board(), tg.lang());
+        Board board = Settings.board(tg.lang());
         String port = Settings.serialPort();
         if (upload && port.isBlank()) {
             port = JOptionPane.showInputDialog(this, "Serial port of the " + board.display + " (e.g. "

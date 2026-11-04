@@ -19,19 +19,19 @@ import java.util.regex.Pattern;
 final class EmbeddedRuntime {
     private EmbeddedRuntime() {}
 
-    private record Piece(List<String> defines, List<String> needs, String code) {}
+    record Piece(List<String> defines, List<String> needs, String code) {}
 
     private static final Map<String, Piece> ARDUINO = new LinkedHashMap<>();
     private static final Map<String, Piece> AVR = new LinkedHashMap<>();
 
-    private static void piece(Map<String, Piece> map, String defines, String needs, String code) {
+    static void piece(Map<String, Piece> map, String defines, String needs, String code) {
         Piece p = new Piece(List.of(defines.split(" ")), needs.isEmpty() ? List.of() : List.of(needs.split(" ")), code);
         for (String d : p.defines()) map.put(d, p);
     }
 
     // ---------------------------------------------------------------- shared C code (valid C and C++)
 
-    private static final String DIGITS = """
+    static final String DIGITS = """
             /* Writes the decimal digits of v at p and returns the end. */
             static char *rt_digits(unsigned long long v, char *p) {
                 char tmp[21];
@@ -45,7 +45,7 @@ final class EmbeddedRuntime {
             }
             """;
 
-    private static final String FMT = """
+    static final String FMT = """
             /* A number the way the interpreter prints it: whole numbers without ".0", others with up to
                6 decimals ("0.25"), very large or small ones as "1.5E10" (buf: 32 chars). */
             static void rt_fmt(double d, char *buf) {
@@ -96,7 +96,7 @@ final class EmbeddedRuntime {
             }
             """;
 
-    private static final String PARSE = """
+    static final String PARSE = """
             /* Input: the whole line must be a number (spaces around it are fine). */
             static int rt_parse_num(const char *s, double *out) {
                 char *end;
@@ -109,21 +109,21 @@ final class EmbeddedRuntime {
             }
             """;
 
-    private static final String HELPERS_MS = """
+    static final String HELPERS_MS = """
             /* Delay: a millisecond count (negative waits 0). */
             static unsigned long rt_ms(double d) {
                 return d > 0 ? (d < 4294967295.0 ? (unsigned long) d : 4294967295UL) : 0UL;
             }
             """;
 
-    private static final String HELPERS_DUTY = """
+    static final String HELPERS_DUTY = """
             /* Analog Write: a PWM duty 0..255, rounded and clamped. */
             static int rt_duty(double d) {
                 return d <= 0 ? 0 : d >= 255 ? 255 : (int) (d + 0.5);
             }
             """;
 
-    private static final String HELPERS_HZ = """
+    static final String HELPERS_HZ = """
             /* UART, SPI and I2C: a rate in Hz, at least 1. */
             static unsigned long rt_hz(double d) {
                 return d >= 1 ? (d < 4294967295.0 ? (unsigned long) d : 4294967295UL) : 1UL;
@@ -866,8 +866,14 @@ final class EmbeddedRuntime {
 
     /** The runtime for a microcontroller program: only the pieces {@code program} uses. */
     static String source(Target t, String program) {
+        if (t.lang() == Target.Lang.PIC32) return Pic32Runtime.source(Settings.board(Target.Lang.PIC32), program);
         boolean arduino = t.lang() == Target.Lang.ARDUINO;
-        Map<String, Piece> pieces = arduino ? ARDUINO : AVR;
+        return assemble(arduino ? "Arduino sketch" : "bare-metal AVR", arduino ? ARDUINO_HEAD : AVR_HEAD,
+                arduino ? ARDUINO : AVR, program);
+    }
+
+    /** The head, then the pieces of {@code pieces} that {@code program} uses (and what those need), in definition order. */
+    static String assemble(String title, String head, Map<String, Piece> pieces, String program) {
         String code = program.replaceAll("\"(?:\\\\.|[^\"\\\\])*\"", "\"\"")
                 .replaceAll("(?s)/\\*.*?\\*/", " ").replaceAll("//[^\n]*", " ");
         Set<Piece> needed = new LinkedHashSet<>();
@@ -879,9 +885,8 @@ final class EmbeddedRuntime {
             if (p != null && needed.add(p)) todo.addAll(p.needs());
         }
         StringBuilder s = new StringBuilder();
-        s.append("/* ===================== EVIA Paradigma runtime (")
-                .append(arduino ? "Arduino sketch" : "bare-metal AVR").append(") ===================== */\n");
-        s.append(arduino ? ARDUINO_HEAD : AVR_HEAD);
+        s.append("/* ===================== EVIA Paradigma runtime (").append(title).append(") ===================== */\n");
+        s.append(head);
         for (Piece p : new LinkedHashSet<>(pieces.values())) {
             if (needed.contains(p)) s.append('\n').append(p.code());
         }

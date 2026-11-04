@@ -10,6 +10,7 @@ import java.util.Locale;
  * @param fqbn       arduino-cli board name
  * @param mcu        avr-gcc -mmcu value (AVR boards only)
  * @param programmer avrdude programmer and baud rate for the bootloader (AVR boards only)
+ * @param pic       xc32-gcc -mprocessor value, e.g. "32MX250F128B" (PIC32 boards only)
  */
 enum Board {
     UNO("Arduino Uno", "arduino:avr:uno", "atmega328p", "arduino -b 115200"),
@@ -23,19 +24,55 @@ enum Board {
     ESP32_S3("ESP32-S3", "esp32:esp32:esp32s3", null, null),
     ESP32_C3("ESP32-C3", "esp32:esp32:esp32c3", null, null),
     ESP32_C6("ESP32-C6", "esp32:esp32:esp32c6", null, null),
-    ESP32_H2("ESP32-H2", "esp32:esp32:esp32h2", null, null);
+    ESP32_H2("ESP32-H2", "esp32:esp32:esp32h2", null, null),
 
-    final String display, fqbn, mcu, programmer;
+    // PIC32MX: family 1 = MX1xx/MX2xx (pin remapping), 3 = MX3xx/MX4xx, 5 = MX5xx/MX6xx/MX7xx (fixed pins);
+    // package: B = 28 pins, H = 64 pins, L = 100 pins
+    PIC32MX150F128B("PIC32MX150F128B (28 pins)", "32MX150F128B", 1, 'B', "RB2"),
+    PIC32MX250F128B("PIC32MX250F128B (chipKIT DP32)", "32MX250F128B", 1, 'B', "RB2"),
+    PIC32MX270F256B("PIC32MX270F256B (28 pins)", "32MX270F256B", 1, 'B', "RB2"),
+    PIC32MX320F128H("PIC32MX320F128H (chipKIT Uno32)", "32MX320F128H", 3, 'H', "RF0"),
+    PIC32MX340F512H("PIC32MX340F512H (chipKIT uC32)", "32MX340F512H", 3, 'H', "RF0"),
+    PIC32MX440F256H("PIC32MX440F256H (64 pins)", "32MX440F256H", 3, 'H', "RF0"),
+    PIC32MX460F512L("PIC32MX460F512L (Cerebot MX4cK)", "32MX460F512L", 3, 'L', "RB10"),
+    PIC32MX695F512L("PIC32MX695F512L (chipKIT WF32)", "32MX695F512L", 5, 'L', "RF0"),
+    PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1");
+
+    final String display, fqbn, mcu, programmer, pic;
+    /** PIC32 only: 1, 3 or 5 (see above), and the package letter; 0 for the other boards. */
+    final int family;
+    final char pkg;
+    /** PIC32 only: the pin of the board's LED, which LED_BUILTIN names. */
+    final String led;
 
     Board(String display, String fqbn, String mcu, String programmer) {
         this.display = display;
         this.fqbn = fqbn;
         this.mcu = mcu;
         this.programmer = programmer;
+        this.pic = null;
+        this.family = 0;
+        this.pkg = 0;
+        this.led = null;
+    }
+
+    Board(String display, String pic, int family, char pkg, String led) {
+        this.display = display;
+        this.fqbn = "";
+        this.mcu = null;
+        this.programmer = null;
+        this.pic = pic;
+        this.family = family;
+        this.pkg = pkg;
+        this.led = led;
     }
 
     boolean isAvr() {
         return mcu != null;
+    }
+
+    boolean isPic32() {
+        return pic != null;
     }
 
     /** Short stored and command-line name: "uno", "esp32-s3". */
@@ -43,9 +80,14 @@ enum Board {
         return name().toLowerCase(Locale.ROOT).replace('_', '-');
     }
 
-    /** The boards a language can build for: all of them for Arduino sketches, the AVR ones for bare-metal C. */
+    /** The boards a language can build for: the Arduino and ESP32 ones for sketches, the AVR ones for AVR C, the PIC32 ones for PIC32 C. */
     boolean supports(Target.Lang lang) {
-        return lang == Target.Lang.ARDUINO || lang == Target.Lang.AVR && isAvr();
+        return switch (lang) {
+            case ARDUINO -> !isPic32();
+            case AVR -> isAvr();
+            case PIC32 -> isPic32();
+            default -> false;
+        };
     }
 
     static Board parse(String key) {
@@ -57,12 +99,17 @@ enum Board {
 
     /** The first board of {@code lang}, if {@code b} can't be built for it. */
     static Board forLang(Board b, Target.Lang lang) {
-        return b.supports(lang) ? b : UNO;
+        return b.supports(lang) ? b : lang == Target.Lang.PIC32 ? PIC32MX250F128B : UNO;
     }
 
     /** "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os ..." for bare-metal C. */
     String avrGcc(String src, String elf) {
         return "avr-gcc -mmcu=" + mcu + " -DF_CPU=16000000UL -std=gnu11 -Os -Wall -Wextra -o " + elf + " " + src + " -lm";
+    }
+
+    /** "xc32-gcc -mprocessor=32MX250F128B -Os ..." for bare-metal PIC32 C. */
+    String xc32(String gcc, String src, String elf) {
+        return gcc + " -mprocessor=" + pic + " -std=gnu99 -Os -Wall -Wextra -Wl,--defsym=_min_heap_size=2048 -o " + elf + " " + src + " -lm";
     }
 
     @Override public String toString() {

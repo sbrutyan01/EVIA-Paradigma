@@ -104,12 +104,36 @@ final class Settings {
 
     /** The board that Build and Upload use for Arduino and AVR code. */
     static Board board() {
-        return Board.parse(PREFS.get("board", "uno"));
+        Board b = Board.parse(PREFS.get("board", "uno"));
+        return b.isPic32() ? Board.UNO : b;
+    }
+
+    /** The board for a language: the Arduino/AVR choice, or the PIC32 chip for PIC32 C. */
+    static Board board(Target.Lang lang) {
+        if (lang == Target.Lang.PIC32) {
+            if (override != null && override.isPic32()) return override;
+            Board b = Board.parse(PREFS.get("board.pic32", "pic32mx250f128b"));
+            return b.isPic32() ? b : Board.PIC32MX250F128B;
+        }
+        if (override != null && override.supports(lang)) return override;
+        return Board.forLang(board(), lang);
+    }
+
+    private static Board override;
+
+    /** A board for this run only (the command line's --board); null goes back to the saved choice. */
+    static void useBoard(Board b) {
+        override = b;
     }
 
     static void setBoard(Board b) {
-        if (b == board()) return;
-        PREFS.put("board", b.key());
+        if (b.isPic32()) {
+            if (b == board(Target.Lang.PIC32)) return;
+            PREFS.put("board.pic32", b.key());
+        } else {
+            if (b == board()) return;
+            PREFS.put("board", b.key());
+        }
         fire();
     }
 
@@ -119,6 +143,16 @@ final class Settings {
 
     static String avrGcc() {
         return PREFS.get("avrGcc", "avr-gcc");
+    }
+
+    /** xc32-gcc, Microchip's free XC32 compiler. */
+    static String xc32() {
+        return PREFS.get("xc32", "xc32-gcc");
+    }
+
+    /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
+    static String pic32Upload() {
+        return PREFS.get("pic32Upload", "pic32prog {hex}");
     }
 
     static String avrdude() {
