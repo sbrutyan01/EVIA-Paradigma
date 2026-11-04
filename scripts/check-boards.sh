@@ -107,7 +107,8 @@ if [ "${SKIP_ARDUINO:-}" != 1 ] && command -v "$ARDUINO_CLI" > /dev/null; then
       for flow in $flows; do
         dir="$OUT/sketch/$name-${fqbn//[:=]/_}-$flow/program"
         mkdir -p "$dir"
-        java -jar "$JAR" --gen "$src" --lang arduino --flow "$flow" -o "$dir/program.ino" 2>/dev/null
+        board=""; case "$fqbn" in esp32:*) board="--board $fqbn" ;; esac   # the generator checks MQTT against this board
+        java -jar "$JAR" --gen "$src" --lang arduino $board --flow "$flow" -o "$dir/program.ino" 2>/dev/null
         if ! "$ARDUINO_CLI" compile --fqbn "$fqbn" --warnings all --output-dir "$dir-build" "$dir" > "$dir.log" 2>&1; then
           fail "$name $flow $fqbn: arduino-cli"; grep -E "error|Error" "$dir.log" | head -8; continue
         fi
