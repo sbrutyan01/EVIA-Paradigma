@@ -72,8 +72,8 @@
   ">Исходный код на GitHub</a>"
  ],
  [
-  "Windows, macOS and Linux. Free and open source, MIT license.",
-  "Windows, macOS и Linux. Бесплатно, открытый исходный код, лицензия MIT."
+  "Windows and Linux; macOS builds will return later. Free and open source, MIT license.",
+  "Windows и Linux; сборки для macOS вернутся позже. Бесплатно, открытый исходный код, лицензия MIT."
  ],
  [
   "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
@@ -304,14 +304,6 @@
   "Пока без цифровой подписи: в предупреждении SmartScreen выберите «Подробнее», затем «Выполнить в любом случае»."
  ],
  [
-  "Not notarized yet: the first time, right-click the app and choose Open.",
-  "Пока без нотаризации: при первом запуске щёлкните приложение правой кнопкой и выберите «Открыть»."
- ],
- [
-  "<td>As above.</td>",
-  "<td>Как выше.</td>"
- ],
- [
   "<td>Any system with Java 25</td>",
   "<td>Любая система с Java 25</td>"
  ],
@@ -394,5 +386,49 @@
  [
   ">MIT license</a>.",
   ">лицензии MIT</a>."
+ ],
+ [
+  "Your first FPGA program in four steps",
+  "Ваша первая программа для FPGA в четыре шага"
+ ],
+ [
+  "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
+  "Та же схема мигания становится аппаратурой для плат Artix-7 и GateMate. Полное руководство, шаг 10, в PDF выше, а в справке есть раздел про FPGA (F1)."
+ ],
+ [
+  "Pick a language and a board",
+  "Выберите язык и плату"
+ ],
+ [
+  "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
+  "Язык: SystemVerilog, Verilog-2001 или VHDL. Плата: Nexys A7, Arty A7, Basys 3 или плата GateMate."
+ ],
+ [
+  "Open the Blink example",
+  "Откройте пример Blink"
+ ],
+ [
+  "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
+  "Файл, Открыть пример, FPGA Boards, Blink. Выводы задаются именами: LED0, SW3, BTNC, JA1."
+ ],
+ [
+  "Generate code",
+  "Создайте код"
+ ],
+ [
+  "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
+  "Нажмите F7. Ограничения выводов лежат в первом комментарии, а командная строка записывает их в отдельный файл."
+ ],
+ [
+  "Build and upload",
+  "Сборка и загрузка"
+ ],
+ [
+  "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
+  "Vivado или открытые средства, выбор в Настройках. Загрузка прошивает плату."
+ ],
+ [
+  "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
+  "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
  ]
 ]

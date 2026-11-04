@@ -72,8 +72,8 @@
   ">Կոդը GitHub-ում</a>"
  ],
  [
-  "Windows, macOS and Linux. Free and open source, MIT license.",
-  "Windows, macOS և Linux։ Անվճար և բաց կոդով, MIT լիցենզիա։"
+  "Windows and Linux; macOS builds will return later. Free and open source, MIT license.",
+  "Windows և Linux. macOS-ի տարբերակները կվերադառնան ավելի ուշ։ Անվճար, բաց կոդ, MIT լիցենզիա։"
  ],
  [
   "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
@@ -304,14 +304,6 @@
   "Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։"
  ],
  [
-  "Not notarized yet: the first time, right-click the app and choose Open.",
-  "Դեռ նոտարացված չէ. առաջին անգամ աջ սեղմեք հավելվածի վրա և ընտրեք Open։"
- ],
- [
-  "<td>As above.</td>",
-  "<td>Ինչպես վերևում։</td>"
- ],
- [
   "<td>Any system with Java 25</td>",
   "<td>Ցանկացած համակարգ Java 25-ով</td>"
  ],
@@ -394,5 +386,49 @@
  [
   ">MIT license</a>.",
   ">MIT լիցենզիայով</a>։"
+ ],
+ [
+  "Your first FPGA program in four steps",
+  "Ձեր առաջին FPGA ծրագիրը չորս քայլով"
+ ],
+ [
+  "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
+  "Նույն թարթման սխեման դառնում է սարքակազմ Artix-7 և GateMate տախտակների համար։ Ամբողջական ձեռնարկը՝ քայլ 10, վերևի PDF-ում է, իսկ ուղեցույցում կա FPGA թեմա (F1)։"
+ ],
+ [
+  "Pick a language and a board",
+  "Ընտրեք լեզու և տախտակ"
+ ],
+ [
+  "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
+  "Լեզու՝ SystemVerilog, Verilog-2001 կամ VHDL։ Տախտակ՝ Nexys A7, Arty A7, Basys 3 կամ GateMate տախտակ։"
+ ],
+ [
+  "Open the Blink example",
+  "Բացեք Blink օրինակը"
+ ],
+ [
+  "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
+  "File, Open Example, FPGA Boards, Blink։ Կոնտակտները անուններ են՝ LED0, SW3, BTNC, JA1։"
+ ],
+ [
+  "Generate code",
+  "Ստեղծեք կոդը"
+ ],
+ [
+  "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
+  "Սեղմեք F7։ Կոնտակտների սահմանափակումները առաջին մեկնաբանության մեջ են, իսկ հրամանի տողը դրանք գրում է առանձին ֆայլում։"
+ ],
+ [
+  "Build and upload",
+  "Կառուցում և բեռնում"
+ ],
+ [
+  "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
+  "Vivado կամ բաց գործիքներ՝ ընտրվում է Կարգավորումներում։ Upload-ը ծրագրավորում է տախտակը։"
+ ],
+ [
+  "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
+  "Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։"
  ]
 ]

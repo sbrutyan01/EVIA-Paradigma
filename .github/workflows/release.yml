@@ -1,7 +1,7 @@
 name: release
 
 # Builds native installers with their own Java runtime:
-#   Windows 10/11 x64 .exe, macOS .dmg (Apple Silicon and Intel), Ubuntu/Debian .deb.
+#   Windows 10/11 x64 .exe and Ubuntu/Debian .deb. (macOS .dmg builds are off for now: add the two macos-* matrix entries back.)
 # On pushes to main the installers are built and tested (artifacts only).
 # Publishing a GitHub release (or pushing a v* tag) attaches them to the release.
 on:
@@ -74,8 +74,6 @@ jobs:
       matrix:
         include:
           - { os: windows-2022,   kind: windows }
-          - { os: macos-15,       kind: macos-arm64 }
-          - { os: macos-15-intel, kind: macos-x64 }
           - { os: ubuntu-24.04,   kind: linux }
     runs-on: ${{ matrix.os }}
     defaults:

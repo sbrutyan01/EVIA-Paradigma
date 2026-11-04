@@ -33,6 +33,7 @@
   <nav aria-label="Main">
     <a href="#features">Features</a>
     <a href="#tutorial">Tutorial</a>
+    <a href="#fpga">FPGA</a>
     <a href="#download">Download</a>
     <a href="#docs">Docs</a>
     <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
@@ -69,7 +70,7 @@
           <a class="btn primary" href="#download">Download {{VERSION}}</a>
           <a class="btn" href="https://github.com/sbrutyan01/EVIA-Paradigma">Source on GitHub</a>
         </p>
-        <p class="fine">Windows, macOS and Linux. Free and open source, MIT license.</p>
+        <p class="fine">Windows and Linux; macOS builds will return later. Free and open source, MIT license.</p>
       </div>
     </div>
   </div>
@@ -230,6 +231,22 @@
   </ol>
 </section>
 
+<section class="tutorial" id="fpga" aria-labelledby="fpga-h">
+  <h2 id="fpga-h">Your first FPGA program in four steps</h2>
+  <p class="section-lede">The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).</p>
+  <ol class="steps">
+    <li><h3>Pick a language and a board</h3><p>Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.</p></li>
+    <li><h3>Open the Blink example</h3><p>File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.</p></li>
+    <li><h3>Generate code</h3><p>Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.</p></li>
+    <li><h3>Build and upload</h3><p>Vivado or the open-source tools, chosen in Settings. Upload programs the board.</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv
+# writes blink.sv and blink.xdc
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd
+# writes blink.vhd and blink.ccf</code></pre>
+  <p class="section-lede">Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.</p>
+</section>
+
 <section class="download" id="download" aria-labelledby="download-h">
   <h2 id="download-h">Download EVIA Paradigma {{VERSION}}</h2>
   <p class="section-lede">Each installer brings its own Java runtime, so nothing else needs to be installed.
@@ -240,12 +257,6 @@
       <tr><td>Windows 10 / 11, x64</td>
         <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-windows-x64.exe">EVIA-Paradigma-{{VERSION}}-windows-x64.exe</a></td>
         <td>Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.</td></tr>
-      <tr><td>macOS, Apple Silicon</td>
-        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-macos-arm64.dmg">EVIA-Paradigma-{{VERSION}}-macos-arm64.dmg</a></td>
-        <td>Not notarized yet: the first time, right-click the app and choose Open.</td></tr>
-      <tr><td>macOS, Intel</td>
-        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-macos-x64.dmg">EVIA-Paradigma-{{VERSION}}-macos-x64.dmg</a></td>
-        <td>As above.</td></tr>
       <tr><td>Ubuntu 22.04+ / Debian 12+</td>
         <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/evia-paradigma_{{VERSION}}_amd64.deb">evia-paradigma_{{VERSION}}_amd64.deb</a></td>
         <td><code>sudo apt install ./evia-paradigma_{{VERSION}}_amd64.deb</code></td></tr>
