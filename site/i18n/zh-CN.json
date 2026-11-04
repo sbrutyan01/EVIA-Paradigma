@@ -63,7 +63,7 @@
   "<b>深色模式。</b>应用采用类似 IntelliJ IDEA 的外观，并使用 Inter 和 JetBrains Mono 字体。View、Theme 可选择浅色、深色或系统主题。",
   "<b>内置指南。</b>Help、Guide（F1）提供英语、俄语和亚美尼亚语版本，说明各程序块、表达式、类功能、快捷键和 Vim 按键。",
   "<h2 id=\"tutorial-h\">八步完成第一个程序</h2>",
-  "完整教程包含所有截图，提供三种语言的 PDF：<a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>。也可在应用的 Help、Tutorial 中查看，或阅读 <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>。",
+  "完整教程包含所有截图，提供七种语言的 PDF：<a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>。也可在应用的 Help、Tutorial 中查看，或阅读 <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>。",
   "<h3>创建项目</h3><p>File、New Project。保持选中 Create a Git repository。</p>",
   "<h3>构建循环</h3><p>将 Set、For 和 Print 拖到画布上，连接它们并按 Run。</p>",
   "<h3>创建类</h3><p>Edit、New Class：为 Counter 添加 total 和 calls 字段。</p>",

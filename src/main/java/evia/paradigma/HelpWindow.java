@@ -161,9 +161,12 @@ final class HelpWindow extends JFrame {
     }
 
     /** The languages of the tutorial PDFs bundled with the application: code and the name shown in the menu. */
-    static final String[][] TUTORIALS = {{"en", "English"}, {"ru", "Русский"}, {"hy", "Հայերեն"}};
+    static final String[][] TUTORIALS = {
+            {"en", "English"}, {"ru", "Русский"}, {"hy", "Հայերեն"}, {"de", "Deutsch"},
+            {"zh-CN", "简体中文"}, {"zh-TW", "繁體中文"}, {"ja", "日本語"}
+    };
 
-    /** Opens the bundled tutorial PDF ("en", "ru" or "hy") in the system's PDF viewer. */
+    /** Opens a bundled tutorial PDF in the system's PDF viewer. */
     static void openTutorial(Component parent, String lang) {
         String name = "EVIA-Paradigma-Tutorial." + lang + ".pdf";
         try (java.io.InputStream in = HelpWindow.class.getResourceAsStream("help/" + name)) {

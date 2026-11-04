@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Builds the tutorial PDFs (English, Russian, Armenian) from docs/tutorial/TUTORIAL*.md.
+"""Builds the tutorial PDFs from docs/tutorial/TUTORIAL*.md.
 
 Markdown -> HTML with pandoc, HTML -> PDF with Chromium (Playwright). Uses the fonts bundled with the
-application (EVIA UI = Inter + Cyrillic + Armenian, JetBrains Mono). Screenshots are shrunk to JPEG
-so a PDF stays around 1 MB.
+application and system CJK fallback fonts. Screenshots are shrunk to JPEG to keep PDFs compact.
 
-Usage: scripts/build-tutorial-pdf.py        -> docs/tutorial/EVIA-Paradigma-Tutorial.{en,ru,hy}.pdf
+Usage: scripts/build-tutorial-pdf.py        -> docs/tutorial/EVIA-Paradigma-Tutorial.<language>.pdf
 """
-import io, os, re, subprocess, sys, tempfile
+import io, os, re, shutil, subprocess, sys, tempfile
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
@@ -18,13 +17,20 @@ LANGS = {
     "en": ("docs/tutorial/TUTORIAL.md", "EVIA Paradigma: tutorial", "Page", "of"),
     "ru": ("docs/tutorial/TUTORIAL.ru.md", "EVIA Paradigma: учебник", "Страница", "из"),
     "hy": ("docs/tutorial/TUTORIAL.hy.md", "EVIA Paradigma. ուսուցում", "Էջ", "/"),
+    "de": ("docs/tutorial/TUTORIAL.de.md", "EVIA Paradigma: Tutorial", "Seite", "von"),
+    "zh-CN": ("docs/tutorial/TUTORIAL.zh-CN.md", "EVIA Paradigma：教程", "第", "页 /"),
+    "zh-TW": ("docs/tutorial/TUTORIAL.zh-TW.md", "EVIA Paradigma：教學", "第", "頁 /"),
+    "ja": ("docs/tutorial/TUTORIAL.ja.md", "EVIA Paradigma：チュートリアル", "ページ", "/"),
 }
 CSS = """
 @font-face { font-family: EVIAUI; src: url('file://%(f)s/EVIAUI-Regular.ttf'); font-weight: 400; }
 @font-face { font-family: EVIAUI; src: url('file://%(f)s/EVIAUI-Bold.ttf'); font-weight: 700; }
 @font-face { font-family: JBM; src: url('file://%(f)s/JetBrainsMono-Regular.ttf'); font-weight: 400; }
 @font-face { font-family: JBM; src: url('file://%(f)s/JetBrainsMono-Bold.ttf'); font-weight: 700; }
-html { font: 10.5pt/1.5 EVIAUI, sans-serif; color: #1f2328; }
+html { font: 10.5pt/1.5 EVIAUI, "Noto Sans CJK SC", "WenQuanYi Zen Hei", "IPAGothic", sans-serif; color: #1f2328; }
+html:lang(zh-CN) { font-family: EVIAUI, "Noto Sans CJK SC", "WenQuanYi Zen Hei", sans-serif; }
+html:lang(zh-TW) { font-family: EVIAUI, "Noto Sans CJK TC", "WenQuanYi Zen Hei", sans-serif; }
+html:lang(ja) { font-family: EVIAUI, "Noto Sans CJK JP", "IPAGothic", sans-serif; }
 body { margin: 0; }
 h1 { font-size: 22pt; margin: 0 0 .4em; }
 h2 { font-size: 15pt; margin: 1.6em 0 .5em; padding-bottom: .2em; border-bottom: 1px solid #c9ced6; break-after: avoid; }
@@ -56,7 +62,7 @@ def shrink(html, tmp):
     return re.sub(r'src="([^"]+\.png)"', one, html)
 
 with tempfile.TemporaryDirectory() as tmp, sync_playwright() as pw:
-    browser = pw.chromium.launch()
+    browser = pw.chromium.launch(executable_path=shutil.which("chromium") or shutil.which("google-chrome"))
     for lang, (md, title, page_word, of_word) in LANGS.items():
         body = subprocess.run(["pandoc", "-f", "gfm+raw_html", "-t", "html", md], capture_output=True, text=True, check=True).stdout
         # links to other files in the repository become plain text in a PDF

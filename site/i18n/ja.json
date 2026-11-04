@@ -63,7 +63,7 @@
   "<b>ダークモード。</b>アプリはIntelliJ IDEA風の外観で、InterとJetBrains Monoを使用します。View、Themeからライト、ダーク、システム設定を選べます。",
   "<b>内蔵ガイド。</b>Help、Guide（F1）では、すべてのブロック、式、クラス機能、ショートカット、Vimキーを英語、ロシア語、アルメニア語で説明しています。",
   "<h2 id=\"tutorial-h\">8ステップで最初のプログラムを作成</h2>",
-  "スクリーンショット付きの完全なチュートリアルを3言語のPDFで利用できます：<a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>。アプリのHelp、Tutorialや<a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>にも掲載されています。",
+  "スクリーンショット付きの完全なチュートリアルを7言語のPDFで利用できます：<a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>、<a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>。アプリのHelp、Tutorialや<a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>にも掲載されています。",
   "<h3>プロジェクトを作成</h3><p>File、New Projectを選択します。Create a Git repositoryはチェックしたままにします。</p>",
   "<h3>ループを作成</h3><p>Set、For、Printをキャンバスにドラッグし、接続してRunを押します。</p>",
   "<h3>クラスを作成</h3><p>Edit、New Classを選び、Counterにtotalとcallsフィールドを追加します。</p>",

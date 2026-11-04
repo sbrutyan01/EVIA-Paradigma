@@ -1,6 +1,6 @@
 # EVIA Paradigma: tutorial
 
-[Русский](TUTORIAL.ru.md) · [Հայերեն](TUTORIAL.hy.md) · [Website](https://sbrutyan01.github.io/EVIA-Paradigma/)
+[Русский](TUTORIAL.ru.md) · [Հայերեն](TUTORIAL.hy.md) · [Deutsch](TUTORIAL.de.md) · [简体中文](TUTORIAL.zh-CN.md) · [繁體中文](TUTORIAL.zh-TW.md) · [日本語](TUTORIAL.ja.md) · [Website](https://sbrutyan01.github.io/EVIA-Paradigma/)
 
 This walk-through builds a small project with a loop and a class, runs it, looks at the C and C++ it becomes,
 and puts it under Git. Every picture is the real application (they are regenerated with
@@ -169,7 +169,7 @@ Every block becomes one state of a state machine and takes one clock cycle. Pins
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
-- **Help → Tutorial (PDF)** opens this tutorial in English, Russian or Armenian.
+- **Help → Tutorial (PDF)** opens this tutorial in English, Russian, Armenian, German, Simplified Chinese, Traditional Chinese or Japanese.
 - **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys, in English,
   Russian or Armenian (the list above the topics). **View → Theme** switches between the light and dark look.
 

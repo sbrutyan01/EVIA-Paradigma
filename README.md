@@ -20,7 +20,11 @@
   <a href="#tutorial">Tutorial</a>
   <br>
   Tutorial in other languages: <a href="docs/tutorial/TUTORIAL.ru.md">Русский</a> ·
-  <a href="docs/tutorial/TUTORIAL.hy.md">Հայերեն</a> · Website:
+  <a href="docs/tutorial/TUTORIAL.hy.md">Հայերեն</a> ·
+  <a href="docs/tutorial/TUTORIAL.de.md">Deutsch</a> ·
+  <a href="docs/tutorial/TUTORIAL.zh-CN.md">简体中文</a> ·
+  <a href="docs/tutorial/TUTORIAL.zh-TW.md">繁體中文</a> ·
+  <a href="docs/tutorial/TUTORIAL.ja.md">日本語</a> · Website:
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/">English</a> ·
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">Русский</a> ·
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">Հայերեն</a> ·
@@ -266,7 +270,7 @@ Release 0.3.1 also has two fixes found by the Windows CI job (they only show wit
 
 ## Tutorial
 
-*Also as PDF in [English](docs/tutorial/EVIA-Paradigma-Tutorial.en.pdf), [Русский](docs/tutorial/EVIA-Paradigma-Tutorial.ru.pdf) and [Հայերեն](docs/tutorial/EVIA-Paradigma-Tutorial.hy.pdf) (also under Help → Tutorial). Also in [Russian / на русском](docs/tutorial/TUTORIAL.ru.md) and [Armenian / հայերեն](docs/tutorial/TUTORIAL.hy.md).*
+*Also as PDF in [English](docs/tutorial/EVIA-Paradigma-Tutorial.en.pdf), [Русский](docs/tutorial/EVIA-Paradigma-Tutorial.ru.pdf), [Հայերեն](docs/tutorial/EVIA-Paradigma-Tutorial.hy.pdf), [Deutsch](docs/tutorial/EVIA-Paradigma-Tutorial.de.pdf), [简体中文](docs/tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf), [繁體中文](docs/tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf) and [日本語](docs/tutorial/EVIA-Paradigma-Tutorial.ja.pdf) (also under Help → Tutorial).*
 
 This walk-through builds a small project with a loop and a class, runs it, looks at the C and C++ it becomes,
 and puts it under Git. Every picture is the real application (they are regenerated with
@@ -427,7 +431,7 @@ Choose SystemVerilog, Verilog-2001 or VHDL and an Artix-7 or GateMate board; see
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
-- **Help → Tutorial (PDF)** opens this tutorial in English, Russian or Armenian.
+- **Help → Tutorial (PDF)** opens this tutorial in English, Russian, Armenian, German, Simplified Chinese, Traditional Chinese or Japanese.
 - **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys, in English,
   Russian or Armenian (the list above the topics). **View → Theme** switches between the light and dark look.
 
@@ -556,7 +560,7 @@ Ctrl+wheel zooms.
 | **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
-| **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Tutorial (PDF; English, Russian, Armenian), Online Documentation, Report an Issue, Check for Updates, About |
+| **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Tutorial (PDF; seven languages), Online Documentation, Report an Issue, Check for Updates, About |
 
 <table>
 <tr>

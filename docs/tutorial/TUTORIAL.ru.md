@@ -1,6 +1,6 @@
 # EVIA Paradigma: учебник
 
-[English](TUTORIAL.md) · **Русский** · [Հայերեն](TUTORIAL.hy.md) · [Сайт](https://sbrutyan01.github.io/EVIA-Paradigma/ru/)
+[English](TUTORIAL.md) · **Русский** · [Հայերեն](TUTORIAL.hy.md) · [Deutsch](TUTORIAL.de.md) · [简体中文](TUTORIAL.zh-CN.md) · [繁體中文](TUTORIAL.zh-TW.md) · [日本語](TUTORIAL.ja.md) · [Сайт](https://sbrutyan01.github.io/EVIA-Paradigma/ru/)
 
 В этом учебнике мы соберём небольшой проект с циклом и классом, запустим его, посмотрим, в какой код на C и C++
 он превращается, и поместим его в Git. В конце мы запрограммируем плату Arduino или ESP32. Все снимки экрана сделаны
@@ -195,7 +195,7 @@ read it back*, *SPI: transfer a byte* и *I2C: write and read a device register*
   в другой программе.
 - В **File → Open Example** есть готовые программы, в том числе `classes.evia` (поля, конструктор, методы, модуль)
   и примеры для плат.
-- **Help → Tutorial (PDF)** открывает этот учебник на английском, русском или армянском.
+- **Help → Tutorial (PDF)** открывает этот учебник на английском, русском, армянском, немецком, упрощённом и традиционном китайском или японском.
 - **Help → Guide** (F1) описывает каждый блок, выражения, классы, проекты, Git, сочетания клавиш и клавиши Vim.
 
 <p align="center"><img src="../screenshots/20-help-guide.png" alt="Встроенное руководство" width="800"></p>

@@ -1,6 +1,6 @@
 # EVIA Paradigma. ուսուցում
 
-[English](TUTORIAL.md) · [Русский](TUTORIAL.ru.md) · **Հայերեն** · [Կայք](https://sbrutyan01.github.io/EVIA-Paradigma/hy/)
+[English](TUTORIAL.md) · [Русский](TUTORIAL.ru.md) · **Հայերեն** · [Deutsch](TUTORIAL.de.md) · [简体中文](TUTORIAL.zh-CN.md) · [繁體中文](TUTORIAL.zh-TW.md) · [日本語](TUTORIAL.ja.md) · [Կայք](https://sbrutyan01.github.io/EVIA-Paradigma/hy/)
 
 Այս ուսուցման ընթացքում մենք կստեղծենք ցիկլով և դասով փոքր նախագիծ, կգործարկենք այն, կտեսնենք, թե ինչ
 C և C++ կոդի է այն վերածվում, և կպահենք այն Git-ում։ Վերջում կծրագրավորենք Arduino կամ ESP32 տախտակ։ Բոլոր
@@ -196,7 +196,7 @@ MX5xx/6xx/7xx ընտանիքներից), ապա **Generate code** (F7)։ Արդ�
 - Կիսվեք դասերով ծրագրերի միջև. **File → Export Classes as Module…**, ապա **File → Import Module…** մեկ այլ ծրագրում։
 - **File → Open Example**-ում կան պատրաստի ծրագրեր, այդ թվում `classes.evia`-ն (դաշտեր, կոնստրուկտոր, մեթոդներ,
   մոդուլ) և տախտակների օրինակներ։
-- **Help → Tutorial (PDF)**-ը բացում է այս ուսուցումը անգլերեն, ռուսերեն կամ հայերեն։
+- **Help → Tutorial (PDF)**-ը բացում է այս ուսուցումը յոթ լեզուներից որևէ մեկով։
 - **Help → Guide**-ը (F1) բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերը, նախագծերը, Git-ը,
   ստեղնային համակցությունները և Vim ստեղները։
 
