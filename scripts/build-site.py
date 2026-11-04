@@ -18,6 +18,9 @@ out = "build/site"
 shutil.rmtree(out, ignore_errors=True)
 shutil.copytree("site", out)
 os.makedirs(out + "/img", exist_ok=True)
+os.makedirs(out + "/tutorial", exist_ok=True)
+for f in glob.glob("docs/tutorial/*.pdf"):   # the tutorial in English, Russian and Armenian
+    shutil.copy(f, out + "/tutorial/")
 for f in glob.glob("docs/screenshots/*.png") + ["docs/logo.png", "docs/logo-dark.png"]:
     shutil.copy(f, out + "/img/")
 

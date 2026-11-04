@@ -41,6 +41,14 @@
                     <include>modules/*.eviam</include>
                 </includes>
             </resource>
+            <!-- the tutorial PDFs (English, Russian, Armenian) for Help > Tutorial -->
+            <resource>
+                <directory>docs/tutorial</directory>
+                <targetPath>evia/paradigma/help</targetPath>
+                <includes>
+                    <include>*.pdf</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>

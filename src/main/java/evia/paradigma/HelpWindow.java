@@ -160,6 +160,30 @@ final class HelpWindow extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /** The languages of the tutorial PDFs bundled with the application: code and the name shown in the menu. */
+    static final String[][] TUTORIALS = {{"en", "English"}, {"ru", "Русский"}, {"hy", "Հայերեն"}};
+
+    /** Opens the bundled tutorial PDF ("en", "ru" or "hy") in the system's PDF viewer. */
+    static void openTutorial(Component parent, String lang) {
+        String name = "EVIA-Paradigma-Tutorial." + lang + ".pdf";
+        try (java.io.InputStream in = HelpWindow.class.getResourceAsStream("help/" + name)) {
+            if (in == null) throw new IOException("the tutorial is not part of this build");
+            java.nio.file.Path dir = java.nio.file.Files.createTempDirectory("evia-tutorial");
+            java.nio.file.Path file = dir.resolve(name);
+            java.nio.file.Files.copy(in, file);
+            file.toFile().deleteOnExit();
+            dir.toFile().deleteOnExit();
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                Desktop.getDesktop().open(file.toFile());
+                return;
+            }
+            JOptionPane.showMessageDialog(parent, "No PDF viewer is available. The tutorial was saved as\n" + file,
+                    "Tutorial", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException | RuntimeException e) {
+            browse(parent, REPO + "/blob/main/docs/tutorial/" + name);   // the same file on GitHub
+        }
+    }
+
     /** Asks GitHub for the latest release and compares it with this version. */
     static void checkForUpdates(Component parent) {
         new SwingWorker<String, Void>() {

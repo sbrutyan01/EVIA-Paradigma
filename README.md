@@ -64,6 +64,7 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 - **PIC32 C**: a new language for nine PIC32MX chips, bare-metal C for Microchip's XC32 (no Harmony or plib):
   MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L),
   MX5xx/6xx/7xx (695F512L, 795F512L). Clock, pins, PWM, ADC, UART, SPI and I2C are set up through the registers.
+- **Tutorial as PDF** in English, Russian and Armenian: **Help → Tutorial (PDF)**, also in [`docs/tutorial`](docs/tutorial) and on the website. It has a new step on the bus blocks and PIC32.
 - **Build and Upload** for PIC32: xc32-gcc, xc32-bin2hex and an upload command you choose (pic32prog by default).
   `--lang pic32 --board KEY` on the command line.
 - **Tested** against a PC compiler and Microchip's real device headers (144 combinations, `-Werror`), and the bus code of
@@ -205,7 +206,7 @@ Release 0.3.1 also has two fixes found by the Windows CI job (they only show wit
 
 ## Tutorial
 
-*Also in [Russian / на русском](docs/tutorial/TUTORIAL.ru.md) and [Armenian / հայերեն](docs/tutorial/TUTORIAL.hy.md).*
+*Also as PDF in [English](docs/tutorial/EVIA-Paradigma-Tutorial.en.pdf), [Русский](docs/tutorial/EVIA-Paradigma-Tutorial.ru.pdf) and [Հայերեն](docs/tutorial/EVIA-Paradigma-Tutorial.hy.pdf) (also under Help → Tutorial). Also in [Russian / на русском](docs/tutorial/TUTORIAL.ru.md) and [Armenian / հայերեն](docs/tutorial/TUTORIAL.hy.md).*
 
 This walk-through builds a small project with a loop and a class, runs it, looks at the C and C++ it becomes,
 and puts it under Git. Every picture is the real application (they are regenerated with
@@ -330,10 +331,39 @@ See [Arduino and ESP32 boards](#arduino-and-esp32-boards).
 
 <p align="center"><img src="docs/screenshots/29-avr-build.png" alt="Bare-metal AVR C built with avr-gcc for the Arduino Uno" width="900"></p>
 
-### 9. Keep going
+### 9. Talk to other chips: UART, SPI and I2C, and PIC32
+
+Three more programs under **File → Open Example → Arduino and ESP32 Boards** use the bus blocks: *UART: send a byte,
+read it back*, *SPI: transfer a byte* and *I2C: write and read a device register*. The blocks are in the *Board* group:
+
+| Block | Code | What it does |
+|---|---|---|
+| **UART Open** | `9600` | starts the serial port at this baud rate |
+| **UART Write** | `65` | sends one byte (0..255) |
+| **UART Read** | `c` | next received byte, or -1 if none |
+| **SPI Open** | `1000000` | SPI master at this clock in Hz (mode 0, MSB first) |
+| **SPI Transfer** | `reply = 66` | sends a byte, stores the byte received at the same time |
+| **I2C Open** | `100000` | I2C master at this clock in Hz |
+| **I2C Write** | `80, 0, 42` | address (7-bit), register, value |
+| **I2C Read** | `v = 80, 0` | stores the register's value, or -1 if nothing answers |
+
+Open a bus before using it. **Run** simulates them: UART Write bytes come back from UART Read, SPI's input is wired
+to its output, and one I2C device with 256 registers answers at address 80 (80 is 0x50; numbers are decimal).
+
+For a Microchip PIC32MX chip choose **Language: PIC32 C** and the chip in the **Board** list (nine chips from the MX1xx/2xx,
+MX3xx/4xx and MX5xx/6xx/7xx families), then **Generate code** (F7). The result is bare-metal C for Microchip's free XC32
+compiler: the clock, pins, PWM, ADC, UART, SPI and I2C are set up through the registers. **Build** runs `xc32-gcc` and
+`xc32-bin2hex`; **Upload** runs the command set in **Settings** (`pic32prog {hex}` by default). The pins of the chosen
+chip family are listed at the top of the generated file.
+
+*Please note:* the PIC32 code is checked against Microchip's real device headers, but it has not yet been built with
+XC32 or run on a chip. Treat the first build on your board as a test.
+
+### 10. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
+- **Help → Tutorial (PDF)** opens this tutorial in English, Russian or Armenian.
 - **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys, in English,
   Russian or Armenian (the list above the topics). **View → Theme** switches between the light and dark look.
 
@@ -461,7 +491,7 @@ Ctrl+wheel zooms.
 | **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
-| **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Online Documentation, Report an Issue, Check for Updates, About |
+| **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Tutorial (PDF; English, Russian, Armenian), Online Documentation, Report an Issue, Check for Updates, About |
 
 <table>
 <tr>
@@ -705,7 +735,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `Library.java` / `BlockDef.java` / `Method.java` | Classes, their fields and methods, keeping calls in sync |
 | `Grouper.java` | Turns a selection into a class plus a call |
 | `Project.java` / `GitService.java` / `GitDialogs.java` | Project folders; the installed git; commit and GitHub dialogs |
-| `HelpWindow.java` | Guide (`help/guide.html`), links, update check |
+| `HelpWindow.java` | Guide (`help/guide.html`), tutorial PDFs, links, update check |
 | `PalettePanel.java` / `FlowCanvas.java` / `Block.java` | Palette, editing surface, blocks |
 | `ExprParser.java` / `Expr.java` | Recursive-descent parser → AST (sealed interface + records) → evaluator |
 | `Interpreter.java` | Compile pass, then execution with per-object state |

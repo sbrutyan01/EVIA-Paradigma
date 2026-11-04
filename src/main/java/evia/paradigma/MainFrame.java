@@ -280,6 +280,9 @@ final class MainFrame extends JFrame {
         help.add(item("Keyboard Shortcuts", null, e -> HelpWindow.showTopic(this, "keys")));
         help.add(item("Vim Keys", null, e -> HelpWindow.showTopic(this, "vim")));
         help.add(examplesMenu("Examples"));
+        JMenu tutorial = new JMenu("Tutorial (PDF)");
+        for (String[] t : HelpWindow.TUTORIALS) tutorial.add(item(t[1], null, e -> HelpWindow.openTutorial(this, t[0])));
+        help.add(tutorial);
         help.addSeparator();
         help.add(item("Online Documentation", null, e -> HelpWindow.browse(this, HelpWindow.REPO + "#readme")));
         help.add(item("Report an Issue...", null, e -> HelpWindow.browse(this, HelpWindow.REPO + "/issues/new")));

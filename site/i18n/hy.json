@@ -248,8 +248,8 @@
   "<h2 id=\"tutorial-h\">Առաջին ծրագիրը ութ քայլով</h2>"
  ],
  [
-  "The full walk-through, with every screenshot, is in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
-  "Ամբողջական քայլ առ քայլ ուսուցումը՝ բոլոր սքրինշոթներով, <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md\">GitHub-ում է</a>։"
+  "The full walk-through, with every screenshot, is a PDF in three languages: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>. It is also under Help, Tutorial in the app, and in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
+  "Ամբողջական քայլ առ քայլ ուսուցումը՝ բոլոր սքրինշոթներով, PDF է երեք լեզվով. <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>։ Այն կա նաև ծրագրում՝ Help, Tutorial, և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>-ում (անգլերեն)։"
  ],
  [
   "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",

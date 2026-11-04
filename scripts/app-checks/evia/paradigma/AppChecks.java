@@ -139,6 +139,15 @@ public class AppChecks {
             check(e.getMessage().contains("board constant"), "board constants can't be assigned");
         }
 
+        // ---------- tutorial PDFs
+        for (String[] t : new String[][] {{"en", "English"}, {"ru", "Русский"}, {"hy", "Հայերեն"}}) {
+            try (java.io.InputStream in = HelpWindow.class.getResourceAsStream("help/EVIA-Paradigma-Tutorial." + t[0] + ".pdf")) {
+                byte[] head = in == null ? new byte[0] : in.readNBytes(5);
+                check(new String(head, java.nio.charset.StandardCharsets.ISO_8859_1).equals("%PDF-"), "tutorial PDF " + t[0] + " is bundled");
+            }
+        }
+        check(HelpWindow.TUTORIALS.length == 3, "tutorial menu lists three languages");
+
         // ---------- UART / SPI / I2C blocks and PIC32
         check(Target.parse("pic32").lang() == Target.Lang.PIC32 && Target.parse("pic32/goto").values() == Target.Values.FAST
                 && Target.parse(Target.parse("pic32").key()).lang() == Target.Lang.PIC32, "pic32 target (always fast values)");
