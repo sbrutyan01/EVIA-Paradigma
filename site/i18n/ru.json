@@ -356,8 +356,8 @@
   "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
  ],
  [
-  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Плюс проверки приложения, модулей, проектов, Git и масштабирования колесом мыши в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
  ],
  [
   "<h2 id=\"docs-h\">Documentation</h2>",
@@ -446,5 +446,9 @@
  [
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">Примеры программ для FPGA</a>, также в File, Open Example, FPGA Boards</li>"
+ ],
+ [
+  "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
+  "<tr><td>Проекты для FPGA в моделировании (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 из 27</td></tr>"
  ]
 ]
