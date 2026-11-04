@@ -21,6 +21,169 @@ final class EmbeddedRuntime {
 
     record Piece(List<String> defines, List<String> needs, String code) {}
 
+
+    /**
+     * MQTT 3.1.1 over a plain TCP connection, quality of service 0: the part that is the same on every board.
+     * It needs four functions from the board's own piece: rt_net_join, rt_net_connect, rt_net_write and rt_net_read.
+     */
+    static final String MQTT_CORE = """
+            /* ---- MQTT 3.1.1, quality of service 0: connect, publish, subscribe, read.
+               The newest message of every subscribed topic is kept until MQTT Read takes it. */
+            #define RT_MQTT_TOPICS 4
+            #define RT_MQTT_TOPIC_LEN 64
+            #define RT_MQTT_BUF 256
+
+            static char rt_mq_topic[RT_MQTT_TOPICS][RT_MQTT_TOPIC_LEN];
+            static double rt_mq_value[RT_MQTT_TOPICS];
+            static char rt_mq_full[RT_MQTT_TOPICS];
+            static int rt_mq_topics = 0;
+            static int rt_mq_ready = 0;
+            static unsigned int rt_mq_id = 1;
+
+            /* A text as MQTT writes it: two bytes of length, then the characters. */
+            static int rt_mq_text(unsigned char *p, const char *s) {
+                int n = (int) strlen(s);
+                p[0] = (unsigned char) (n >> 8);
+                p[1] = (unsigned char) n;
+                memcpy(p + 2, s, (size_t) n);
+                return n + 2;
+            }
+
+            /* One packet: the type, the length in MQTT's own format, then the body. */
+            static int rt_mq_packet(unsigned char type, const unsigned char *body, int n) {
+                unsigned char head[5];
+                int h = 0;
+                unsigned long len = (unsigned long) n;
+                head[h++] = type;
+                do {
+                    unsigned char d = (unsigned char) (len % 128);
+                    len /= 128;
+                    if (len) d |= 0x80;
+                    head[h++] = d;
+                } while (len);
+                if (rt_net_write(head, h) != h) return 0;
+                return n == 0 || rt_net_write(body, n) == n;
+            }
+
+            static int mqttConnect(const char *network, const char *password, const char *broker, int port) {
+                unsigned char body[RT_MQTT_BUF], ack[4];
+                int n = 0;
+                rt_mq_ready = 0;
+                if (!rt_net_join(network, password)) return 0;
+                if (!rt_net_connect(broker, port)) return 0;
+                n += rt_mq_text(body + n, "MQTT");
+                body[n++] = 4;        /* protocol level 4 = MQTT 3.1.1 */
+                body[n++] = 0x02;     /* clean session, no will, no user name */
+                body[n++] = 0;
+                body[n++] = 60;       /* keep alive in seconds */
+                n += rt_mq_text(body + n, RT_MQTT_CLIENT);
+                if (!rt_mq_packet(0x10, body, n)) return 0;
+                if (rt_net_read(ack, 4, 5000) != 4 || (ack[0] & 0xF0) != 0x20 || ack[3] != 0) return 0;
+                rt_mq_ready = 1;
+                return 1;
+            }
+
+            static void mqttPublish(const char *topic, const char *text) {
+                unsigned char body[RT_MQTT_BUF];
+                int n = 0, len = (int) strlen(text);
+                if (!rt_mq_ready) return;
+                n += rt_mq_text(body + n, topic);
+                if (len > (int) sizeof body - n) len = (int) sizeof body - n;
+                memcpy(body + n, text, (size_t) len);
+                n += len;
+                rt_mq_packet(0x30, body, n);
+            }
+
+            static void mqttPublishNum(const char *topic, double v) {
+                char buf[32];
+                rt_fmt(v, buf);
+                mqttPublish(topic, buf);
+            }
+
+            static void mqttSubscribe(const char *topic) {
+                unsigned char body[RT_MQTT_BUF];
+                int n = 0, i;
+                if (!rt_mq_ready) return;
+                for (i = 0; i < rt_mq_topics; i++) {
+                    if (strcmp(rt_mq_topic[i], topic) == 0) break;
+                }
+                if (i == rt_mq_topics && rt_mq_topics < RT_MQTT_TOPICS) {
+                    strncpy(rt_mq_topic[rt_mq_topics], topic, RT_MQTT_TOPIC_LEN - 1);
+                    rt_mq_topic[rt_mq_topics][RT_MQTT_TOPIC_LEN - 1] = 0;
+                    rt_mq_full[rt_mq_topics] = 0;
+                    rt_mq_topics++;
+                }
+                body[n++] = (unsigned char) (rt_mq_id >> 8);
+                body[n++] = (unsigned char) rt_mq_id;
+                rt_mq_id++;
+                n += rt_mq_text(body + n, topic);
+                body[n++] = 0;        /* quality of service 0 */
+                rt_mq_packet(0x82, body, n);
+            }
+
+            /* Takes in everything that has arrived and keeps the newest message of each subscribed topic. */
+            static void rt_mq_poll(void) {
+                unsigned char type, d, buf[RT_MQTT_BUF];
+                while (rt_net_read(&type, 1, 0) == 1) {
+                    unsigned long len = 0, mult = 1;
+                    int i, tl;
+                    do {
+                        if (rt_net_read(&d, 1, 1000) != 1) return;
+                        len += (unsigned long) (d & 0x7F) * mult;
+                        mult *= 128;
+                    } while (d & 0x80);
+                    if (len > sizeof buf) {                  /* longer than the buffer: read it and drop it */
+                        while (len--) {
+                            if (rt_net_read(&d, 1, 1000) != 1) return;
+                        }
+                        continue;
+                    }
+                    if (len && rt_net_read(buf, (int) len, 1000) != (int) len) return;
+                    if ((type & 0xF0) != 0x30 || len < 2) continue;     /* only PUBLISH carries a message */
+                    tl = (buf[0] << 8) | buf[1];
+                    if ((unsigned long) tl + 2 > len) continue;
+                    for (i = 0; i < rt_mq_topics; i++) {
+                        if ((int) strlen(rt_mq_topic[i]) == tl && memcmp(rt_mq_topic[i], buf + 2, (size_t) tl) == 0) {
+                            char text[32];
+                            unsigned long pl = len - 2 - (unsigned long) tl;
+                            double v;
+                            if (pl > sizeof text - 1) pl = sizeof text - 1;
+                            memcpy(text, buf + 2 + tl, (size_t) pl);
+                            text[pl] = 0;
+                            rt_mq_value[i] = rt_parse_num(text, &v) ? v : -1.0;
+                            rt_mq_full[i] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            /* 1 when a message of that topic is waiting, 0 when none is. */
+            static double mqttHas(const char *topic) {
+                int i;
+                if (!rt_mq_ready) return 0.0;
+                rt_mq_poll();
+                for (i = 0; i < rt_mq_topics; i++) {
+                    if (strcmp(rt_mq_topic[i], topic) == 0 && rt_mq_full[i]) return 1.0;
+                }
+                return 0.0;
+            }
+
+            /* The number in the next message of that topic, or -1 when none has arrived. */
+            static double mqttRead(const char *topic) {
+                int i;
+                if (!rt_mq_ready) return -1.0;
+                rt_mq_poll();
+                for (i = 0; i < rt_mq_topics; i++) {
+                    if (strcmp(rt_mq_topic[i], topic) == 0 && rt_mq_full[i]) {
+                        rt_mq_full[i] = 0;
+                        return rt_mq_value[i];
+                    }
+                }
+                return -1.0;
+            }
+            """;
+
     private static final Map<String, Piece> ARDUINO = new LinkedHashMap<>();
     private static final Map<String, Piece> AVR = new LinkedHashMap<>();
 
@@ -169,6 +332,57 @@ final class EmbeddedRuntime {
                 }
                 """);
         piece(ARDUINO, "rt_parse_num", "", PARSE);
+
+        // MQTT over the ESP32's own WiFi (an AVR board has no network: the generator refuses the blocks there)
+        piece(ARDUINO, "rt_net_join rt_net_connect rt_net_write rt_net_read", "", """
+                #include <WiFi.h>
+                /* ---- the network under MQTT: the board's WiFi and one TCP connection */
+                #define RT_MQTT_CLIENT "evia-paradigma"
+                static WiFiClient rt_net;
+
+                static int rt_net_join(const char *network, const char *password) {
+                    unsigned long start;
+                    if (WiFi.status() == WL_CONNECTED) return 1;
+                    WiFi.mode(WIFI_STA);
+                    WiFi.begin(network, password);
+                    start = millis();
+                    while (WiFi.status() != WL_CONNECTED) {
+                        if (millis() - start > 20000UL) return 0;   /* 20 seconds to join */
+                        delay(100);
+                    }
+                    return 1;
+                }
+
+                static int rt_net_connect(const char *host, int port) {
+                    rt_net.stop();
+                    return rt_net.connect(host, (uint16_t) port) ? 1 : 0;
+                }
+
+                static int rt_net_write(const unsigned char *p, int n) {
+                    return (int) rt_net.write(p, (size_t) n);
+                }
+
+                /* Up to n bytes; waits up to ms milliseconds for the first one. */
+                static int rt_net_read(unsigned char *p, int n, unsigned long ms) {
+                    unsigned long start = millis();
+                    int got = 0;
+                    while (got < n) {
+                        if (rt_net.available()) {
+                            int c = rt_net.read();
+                            if (c < 0) break;
+                            p[got++] = (unsigned char) c;
+                            start = millis();
+                            continue;
+                        }
+                        if (!rt_net.connected() && !rt_net.available()) break;
+                        if (millis() - start >= ms) break;
+                        delay(1);
+                    }
+                    return got;
+                }
+                """);
+        piece(ARDUINO, "mqttConnect mqttPublish mqttPublishNum mqttSubscribe mqttHas mqttRead rt_mq_poll",
+                "rt_net_join rt_fmt rt_parse_num", MQTT_CORE);
         piece(ARDUINO, "rt_read_line", "", """
                 /* One line from the serial port (Enter, or the Serial Monitor's "Newline" ending); empty lines are skipped. */
                 static const char *rt_read_line(void) {

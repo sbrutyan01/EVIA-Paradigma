@@ -18,3 +18,5 @@ licenses are in `src/main/resources/evia/paradigma/fonts/`.
 The PIC32 checks in CI (`scripts/check-pic32.sh`) read Microchip's device headers, fetched at test time from the Pinguino project. They are not part of this repository, the jar or the installers.
 
 The FPGA pin locations in `Fpga.java` are facts read from the boards' published constraint and design files (Digilent master XDC files, Olimex KiCad design, Cologne Chip examples). No code or file text from them is copied. The FPGA checks in CI (`scripts/check-fpga.sh`) use the OSS CAD Suite, downloaded at test time; it is not part of this repository, the jar or the installers.
+
+The tools that **Settings** can fetch (arduino-cli, AVR GCC, the OSS CAD Suite) are downloaded from their own projects' releases at the moment you ask for them, into EVIA Paradigma's folder. They are not part of this repository, the jar or the installers, and each keeps its own licence. Microchip's XC32 is not downloaded at all: its licence does not allow passing the compiler on, so Settings only opens Microchip's page.

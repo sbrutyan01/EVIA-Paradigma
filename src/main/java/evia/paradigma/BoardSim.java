@@ -216,6 +216,69 @@ final class BoardSim {
         event("I2C write " + hex(a) + "[" + r + "] = " + b);
     }
 
+    // ---------------------------------------------------------------- MQTT
+
+    private boolean mqttOn;
+    private final java.util.LinkedHashMap<String, java.util.ArrayDeque<Double>> topics = new java.util.LinkedHashMap<>();
+
+    private static String topic(String t) {
+        String s = t == null ? "" : t.trim();
+        if (s.isEmpty()) throw new FlowException("the topic must be a text, e.g. \"evia/value\"");
+        return s;
+    }
+
+    /** Joins the network and connects to the broker. The simulated broker always answers. */
+    void mqttConnect(String network, String password, String broker, double port) {
+        int p = whole(port, 65535, "MQTT port");
+        if (broker == null || broker.isBlank()) throw new FlowException("the broker must be a text, e.g. \"broker.example.com\"");
+        mqttOn = true;
+        event("MQTT connect " + broker + ":" + p + " over " + (network == null || network.isBlank() ? "the network" : network));
+    }
+
+    /** Sends a message. A number is sent as text, as Print writes it; a subscribed topic receives it back. */
+    void mqttPublish(String t, Object value) {
+        if (!mqttOn) throw new FlowException("MQTT Publish needs an MQTT Connect block before it");
+        String name = topic(t), text = Expr.str(value);
+        java.util.ArrayDeque<Double> q = topics.get(name);
+        if (q != null) q.addLast(value instanceof Double d ? d : parse(text));
+        event("MQTT publish " + name + " = " + text);
+    }
+
+    void mqttSubscribe(String t) {
+        if (!mqttOn) throw new FlowException("MQTT Subscribe needs an MQTT Connect block before it");
+        String name = topic(t);
+        topics.computeIfAbsent(name, k -> new java.util.ArrayDeque<>());
+        event("MQTT subscribe " + name);
+    }
+
+    /** 1 when a message of that topic is waiting, 0 when none is. */
+    double mqttHas(String t) {
+        if (!mqttOn) throw new FlowException("MQTT Has Message needs an MQTT Connect block before it");
+        java.util.ArrayDeque<Double> q = topics.get(topic(t));
+        return q != null && !q.isEmpty() ? 1 : 0;
+    }
+
+    /** The number in the next message of that topic, or -1 when none has arrived. */
+    double mqttRead(String t) {
+        if (!mqttOn) throw new FlowException("MQTT Read needs an MQTT Connect block before it");
+        String name = topic(t);
+        java.util.ArrayDeque<Double> q = topics.get(name);
+        if (q == null) throw new FlowException("MQTT Read needs an MQTT Subscribe block for " + name + " before it");
+        Double v = q.pollFirst();
+        if (v == null) return -1;
+        event("MQTT message " + name + " = " + Expr.str(v));
+        return v;
+    }
+
+    /** The number in a message's text, or -1 when it does not start with one (the boards do the same). */
+    private static double parse(String text) {
+        try {
+            return Double.parseDouble(text.trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
     /** A register of the device, or -1 if the address does not answer. */
     double i2cRead(double addr, double reg) {
         if (!i2cOn) throw new FlowException("I2C Read needs an I2C Open block before it");

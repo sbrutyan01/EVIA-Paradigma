@@ -144,6 +144,9 @@ jobs:
       - name: "PIC32 examples against the device headers (MX1xx/2xx, MX3xx/4xx, MX5xx/6xx/7xx)"
         run: scripts/check-pic32.sh
 
+      - name: "The generated MQTT client against a broker on this computer"
+        run: scripts/check-mqtt.sh
+
   # FPGA designs (SystemVerilog, Verilog-2001, VHDL for Artix-7 and GateMate): simulated against the interpreter
   # with Icarus Verilog and GHDL, synthesised with yosys, and for the GateMate placed, routed and packed into a
   # bitstream with nextpnr-himbaechel and gmpack. There is no Vivado or board in CI.

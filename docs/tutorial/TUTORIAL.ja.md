@@ -131,7 +131,27 @@ Microchip PIC32MX チップでは、**Language: PIC32 C** と **Board** リス�
 
 *注意：* 出力はオープンソースツールでシミュレーションと合成を行っていますが、Vivado での処理や実機への書き込みは行っていません。
 
-## 11. さらに使いこなす
+## 11. MQTT で数値を送り出す
+
+**File → Open Example → Arduino and ESP32 Boards → MQTT sensor** を開きます。温度をブローカーに公開し、自分宛てに
+コマンドを送って読み戻すプログラムです。
+
+**MQTT** のブロックは *Board* グループに5つあります。*MQTT Connect*、*MQTT Publish*、*MQTT Subscribe*、
+*MQTT Has Message*、*MQTT Read* です。ネットワーク名、パスワード、ブローカー、トピックは固定のテキストです。
+ビルド時にプログラムへ書き込まれるからです。
+
+- **Run** は自分のパソコン上のブローカーが応答するので、機器がなくても試せます。
+- **PIC32 C** は AT ファームウェアの ESP8266／ESP32 モジュールを UART2 で動かし、Print は UART1 のままです。
+- **ESP32** ボードの **Arduino** はボード自身の WiFi を使います。
+- AVR ボードはこれらのブロックを拒否します。シリアルポートが1つしかなく、Print が使っているからです。
+
+メッセージは数値です。何も届いていないとき *MQTT Read* は -1 を返すので、本物の -1 があり得る場合は先に
+*MQTT Has Message* で確かめてください。
+
+*注意:* MQTT のパケットは CI で実際のブローカーに対して検査していますが、WiFi モジュール、ESP32、PIC32 チップは
+含まれていません。MX695/795 の Ethernet ポート経由の MQTT はまだ対応していません。
+
+## 12. さらに使いこなす
 
 - クラスを複数のプログラムで共有するには、**File → Export Classes as Module…** を選び、別のプログラムで **File → Import Module…** を選びます。
 - **File → Open Example** には、フィールド、コンストラクター、メソッド、モジュールを含む `classes.evia` などのサンプルがあります。

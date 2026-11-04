@@ -119,6 +119,9 @@ final class Pic32Runtime {
                     }
                     #define RT_UART_PINS() do { rt_pps(1); U1RXR = 3; RPB3R = 1; rt_pps(0); \\
                         ANSELBCLR = (1UL << 13) | (1UL << 3); TRISBSET = 1UL << 13; TRISBCLR = 1UL << 3; } while (0)
+                    /* UART2 (the WiFi module): RX = RB5, TX = RB1 */
+                    #define RT_AT_PINS() do { rt_pps(1); U2RXR = 1; RPB1R = 2; rt_pps(0); \\
+                        ANSELBCLR = (1UL << 5) | (1UL << 1); TRISBSET = 1UL << 5; TRISBCLR = 1UL << 1; } while (0)
                     #define RT_SPI_PINS() do { rt_pps(1); SDI1R = 0; RPA4R = 3; rt_pps(0); \\
                         ANSELACLR = 1UL << 1; ANSELBCLR = 1UL << 14; TRISASET = 1UL << 1; TRISACLR = 1UL << 4; \\
                         TRISBCLR = 1UL << 14; } while (0)
@@ -134,6 +137,8 @@ final class Pic32Runtime {
             s.append("/* ---- fixed pins: UART1 RX = RF2, TX = RF").append(tx).append("; SPI2 SDI = RG7, SDO = RG8, SCK = RG6; I2C1 ")
                     .append(b.pkg == 'L' ? "SCL = RA14, SDA = RA15" : "SCL = RG2, SDA = RG3").append(" */\n");
             s.append("#define RT_UART_PINS() do { TRISFSET = 1UL << 2; TRISFCLR = 1UL << ").append(tx).append("; } while (0)\n");
+            s.append("/* UART2 (the WiFi module): RX = RF4, TX = RF5 */\n");
+            s.append("#define RT_AT_PINS() do { TRISFSET = 1UL << 4; TRISFCLR = 1UL << 5; } while (0)\n");
             s.append("""
                     #define RT_SPI_PINS() do { TRISGSET = 1UL << 7; TRISGCLR = (1UL << 6) | (1UL << 8); } while (0)
                     #define RT_I2C_PINS() do { } while (0)
@@ -619,6 +624,178 @@ final class Pic32Runtime {
                     return (int) (RT_SPIBUF & 0xFF);
                 }
                 """);
+        // ============================================================ MQTT over an ESP8266/ESP32 AT module on UART2
+        piece("rt_net_join rt_net_connect rt_net_write rt_net_read", "millis delay", """
+                /* ---- the network under MQTT: a WiFi module with AT firmware (ESP8266 or ESP32) on UART2, 115200 baud.
+                   Wire the module's RX to the chip's UART2 TX, its TX to UART2 RX, and give it its own 3.3 V supply. */
+                #define RT_MQTT_CLIENT "evia-paradigma"
+                #define RT_AT_RING 512
+
+                static unsigned char rt_at_ring[RT_AT_RING];
+                static unsigned int rt_at_head = 0, rt_at_tail = 0;
+                static int rt_at_pending = 0;           /* bytes of the message the module is still sending */
+                static char rt_at_line[64];
+                static int rt_at_fill = 0;
+                static int rt_at_started = 0;
+
+                static void rt_at_begin(void) {
+                    unsigned long brg = (RT_PBCLK / 4 + 115200UL / 2) / 115200UL;
+                    brg = brg > 0 ? brg - 1 : 0;
+                    RT_AT_PINS();
+                    U2MODE = 0;
+                    U2STA = 0;
+                    U2BRG = brg > 65535UL ? 65535UL : brg;
+                    U2MODEbits.BRGH = 1;
+                    U2MODEbits.ON = 1;
+                    U2STAbits.UTXEN = 1;
+                    U2STAbits.URXEN = 1;
+                    rt_at_started = 1;
+                }
+
+                static void rt_at_putc(char c) {
+                    while (U2STAbits.UTXBF) {
+                    }
+                    U2TXREG = (unsigned char) c;
+                }
+
+                static void rt_at_send(const char *s) {
+                    while (*s) rt_at_putc(*s++);
+                }
+
+                /* A whole number 0..99999 as text (printf is far too big for this chip). */
+                static void rt_at_num(char *p, int v) {
+                    char t[8];
+                    int n = 0;
+                    if (v <= 0) {
+                        *p++ = '0';
+                        *p = 0;
+                        return;
+                    }
+                    while (v > 0 && n < (int) sizeof t) {
+                        t[n++] = (char) ('0' + v % 10);
+                        v /= 10;
+                    }
+                    while (n) *p++ = t[--n];
+                    *p = 0;
+                }
+
+                static int rt_at_getc(void) {
+                    if (U2STAbits.OERR) U2STAbits.OERR = 0;      /* the module ran ahead: start again */
+                    if (!U2STAbits.URXDA) return -1;
+                    return (int) (U2RXREG & 0xFF);
+                }
+
+                /* Keeps the bytes of +IPD messages, and collects the module's answers line by line.
+                   Returns 1 when the line now holds a complete answer. */
+                static int rt_at_step(void) {
+                    int c = rt_at_getc();
+                    if (c < 0) return 0;
+                    if (rt_at_pending > 0) {
+                        unsigned int next = (rt_at_head + 1) % RT_AT_RING;
+                        if (next != rt_at_tail) {
+                            rt_at_ring[rt_at_head] = (unsigned char) c;
+                            rt_at_head = next;
+                        }
+                        rt_at_pending--;
+                        return 0;
+                    }
+                    if (c == '\\n' || c == '\\r') {
+                        int had = rt_at_fill;
+                        rt_at_line[rt_at_fill] = 0;
+                        rt_at_fill = 0;
+                        return had > 0;
+                    }
+                    if (rt_at_fill < (int) sizeof rt_at_line - 1) rt_at_line[rt_at_fill++] = (char) c;
+                    rt_at_line[rt_at_fill] = 0;
+                    if (c == ':' && strncmp(rt_at_line, "+IPD,", 5) == 0) {   /* +IPD,<length>: then the bytes */
+                        rt_at_pending = atoi(rt_at_line + 5);
+                        rt_at_fill = 0;
+                        rt_at_line[0] = 0;
+                    }
+                    if (c == '>' && rt_at_fill == 1) return 1;                /* the module is waiting for the data */
+                    return 0;
+                }
+
+                /* Waits for a line that holds {@code want}; 0 if "ERROR" or "FAIL" comes first, or the time runs out. */
+                static int rt_at_wait(const char *want, unsigned long ms) {
+                    unsigned long start = millis();
+                    while (millis() - start < ms) {
+                        if (!rt_at_step()) continue;
+                        if (strstr(rt_at_line, want)) return 1;
+                        if (strstr(rt_at_line, "ERROR") || strstr(rt_at_line, "FAIL")) return 0;
+                    }
+                    return 0;
+                }
+
+                static int rt_at_cmd(const char *cmd, const char *want, unsigned long ms) {
+                    rt_at_send(cmd);
+                    rt_at_send("\\r\\n");
+                    return rt_at_wait(want, ms);
+                }
+
+                static int rt_net_join(const char *network, const char *password) {
+                    char cmd[160];
+                    if (!rt_at_started) {
+                        rt_at_begin();
+                        delay(500);
+                    }
+                    rt_at_cmd("AT", "OK", 2000);
+                    if (!rt_at_cmd("AT+CWMODE=1", "OK", 2000)) return 0;
+                    strcpy(cmd, "AT+CWJAP=\\"");
+                    strncat(cmd, network, 64);
+                    strcat(cmd, "\\",\\"");
+                    strncat(cmd, password, 64);
+                    strcat(cmd, "\\"");
+                    if (!rt_at_cmd(cmd, "OK", 20000)) return 0;      /* already joined answers OK too */
+                    return 1;
+                }
+
+                static int rt_net_connect(const char *host, int port) {
+                    char cmd[160], num[12];
+                    rt_at_cmd("AT+CIPMUX=0", "OK", 2000);
+                    rt_at_cmd("AT+CIPCLOSE", "OK", 2000);
+                    strcpy(cmd, "AT+CIPSTART=\\"TCP\\",\\"");
+                    strncat(cmd, host, 96);
+                    strcat(cmd, "\\",");
+                    rt_at_num(num, port);
+                    strcat(cmd, num);
+                    rt_at_head = rt_at_tail = 0;
+                    rt_at_pending = 0;
+                    return rt_at_cmd(cmd, "OK", 10000);
+                }
+
+                static int rt_net_write(const unsigned char *p, int n) {
+                    char cmd[32];
+                    int i;
+                    strcpy(cmd, "AT+CIPSEND=");
+                    rt_at_num(cmd + strlen(cmd), n);
+                    if (!rt_at_cmd(cmd, ">", 5000)) return 0;
+                    for (i = 0; i < n; i++) rt_at_putc((char) p[i]);
+                    if (!rt_at_wait("SEND OK", 10000)) return 0;
+                    return n;
+                }
+
+                /* Up to n bytes of the connection; waits up to ms milliseconds for the first one. */
+                static int rt_net_read(unsigned char *p, int n, unsigned long ms) {
+                    unsigned long start = millis();
+                    int got = 0;
+                    while (got < n) {
+                        if (rt_at_tail != rt_at_head) {
+                            p[got++] = rt_at_ring[rt_at_tail];
+                            rt_at_tail = (rt_at_tail + 1) % RT_AT_RING;
+                            start = millis();
+                            continue;
+                        }
+                        rt_at_step();
+                        if (rt_at_tail != rt_at_head) continue;
+                        if (millis() - start >= ms) break;
+                    }
+                    return got;
+                }
+                """);
+        piece("mqttConnect mqttPublish mqttPublishNum mqttSubscribe mqttHas mqttRead rt_mq_poll",
+                "rt_net_join rt_fmt rt_parse_num", EmbeddedRuntime.MQTT_CORE);
+
         piece("i2cOpen i2cWrite i2cRead", "", """
                 /* ---- I2C master (I2C1); a device that does not answer reads as -1 */
                 static void i2cOpen(unsigned long hz) {

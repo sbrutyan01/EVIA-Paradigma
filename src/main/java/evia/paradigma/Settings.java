@@ -145,6 +145,24 @@ final class Settings {
         fire();
     }
 
+    /** The name of a program in a folder: with .exe on Windows. */
+    private static String tool(String name) {
+        return ExternalEditor.WINDOWS ? name + ".exe" : name;
+    }
+
+    /** "Get" beside a tool's field: fetches the tool and writes its path into the field. */
+    private static JButton getButton(Component parent, Toolchains.Tool t, JTextField field) {
+        JButton b = new JButton(t.downloadable() ? "Get" : "Where?");
+        b.setToolTipText(t.downloadable()
+                ? "Download " + t.display + " into EVIA Paradigma's own folder and use it"
+                : "Open " + t.display + "'s download page");
+        b.addActionListener(e -> {
+            java.nio.file.Path exe = Toolchains.install(parent, t);
+            if (exe != null) field.setText(exe.toString());
+        });
+        return b;
+    }
+
     static String arduinoCli() {
         return PREFS.get("arduinoCli", "arduino-cli");
     }
@@ -470,15 +488,18 @@ final class Settings {
         g.gridy++; g.gridx = 0; g.gridwidth = 1;
         p.add(new JLabel("arduino-cli:"), g);
         g.gridx = 1; p.add(cli, g);
+        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.ARDUINO_CLI, cli), g);
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("avr-gcc:"), g);
         g.gridx = 1; p.add(avrGcc, g);
+        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.AVR_GCC, avrGcc), g);
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("avrdude:"), g);
         g.gridx = 1; p.add(avrdude, g);
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("xc32-gcc:"), g);
         g.gridx = 1; p.add(xc32, g);
+        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.XC32, xc32), g);
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("PIC32 upload:"), g);
         g.gridx = 1; p.add(pic32Up, g);
@@ -491,6 +512,21 @@ final class Settings {
         p.add(new JSeparator(), withFill(g));
         g.fill = GridBagConstraints.NONE;
         g.gridwidth = 1;
+        JButton getOss = new JButton("Get FPGA tools");
+        getOss.setToolTipText("Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below");
+        getOss.addActionListener(e -> {
+            java.nio.file.Path exe = Toolchains.install(p, Toolchains.Tool.OSS_CAD);
+            if (exe == null) return;
+            java.nio.file.Path bin = exe.getParent();
+            yosys.setText(bin.resolve(tool("yosys")).toString());
+            gatemate.setText(bin.resolve(tool("nextpnr-himbaechel")).toString());
+            gmpack.setText(bin.resolve(tool("gmpack")).toString());
+            loader.setText(bin.resolve(tool("openFPGALoader")).toString());
+            nextpnrXilinx.setText(bin.resolve(tool("nextpnr-xilinx")).toString());
+        });
+        g.gridy++; g.gridx = 2;
+        p.add(getOss, g);
+        g.gridx = 0;
         String[][] fpgaRows = {{"Artix-7 flow:", null}, {"Vivado:", "v"}, {"yosys:", "y"}, {"nextpnr-xilinx:", "nx"}, {"Chip database folder:", "cd"},
                 {"prjxray-db folder:", "px"}, {"fasm2frames:", "f2f"}, {"xc7frames2bit:", "f2b"}, {"nextpnr-himbaechel:", "gm"}, {"gmpack:", "gp"},
                 {"openFPGALoader:", "ol"}};

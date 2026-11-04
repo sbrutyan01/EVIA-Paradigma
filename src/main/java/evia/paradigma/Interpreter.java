@@ -113,6 +113,25 @@ final class Interpreter {
                 if (parts.size() != 2) throw new FlowException("expected  name = address, register   e.g.  " + b.type.defaultCode);
                 yield new Compiled(variable(m.group(1)), ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
             }
+            case MQTT_CONNECT -> {
+                List<String> parts = splitTopLevel(code, ',');
+                if (parts.size() != 4) {
+                    throw new FlowException("expected  \"network\", \"password\", \"broker\", port   e.g.  " + b.type.defaultCode);
+                }
+                yield new Compiled(null, ExprParser.parse(parts.get(0)),
+                        List.of(ExprParser.parse(parts.get(1)), ExprParser.parse(parts.get(2)), ExprParser.parse(parts.get(3))));
+            }
+            case MQTT_PUBLISH -> {
+                List<String> parts = splitTopLevel(code, ',');
+                if (parts.size() != 2) throw new FlowException("expected  \"topic\", value   e.g.  " + b.type.defaultCode);
+                yield new Compiled(null, ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
+            }
+            case MQTT_SUBSCRIBE -> new Compiled(null, ExprParser.parse(code), null);
+            case MQTT_HAS, MQTT_READ -> {
+                Matcher m = ASSIGN.matcher(code);
+                if (!m.matches()) throw new FlowException("expected  name = \"topic\"   e.g.  " + b.type.defaultCode);
+                yield new Compiled(variable(m.group(1)), ExprParser.parse(m.group(2)), null);
+            }
             case PRINT, IF, WHILE, DO_WHILE -> new Compiled(null, ExprParser.parse(code), null);
             case FOR -> {
                 List<String> parts = splitTopLevel(code, ';');
@@ -507,6 +526,27 @@ final class Interpreter {
                     }
                     case I2C_READ -> {
                         scope.set(c.var(), board.i2cRead(Expr.num(Expr.eval(c.expr(), scope)), Expr.num(Expr.eval(c.args().get(0), scope))));
+                        yield cur.next[0];
+                    }
+                    case MQTT_CONNECT -> {
+                        board.mqttConnect(Expr.str(Expr.eval(c.expr(), scope)), Expr.str(Expr.eval(c.args().get(0), scope)),
+                                Expr.str(Expr.eval(c.args().get(1), scope)), Expr.num(Expr.eval(c.args().get(2), scope)));
+                        yield cur.next[0];
+                    }
+                    case MQTT_PUBLISH -> {
+                        board.mqttPublish(Expr.str(Expr.eval(c.expr(), scope)), Expr.eval(c.args().get(0), scope));
+                        yield cur.next[0];
+                    }
+                    case MQTT_SUBSCRIBE -> {
+                        board.mqttSubscribe(Expr.str(Expr.eval(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case MQTT_HAS -> {
+                        scope.set(c.var(), board.mqttHas(Expr.str(Expr.eval(c.expr(), scope))));
+                        yield cur.next[0];
+                    }
+                    case MQTT_READ -> {
+                        scope.set(c.var(), board.mqttRead(Expr.str(Expr.eval(c.expr(), scope))));
                         yield cur.next[0];
                     }
                     case IF -> Expr.truthy(Expr.eval(c.expr(), scope)) ? cur.next[0] : cur.next[1];

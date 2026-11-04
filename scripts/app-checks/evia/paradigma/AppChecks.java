@@ -249,6 +249,80 @@ public class AppChecks {
                     "FPGA build and upload commands");
         }
 
+        // ---------- MQTT: the blocks, Run's broker, the generated code and the refusals
+        {
+            Library mq = newLib();
+            ProgramIO.load(mq, Path.of("examples/boards/mqtt_sensor.evia"));
+            String out = run(mq);
+            check(out.contains("command 10") && out.contains("command 50") && out.trim().endsWith("done"),
+                    "Run answers MQTT Read from its own broker");
+            Settings.useBoard(Board.PIC32MX250F128B);
+            String c = CodeGenerator.generate(mq, Target.parse("pic32"));
+            check(c.contains("mqttConnect(\"home-wifi\", \"secret\", \"test.mosquitto.org\", 1883)")
+                            && c.contains("mqttPublishNum(\"evia/temperature\"") && c.contains("mqttSubscribe(\"evia/command\")")
+                            && c.contains("mqttHas(\"evia/command\")") && c.contains("mqttRead(\"evia/command\")"),
+                    "PIC32 C calls the MQTT functions");
+            check(c.contains("AT+CIPSTART") && c.contains("U2BRG") && c.contains("MQTT 3.1.1"),
+                    "PIC32 C talks to a WiFi module on UART2");
+            Settings.useBoard(Board.ESP32);
+            String esp = CodeGenerator.generate(mq, Target.parse("arduino"));
+            check(esp.contains("#include <WiFi.h>") && esp.contains("WiFi.begin(network, password)") && esp.contains("mqttConnect("),
+                    "the ESP32 sketch joins the network itself");
+            Settings.useBoard(Board.UNO);
+            try {
+                CodeGenerator.generate(mq, Target.parse("arduino"));
+                check(false, "an AVR board refuses MQTT");
+            } catch (FlowException e) {
+                check(e.getMessage().contains("needs a network"), "an AVR board refuses MQTT (" + e.getMessage() + ")");
+            }
+            Settings.useBoard(null);
+            String[][] bad = {
+                    {"MQTT_CONNECT", "broker, 1883, \"c\", 1", "fixed text"},
+                    {"MQTT_PUBLISH", "\"t\"", "topic"},
+                    {"MQTT_READ", "v = topic", "fixed text"},
+            };
+            for (String[] b : bad) {
+                Library one = newLib();
+                Block start = one.main.addBlock(BlockType.START, 0, 0);
+                Block blk = one.main.addBlock(BlockType.valueOf(b[0]), 0, 90);
+                blk.setCode(b[1]);
+                one.main.connect(start, 0, blk);
+                Settings.useBoard(Board.PIC32MX250F128B);
+                try {
+                    CodeGenerator.generate(one, Target.parse("pic32"));
+                    check(false, "MQTT refuses " + b[0] + " " + b[1]);
+                } catch (FlowException e) {
+                    check(e.getMessage().toLowerCase().contains(b[2]), "MQTT refuses '" + b[1] + "' (" + e.getMessage() + ")");
+                }
+                Settings.useBoard(null);
+            }
+        }
+
+        // ---------- the toolchains EVIA Paradigma can fetch
+        {
+            Path rel = tmp.resolve("releases");
+            Files.createDirectories(rel.resolve("bin"));
+            Files.writeString(rel.resolve("bin/arduino-cli"), "#!/bin/sh\necho 0.99.0\n");
+            Files.writeString(rel.resolve("bin/arduino-cli.exe"), "stub\n");
+            Process tar = new ProcessBuilder("tar", "-czf", tmp.resolve("arduino-cli_0.99.0_Linux_64bit.tar.gz").toString(),
+                    "-C", rel.toString(), "bin").start();
+            check(tar.waitFor() == 0, "test archive packed");
+            Path feed = tmp.resolve("feed.json");
+            Files.writeString(feed, "{\"assets\":[{\"browser_download_url\":\"" + tmp.resolve("arduino-cli_0.99.0_Linux_64bit.tar.gz").toUri()
+                    + "\"},{\"browser_download_url\":\"" + tmp.resolve("arduino-cli_0.99.0_Windows_64bit.zip").toUri() + "\"}]}");
+            System.setProperty("evia.toolchain.releases.arduino-cli", feed.toUri().toString());
+            String url = Toolchains.latest(Toolchains.Tool.ARDUINO_CLI);
+            check(url.endsWith(ExternalEditor.WINDOWS ? "Windows_64bit.zip" : "Linux_64bit.tar.gz"), "the file for this computer is chosen");
+            Path archive = Toolchains.download(url, (bytesDone, bytesTotal) -> { }, () -> false);
+            Path into = tmp.resolve("unpacked");
+            Files.createDirectories(into);
+            Toolchains.unpack(archive, into);
+            check(Files.isRegularFile(into.resolve("bin/arduino-cli")), "the archive is unpacked");
+            check(Toolchains.Tool.XC32.page.contains("microchip.com") && !Toolchains.Tool.XC32.downloadable(),
+                    "XC32 is fetched from Microchip, not from here");
+            check(Toolchains.home(Toolchains.Tool.OSS_CAD).toString().contains("oss-cad-suite"), "each tool has its own folder");
+        }
+
         // ---------- compiler family (Clang or GCC)
         check(Settings.family("clang++ -O2") == ToolchainInstaller.Kind.CLANG && Settings.family("\"C:/w/mingw64/bin/g++.exe\" -O2") == ToolchainInstaller.Kind.GCC,
                 "compiler family from the command");

@@ -60,6 +60,18 @@ public enum BlockType {
     I2C_READ("I2C Read", new Color(224, 178, 228), true, 1, true, "v = 80, 0",
             "name = address, register   Reads a byte from a register of the device; -1 if it does not answer, e.g.  v = 80, 0"),
 
+    // ---- MQTT over a network: the ESP32's own WiFi, or an ESP8266/ESP32 AT module or Ethernet on a PIC32
+    MQTT_CONNECT("MQTT Connect", new Color(118, 198, 196), true, 1, true, "\"network\", \"password\", \"broker.example.com\", 1883",
+            "\"network\", \"password\", \"broker\", port   Joins the network and connects to the MQTT broker (the texts are fixed, not variables)"),
+    MQTT_PUBLISH("MQTT Publish", new Color(132, 208, 204), true, 1, true, "\"evia/value\", 42",
+            "\"topic\", value   Sends a message: a number or a text, e.g.  \"evia/temperature\", t"),
+    MQTT_SUBSCRIBE("MQTT Subscribe", new Color(146, 216, 210), true, 1, true, "\"evia/command\"",
+            "\"topic\"   Asks the broker for the messages of this topic (up to four topics in a program)"),
+    MQTT_HAS("MQTT Has Message", new Color(152, 220, 214), true, 1, true, "waiting = \"evia/command\"",
+            "name = \"topic\"   Stores 1 when a message of that topic is waiting, 0 when none is, e.g.  waiting = \"evia/command\""),
+    MQTT_READ("MQTT Read", new Color(160, 224, 218), true, 1, true, "cmd = \"evia/command\"",
+            "name = \"topic\"   Stores the number in the next message of that topic, or -1 if none has arrived (MQTT Has Message tells a waiting -1 apart), e.g.  cmd = \"evia/command\""),
+
     // ---- only inside custom block definitions
     ENTER("Enter", new Color(112, 204, 196), false, 1, false, "",
             "Where the method starts executing (one per method)."),
@@ -82,7 +94,8 @@ public enum BlockType {
     boolean isBoard() {
         return switch (this) {
             case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
-                 UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> true;
+                 UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
+                 MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> true;
             default -> false;
         };
     }

@@ -68,6 +68,7 @@ levels() { grep -oE "$1" "$2" | grep -oE '(HIGH|LOW|[01])$' | sed 's/HIGH/1/;s/L
 "$AVR_GCC" --version | head -n 1
 for src in examples/boards/*.evia; do
   name=$(basename "$src" .evia)
+  if grep -q "MQTT_" "$src"; then echo "skip  $name (MQTT needs a network: ESP32 or PIC32)"; continue; fi
   java -jar "$JAR" --run "$src" > "$OUT/$name.interp" 2> "$OUT/$name.events" < /dev/null
   sed -i '/^Picked up/d' "$OUT/$name.events"
   for flow in structured goto; do
@@ -97,7 +98,10 @@ if [ "${SKIP_ARDUINO:-}" != 1 ] && command -v "$ARDUINO_CLI" > /dev/null; then
   first_esp=$(echo $FQBNS | tr ' ' '\n' | grep '^esp32:' | head -n 1)
   for src in examples/boards/*.evia; do
     name=$(basename "$src" .evia)
+    mqtt=no
+    grep -q "MQTT_" "$src" && mqtt=yes
     for fqbn in $FQBNS; do
+      case "$mqtt:$fqbn" in yes:esp32:*) ;; yes:*) continue ;; esac   # MQTT needs the ESP32's WiFi
       flows=structured
       [ "$fqbn" = "$first_avr" ] || [ "$fqbn" = "$first_esp" ] && flows="structured goto"
       for flow in $flows; do

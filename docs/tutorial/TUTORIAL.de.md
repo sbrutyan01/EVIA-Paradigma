@@ -131,7 +131,27 @@ Jeder Block wird zu einem Zustand einer Zustandsmaschine und benötigt einen Tak
 
 *Hinweis:* Die Ausgabe wurde mit Open-Source-Werkzeugen simuliert und synthetisiert, aber nicht mit Vivado verarbeitet oder auf ein Board geladen.
 
-## 11. Weiter geht's
+## 11. Zahlen per MQTT weiterschicken
+
+Öffne **Datei → Beispiel öffnen → Arduino and ESP32 Boards → MQTT sensor**. Das Programm veröffentlicht eine
+Temperatur bei einem Broker, schickt sich selbst einen Befehl und liest ihn zurück.
+
+Die fünf **MQTT**-Blöcke stehen in der Gruppe *Board*: *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*,
+*MQTT Has Message* und *MQTT Read*. Netzwerkname, Passwort, Broker und Themen sind feste Texte, denn sie werden beim
+Erzeugen in das Programm geschrieben.
+
+- **Run** antwortet aus einem Broker auf deinem Rechner, das Programm lässt sich also ohne Hardware ausprobieren.
+- **PIC32 C** steuert ein ESP8266- oder ESP32-Modul mit AT-Firmware über UART2, Print behält UART1.
+- **Arduino** auf einem **ESP32**-Board nutzt das WLAN des Boards selbst.
+- Ein AVR-Board lehnt die Blöcke ab: Es hat eine serielle Schnittstelle, und die benutzt Print.
+
+Eine Nachricht ist eine Zahl. *MQTT Read* liefert -1, wenn nichts angekommen ist; frage also vorher
+*MQTT Has Message*, falls eine echte -1 vorkommen kann.
+
+*Hinweis:* Die MQTT-Pakete werden in der CI gegen einen echten Broker geprüft, aber weder ein WLAN-Modul noch ein
+ESP32 oder ein PIC32-Chip waren dabei. MQTT über den Ethernet-Anschluss der MX695/795-Chips gibt es noch nicht.
+
+## 12. Weiter geht's
 
 - Verwende Klassen in mehreren Programmen: **File → Export Classes as Module…**, danach **File → Import Module…** im anderen Programm.
 - **File → Open Example** enthält fertige Programme, darunter `classes.evia` mit Feldern, Konstruktor, Methoden und Modul.

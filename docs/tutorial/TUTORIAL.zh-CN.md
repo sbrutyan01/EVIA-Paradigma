@@ -131,7 +131,25 @@
 
 *注意：* 输出已使用开源工具进行仿真和综合，但尚未通过 Vivado，也未下载到实际开发板。
 
-## 11. 后续探索
+## 11. 用 MQTT 把数字发出去
+
+打开 **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**。这个程序向代理服务器发布温度，再给自己
+发一条命令并读回来。
+
+**MQTT** 的五个积木在 *Board* 组里：*MQTT Connect*、*MQTT Publish*、*MQTT Subscribe*、*MQTT Has Message* 和
+*MQTT Read*。网络名称、密码、代理服务器和主题都是固定文本，因为它们在构建时写进程序里。
+
+- **Run** 由你电脑上的代理服务器作答，所以没有硬件也能试。
+- **PIC32 C** 通过 UART2 驱动带 AT 固件的 ESP8266 或 ESP32 模块，Print 仍用 UART1。
+- **ESP32** 板上的 **Arduino** 使用板子自己的 WiFi。
+- AVR 板会拒绝这些积木：它只有一个串口，而 Print 正在用。
+
+消息是一个数字。没有消息时 *MQTT Read* 返回 -1，所以如果真的可能收到 -1，先用 *MQTT Has Message* 判断。
+
+*请注意：* MQTT 报文在 CI 中对着真实的代理服务器检查过，但没有 WiFi 模块、ESP32 或 PIC32 芯片参与。
+MX695/795 芯片的以太网口 MQTT 还不支持。
+
+## 12. 后续探索
 
 - 在程序间共享类：选择 **File → Export Classes as Module…**，再在另一个程序中选择 **File → Import Module…**。
 - **File → Open Example** 提供现成程序，包括 `classes.evia`（字段、构造函数、方法和模块）。

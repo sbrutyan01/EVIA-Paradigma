@@ -204,6 +204,7 @@
         blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device
         headers, but has not yet been built with XC32 or run on a chip.</p>
       <p>New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.</p>
+      <p>New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. The generated client is checked against a real broker; no WiFi module or chip was part of that.</p>
     </div>
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
@@ -233,6 +234,7 @@
     <li><b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.</li>
     <li><b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.</li>
     <li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in any of seven languages.</li>
+    <li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>
   </ul>
 </section>
 

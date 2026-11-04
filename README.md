@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.1-blue" alt="version 0.6.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.5-blue" alt="version 0.6.5"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -61,6 +61,20 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 | Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
 | Any OS with Java 25 | `evia-paradigma-0.6.1.jar` | `java -jar evia-paradigma-0.6.1.jar` |
+
+### Release 0.6.5
+
+[EVIA Paradigma v0.6.5](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.5) ([release notes](docs/release-notes/v0.6.5.md)):
+MQTT blocks, and Settings fetches the outside tools.
+
+- **Five MQTT blocks** (Connect, Publish, Subscribe, Has Message, Read) in the *Board* group: on a PIC32MX with a
+  WiFi module on UART2, on an ESP32 with its own WiFi, and in **Run** against a broker on your computer. See
+  [MQTT](#mqtt-send-the-numbers-somewhere).
+- **Settings fetches the tools:** arduino-cli, avr-gcc and the OSS CAD Suite are downloaded into EVIA Paradigma's own
+  folder; XC32 opens Microchip's page, because its licence does not allow passing the compiler on.
+- **Tested** by compiling the generated MQTT client and running it against a real broker (`scripts/check-mqtt.sh`),
+  and by compiling the PIC32 output against Microchip's headers (162 of 162). No WiFi module, ESP32 or PIC32 chip was
+  part of that; Ethernet MQTT on the MX695/795 chips is not supported yet.
 
 ### Release 0.6.1
 
@@ -410,9 +424,31 @@ read it back*, *SPI: transfer a byte* and *I2C: write and read a device register
 | **I2C Open** | `100000` | I2C master at this clock in Hz |
 | **I2C Write** | `80, 0, 42` | address (7-bit), register, value |
 | **I2C Read** | `v = 80, 0` | stores the register's value, or -1 if nothing answers |
+| **MQTT Connect** | `"network", "password", "broker.example.com", 1883` | joins the network and connects to the broker |
+| **MQTT Publish** | `"evia/temperature", t` | sends a message: a number or a text |
+| **MQTT Subscribe** | `"evia/command"` | asks the broker for that topic (up to four) |
+| **MQTT Has Message** | `waiting = "evia/command"` | 1 when a message of that topic is waiting, 0 when none is |
+| **MQTT Read** | `cmd = "evia/command"` | the number in the next message, or -1 if none has arrived |
 
 Open a bus before using it. **Run** simulates them: UART Write bytes come back from UART Read, SPI's input is wired
 to its output, and one I2C device with 256 registers answers at address 80 (80 is 0x50; numbers are decimal).
+
+### MQTT: send the numbers somewhere
+
+The five **MQTT** blocks publish a program's numbers to an MQTT broker and read commands back. The network name,
+password, broker and topics are fixed texts: they are written into the program when it is built.
+
+- **PIC32 C** uses an ESP8266 or ESP32 module with AT firmware on **UART2** (RB5 / RB1 on the 28-pin chips, RF4 / RF5
+  on the others), so Print keeps UART1 to itself.
+- **Arduino** on an **ESP32** board uses the board's own WiFi; no library has to be installed.
+- **Run** answers from a broker on your computer: publishing to a topic you subscribed to brings the message back.
+- An AVR board (Uno, Nano, Mega ...) refuses the blocks, because it has one serial port and Print uses it. An FPGA
+  refuses them too.
+
+The client in the generated file is MQTT 3.1.1 with quality of service 0, about 150 lines of C and no library.
+`examples/boards/mqtt_sensor.evia` publishes a temperature, sends itself a command and reads it back. CI compiles the
+client on the build machine and runs it against a real broker (`scripts/check-mqtt.sh`); no WiFi module or ESP32 was
+part of that, and MQTT over the Ethernet port of the MX695/795 chips is not supported yet.
 
 For a Microchip PIC32MX chip choose **Language: PIC32 C** and the chip in the **Board** list (nine chips from the MX1xx/2xx,
 MX3xx/4xx and MX5xx/6xx/7xx families), then **Generate code** (F7). The result is bare-metal C for Microchip's free XC32
@@ -427,7 +463,12 @@ XC32 or run on a chip. Treat the first build on your board as a test.
 
 Choose SystemVerilog, Verilog-2001 or VHDL and an Artix-7 or GateMate board; see "FPGA: Artix-7 and GateMate" above.
 
-### 11. Keep going
+### 11. Send the numbers on with MQTT
+
+Open **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**; see [MQTT](#mqtt-send-the-numbers-somewhere)
+above. Run answers from a broker on your computer, a PIC32 uses a WiFi module on UART2, an ESP32 uses its own WiFi.
+
+### 12. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
@@ -691,6 +732,11 @@ and the tool paths) only decides what **Build** and **Upload** in the code windo
 | **I2C Open** | `100000` | I2C master at this clock in Hz |
 | **I2C Write** | `80, 0, 42` | address (7-bit), register, value |
 | **I2C Read** | `v = 80, 0` | stores the register's value, or -1 if nothing answers at that address |
+| **MQTT Connect** | `"network", "password", "broker.example.com", 1883` | joins the network and connects to the broker |
+| **MQTT Publish** | `"evia/temperature", t` | sends a message: a number or a text |
+| **MQTT Subscribe** | `"evia/command"` | asks the broker for that topic (up to four) |
+| **MQTT Has Message** | `waiting = "evia/command"` | 1 when a message of that topic is waiting, 0 when none is |
+| **MQTT Read** | `cmd = "evia/command"` | the number in the next message, or -1 if none has arrived |
 
 **Run** simulates an Arduino Uno, so board programs can be tried without a board:
 - every pin change appears in the output (`board [500 ms] pin 13 HIGH`), separately from the program's output;
@@ -840,7 +886,11 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    three PIC32MX families and both flows, compiled syntax-only with gcc (`-Wall -Wextra -Werror`) against Microchip's
    real device headers (fetched from the Pinguino project; they are not part of this repository). There is no XC32
    compiler or chip in CI.
-9. the **fpga** job runs [`scripts/check-fpga.sh`](scripts/check-fpga.sh) with the OSS CAD Suite: nine test programs in all
+9. the **pic32** job also runs [`scripts/check-mqtt.sh`](scripts/check-mqtt.sh): the generated MQTT client is compiled on
+   the build machine with its network functions replaced by an ordinary socket and run against a small broker, which
+   checks the CONNECT, the SUBSCRIBE and the published text and numbers and sends messages back. No WiFi module, ESP32
+   or PIC32 chip is part of that.
+10. the **fpga** job runs [`scripts/check-fpga.sh`](scripts/check-fpga.sh) with the OSS CAD Suite: nine test programs in all
    three HDLs simulated (Icarus Verilog, GHDL) and compared with the interpreter, every example synthesised with yosys for
    Artix-7, and the GateMate designs placed, routed and packed into a bitstream. There is no Vivado or board in CI.
 
@@ -885,9 +935,12 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `HdlGenerator.java` / `Rtl.java` / `Fpga.java` | FPGA: flowchart to state machine, written as SystemVerilog, Verilog-2001 or VHDL; the boards' pins and clocks, constraint files and build commands |
 | `scripts/fpga/` | FPGA checks: test programs, simulation against the interpreter (Icarus Verilog, GHDL), synthesis (yosys, nextpnr) |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
+| `EmbeddedRuntime.MQTT_CORE` / `Pic32Runtime.java` | The MQTT 3.1.1 client that goes into the generated file, and the network under it: the ESP32's WiFi, or a WiFi module on the PIC32's UART2 |
+| `Toolchains.java` | Fetches arduino-cli, avr-gcc and the OSS CAD Suite into the app's own folder; XC32 opens Microchip's page |
+| `scripts/mqtt/` | The MQTT check: a socket in place of the chip's network, and a small broker that reads what the client sends |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds its Russian, Armenian, German, Simplified Chinese, Traditional Chinese and Japanese texts |
-| `docs/tutorial/` | The tutorial in Russian and Armenian |
+| `docs/tutorial/` | The tutorial in seven languages, as Markdown and as the PDFs the app opens |
 
 ## Screenshots
 

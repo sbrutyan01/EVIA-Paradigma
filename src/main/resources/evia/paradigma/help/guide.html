@@ -171,7 +171,19 @@ compiles for it; <b>Upload</b> builds and sends the program to the board on the 
 <tr><td>I2C Open</td><td><code>100000</code></td><td>Starts the I2C bus as master at this clock in Hz.</td></tr>
 <tr><td>I2C Write</td><td><code>80, 0, 42</code></td><td>Writes a value to a register of the device at this 7-bit address: address, register, value.</td></tr>
 <tr><td>I2C Read</td><td><code>v = 80, 0</code></td><td>Stores the register's value, or -1 if no device answers at that address.</td></tr>
+<tr><td>MQTT Connect</td><td><code>"network", "password", "broker.example.com", 1883</code></td><td>Joins the network and connects to the MQTT broker.</td></tr>
+<tr><td>MQTT Publish</td><td><code>"evia/temperature", t</code></td><td>Sends a message on that topic: a number or a text.</td></tr>
+<tr><td>MQTT Subscribe</td><td><code>"evia/command"</code></td><td>Asks the broker for the messages of that topic (up to four topics).</td></tr>
+<tr><td>MQTT Has Message</td><td><code>waiting = "evia/command"</code></td><td>Stores 1 when a message of that topic is waiting, 0 when none is.</td></tr>
+<tr><td>MQTT Read</td><td><code>cmd = "evia/command"</code></td><td>Stores the number in the next message, or -1 if none has arrived.</td></tr>
 </table>
+<p><b>MQTT.</b> The network name, password, broker and topics are fixed texts, because they are written into the program
+when it is built. <b>PIC32 C</b> drives an ESP8266 or ESP32 module with AT firmware on UART2 (RB5/RB1 on the 28-pin chips,
+RF4/RF5 on the others), so Print keeps UART1. <b>Arduino</b> on an ESP32 board uses the board's own WiFi. <b>Run</b> answers
+from a broker on your computer: publishing to a topic you subscribed to brings the message back. An AVR board refuses the
+MQTT blocks (one serial port, which Print uses), and so does an FPGA. A message is a number, written as Print writes it;
+since -1 also means "nothing has arrived", MQTT Has Message tells a real -1 apart. MQTT over the Ethernet port of the
+MX695/795 chips is not supported yet.</p>
 <p>Pins can be numbers, expressions or the board's names <code>LED_BUILTIN</code>, <code>A0</code> ... <code>A15</code>;
 <code>HIGH</code> and <code>LOW</code> work in any expression. These names can't be used as variables.</p>
 <p>The bus blocks work in Run and in all three board languages. Open a bus before using it; addresses are 7-bit and the

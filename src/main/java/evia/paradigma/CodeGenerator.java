@@ -748,7 +748,8 @@ final class CodeGenerator {
                         case PRINT -> add(print(c.expr(), b));
                         case INPUT -> add(input(c.var(), b));
                         case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
-                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> add(board(b, c));
+                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
+                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> add(board(b, c));
                         case END -> {
                             add("return;");
                             return;
@@ -930,7 +931,8 @@ final class CodeGenerator {
                     line(go(b, 0, after));
                 }
                 case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
-                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ -> {
+                             UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
+                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> {
                     line(board(b, c));
                     line(go(b, 0, after));
                 }
@@ -1169,8 +1171,61 @@ final class CodeGenerator {
                         + byteOf(c.args().get(1), b) + ");";
                 case I2C_READ -> target(c.var(), b) + " = (double) i2cRead(" + byteOf(c.expr(), b) + ", "
                         + byteOf(c.args().get(0), b) + ");";
+                case MQTT_CONNECT -> {
+                    mqttCheck(b);
+                    yield "mqttConnect(" + mqttText(c.expr(), b, "network name") + ", " + mqttText(c.args().get(0), b, "password")
+                            + ", " + mqttText(c.args().get(1), b, "broker") + ", " + mqttPort(c.args().get(2), b) + ");";
+                }
+                case MQTT_PUBLISH -> {
+                    mqttCheck(b);
+                    F f = fast(c.args().get(0), b);
+                    List<F> parts = f.kind == TEXT ? mergeText(f.parts) : List.of(f);
+                    yield parts.size() == 1 && parts.get(0).kind == TEXT
+                            ? "mqttPublish(" + mqttText(c.expr(), b, "topic") + ", " + cString(parts.get(0).text) + ");"
+                            : "mqttPublishNum(" + mqttText(c.expr(), b, "topic") + ", " + fastNum(c.args().get(0), b) + ");";
+                }
+                case MQTT_SUBSCRIBE -> {
+                    mqttCheck(b);
+                    yield "mqttSubscribe(" + mqttText(c.expr(), b, "topic") + ");";
+                }
+                case MQTT_HAS -> {
+                    mqttCheck(b);
+                    yield target(c.var(), b) + " = mqttHas(" + mqttText(c.expr(), b, "topic") + ");";
+                }
+                case MQTT_READ -> {
+                    mqttCheck(b);
+                    yield target(c.var(), b) + " = mqttRead(" + mqttText(c.expr(), b, "topic") + ");";
+                }
                 default -> throw new IllegalStateException();
             };
+        }
+
+        /** MQTT needs a network: the ESP32's own WiFi, or a PIC32 with an AT module or Ethernet. */
+        void mqttCheck(Block b) {
+            Board board = Settings.board(t.lang());
+            if (t.lang() == Target.Lang.PIC32) return;
+            if (t.lang() == Target.Lang.ARDUINO && board.fqbn.startsWith("esp32:")) return;
+            throw new FlowException(b, "the " + b.type.title + " block needs a network: choose an ESP32 board, or Language PIC32 C"
+                    + " (an AVR board has one serial port, which Print already uses). Run simulates a broker on the computer.");
+        }
+
+        /** A text that is fixed when the program is built: the network, password, broker or topic. */
+        String mqttText(Expr e, Block b, String what) {
+            if (e instanceof Expr.Str str) {
+                if (str.value().isBlank()) throw new FlowException(b, "the " + what + " must not be empty");
+                if (str.value().length() > 96) throw new FlowException(b, "the " + what + " must be shorter than 96 characters");
+                return cString(str.value());
+            }
+            throw new FlowException(b, "the " + what + " must be a fixed text in quotes, e.g. " + b.type.defaultCode
+                    + " (it is written into the program when it is built)");
+        }
+
+        /** The broker's port: a whole number 1..65535, fixed when the program is built. */
+        String mqttPort(Expr e, Block b) {
+            if (e instanceof Expr.Num n && n.value() == Math.rint(n.value()) && n.value() >= 1 && n.value() <= 65535) {
+                return Long.toString((long) n.value());
+            }
+            throw new FlowException(b, "the port must be a whole number 1..65535, e.g. 1883");
         }
 
         /** A byte for a bus function: a whole number 0..255 as it is, anything else converted (and cut to 8 bits). */

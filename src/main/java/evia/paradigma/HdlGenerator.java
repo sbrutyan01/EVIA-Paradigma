@@ -152,7 +152,8 @@ final class HdlGenerator {
             switch (b.type) {
                 case INPUT -> throw new FlowException(b, "Input needs a keyboard; an FPGA program has none. Use a switch or button (Digital Read) or UART Read instead.");
                 case ANALOG_READ -> throw new FlowException(b, "Analog Read is not available on these FPGA boards yet (no ADC is connected).");
-                case SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ ->
+                case SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
+                     MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ ->
                         throw new FlowException(b, b.type.title + " is not supported when generating for an FPGA yet. UART, digital pins and PWM are.");
                 case CUSTOM, ENTER, EXIT -> throw new FlowException(b, "custom blocks are not supported when generating for an FPGA yet");
                 default -> { }

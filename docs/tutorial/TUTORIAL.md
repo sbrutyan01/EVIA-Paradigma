@@ -165,7 +165,27 @@ Every block becomes one state of a state machine and takes one clock cycle. Pins
 
 *Please note:* the output was simulated and synthesised with open-source tools, but not run through Vivado or loaded onto a board.
 
-## 11. Keep going
+## 11. Send the numbers on with MQTT
+
+Open **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**. It publishes a temperature to a broker,
+sends itself a command and reads it back.
+
+The five **MQTT** blocks are in the *Board* group: *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*,
+*MQTT Has Message* and *MQTT Read*. The network name, password, broker and topics are fixed texts, because they are
+written into the program when it is built.
+
+- **Run** answers from a broker on your computer, so the program can be tried without hardware.
+- **PIC32 C** drives an ESP8266 or ESP32 module with AT firmware on UART2, while Print keeps UART1.
+- **Arduino** on an **ESP32** board uses the board's own WiFi.
+- An AVR board refuses the blocks: it has one serial port and Print uses it.
+
+A message is a number. *MQTT Read* gives -1 when nothing has arrived, so ask *MQTT Has Message* first if a real -1
+could turn up.
+
+*Please note:* the MQTT packets are checked against a real broker in CI, but no WiFi module, ESP32 or PIC32 chip was
+part of that. MQTT over the Ethernet port of the MX695/795 chips is not supported yet.
+
+## 12. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).

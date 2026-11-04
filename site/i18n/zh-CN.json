@@ -113,5 +113,7 @@
  "已展开的 Code Language and Mode 菜单：C99 至 C++20、Arduino、AVR C、PIC32 C、SystemVerilog、Verilog-2001 和 VHDL，下方是流程与数值。",
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA 示例程序</a>，也可在 File、Open Example、FPGA Boards 中找到</li>",
  "<tr><td>仿真中的 FPGA 设计（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27 项中的 27 项</td></tr>",
- "<li><b>PDF 教程。</b> Help, Tutorial 可用七种语言中的任意一种打开完整教程。</li>"
+ "<li><b>PDF 教程。</b> Help, Tutorial 可用七种语言中的任意一种打开完整教程。</li>",
+ "0.6.5 新增：MQTT。五个积木把程序的数字发布给代理服务器并读回命令：UART2 接 WiFi 模块的 PIC32MX、自带 WiFi 的 ESP32，以及对着你电脑上代理服务器运行的 Run。生成的客户端对着真实代理服务器检查过，但没有 WiFi 模块或芯片参与。",
+ "<li><b>设置会下载工具。</b> arduino-cli、avr-gcc 和 FPGA 套件会下载到应用自己的文件夹；XC32 会打开 Microchip 的页面。</li>"
 ]
