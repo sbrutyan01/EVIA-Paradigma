@@ -100,6 +100,8 @@ if [ "${SKIP_ARDUINO:-}" != 1 ] && command -v "$ARDUINO_CLI" > /dev/null; then
     name=$(basename "$src" .evia)
     mqtt=no
     grep -q "MQTT_" "$src" && mqtt=yes
+    # the PIC32 pin names (RD0 ...) do not exist on the Arduino boards
+    if grep -qE "\bR[A-G][0-9]+\b" "$src"; then echo "skip  $name (PIC32 pin names)"; continue; fi
     for fqbn in $FQBNS; do
       # MQTT needs WiFi: the ESP32 boards have it, the ESP32-H2 and the AVR boards do not
       case "$mqtt:$fqbn" in yes:*esp32h2) continue ;; yes:esp32:*) ;; yes:*) continue ;; esac
