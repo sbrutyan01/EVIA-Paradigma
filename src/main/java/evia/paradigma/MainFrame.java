@@ -29,6 +29,7 @@ final class MainFrame extends JFrame {
 
     /** Bundled examples: file name (in resources/evia/paradigma/examples) and menu title. */
     static final String[][] EXAMPLES = {
+            {"tutorial.evia", "Tutorial: a loop and a Counter class"},
             {"classes.evia", "Classes, objects and a module"},
             {"counters.evia", "Counters (objects keep their fields)"},
             {"loops.evia", "Loops: for, while, do-while"},

@@ -1,0 +1,57 @@
+name: site
+
+# Builds the project website (site/ + screenshots + real generator output) and publishes it
+# to the gh-pages branch, which GitHub Pages serves at https://sbrutyan01.github.io/EVIA-Paradigma/
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "docs/screenshots/**"
+      - "examples/tutorial.evia"
+      - "scripts/build-site.py"
+      - "src/main/java/evia/paradigma/CodeGenerator.java"
+      - "src/main/java/evia/paradigma/Runtimes.java"
+      - "pom.xml"
+      - ".github/workflows/pages.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  site:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build the app (the site shows its real generated code)
+        run: mvn -B -DskipTests package
+
+      - name: Build the site
+        run: python3 scripts/build-site.py "$(ls target/evia-paradigma-*.jar | head -n 1)"
+
+      - name: Publish to gh-pages
+        run: |
+          cd build/site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Site for ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages:refs/heads/gh-pages

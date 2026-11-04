@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVIA Paradigma: visual programming that compiles to C and C++</title>
+<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang. Classes, modules, projects, Git, Vim. Free and open source (MIT).">
+<meta property="og:title" content="EVIA Paradigma">
+<meta property="og:description" content="Draw a program as blocks. Get C or C++.">
+<meta property="og:image" content="img/hero-diagram.png">
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="preload" href="fonts/FamiljenGrotesk.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="EVIA Paradigma home">
+    <img src="img/logo.png" alt="" width="34" height="34">
+    <span>EVIA Paradigma</span>
+  </a>
+  <nav aria-label="Main">
+    <a href="#features">Features</a>
+    <a href="#tutorial">Tutorial</a>
+    <a href="#download">Download</a>
+    <a href="#docs">Docs</a>
+    <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-text">
+    <h1>Draw a program.<br>Get C or C++.</h1>
+    <div class="hero-grid">
+      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets.
+        Wire blocks on a canvas, run them, then turn them into one readable source file in
+        C99, C11, C17 or C++98 to C++20, and build it with Clang.</p>
+      <div class="side">
+        <p class="actions">
+          <a class="btn primary" href="#download">Download {{VERSION}}</a>
+          <a class="btn" href="https://github.com/sbrutyan01/EVIA-Paradigma">Source on GitHub</a>
+        </p>
+        <p class="fine">Windows, macOS and Linux. Free and open source, MIT license.</p>
+      </div>
+    </div>
+  </div>
+
+  <figure class="bench" aria-labelledby="bench-caption">
+    <div class="bench-diagram">
+      <img src="img/hero-diagram.png" width="1440" height="1048"
+           alt="Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.">
+    </div>
+    <div class="bench-arrow" aria-hidden="true"></div>
+    <div class="bench-code">
+      <div class="controls" role="group" aria-label="Generated code options">
+        <div class="langs" role="tablist" aria-label="Language">
+          <button role="tab" data-lang="c99">C99</button>
+          <button role="tab" data-lang="c11">C11</button>
+          <button role="tab" data-lang="c17">C17</button>
+          <button role="tab" data-lang="c++98">C++98</button>
+          <button role="tab" data-lang="c++11">C++11</button>
+          <button role="tab" data-lang="c++14">C++14</button>
+          <button role="tab" data-lang="c++17">C++17</button>
+          <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
+        </div>
+        <div class="modes">
+          <span class="mode" role="radiogroup" aria-label="Flow">
+            <button role="radio" data-flow="structured" aria-checked="true">Structured</button>
+            <button role="radio" data-flow="goto" aria-checked="false">Goto</button>
+          </span>
+          <span class="mode" role="radiogroup" aria-label="Values">
+            <button role="radio" data-values="safe" aria-checked="true">Safe</button>
+            <button role="radio" data-values="fast" aria-checked="false">Fast</button>
+          </span>
+        </div>
+      </div>
+      <pre class="code" tabindex="0" aria-live="polite"><code id="sample"></code></pre>
+      <div class="run">
+        <pre id="output" aria-label="Program output"></pre>
+      </div>
+    </div>
+    <figcaption id="bench-caption"><span id="sample-note">The diagram on the left, as the generator writes it.</span>
+      All 32 versions print the same output as the built-in interpreter.</figcaption>
+  </figure>
+</section>
+
+<section class="features" id="features" aria-labelledby="features-h">
+  <h2 id="features-h">What it does</h2>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Programs are blocks and wires</h3>
+      <p>Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the
+        control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and
+        text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.</p>
+    </div>
+    <img src="img/03-first-run.png" loading="lazy" width="2360" height="1760" alt="A For loop wired from blocks, and its output: step 1, step 2, step 3.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Classes, objects and modules</h3>
+      <p>A class has fields with initial values, a constructor and methods, and each method is its own block
+        diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same
+        object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other
+        programs.</p>
+    </div>
+    <img src="img/05-class-method.png" loading="lazy" width="2160" height="1280" alt="Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Eight languages, two ways to write them</h3>
+      <p>Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else,
+        loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump.
+        <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain
+        <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it
+        compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.</p>
+    </div>
+    <img src="img/22-c11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Code window showing the program as C11, compiled with Clang and run.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>See the code of any block</h3>
+      <p>Right-click a block and choose View source code: the generated file opens with exactly the lines that
+        block became highlighted. It works for a whole method or class too, in whichever language you chose.
+        Compile &amp; Run builds it with Clang right there; on Windows the app installs llvm-mingw for you, no
+        Visual Studio needed.</p>
+    </div>
+    <img src="img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Zoom with the mouse wheel</h3>
+      <p>Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires
+        stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.</p>
+    </div>
+    <img src="img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="The diagram zoomed in to 161 percent.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Projects, Git and GitHub</h3>
+      <p>File, New Project creates a folder with the program, a modules folder, a README and a Git repository.
+        Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your
+        git already has. The app never asks for or stores a password.</p>
+    </div>
+    <img src="img/18-connect-github.png" loading="lazy" width="1110" height="392" alt="Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.">
+  </article>
+
+  <ul class="extras">
+    <li><b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.</li>
+    <li><b>Command line.</b> <code>evia --run program.evia</code> and <code>evia --gen program.evia --lang c11 -o program.c</code> for scripts and Makefiles.</li>
+    <li><b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key.</li>
+  </ul>
+</section>
+
+<section class="tutorial" id="tutorial" aria-labelledby="tutorial-h">
+  <h2 id="tutorial-h">Your first program in eight steps</h2>
+  <p class="section-lede">The full walk-through, with every screenshot, is in the
+    <a href="https://github.com/sbrutyan01/EVIA-Paradigma#tutorial">README</a>.</p>
+  <ol class="steps">
+    <li><img src="img/01-new-project.png" loading="lazy" alt=""><h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p></li>
+    <li><img src="img/03-first-run.png" loading="lazy" alt=""><h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p></li>
+    <li><img src="img/04-class-fields.png" loading="lazy" alt=""><h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p></li>
+    <li><img src="img/07-call-dialog.png" loading="lazy" alt=""><h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p></li>
+    <li><img src="img/09-block-menu.png" loading="lazy" alt=""><h3>See the code</h3><p>Right-click a block, View source code.</p></li>
+    <li><img src="img/21-language-dropdown.png" loading="lazy" alt=""><h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p></li>
+    <li><img src="img/17-commit.png" loading="lazy" alt=""><h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p></li>
+    <li><img src="img/20-help-guide.png" loading="lazy" alt=""><h3>Keep going</h3><p>Modules, examples and the guide (F1).</p></li>
+  </ol>
+</section>
+
+<section class="download" id="download" aria-labelledby="download-h">
+  <h2 id="download-h">Download EVIA Paradigma {{VERSION}}</h2>
+  <p class="section-lede">Each installer brings its own Java runtime, so nothing else needs to be installed.
+    To compile the generated code you need Clang (the app sets it up on Windows).</p>
+  <table class="dl">
+    <thead><tr><th scope="col">System</th><th scope="col">File</th><th scope="col">Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Windows 10 / 11, x64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-windows-x64.exe">EVIA-Paradigma-{{VERSION}}-windows-x64.exe</a></td>
+        <td>Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.</td></tr>
+      <tr><td>macOS, Apple Silicon</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-macos-arm64.dmg">EVIA-Paradigma-{{VERSION}}-macos-arm64.dmg</a></td>
+        <td>Not notarized yet: the first time, right-click the app and choose Open.</td></tr>
+      <tr><td>macOS, Intel</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-macos-x64.dmg">EVIA-Paradigma-{{VERSION}}-macos-x64.dmg</a></td>
+        <td>As above.</td></tr>
+      <tr><td>Ubuntu 22.04+ / Debian 12+</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/evia-paradigma_{{VERSION}}_amd64.deb">evia-paradigma_{{VERSION}}_amd64.deb</a></td>
+        <td><code>sudo apt install ./evia-paradigma_{{VERSION}}_amd64.deb</code></td></tr>
+      <tr><td>Any system with Java 25</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/evia-paradigma-{{VERSION}}.jar">evia-paradigma-{{VERSION}}.jar</a></td>
+        <td><code>java -jar evia-paradigma-{{VERSION}}.jar</code></td></tr>
+    </tbody>
+  </table>
+  <p class="fine"><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases">All releases and release notes</a></p>
+</section>
+
+<section class="tested" aria-labelledby="tested-h">
+  <h2 id="tested-h">Tested against its own interpreter</h2>
+  <p class="section-lede">On every change, CI generates every example and test program in all 32 combinations of
+    language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the
+    exit code with the interpreter.</p>
+  <table class="results">
+    <thead><tr><th scope="col">Where</th><th scope="col">Compiler</th><th scope="col">Identical to the interpreter</th></tr></thead>
+    <tbody>
+      <tr><td>Linux, all 8 languages</td><td>Clang 23</td><td>384 of 384</td></tr>
+      <tr><td>Linux, all 8 languages</td><td>GCC 13</td><td>384 of 384</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>240 of 240</td></tr>
+    </tbody>
+  </table>
+  <p class="fine">Plus checks of the application, modules, projects, Git and mouse-wheel zoom on a real window.
+    See <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>.</p>
+</section>
+
+<section class="docs" id="docs" aria-labelledby="docs-h">
+  <h2 id="docs-h">Documentation</h2>
+  <ul class="doclinks">
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma#readme">README</a>: features, tutorial, menus, languages, command line</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/docs/release-notes">Release notes</a> for every version</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Example programs</a>, also under File, Open Example</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">Report a problem or ask for a feature</a></li>
+  </ul>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia
+java -jar evia-paradigma.jar --gen program.evia --lang c11 -o program.c
+clang -std=c11 -O2 -o program program.c -lm</code></pre>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img src="img/logo.png" alt="" width="28" height="28">
+  <p>EVIA Paradigma {{VERSION}}. Copyright 2026 Sergey Brutyan. Released under the
+    <a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/LICENSE">MIT license</a>.</p>
+</footer>
+
+<script src="samples.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -13,6 +13,11 @@
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.3.1-blue" alt="version 0.3.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
+  <br><br>
+  <b><a href="https://sbrutyan01.github.io/EVIA-Paradigma/">Website</a></b> ·
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest">Download</a> ·
+  <a href="#tutorial">Tutorial</a>
 </p>
 
 Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run the program. Define **classes** with
@@ -481,6 +486,12 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    `-Wall -Wextra -Wpedantic -Werror` and compared with the interpreter (stdout, stderr, exit code). The Windows job
    does the same with llvm-mingw Clang and `-static` and checks that no program needs a Visual Studio DLL.
 
+The website is built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) whenever `site/`, the screenshots,
+the tutorial example or the code generator change, and when a release is published:
+[`scripts/build-site.py`](scripts/build-site.py) copies [`site/`](site) and the screenshots, generates the tutorial
+program in all 32 language/flow/values combinations with the freshly built jar (so the code shown on the front page
+is always the real output), and pushes the result to the `gh-pages` branch.
+
 **If a release ends up without installers** (for example a download failed while it was being built):
 open **Actions → release → Run workflow**, enter the tag (e.g. `v0.2.1`) and run it. It builds that tag's
 sources and attaches the installers to its release. The Clang download retries and, if apt.llvm.org is down,
@@ -511,6 +522,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
+| `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build |
 
 ## Screenshots
 
