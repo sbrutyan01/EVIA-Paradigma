@@ -61,6 +61,8 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **Run simulates an Uno**: pin changes in the output, a button and an analog signal, repeatable virtual time.
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
 - Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class).
+- [Website](https://sbrutyan01.github.io/EVIA-Paradigma/): light and dark themes (follows the system; **Light / Dark**
+  buttons in the header), a bigger logo and name, the board features and this release's test results.
 
 | File | Platform | Size |
 |---|---|---|
