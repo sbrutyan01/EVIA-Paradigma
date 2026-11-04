@@ -45,7 +45,7 @@ final class Cli {
                             }
                             case "--board" -> {
                                 Board b = Board.parse(v);
-                                if (!b.key().equals(v.trim().toLowerCase().replace('_', '-')) && !b.fqbn.equals(v.trim())) {
+                                if (!b.key().equals(v.trim().toLowerCase().replace('_', '-')) && !b.fqbn.equalsIgnoreCase(v.trim())) {
                                     throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b, nexys-a7-100t, arty-a7-35, basys3, olimex-gatemate, ccgm1a1-evb)");
                                 }
                                 Settings.useBoard(b);

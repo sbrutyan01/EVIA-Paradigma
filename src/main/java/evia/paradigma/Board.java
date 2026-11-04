@@ -127,7 +127,7 @@ enum Board {
     static Board parse(String key) {
         if (key == null) return UNO;
         String k = key.trim().toLowerCase(Locale.ROOT).replace('_', '-');
-        for (Board b : values()) if (b.key().equals(k) || b.fqbn.equals(k)) return b;
+        for (Board b : values()) if (b.key().equals(k) || b.fqbn.equalsIgnoreCase(key.trim())) return b;
         return UNO;
     }
 
