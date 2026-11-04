@@ -31,6 +31,10 @@ final class Interpreter {
         void print(String text);
         String input(String varName); // null = user cancelled
         boolean cancelled();
+        /** A change on the simulated board (pin levels, modes); not program output. */
+        default void board(String event) { }
+        /** A Delay block: the main window really waits; tests and the command line don't. */
+        default void sleep(long ms) { }
     }
 
     /**
@@ -61,13 +65,32 @@ final class Interpreter {
             case SET -> {
                 Matcher m = ASSIGN.matcher(code);
                 if (!m.matches()) throw new FlowException("expected  name = expression");
-                yield new Compiled(m.group(1), ExprParser.parse(m.group(2)), null);
+                yield new Compiled(variable(m.group(1)), ExprParser.parse(m.group(2)), null);
             }
-            case INPUT -> {
+            case INPUT, MILLIS -> {
                 String name = code.trim();
                 if (!VAR.matcher(name).matches()) throw new FlowException("expected a variable name");
-                yield new Compiled(name, null, null);
+                yield new Compiled(variable(name), null, null);
             }
+            case DIGITAL_READ, ANALOG_READ -> {
+                Matcher m = ASSIGN.matcher(code);
+                if (!m.matches()) throw new FlowException("expected  name = pin   e.g.  " + b.type.defaultCode);
+                yield new Compiled(variable(m.group(1)), ExprParser.parse(m.group(2)), null);
+            }
+            case PIN_MODE -> {
+                List<String> parts = splitTopLevel(code, ',');
+                String mode = parts.size() == 2 ? parts.get(1).trim() : "";
+                if (parts.size() != 2 || !BoardSim.MODES.contains(mode)) {
+                    throw new FlowException("expected  pin, OUTPUT   or  pin, INPUT   or  pin, INPUT_PULLUP");
+                }
+                yield new Compiled(mode, ExprParser.parse(parts.get(0)), null);
+            }
+            case DIGITAL_WRITE, ANALOG_WRITE -> {
+                List<String> parts = splitTopLevel(code, ',');
+                if (parts.size() != 2) throw new FlowException("expected  pin, value   e.g.  " + b.type.defaultCode);
+                yield new Compiled(null, ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
+            }
+            case DELAY -> new Compiled(null, ExprParser.parse(code), null);
             case PRINT, IF, WHILE, DO_WHILE -> new Compiled(null, ExprParser.parse(code), null);
             case FOR -> {
                 List<String> parts = splitTopLevel(code, ';');
@@ -109,7 +132,13 @@ final class Interpreter {
         if (part.isBlank()) return null;
         Matcher m = ASSIGN.matcher(part);
         if (!m.matches()) throw new FlowException("the " + what + " part must look like  name = expression");
-        return new Assign(m.group(1), ExprParser.parse(m.group(2)));
+        return new Assign(variable(m.group(1)), ExprParser.parse(m.group(2)));
+    }
+
+    /** A name that can be assigned: not a board constant such as HIGH or A0. */
+    private static String variable(String name) {
+        if (BoardSim.isConstant(name)) throw new FlowException(name + " is a board constant; choose another variable name");
+        return name;
     }
 
     /** Splits on {@code sep}, ignoring separators inside "string literals". */
@@ -276,6 +305,7 @@ final class Interpreter {
                 return obj.fields.getOrDefault(name.substring(5), 0.0);
             }
             Object v = globals.get(name);
+            if (v == null) v = BoardSim.constant(name);
             if (v == null) throw new FlowException("undefined variable '" + name + "'");
             return v;
         }
@@ -296,8 +326,10 @@ final class Interpreter {
 
     private final Map<String, Object> globals = new LinkedHashMap<>();
     private int steps;
+    private BoardSim board;
 
     void run(Block start, Host host) {
+        board = new BoardSim(host::board);
         try {
             runGraph(start, new Scope(new Obj(), null), 0, host);
         } catch (Halt ignored) {
@@ -357,6 +389,38 @@ final class Interpreter {
                         scope.set(c.var(), v);
                         yield cur.next[0];
                     }
+                    case PIN_MODE -> {
+                        board.pinMode(pinOf(c.expr(), scope), c.var());
+                        yield cur.next[0];
+                    }
+                    case DIGITAL_WRITE -> {
+                        board.digitalWrite(pinOf(c.expr(), scope), Expr.num(Expr.eval(c.args().get(0), scope)));
+                        yield cur.next[0];
+                    }
+                    case ANALOG_WRITE -> {
+                        board.analogWrite(pinOf(c.expr(), scope), Expr.num(Expr.eval(c.args().get(0), scope)));
+                        yield cur.next[0];
+                    }
+                    case DIGITAL_READ -> {
+                        scope.set(c.var(), board.digitalRead(pinOf(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case ANALOG_READ -> {
+                        scope.set(c.var(), board.analogRead(pinOf(c.expr(), scope)));
+                        yield cur.next[0];
+                    }
+                    case DELAY -> {
+                        double ms = Expr.num(Expr.eval(c.expr(), scope));
+                        if (ms > 0) {
+                            board.delay((long) ms);
+                            host.sleep((long) ms);
+                        }
+                        yield cur.next[0];
+                    }
+                    case MILLIS -> {
+                        scope.set(c.var(), (double) board.millis());
+                        yield cur.next[0];
+                    }
                     case IF -> Expr.truthy(Expr.eval(c.expr(), scope)) ? cur.next[0] : cur.next[1];
                     case CUSTOM -> call(cur, c, scope, depth, host);
                     case END, EXIT -> throw new IllegalStateException();
@@ -378,6 +442,10 @@ final class Interpreter {
             prev = cur;
             cur = nxt;
         }
+    }
+
+    private static int pinOf(Expr e, Scope scope) {
+        return BoardSim.pin(Expr.num(Expr.eval(e, scope)));
     }
 
     /** Loop condition: 'body' if true (or the loop itself if the body is empty), else 'done'. */

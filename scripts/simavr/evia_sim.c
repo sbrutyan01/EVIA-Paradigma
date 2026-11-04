@@ -1,0 +1,167 @@
+/*
+ * Runs an AVR program (Intel HEX) in simavr and copies what it sends on the UART to stdout,
+ * byte for byte. Used by scripts/check-boards.sh to compare bare-metal AVR code with the
+ * interpreter. Stops when the program sleeps with interrupts off (EVIA's rt_end), crashes,
+ * or after a time limit.
+ *
+ *   evia_sim MCU program.hex [options]
+ *     --seconds N      stop after N seconds of simulated time (default 120)
+ *     --watch D5       report every change of output pin PD5 on stderr: "[1000 ms] PD5 1"
+ *     --button D4      a push button to ground on PD4, pressed during the second half of every
+ *                      2-second period - the same button the interpreter's simulated board has
+ *     --adc 7          feed ADC channel 7 with the interpreter's analog signal: 0..1023..0 over 4 s
+ *
+ * Built against simavr's simulator core (without its ELF loader, so libelf isn't needed).
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "sim_avr.h"
+#include "sim_hex.h"
+#include "avr_uart.h"
+#include "avr_ioport.h"
+#include "sim_cycle_timers.h"
+#include "avr_adc.h"
+
+/* sim_hex.c can also load ELF files; evia_sim only loads HEX, so these are never called. */
+struct elf_firmware_t;
+void sim_default_mcu(struct elf_firmware_t *firmware, const char *file) {
+    (void) firmware;
+    (void) file;
+}
+int elf_read_firmware(const char *file, struct elf_firmware_t *firmware) {
+    (void) file;
+    (void) firmware;
+    return -1;
+}
+
+static void uart_out(struct avr_irq_t *irq, uint32_t value, void *param) {
+    (void) irq;
+    (void) param;
+    putchar((int) (value & 0xFF));
+}
+
+static avr_t *avr;
+
+static unsigned long now_ms(void) {
+    return (unsigned long) (avr->cycle / (avr->frequency / 1000));
+}
+
+static void pin_changed(struct avr_irq_t *irq, uint32_t value, void *param) {
+    (void) irq;
+    fprintf(stderr, "[%lu ms] P%s %u\n", now_ms(), (const char *) param, value & 1);
+}
+
+/* The button: released (pin pulled high) except during the second half of each 2-second period. */
+static avr_irq_t *button;
+static int button_down = -1;
+
+static avr_cycle_count_t button_tick(struct avr_t *a, avr_cycle_count_t when, void *param) {
+    (void) a;
+    (void) param;
+    int down = now_ms() % 2000 >= 1000;
+    if (down != button_down) {
+        button_down = down;
+        avr_raise_irq(button, down ? 0 : 1);
+    }
+    return when + avr->frequency / 1000;   /* again in 1 ms */
+}
+
+/* The analog signal: a triangle wave 0..1023..0 with a 4.096 s period, as millivolts (5 V reference). */
+static avr_irq_t *adc;
+
+static avr_cycle_count_t adc_tick(struct avr_t *a, avr_cycle_count_t when, void *param) {
+    (void) a;
+    (void) param;
+    unsigned long t = now_ms() % 4096;
+    unsigned long value = t < 2048 ? t / 2 : (4095 - t) / 2;
+    avr_raise_irq(adc, (uint32_t) ((value * 5000 + 1022) / 1023));
+    return when + avr->frequency / 1000;
+}
+
+static avr_irq_t *pin_irq(const char *name) {
+    if (strlen(name) != 2 || name[1] < '0' || name[1] > '7') {
+        fprintf(stderr, "evia_sim: pin names look like D4 or B5, not %s\n", name);
+        exit(2);
+    }
+    avr_irq_t *irq = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(name[0]), name[1] - '0');
+    if (!irq) {
+        fprintf(stderr, "evia_sim: this chip has no port %c\n", name[0]);
+        exit(2);
+    }
+    return irq;
+}
+
+static void quiet_log(avr_t *avr, const int level, const char *format, va_list ap) {
+    (void) avr;
+    if (level <= LOG_ERROR) vfprintf(stderr, format, ap);
+}
+
+int main(int argc, char **argv) {
+    if (argc < 3) {
+        fprintf(stderr, "usage: evia_sim MCU program.hex [--seconds N] [--watch D5] [--button D4]\n");
+        return 2;
+    }
+    double seconds = 120;
+    avr = avr_make_mcu_by_name(argv[1]);
+    if (!avr) {
+        fprintf(stderr, "evia_sim: unknown MCU %s\n", argv[1]);
+        return 2;
+    }
+    avr_global_logger_set(quiet_log);
+    avr_init(avr);
+    avr->frequency = 16000000;
+    avr->vcc = avr->avcc = 5000;   /* millivolts: a 5 V board */
+
+    uint32_t size = 0, start = 0;
+    uint8_t *code = read_ihex_file(argv[2], &size, &start);
+    if (!code) {
+        fprintf(stderr, "evia_sim: can't read %s\n", argv[2]);
+        return 2;
+    }
+    avr_loadcode(avr, code, size, start);
+    free(code);
+    avr->pc = 0;
+
+    const char names[] = {'0', '1'};
+    for (unsigned i = 0; i < sizeof names; i++) {
+        uint32_t flags = 0;
+        if (avr_ioctl(avr, AVR_IOCTL_UART_GET_FLAGS(names[i]), &flags) < 0) continue;   /* no such UART */
+        flags &= ~AVR_UART_FLAG_STDIO;
+        avr_ioctl(avr, AVR_IOCTL_UART_SET_FLAGS(names[i]), &flags);
+        avr_irq_t *out = avr_io_getirq(avr, AVR_IOCTL_UART_GETIRQ(names[i]), UART_IRQ_OUTPUT);
+        if (out) avr_irq_register_notify(out, uart_out, NULL);
+    }
+
+    for (int i = 3; i + 1 < argc; i += 2) {
+        if (!strcmp(argv[i], "--seconds")) {
+            seconds = atof(argv[i + 1]);
+        } else if (!strcmp(argv[i], "--watch")) {
+            avr_irq_register_notify(pin_irq(argv[i + 1]), pin_changed, argv[i + 1]);
+        } else if (!strcmp(argv[i], "--button")) {
+            button = pin_irq(argv[i + 1]);
+            button_tick(avr, avr->cycle, NULL);
+            avr_cycle_timer_register(avr, avr->frequency / 1000, button_tick, NULL);
+        } else if (!strcmp(argv[i], "--adc")) {
+            adc = avr_io_getirq(avr, AVR_IOCTL_ADC_GETIRQ, ADC_IRQ_ADC0 + atoi(argv[i + 1]));
+            adc_tick(avr, avr->cycle, NULL);
+            avr_cycle_timer_register(avr, avr->frequency / 1000, adc_tick, NULL);
+        } else {
+            fprintf(stderr, "evia_sim: unknown option %s\n", argv[i]);
+            return 2;
+        }
+    }
+
+    avr_cycle_count_t limit = (avr_cycle_count_t) (seconds * avr->frequency);
+    int state = cpu_Running;
+    while (state != cpu_Done && state != cpu_Crashed) {
+        state = avr_run(avr);
+        if (avr->cycle > limit) {
+            fflush(stdout);
+            fprintf(stderr, "evia_sim: still running after %.0f s of simulated time\n", seconds);
+            return 3;
+        }
+    }
+    fflush(stdout);
+    return state == cpu_Crashed ? 4 : 0;
+}

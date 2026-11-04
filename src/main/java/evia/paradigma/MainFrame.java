@@ -37,6 +37,14 @@ final class MainFrame extends JFrame {
             {"expressions.evia", "Expressions"},
             {"example.evia", "Even/odd and average"},
     };
+    /** Programs for Arduino and ESP32 boards (they use the Board blocks; Run simulates an Uno). */
+    static final String[][] BOARD_EXAMPLES = {
+            {"boards/blink.evia", "Blink the built-in LED"},
+            {"boards/button.evia", "Button: read a pin, light the LED"},
+            {"boards/fade.evia", "Fade an LED with PWM"},
+            {"boards/analog_meter.evia", "Analog meter (A0)"},
+            {"boards/led_class.evia", "Led class: an object with a pin"},
+    };
     static final String[] EXAMPLE_FILES = {"modules/counter.eviam"};
 
     private final Library lib = new Library();
@@ -288,7 +296,7 @@ final class MainFrame extends JFrame {
                 Target cur = Settings.target();
                 ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
                 for (Target.Lang l : Target.Lang.values()) {
-                    if (l == Target.Lang.CPP98) m.addSeparator();
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.ARDUINO) m.addSeparator();
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + l.note + ")", l == cur.lang());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
                     g1.add(i);
@@ -307,6 +315,7 @@ final class MainFrame extends JFrame {
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(v.display + " values"
                             + (v == Target.Values.SAFE ? "   (numbers and text, all checks)" : "   (double numbers, no checks)"), v == cur.values());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withValues(v)));
+                    i.setEnabled(!cur.embedded());
                     g3.add(i);
                     m.add(i);
                 }
@@ -335,6 +344,10 @@ final class MainFrame extends JFrame {
     private JMenu examplesMenu(String title) {
         JMenu m = new JMenu(title);
         for (String[] ex : EXAMPLES) m.add(item(ex[1], null, e -> openExample(ex[0])));
+        JMenu boards = new JMenu("Arduino and ESP32 Boards");
+        for (String[] ex : BOARD_EXAMPLES) boards.add(item(ex[1], null, e -> openExample(ex[0])));
+        m.addSeparator();
+        m.add(boards);
         return m;
     }
 
@@ -523,6 +536,19 @@ final class MainFrame extends JFrame {
 
                     @Override public boolean cancelled() {
                         return isCancelled() || Thread.currentThread().isInterrupted();
+                    }
+
+                    @Override public void board(String event) {
+                        SwingUtilities.invokeLater(() -> console.append("   board " + event + "\n"));
+                    }
+
+                    @Override public void sleep(long ms) {
+                        if (delay <= 0) return;               // full speed: virtual time only
+                        try {
+                            Thread.sleep(Math.min(ms, 60_000));
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 });
                 return null;
@@ -825,7 +851,12 @@ final class MainFrame extends JFrame {
             lib.changed();
             resetTo(null, null);
             setTitle(APP + " - example " + name);
-            status.setText("Example " + name + ". Press Run (F5). Save it to keep your changes.");
+            if (name.startsWith("boards/") && !Settings.target().embedded()) {
+                Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // its code is for a board
+            }
+            status.setText(name.startsWith("boards/")
+                    ? "Example " + name + ". Run (F5) simulates an Arduino Uno; Generate Code (F7) makes the sketch for your board."
+                    : "Example " + name + ". Press Run (F5). Save it to keep your changes.");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Example", JOptionPane.ERROR_MESSAGE);
         }

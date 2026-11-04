@@ -40,7 +40,7 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr)");
                                 t = t.withLang(l);
                             }
                             case "--flow" -> t = t.withFlow(switch (v.toLowerCase()) {
@@ -83,7 +83,9 @@ final class Cli {
                               java -jar evia-paradigma.jar --gen  program.evia [options]
                                                                                      generate C or C++
                                   -o FILE              write to FILE (default: standard output)
-                                  --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default)
+                                  --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default),
+                                                       arduino (a sketch for Arduino AVR and ESP32 boards),
+                                                       avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
                                   --values MODE        safe (default): numbers and text, the interpreter's checks
@@ -91,7 +93,11 @@ final class Cli {
                               java -jar evia-paradigma.jar --example out.evia        save the example
                             Build generated code with Clang %d, e.g.:
                               clang++ -std=c++20 -O2 -o program program.cpp
-                              clang -std=c11 -O2 -o program program.c -lm""".formatted(Settings.LATEST_CLANG));
+                              clang -std=c11 -O2 -o program program.c -lm
+                              (or g++ / gcc, GCC %d or newer)
+                            Boards:
+                              arduino-cli compile --fqbn arduino:avr:uno program      (program/program.ino)
+                              avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o program.elf program.c -lm""".formatted(Settings.LATEST_CLANG, Settings.MIN_GCC));
                     return args[0].equals("--help") || args[0].equals("-h") ? 0 : 2;
                 }
             }
@@ -122,6 +128,8 @@ final class Cli {
                     }
                 }
                 @Override public boolean cancelled() { return false; }
+                // the simulated board's pin changes go to stderr, so stdout is exactly the program's output
+                @Override public void board(String event) { err.println("board " + event); }
             });
             return 0;
         } catch (FlowException e) {

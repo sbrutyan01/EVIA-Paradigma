@@ -722,6 +722,11 @@ final class Runtimes {
 
     private static final Pattern RT_NAME = Pattern.compile("\\b(rt_[A-Za-z0-9_]+|RT_[A-Z_]+|Value)\\b");
 
+    /** Arduino sketch or bare-metal AVR runtime (see {@link EmbeddedRuntime}). */
+    static String embedded(Target t, String program) {
+        return EmbeddedRuntime.source(t, program);
+    }
+
     /** The C runtime pieces {@code program} uses (and what they need), in a valid order. */
     static String c(Target t, String program) {
         Set<Piece> needed = new LinkedHashSet<>();

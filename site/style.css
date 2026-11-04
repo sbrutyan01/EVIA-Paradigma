@@ -26,6 +26,7 @@
   --if: #e8786c;
   --start: #7cc781;
   --class: #ffb38c;
+  --board: #6ebe96;
   --console: #1f232e;
   --console-ink: #dfe3ea;
   --console-dim: #8b93a7;
@@ -170,8 +171,9 @@ h3 { font-size: 24px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01e
 .feature:nth-of-type(2) h3 { border-color: var(--class); }
 .feature:nth-of-type(3) h3 { border-color: var(--loop); }
 .feature:nth-of-type(4) h3 { border-color: var(--if); }
-.feature:nth-of-type(5) h3 { border-color: var(--start); }
-.feature:nth-of-type(6) h3 { border-color: #c4a1e6; }
+.feature:nth-of-type(5) h3, .feature:nth-of-type(6) h3 { border-color: var(--board); }
+.feature:nth-of-type(7) h3 { border-color: var(--start); }
+.feature:nth-of-type(8) h3 { border-color: #c4a1e6; }
 .extras { list-style: none; margin: 8px 0 0; padding: 28px 0 0; border-top: 1px solid var(--rule);
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; font-size: 16.5px; color: #2c3547; }
 .extras b { display: block; color: var(--ink); font-size: 18px; margin-bottom: 4px; }

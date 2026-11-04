@@ -294,6 +294,62 @@ public class Tour {
         capture(hw, "20-help-guide");
         ui(hw::dispose);
         capture(f, "00-main-window");
+
+        // ---- 9. boards: simulated run, Arduino sketch, bare-metal AVR build, settings, language list
+        later(f, "openExample", "boards/blink.evia");
+        settle(1200);
+        for (Window w : Window.getWindows()) {
+            if (w instanceof JDialog dd && dd.isShowing()) click(dd, "No");   // "Save changes?" - the project is saved already
+        }
+        waitFor(() -> f.getTitle().contains("blink") ? Boolean.TRUE : null, "blink example");
+        settle(600);
+        later(f, "run");
+        JTextArea console = (JTextArea) field(f, "console");
+        waitFor(() -> console.getText().contains(">> finished") ? Boolean.TRUE : null, "simulated run");
+        capture(f, "27-board-simulated");
+
+        Block write = null;
+        for (Block b : lib.main.getBlocks()) if (b.type == BlockType.DIGITAL_WRITE && b.getCode().endsWith("HIGH")) write = b;
+        Block w0 = write;
+        ui(() -> Settings.setBoard(Board.ESP32_S3));
+        ui(() -> Settings.setTarget(new Target(Target.Lang.ARDUINO, Target.Flow.STRUCTURED, Target.Values.FAST)));
+        later(f, "viewSource", w0);
+        CodeViewer bv = waitFor(() -> { for (Window w : Window.getWindows()) if (w instanceof CodeViewer v && v.isShowing()) return v; return null; }, "sketch");
+        ui(() -> bv.setBounds(60, 40, 1180, 860));
+        waitFor(() -> bv.getTitle().contains("Arduino") ? Boolean.TRUE : null, "Arduino code");
+        settle(800);
+        capture(bv, "28-arduino-sketch");
+
+        ui(() -> Settings.setBoard(Board.UNO));
+        ui(() -> Settings.setTarget(new Target(Target.Lang.AVR, Target.Flow.STRUCTURED, Target.Values.FAST)));
+        waitFor(() -> bv.getTitle().contains("AVR") ? Boolean.TRUE : null, "AVR code");
+        settle(800);
+        JTextArea bout = (JTextArea) field(bv, "output");
+        click(bv.getContentPane(), "Build");
+        waitFor(() -> bout.getText().contains(">> built") || bout.getText().contains("failed") || bout.getText().contains("avr-gcc and avr-libc") ? Boolean.TRUE : null, "AVR build");
+        settle(800);
+        capture(bv, "29-avr-build");
+        ui(() -> bv.setVisible(false));
+
+        SwingUtilities.invokeLater(() -> Settings.showDialog(f));
+        JDialog sd = dialog("Settings");
+        ui(() -> {
+            for (JComboBox<?> c : find(sd, JComboBox.class)) if (c.getItemCount() == 2) c.setSelectedIndex(1);   // GCC
+        });
+        settle(1500);
+        capture(sd, "30-settings-gcc-boards");
+        click(sd, "Cancel");
+        settle(300);
+
+        ui(() -> Settings.setTarget(new Target(Target.Lang.ARDUINO, Target.Flow.STRUCTURED, Target.Values.FAST)));
+        settle(500);
+        JComboBox<?> langList = find(find(f.getContentPane(), TargetBar.class).get(0), JComboBox.class).get(0);
+        ui(() -> langList.showPopup());
+        settle(700);
+        Rectangle fb = f.getBounds();
+        capture(new Rectangle(fb.x, fb.y, fb.width, 560), "31-language-list");
+        ui(() -> langList.hidePopup());
+        ui(() -> Settings.setTarget(Target.DEFAULT));
         System.out.println("tour done");
         System.exit(0);
     }

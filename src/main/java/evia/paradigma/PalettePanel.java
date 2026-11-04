@@ -43,8 +43,17 @@ final class PalettePanel extends JPanel {
         removeAll();
         add(header("Blocks"));
         for (BlockType t : BlockType.values()) {
-            if (t == BlockType.CUSTOM || !target.allows(t)) continue;
+            if (t == BlockType.CUSTOM || t.isBoard() || !target.allows(t)) continue;
             add(item(t.title, t.color, t.hint, "TYPE:" + t.name(), null, null));
+            add(Box.createVerticalStrut(5));
+        }
+
+        add(Box.createVerticalStrut(10));
+        add(header("Board"));
+        for (BlockType t : BlockType.values()) {
+            if (!t.isBoard() || !target.allows(t)) continue;
+            add(item(t.title, t.color, "<html>" + t.hint + "<br><i>Arduino / AVR C code; Run simulates an Arduino Uno.</i></html>",
+                    "TYPE:" + t.name(), null, null));
             add(Box.createVerticalStrut(5));
         }
 

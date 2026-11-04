@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.3.1-blue" alt="version 0.3.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-blue" alt="version 0.4.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -23,15 +23,17 @@
 Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run the program. Define **classes** with
 fields, a constructor and methods, share them between programs as **modules**, keep your work
 in **project folders** under **Git/GitHub**, edit everything with **Vim**, and turn the
-program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23**,
-with structured or goto control flow and safe or fast values. Pure Swing, no external
-libraries; a Maven project for NetBeans and Java 25.
+program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23** or **GCC**,
+with structured or goto control flow and safe or fast values. The same diagrams program **Arduino and ESP32 boards**:
+pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
+-S2, -S3, -C3, -C6, -H2) or bare-metal **AVR C** that drives the chip's registers directly, and **Run** simulates the
+board on your computer. Pure Swing, no external libraries; a Maven project for NetBeans and Java 25.
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
 **Contents:** [Download](#download) · [Tutorial](#tutorial) · [Building from source](#building-from-source) ·
 [Blocks](#blocks) · [Classes](#classes-and-objects) · [Zoom](#zoom) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
-[Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
+[Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Arduino and ESP32](#arduino-and-esp32-boards) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
 
 ## Download
 
@@ -40,11 +42,25 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.3.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.3.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.3.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.3.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.3.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.3.1.jar` | `java -jar evia-paradigma-0.3.1.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.4.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.4.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.4.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.4.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.4.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.4.0.jar` | `java -jar evia-paradigma-0.4.0.jar` |
+
+### Release 0.4.0
+
+[EVIA Paradigma v0.4.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.4.0) ([release notes](docs/release-notes/v0.4.0.md)):
+Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, and GCC as a choice next to Clang.
+
+- **Board blocks:** Pin Mode, Digital Write, Digital Read, Analog Read, Analog Write (PWM), Delay, Millis.
+- **Arduino sketch** for 12 boards: Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32, ESP32-S2, -S3, -C3, -C6, -H2.
+- **AVR C**: bare metal for the ATmega328P, ATmega2560 and ATmega32U4. avr-gcc and avr-libc only: pins, timers,
+  PWM, the ADC and a 115200-baud UART through the registers, with Arduino's pin numbering.
+- **Build and Upload** in the code window (arduino-cli, or avr-gcc + avrdude); **Board** list next to the language.
+- **Run simulates an Uno**: pin changes in the output, a button and an analog signal, repeatable virtual time.
+- **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
+- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class).
 
 ### Release 0.3.1
 
@@ -231,7 +247,22 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 <p align="center"><img src="docs/screenshots/19-history.png" alt="Git history" width="650"></p>
 
-### 8. Keep going
+### 8. Program an Arduino or ESP32 board
+
+**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. The **Board** blocks (green, under
+*Board* in the palette) set pins, read buttons and sensors, and wait. **Run** (F5) simulates an Arduino Uno: the
+output shows every pin change with its time.
+
+<p align="center"><img src="docs/screenshots/27-board-simulated.png" alt="Blink example: the simulated board's pin changes in the output" width="900"></p>
+
+Choose **Language: Arduino** and a **Board**, then **Generate code** (F7): one sketch for any of the 12 boards.
+**Build** compiles it with arduino-cli, **Upload** sends it to the board; Print and Input use the Serial Monitor at
+115200 baud. **AVR C** writes the same program without the Arduino core, straight to the chip's registers, built with avr-gcc.
+See [Arduino and ESP32 boards](#arduino-and-esp32-boards).
+
+<p align="center"><img src="docs/screenshots/29-avr-build.png" alt="Bare-metal AVR C built with avr-gcc for the Arduino Uno" width="900"></p>
+
+### 9. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
@@ -241,14 +272,15 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 ## Building from source
 
-**Requirements:** JDK 25, LLVM/Clang 23 (latest stable) for compiling generated C and C++, and Vim/gVim (optional, for editing in the real Vim).
+**Requirements:** JDK 25, Clang 23 (latest stable) or GCC 13+ for compiling generated C and C++, and Vim/gVim (optional, for editing in the real Vim).
+For boards (optional): [arduino-cli](https://arduino.github.io/arduino-cli/) with the `arduino:avr` and `esp32:esp32` cores, or avr-gcc, avr-libc and avrdude.
 
 1. Clone: `git clone https://github.com/sbrutyan01/EVIA-Paradigma.git`
 2. NetBeans → **File → Open Project…** → select the folder. Make sure the project uses JDK 25
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.3.1.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.4.0.jar`.
 
 ### Installing Clang 23
 
@@ -257,6 +289,11 @@ Command line: `mvn package` then `java -jar target/evia-paradigma-0.3.1.jar`.
 | Windows | Nothing to do: **Settings → Install Clang…** (also offered automatically on the first compile) downloads the latest [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases), a self-contained Clang with its own C++ library and Windows headers, into `%LOCALAPPDATA%\EVIA Paradigma\llvm-mingw`. No Visual Studio, no admin rights, no PATH changes. Programs are linked with `-static`, so they run on any Windows PC |
 | Ubuntu/Debian | `wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh 23`, then use `clang++-23` |
 | macOS | `brew install llvm` |
+
+**GCC instead of Clang:** **Settings → Compiler: GCC (GNU)** switches the command to `g++` (and `gcc` for C).
+Ubuntu/Debian: `sudo apt install g++`; macOS: `brew install gcc`; Windows: **Settings → Install GCC…** downloads the latest
+[WinLibs](https://winlibs.com) MinGW-w64 GCC into `%LOCALAPPDATA%\EVIA Paradigma\winlibs-gcc` (also no Visual Studio,
+programs linked with `-static`). GCC 13 or newer compiles every language and mode.
 
 **Settings → Check** test-compiles the C++ runtime with the configured compiler and shows the version. It's green for Clang 23, orange for older versions or other compilers, and red if the compiler or its C++ library is missing.
 
@@ -450,6 +487,50 @@ clang   -std=c11   -O2 -o program program.c -lm
 clang++ -std=c++98 -O2 -o program program.cpp
 ```
 
+## Arduino and ESP32 boards
+
+Two more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
+only in Print). Print and Input go over the serial port at 115200 baud.
+
+| Language | Boards | Output | Build and upload |
+|---|---|---|---|
+| **Arduino** | Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini (5 V, 16 MHz); ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2 | one sketch, `program/program.ino`, with `setup()` and `loop()`; text in flash (`F()`) on AVR boards | `arduino-cli compile` / `upload` with the `arduino:avr` and `esp32:esp32` cores |
+| **AVR C** | the six AVR boards: ATmega328P (Uno, Nano, Pro Mini), ATmega2560 (Mega 2560), ATmega32U4 (Leonardo, Micro) | bare-metal C: no Arduino core. `pinMode`, `digitalWrite`, `analogRead`, `analogWrite`, `millis` and `delay` written against the chip's registers, with Arduino's pin numbers, timer setup and a 115200-baud UART (USART1 on pins 0/1 for the ATmega32U4) | `avr-gcc -mmcu=… -Os`, `avr-objcopy`, `avrdude` |
+
+The generated code is the same for every board of a language. Pins are written as `LED_BUILTIN`, `A0` and so on, and
+each board's headers say where they are. The **Board** list next to the language (and in Settings, with the serial port
+and the tool paths) only decides what **Build** and **Upload** in the code window do.
+
+<p align="center"><img src="docs/screenshots/28-arduino-sketch.png" alt="Arduino sketch for an ESP32-S3, the Digital Write block highlighted" width="900"></p>
+
+| Block | Code | What it does |
+|---|---|---|
+| **Pin Mode** | `LED_BUILTIN, OUTPUT` | `OUTPUT`, `INPUT` or `INPUT_PULLUP` |
+| **Digital Write** | `LED_BUILTIN, HIGH` | `HIGH` for any non-zero value, `LOW` for 0 |
+| **Digital Read** | `pressed = 4` | stores 1 (HIGH) or 0 (LOW) |
+| **Analog Read** | `level = A0` | 0..1023 on AVR boards, 0..4095 on ESP32 |
+| **Analog Write** | `5, brightness` | PWM duty 0..255 |
+| **Delay** | `500` | waits this many milliseconds |
+| **Millis** | `t` | milliseconds since the program started |
+
+**Run** simulates an Arduino Uno, so board programs can be tried without a board:
+- every pin change appears in the output (`board [500 ms] pin 13 HIGH`), separately from the program's output;
+- time is virtual and only Delay moves it, so runs are repeatable (the main window also really waits, unless the speed
+  slider is at full speed);
+- a button on each input pin is pressed during the second half of every 2 seconds;
+- analog pins read a slow wave 0..1023..0.
+
+On a board the program runs once from `setup()`, and the pins keep their state afterwards. Desktop C and C++
+can't use the Board blocks; Generate code names the block.
+
+<p align="center"><img src="docs/screenshots/31-language-list.png" alt="The Language list with Arduino and AVR C" width="800"></p>
+
+How the board code is tested: CI builds the bare-metal AVR C of every board example for all three chips with
+`-Wall -Wextra -Werror`, in both flows, and runs each build in [simavr](https://github.com/buserror/simavr). The
+simulator gets the same button and analog signal as EVIA Paradigma's simulated Uno. The UART output must match the
+interpreter, and the built-in LED must switch the same number of times on the right port bit (PB5, PB7 or PC7). The
+Arduino sketches are built with arduino-cli for all 12 boards, and the Uno and Mega 2560 builds run in simavr too.
+
 ## Command line
 
 ```
@@ -462,6 +543,16 @@ clang++ -std=c++20 -O2 -o prog prog.cpp && ./prog
 java -jar evia-paradigma.jar --gen program.evia --lang c11 -o prog.c
 java -jar evia-paradigma.jar --gen program.evia --lang c++98 --flow goto --values fast -o prog.cpp
 clang -std=c11 -O2 -o prog prog.c -lm && ./prog
+```
+
+Boards:
+
+```
+java -jar evia-paradigma.jar --gen blink.evia --lang arduino -o blink/blink.ino
+arduino-cli compile --fqbn esp32:esp32:esp32s3 blink
+java -jar evia-paradigma.jar --gen blink.evia --lang avr -o blink.c
+avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o blink.elf blink.c -lm && avr-objcopy -O ihex blink.elf blink.hex
+java -jar evia-paradigma.jar --run blink.evia                # simulated Uno; pin changes go to stderr
 ```
 
 This lets you write a program in the editor and then generate and build it from Vim (`:!java -jar … --gen %`)
@@ -484,7 +575,11 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    and [`tests/programs/`](tests/programs) (numbers, text, objects, recursion, unstructured wiring and every runtime
    error) in all 32 combinations of language (C99 … C++20), flow and values, compiled with
    `-Wall -Wextra -Wpedantic -Werror` and compared with the interpreter (stdout, stderr, exit code). The Windows job
-   does the same with llvm-mingw Clang and `-static` and checks that no program needs a Visual Studio DLL.
+   does the same with llvm-mingw Clang and with WinLibs GCC (both `-static`) and checks that no program needs a
+   Visual Studio or compiler DLL,
+7. the **boards** job runs [`scripts/check-boards.sh`](scripts/check-boards.sh): the board examples as bare-metal AVR C
+   (avr-gcc 14, `-Werror`) for the ATmega328P, ATmega2560 and ATmega32U4, each run in simavr and compared with the
+   interpreter (UART output, LED switching); and as Arduino sketches built with arduino-cli for all 12 boards.
 
 The website is built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) whenever `site/`, the screenshots,
 the tutorial example or the code generator change, and when a release is published:
@@ -522,6 +617,9 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
+| `Board.java` / `BoardSim.java` | The 12 boards (arduino-cli names, AVR chips); the simulated Uno used by Run |
+| `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
+| `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build |
 
 ## Screenshots
@@ -537,6 +635,10 @@ All pictures are in [`docs/screenshots`](docs/screenshots). They are taken from 
 | View source code (C++20) | Compile & Run with Clang |
 | <img src="docs/screenshots/22-c11-compile-run.png" alt="C11" width="420"> | <img src="docs/screenshots/23-cpp17-goto-fast.png" alt="C++17 goto fast" width="420"> |
 | The same program as C11 | C++17, goto flow, fast values |
+| <img src="docs/screenshots/27-board-simulated.png" alt="Simulated board" width="420"> | <img src="docs/screenshots/28-arduino-sketch.png" alt="Arduino sketch" width="420"> |
+| Blink on the simulated Uno | Arduino sketch for an ESP32-S3 |
+| <img src="docs/screenshots/29-avr-build.png" alt="AVR build" width="420"> | <img src="docs/screenshots/30-settings-gcc-boards.png" alt="Settings" width="420"> |
+| Bare-metal AVR C built with avr-gcc | Settings: Clang or GCC, board tools |
 | <img src="docs/screenshots/02-project-created.png" alt="New project" width="420"> | <img src="docs/screenshots/20-help-guide.png" alt="Guide" width="420"> |
 | New project with Git | Help → Guide |
 

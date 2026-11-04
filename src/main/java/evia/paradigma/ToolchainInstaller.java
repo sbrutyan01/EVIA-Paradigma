@@ -15,14 +15,39 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Sets up a self-contained Clang for Windows: the latest llvm-mingw release
- * (Clang + libc++ + Windows headers, no Visual Studio needed), downloaded from GitHub
- * into the user's application data folder. No admin rights, no PATH changes.
+ * Sets up a self-contained compiler for Windows, downloaded from GitHub into the user's application
+ * data folder (no admin rights, no PATH changes, no Visual Studio):
+ * <ul>
+ *   <li>Clang: the latest llvm-mingw release (Clang + libc++ + Windows headers);</li>
+ *   <li>GCC: the latest WinLibs release (GNU GCC + MinGW-w64, UCRT).</li>
+ * </ul>
  * Programs are linked with -static so they run on any Windows PC.
  */
 final class ToolchainInstaller {
-    private static final String RELEASES = System.getProperty("evia.toolchain.releases",
-            "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/latest");   // property: for tests
+
+    /** The two toolchains EVIA Paradigma can install. */
+    enum Kind {
+        CLANG("Clang", "llvm-mingw", "clang++.exe",
+                "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/latest",
+                "llvm-mingw-[^\"]*-ucrt-%ARCH%\\.zip", "https://github.com/mstorsjo/llvm-mingw/releases",
+                "Self-contained Clang with its own C++ library."),
+        GCC("GCC", "winlibs-gcc", "g++.exe",
+                "https://api.github.com/repos/brechtsanders/winlibs_mingw/releases/latest",
+                "winlibs-x86_64-posix-seh-gcc-[0-9.]+-mingw-w64ucrt-[0-9.]+-r[0-9]+\\.zip", "https://winlibs.com",
+                "GNU GCC with MinGW-w64 (WinLibs build, UCRT).");
+
+        final String display, folder, exe, releases, asset, page, about;
+
+        Kind(String display, String folder, String exe, String releases, String asset, String page, String about) {
+            this.display = display;
+            this.folder = folder;
+            this.exe = exe;
+            this.releases = System.getProperty("evia.toolchain.releases." + folder, releases);   // property: for tests
+            this.asset = asset;
+            this.page = page;
+            this.about = about;
+        }
+    }
 
     private ToolchainInstaller() {}
 
@@ -36,23 +61,35 @@ final class ToolchainInstaller {
         return ExternalEditor.WINDOWS;
     }
 
-    /** Where EVIA Paradigma keeps its own toolchain. */
+    /** Where EVIA Paradigma keeps its own Clang. */
     static Path home() {
+        return home(Kind.CLANG);
+    }
+
+    static Path home(Kind k) {
         String base = System.getenv("LOCALAPPDATA");
         if (base == null) base = System.getProperty("user.home");
-        return Path.of(base, "EVIA Paradigma", "llvm-mingw");
+        return Path.of(base, "EVIA Paradigma", k.folder);
     }
 
     static Path managedClang() {
-        Path p = home().resolve("bin").resolve("clang++.exe");
+        return managed(Kind.CLANG);
+    }
+
+    static Path managed(Kind k) {
+        Path p = home(k).resolve("bin").resolve(k.exe);
         return Files.isRegularFile(p) ? p : null;
     }
 
-    /** Compile command for the managed toolchain, or null if it isn't installed. */
+    /** Compile command for the managed Clang, or null if it isn't installed. */
     static String managedCommand() {
-        Path clang = managedClang();
-        if (clang == null) return null;
-        return "\"" + clang + "\" -std=c++20 -O2 -Wall -Wextra -static -o {exe} {src}";
+        return managedCommand(Kind.CLANG);
+    }
+
+    static String managedCommand(Kind k) {
+        Path exe = managed(k);
+        if (exe == null) return null;
+        return "\"" + exe + "\" -std=c++20 -O2 -Wall -Wextra -static -o {exe} {src}";
     }
 
     /** True if compiler output means the C++ standard library or the compiler itself is missing. */
@@ -66,19 +103,24 @@ final class ToolchainInstaller {
      * Returns true when the toolchain is installed and a test compile succeeded.
      */
     static boolean install(Component parent) {
+        return install(parent, Kind.CLANG);
+    }
+
+    static boolean install(Component parent, Kind kind) {
         Window owner = parent == null ? null : parent instanceof Window w ? w : SwingUtilities.getWindowAncestor(parent);
-        JDialog d = new JDialog(owner, "Install Clang toolchain", Dialog.ModalityType.APPLICATION_MODAL);
+        String title = "Install " + kind.display + " toolchain";
+        JDialog d = new JDialog(owner, title, Dialog.ModalityType.APPLICATION_MODAL);
         AppIcon.apply(d);
-        JLabel status = new JLabel("Looking up the latest llvm-mingw release...");
+        JLabel status = new JLabel("Looking up the latest " + kind.folder + " release...");
         JProgressBar bar = new JProgressBar(0, 1000);
         bar.setStringPainted(true);
         bar.setIndeterminate(true);
         JButton cancel = new JButton("Cancel");
         JPanel p = new JPanel(new BorderLayout(0, 10));
         p.setBorder(BorderFactory.createEmptyBorder(16, 18, 12, 18));
-        p.add(new JLabel("<html><b>Clang for Windows (llvm-mingw)</b><br>"
-                + "Self-contained Clang with its own C++ library. No Visual Studio needed.<br>"
-                + "Installed to: " + home() + "</html>"), BorderLayout.NORTH);
+        p.add(new JLabel("<html><b>" + kind.display + " for Windows (" + kind.folder + ")</b><br>"
+                + kind.about + " No Visual Studio needed.<br>"
+                + "Installed to: " + home(kind) + "</html>"), BorderLayout.NORTH);
         JPanel mid = new JPanel(new BorderLayout(0, 6));
         mid.add(status, BorderLayout.NORTH);
         mid.add(bar, BorderLayout.CENTER);
@@ -104,23 +146,23 @@ final class ToolchainInstaller {
             @Override
             protected String doInBackground() throws Exception {
                 // 1. find the release asset for this machine
-                String json = readString(RELEASES);
+                String json = readString(kind.releases);
                 Matcher tag = Pattern.compile("\"tag_name\"\\s*:\\s*\"([^\"]+)\"").matcher(json);
-                String arch = System.getProperty("os.arch").toLowerCase().contains("aarch64") ? "aarch64" : "x86_64";
-                Matcher url = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]*llvm-mingw-[^\"]*-ucrt-" + arch + "\\.zip)\"")
+                String arch = System.getProperty("os.arch").toLowerCase().contains("aarch64") && kind == Kind.CLANG ? "aarch64" : "x86_64";
+                Matcher url = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]*/" + kind.asset.replace("%ARCH%", arch) + ")\"")
                         .matcher(json);
-                if (!url.find()) throw new IOException("no Windows " + arch + " download found in the latest llvm-mingw release");
+                if (!url.find()) throw new IOException("no Windows " + arch + " download found in the latest " + kind.folder + " release");
                 String release = tag.find() ? tag.group(1) : "latest";
 
                 // 2. download with progress
-                Path tmpDir = Files.createTempDirectory("evia-llvm-mingw");
-                Path zip = tmpDir.resolve("llvm-mingw.zip");
-                publish(new Object[]{"Downloading llvm-mingw " + release + "...", -1});
+                Path tmpDir = Files.createTempDirectory("evia-" + kind.folder);
+                Path zip = tmpDir.resolve(kind.folder + ".zip");
+                publish(new Object[]{"Downloading " + kind.folder + " " + release + "...", -1});
                 download(url.group(1), zip, progress);
 
                 // 3. unpack next to the final folder, then swap it in
-                Path target = home();
-                Path staging = target.resolveSibling("llvm-mingw.new");
+                Path target = home(kind);
+                Path staging = target.resolveSibling(kind.folder + ".new");
                 deleteTree(staging);
                 publish(new Object[]{"Unpacking...", -1});
                 unzip(zip, staging, progress);
@@ -141,7 +183,7 @@ final class ToolchainInstaller {
 
                 // 4. check that it really compiles the generated C++
                 publish(new Object[]{"Testing the compiler...", -1});
-                String problem = Settings.testCompile(managedCommand());
+                String problem = Settings.testCompile(managedCommand(kind));
                 if (problem != null) {
                     deleteTree(target);                  // never leave a broken toolchain in use
                     throw new IOException("test compile failed:\n" + problem);
@@ -166,21 +208,21 @@ final class ToolchainInstaller {
                 }
                 try {
                     String release = get();
-                    Settings.setCompilerCommand(managedCommand());
+                    Settings.setCompilerCommand(managedCommand(kind));
                     ok[0] = true;
                     d.dispose();
-                    Settings.CompilerInfo ci = Settings.detectCompiler(managedCommand());
-                    JOptionPane.showMessageDialog(parent, "Clang is ready: llvm-mingw " + release
+                    Settings.CompilerInfo ci = Settings.detectCompiler(managedCommand(kind));
+                    JOptionPane.showMessageDialog(parent, kind.display + " is ready: " + kind.folder + " " + release
                                     + (ci != null ? " (" + ci.display() + ")" : "")
-                                    + "\nEVIA Paradigma now uses it to compile generated C++.",
-                            "Install Clang toolchain", JOptionPane.INFORMATION_MESSAGE);
+                                    + "\nEVIA Paradigma now uses it to compile generated C and C++.",
+                            title, JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e) {
                     d.dispose();
                     Throwable c = e.getCause() != null ? e.getCause() : e;
                     JOptionPane.showMessageDialog(parent, "Could not install the toolchain:\n" + c.getMessage()
-                                    + "\n\nYou can also install it by hand: download llvm-mingw-<date>-ucrt-x86_64.zip from\n"
-                                    + "https://github.com/mstorsjo/llvm-mingw/releases and unpack it to\n" + home(),
-                            "Install Clang toolchain", JOptionPane.ERROR_MESSAGE);
+                                    + "\n\nYou can also install it by hand: download the Windows x86_64 zip from\n"
+                                    + kind.page + " and unpack it to\n" + home(kind),
+                            title, JOptionPane.ERROR_MESSAGE);
                 }
             }
         };

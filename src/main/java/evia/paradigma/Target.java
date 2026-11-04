@@ -6,7 +6,8 @@ import java.util.Locale;
  * What code generation produces: the language standard, how control flow is written and how
  * values are represented.
  *
- * @param lang   C99 ... C++20
+ * @param lang   C99 ... C++20 for the desktop; ARDUINO (a sketch for Arduino AVR and ESP32 boards) and
+ *               AVR (bare-metal C for avr-gcc) for microcontrollers, which always use fast values
  * @param flow   STRUCTURED: if/else, for, while, do-while and switch where the wiring allows it
  *               (labels only where it doesn't); GOTO: every block is a label, wires are jumps
  * @param values SAFE: dynamic values (number or text) with the interpreter's exact checks;
@@ -14,13 +15,20 @@ import java.util.Locale;
  */
 record Target(Lang lang, Flow flow, Values values) {
 
+    /** Microcontroller targets have only fast values (no room for text in variables). */
+    Target {
+        if (lang.embedded()) values = Values.FAST;
+    }
+
     static final Target DEFAULT = new Target(Lang.CPP20, Flow.STRUCTURED, Values.SAFE);
 
     enum Lang {
         C99("C99", "c99", 99, "ISO C 1999"), C11("C11", "c11", 11, "ISO C 2011"), C17("C17", "c17", 17, "ISO C 2018"),
         CPP98("C++98", "c++98", 98, "ISO C++ 1998"), CPP11("C++11", "c++11", 11, "ISO C++ 2011"),
         CPP14("C++14", "c++14", 14, "ISO C++ 2014"), CPP17("C++17", "c++17", 17, "ISO C++ 2017"),
-        CPP20("C++20", "c++20", 20, "ISO C++ 2020");
+        CPP20("C++20", "c++20", 20, "ISO C++ 2020"),
+        ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR and ESP32 boards"),
+        AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core");
 
         final String display, std, note;
         final int year;
@@ -33,7 +41,26 @@ record Target(Lang lang, Flow flow, Values values) {
         }
 
         boolean isC() {
-            return !std.startsWith("c++");
+            return this != ARDUINO && !std.startsWith("c++") && !std.startsWith("gnu++");
+        }
+
+        /** Runs on a microcontroller (Arduino sketch or bare-metal AVR). */
+        boolean embedded() {
+            return this == ARDUINO || this == AVR;
+        }
+
+        /** The name used on the command line and in saved files. */
+        String key() {
+            return switch (this) {
+                case ARDUINO -> "arduino";
+                case AVR -> "avr";
+                default -> std;
+            };
+        }
+
+        /** "(2011)", or what it runs on for microcontroller targets. */
+        String tag() {
+            return embedded() ? (this == ARDUINO ? "AVR, ESP32" : "registers") : note.substring(note.length() - 4);
         }
 
         /** 98, 11, 14, 17, 20 for C++ (0 for C); compares chronologically. */
@@ -42,7 +69,7 @@ record Target(Lang lang, Flow flow, Values values) {
         }
 
         String ext() {
-            return isC() ? ".c" : ".cpp";
+            return this == ARDUINO ? ".ino" : isC() ? ".c" : ".cpp";
         }
 
         @Override public String toString() {
@@ -68,17 +95,21 @@ record Target(Lang lang, Flow flow, Values values) {
         return lang.isC();
     }
 
+    boolean embedded() {
+        return lang.embedded();
+    }
+
     boolean fast() {
         return values == Values.FAST;
     }
 
     /** True for C++ before C++17, where the object of a call and its arguments are evaluated in unspecified order. */
     boolean cppBefore17() {
-        return !isC() && lang.cpp() < 17;
+        return !isC() && !embedded() && lang.cpp() < 17;
     }
 
     String languageName() {
-        return isC() ? "C" : "C++";
+        return lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : isC() ? "C" : "C++";
     }
 
     String ext() {
@@ -92,7 +123,7 @@ record Target(Lang lang, Flow flow, Values values) {
 
     /** Stored form, e.g. "c11/structured/fast". */
     String key() {
-        return lang.std + "/" + flow.name().toLowerCase(Locale.ROOT) + "/" + values.name().toLowerCase(Locale.ROOT);
+        return lang.key() + "/" + flow.name().toLowerCase(Locale.ROOT) + "/" + values.name().toLowerCase(Locale.ROOT);
     }
 
     static Target parse(String key) {
@@ -104,10 +135,10 @@ record Target(Lang lang, Flow flow, Values values) {
         return new Target(lang == null ? DEFAULT.lang : lang, flow, values);
     }
 
-    /** Accepts "c11", "C11", "c++14", "cpp14", "cxx14". */
+    /** Accepts "c11", "C11", "c++14", "cpp14", "cxx14", "arduino", "avr". */
     static Lang langOf(String s) {
         String k = s.trim().toLowerCase(Locale.ROOT).replace("cpp", "c++").replace("cxx", "c++");
-        for (Lang l : Lang.values()) if (l.std.equals(k)) return l;
+        for (Lang l : Lang.values()) if (l.key().equals(k)) return l;
         return null;
     }
 

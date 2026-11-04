@@ -12,13 +12,16 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** User settings (stored with java.util.prefs): Vim keys, external editor, C++ compiler. */
+/** User settings (stored with java.util.prefs): Vim keys, external editor, compiler (Clang or GCC), boards. */
 final class Settings {
     private Settings() {}
 
     /** Latest stable LLVM/Clang major version this release of EVIA Paradigma targets. */
     static final int LATEST_CLANG = 23;
     static final String DEFAULT_COMPILER = "clang++ -std=c++20 -O2 -Wall -Wextra -o {exe} {src}";
+    static final String DEFAULT_GCC = "g++ -std=c++20 -O2 -Wall -Wextra -o {exe} {src}";
+    /** GCC versions from this one on compile everything EVIA Paradigma generates (C++20 with from_chars). */
+    static final int MIN_GCC = 13;
 
     private static final Preferences PREFS = Preferences.userNodeForPackage(Settings.class);
     private static final List<Runnable> listeners = new ArrayList<>();
@@ -50,6 +53,61 @@ final class Settings {
     static void setCompilerCommand(String command) {
         PREFS.put("compiler", command);
         fire();
+    }
+
+    /** Clang or GCC: which compiler family a compile command uses. */
+    static ToolchainInstaller.Kind family(String command) {
+        List<String> t = split(command);
+        String exe = t.isEmpty() ? "" : t.get(0).replace('\\', '/');
+        String name = exe.substring(exe.lastIndexOf('/') + 1).toLowerCase(java.util.Locale.ROOT);
+        if (name.contains("clang")) return ToolchainInstaller.Kind.CLANG;   // "clang++" contains "g++" too
+        return name.contains("g++") || name.contains("gcc") ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
+    }
+
+    /** The same command with the other compiler: its managed copy on Windows if installed, else clang++ / g++ from PATH. */
+    static String withFamily(String command, ToolchainInstaller.Kind k) {
+        if (family(command) == k) return command;
+        String managed = ToolchainInstaller.managedCommand(k);
+        if (managed != null) return managed;
+        List<String> t = split(command);
+        if (t.isEmpty()) return k == ToolchainInstaller.Kind.GCC ? DEFAULT_GCC : DEFAULT_COMPILER;
+        StringBuilder sb = new StringBuilder(k == ToolchainInstaller.Kind.GCC ? "g++" : "clang++");
+        for (String tok : t.subList(1, t.size())) sb.append(' ').append(tok.contains(" ") ? "\"" + tok + "\"" : tok);
+        return sb.toString();
+    }
+
+    // ================================================================ boards
+
+    /** The board that Build and Upload use for Arduino and AVR code. */
+    static Board board() {
+        return Board.parse(PREFS.get("board", "uno"));
+    }
+
+    static void setBoard(Board b) {
+        if (b == board()) return;
+        PREFS.put("board", b.key());
+        fire();
+    }
+
+    static String arduinoCli() {
+        return PREFS.get("arduinoCli", "arduino-cli");
+    }
+
+    static String avrGcc() {
+        return PREFS.get("avrGcc", "avr-gcc");
+    }
+
+    static String avrdude() {
+        return PREFS.get("avrdude", "avrdude");
+    }
+
+    /** The board's serial port for Upload, e.g. COM3 or /dev/ttyACM0 (empty: ask). */
+    static String serialPort() {
+        return PREFS.get("serialPort", "");
+    }
+
+    static void setSerialPort(String port) {
+        PREFS.put("serialPort", port.trim());
     }
 
     /** True (default): the mouse wheel zooms block diagrams; false: it scrolls and Ctrl+wheel zooms. */
@@ -230,19 +288,47 @@ final class Settings {
         JLabel compilerStatus = new JLabel(" ");
         JButton detectEditor = new JButton("Detect");
         detectEditor.addActionListener(e -> editor.setText(ExternalEditor.defaultCommand()));
-        JButton defCompiler = new JButton("Default (Clang)");
-        defCompiler.addActionListener(e -> {
-            String managed = ToolchainInstaller.managedCommand();
-            compiler.setText(managed != null ? managed : DEFAULT_COMPILER);
+        JComboBox<String> familyBox = new JComboBox<>(new String[]{"Clang (LLVM)", "GCC (GNU)"});
+        familyBox.setToolTipText("Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)");
+        familyBox.setSelectedIndex(family(compiler.getText()) == ToolchainInstaller.Kind.GCC ? 1 : 0);
+        JButton install = new JButton();
+        Runnable familyChanged = () -> {
+            ToolchainInstaller.Kind k = familyBox.getSelectedIndex() == 1 ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
+            install.setText((ToolchainInstaller.managed(k) == null ? "Install " : "Update ") + k.display + "...");
+            install.setToolTipText(k == ToolchainInstaller.Kind.GCC
+                    ? "Download the latest WinLibs GCC (MinGW-w64, no Visual Studio needed)"
+                    : "Download the latest llvm-mingw (Clang with its own C++ library, no Visual Studio needed)");
+        };
+        familyChanged.run();
+        familyBox.addActionListener(e -> {
+            ToolchainInstaller.Kind k = familyBox.getSelectedIndex() == 1 ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
+            compiler.setText(withFamily(compiler.getText(), k));
+            familyChanged.run();
+            checkCompiler(compiler.getText(), compilerStatus);
         });
-        JButton install = new JButton(ToolchainInstaller.managedClang() == null ? "Install Clang..." : "Update Clang...");
-        install.setToolTipText("Download the latest llvm-mingw (Clang with its own C++ library, no Visual Studio needed)");
+        JButton defCompiler = new JButton("Default");
+        defCompiler.setToolTipText("The default command for the chosen compiler");
+        defCompiler.addActionListener(e -> {
+            ToolchainInstaller.Kind k = familyBox.getSelectedIndex() == 1 ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
+            String managed = ToolchainInstaller.managedCommand(k);
+            compiler.setText(managed != null ? managed : k == ToolchainInstaller.Kind.GCC ? DEFAULT_GCC : DEFAULT_COMPILER);
+            checkCompiler(compiler.getText(), compilerStatus);
+        });
         install.addActionListener(e -> {
-            if (ToolchainInstaller.install(p(compiler))) {
-                compiler.setText(ToolchainInstaller.managedCommand());
+            ToolchainInstaller.Kind k = familyBox.getSelectedIndex() == 1 ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
+            if (ToolchainInstaller.install(p(compiler), k)) {
+                compiler.setText(ToolchainInstaller.managedCommand(k));
+                familyChanged.run();
                 checkCompiler(compiler.getText(), compilerStatus);
             }
         });
+        JComboBox<Board> boardBox = new JComboBox<>(Board.values());
+        boardBox.setSelectedItem(board());
+        JTextField port = new JTextField(serialPort(), 14);
+        port.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
+        JTextField cli = new JTextField(arduinoCli(), 30);
+        JTextField avrGcc = new JTextField(avrGcc(), 30);
+        JTextField avrdude = new JTextField(avrdude(), 30);
         JButton check = new JButton("Check");
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
 
@@ -262,20 +348,47 @@ final class Settings {
         g.gridx = 1; g.gridy = 3; g.gridwidth = 2;
         p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
         g.gridx = 0; g.gridy = 4; g.gridwidth = 1;
-        p.add(new JLabel("Compiler (C++):"), g);
+        p.add(new JLabel("Compiler:"), g);
+        g.gridx = 1; p.add(familyBox, g);
+        g.gridx = 0; g.gridy = 5;
+        p.add(new JLabel("Command (C++):"), g);
         g.gridx = 1; p.add(compiler, g);
+        g.gridy = 4;
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         btns.add(defCompiler);
         btns.add(check);
         if (ToolchainInstaller.supported()) btns.add(install);
-        g.gridx = 2; p.add(btns, g);
-        g.gridx = 1; g.gridy = 5; g.gridwidth = 2;
+        g.gridx = 2; g.gridy = 5; p.add(btns, g);
+        g.gridx = 1; g.gridy = 6; g.gridwidth = 2;
         p.add(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."), g);
         g.gridy++;
-        p.add(small("Latest stable Clang is " + LATEST_CLANG
-                + (ToolchainInstaller.supported() ? ". Windows: \"Install Clang...\" sets up llvm-mingw, no Visual Studio needed." : ".")), g);
+        p.add(small("Clang " + LATEST_CLANG + " is the latest stable; GCC " + MIN_GCC + " or newer works too"
+                + (ToolchainInstaller.supported() ? ". Windows: Install sets up llvm-mingw or WinLibs GCC, no Visual Studio needed." : ".")), g);
         g.gridy++;
         p.add(compilerStatus, g);
+
+        g.gridy++; g.gridx = 0; g.gridwidth = 3;
+        p.add(new JSeparator(), withFill(g));
+        g.fill = GridBagConstraints.NONE;
+        g.gridy++; g.gridwidth = 1;
+        p.add(new JLabel("Board:"), g);
+        JPanel boardRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        boardRow.add(boardBox);
+        boardRow.add(new JLabel("  Serial port:"));
+        boardRow.add(port);
+        g.gridx = 1; g.gridwidth = 2; p.add(boardRow, g);
+        g.gridy++; g.gridx = 0; g.gridwidth = 1;
+        p.add(new JLabel("arduino-cli:"), g);
+        g.gridx = 1; p.add(cli, g);
+        g.gridy++; g.gridx = 0;
+        p.add(new JLabel("avr-gcc:"), g);
+        g.gridx = 1; p.add(avrGcc, g);
+        g.gridy++; g.gridx = 0;
+        p.add(new JLabel("avrdude:"), g);
+        g.gridx = 1; p.add(avrdude, g);
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small("<html>Arduino sketches build with arduino-cli (cores: arduino:avr, esp32:esp32); bare-metal AVR C with avr-gcc,<br>"
+                + "uploaded with avrdude. Leonardo / Micro: press reset just before uploading bare-metal code.</html>"), g);
         checkCompiler(compiler.getText(), compilerStatus);
 
         int r = JOptionPane.showConfirmDialog(parent, p, "Settings - EVIA Paradigma",
@@ -284,6 +397,11 @@ final class Settings {
         PREFS.put("editor", editor.getText().trim());
         PREFS.put("compiler", compiler.getText().trim().isEmpty() ? DEFAULT_COMPILER : compiler.getText().trim());
         PREFS.putBoolean("vimKeys", vim.isSelected());
+        PREFS.put("board", ((Board) boardBox.getSelectedItem()).key());
+        PREFS.put("serialPort", port.getText().trim());
+        PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
+        PREFS.put("avrGcc", avrGcc.getText().trim().isEmpty() ? "avr-gcc" : avrGcc.getText().trim());
+        PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
         PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
     }
@@ -295,16 +413,18 @@ final class Settings {
     static void checkCompiler(String command, JLabel label, boolean c) {
         label.setText("Checking compiler...");
         label.setForeground(Color.GRAY);
+        Object token = newCheck(label);
         new Thread(() -> {
             CompilerInfo ci = detectCompiler(command);
             String problem = ci == null ? null : testCompile(command, c);
             SwingUtilities.invokeLater(() -> {
+                if (!isLatestCheck(label, token)) return;   // a newer check started meanwhile
                 describe(ci, label);
                 if (problem != null) {
                     boolean noStdlib = ToolchainInstaller.looksLikeMissingToolchain(problem);
                     label.setText(ci.display() + (noStdlib
                             ? "  - found, but it has no C++ standard library"
-                            + (ToolchainInstaller.supported() ? ": click \"Install Clang...\"" : "")
+                            + (ToolchainInstaller.supported() ? ": click \"Install " + family(command).display + "...\"" : "")
                             : "  - test compile failed"));
                     label.setToolTipText("<html><pre>" + problem.replace("&", "&amp;").replace("<", "&lt;") + "</pre></html>");
                     label.setForeground(new Color(190, 30, 30));
@@ -315,6 +435,17 @@ final class Settings {
         }, "evia-compiler-check").start();
     }
 
+    /** Marks the newest check shown on a label, so a slower earlier check can't overwrite it. */
+    static Object newCheck(JComponent label) {
+        Object token = new Object();
+        label.putClientProperty("evia.check", token);
+        return token;
+    }
+
+    static boolean isLatestCheck(JComponent label, Object token) {
+        return label.getClientProperty("evia.check") == token;
+    }
+
     private static Component p(Component c) {
         return SwingUtilities.getWindowAncestor(c) != null ? SwingUtilities.getWindowAncestor(c) : c;
     }
@@ -323,8 +454,8 @@ final class Settings {
     static void describe(CompilerInfo ci, JLabel label) {
         if (ci == null) {
             label.setText(ToolchainInstaller.supported()
-                    ? "Compiler not found - click \"Install Clang...\""
-                    : "Compiler not found - install LLVM/Clang " + LATEST_CLANG + " and put clang++ on PATH");
+                    ? "Compiler not found - click \"Install ...\" next to the compiler"
+                    : "Compiler not found - install Clang " + LATEST_CLANG + " (clang++) or GCC " + MIN_GCC + "+ (g++) and put it on PATH");
             label.setForeground(new Color(190, 30, 30));
         } else if (ci.needsVisualStudio()) {
             label.setText(ci.display() + " (" + ci.target() + ") - needs Visual Studio's C++ library"
@@ -336,10 +467,21 @@ final class Settings {
         } else if (ci.isClang()) {
             label.setText(ci.display() + "  - latest stable is Clang " + LATEST_CLANG);
             label.setForeground(new Color(200, 110, 0));
+        } else if (ci.name().equals("GCC") && ci.major() >= MIN_GCC) {
+            label.setText(ci.display() + "  (GNU)");
+            label.setForeground(new Color(30, 130, 50));
+        } else if (ci.name().equals("GCC")) {
+            label.setText(ci.display() + "  - GCC " + MIN_GCC + " or newer is needed for C++20");
+            label.setForeground(new Color(200, 110, 0));
         } else {
             label.setText(ci.display() + "  - Clang " + LATEST_CLANG + " is the recommended compiler");
             label.setForeground(new Color(200, 110, 0));
         }
+    }
+
+    private static GridBagConstraints withFill(GridBagConstraints g) {
+        g.fill = GridBagConstraints.HORIZONTAL;
+        return g;
     }
 
     private static JLabel small(String s) {

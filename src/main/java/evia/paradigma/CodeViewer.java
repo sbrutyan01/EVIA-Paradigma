@@ -19,7 +19,8 @@ import java.util.regex.Pattern;
 /**
  * Editor for the generated C or C++ program. The language and generation mode are chosen in
  * the drop-down lists at the top (changing them regenerates the code). The code can be edited
- * with Vim keys (or in the real Vim via "Edit in Vim"), saved, and compiled and run with Clang.
+ * with Vim keys (or in the real Vim via "Edit in Vim"), saved, and compiled and run with Clang or GCC.
+ * Arduino and AVR code is built for the chosen board (arduino-cli, or avr-gcc) and uploaded to it.
  *
  * <p>Vim commands: {@code :w} save, {@code :w file.cpp} save as, {@code :q} close,
  * {@code :wq}/{@code :x} save and close, {@code :make} or {@code :run} compile and run,
@@ -34,6 +35,7 @@ final class CodeViewer extends JFrame {
     private final JTextField inputField = new JTextField();
     private final JButton runBtn = new JButton("Compile & Run");
     private final JButton stopBtn = new JButton("Stop");
+    private final JButton uploadBtn = new JButton("Upload");
     private final VimKeys vim;
     private final Timer rehighlight;
     private String generated = "";
@@ -61,17 +63,18 @@ final class CodeViewer extends JFrame {
         tb.add(button("Edit in Vim...", e -> editInVim()));
         tb.add(vimBox);
         tb.addSeparator();
-        tb.add(new TargetBar());
-        tb.addSeparator();
-        tb.add(new JLabel(" Compiler: "));
-        tb.add(compilerLabel);
-        tb.add(Box.createHorizontalStrut(8));
         tb.add(button("Settings...", e -> Settings.showDialog(this)));
+        tb.add(Box.createHorizontalStrut(12));
+        tb.add(new JLabel("Compiler: "));
+        tb.add(compilerLabel);
         tb.add(Box.createHorizontalGlue());
         runBtn.addActionListener(e -> compileAndRun());
+        uploadBtn.addActionListener(e -> buildForBoard(true));
+        uploadBtn.setToolTipText("Build, then upload to the board on the serial port set in Settings");
         stopBtn.addActionListener(e -> stop());
         stopBtn.setEnabled(false);
         tb.add(runBtn);
+        tb.add(uploadBtn);
         tb.add(stopBtn);
 
         // ---- code editor with Vim keys and a Vim-like mode line
@@ -131,9 +134,25 @@ final class CodeViewer extends JFrame {
 
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, codePanel, bottom);
         split.setResizeWeight(0.72);
-        getContentPane().add(tb, BorderLayout.NORTH);
+        // second row: language, flow, values (and board)
+        JToolBar tb2 = new JToolBar();
+        tb2.setFloatable(false);
+        tb2.add(new TargetBar());
+        tb2.add(Box.createHorizontalGlue());
+        JPanel bars = new JPanel(new GridLayout(2, 1));
+        bars.add(tb);
+        bars.add(tb2);
+        getContentPane().add(bars, BorderLayout.NORTH);
         getContentPane().add(split, BorderLayout.CENTER);
+        updateButtons();
         checkCompiler();
+    }
+
+    /** Desktop languages compile and run; microcontroller languages build and upload. */
+    private void updateButtons() {
+        runBtn.setText(target.embedded() ? "Build" : "Compile & Run");
+        runBtn.setToolTipText(target.embedded() ? "Build for the board chosen in the Board list" : null);
+        uploadBtn.setVisible(target.embedded());
     }
 
     private static JButton button(String text, java.awt.event.ActionListener l) {
@@ -171,6 +190,7 @@ final class CodeViewer extends JFrame {
         boolean newTarget = !t.equals(target);
         target = t;
         if (newTarget) {
+            updateButtons();
             checkCompiler();
             if (process == null) output.setText("");   // the old output belongs to the other language
         }
@@ -348,11 +368,159 @@ final class CodeViewer extends JFrame {
     // ================================================================ compile & run
 
     private void checkCompiler() {
-        Settings.checkCompiler(Settings.commandFor(target), compilerLabel, target.isC());
+        if (target.embedded()) checkBoardTools();
+        else Settings.checkCompiler(Settings.commandFor(target), compilerLabel, target.isC());
+    }
+
+    /** Shows whether arduino-cli (Arduino) or avr-gcc (AVR C) is installed. */
+    private void checkBoardTools() {
+        boolean arduino = target.lang() == Target.Lang.ARDUINO;
+        String tool = arduino ? Settings.arduinoCli() : Settings.avrGcc();
+        compilerLabel.setText("Checking " + tool + "...");
+        compilerLabel.setForeground(Color.GRAY);
+        Object token = Settings.newCheck(compilerLabel);
+        new Thread(() -> {
+            String version = null;
+            try {
+                Process p = new ProcessBuilder(tool, arduino ? "version" : "--version").redirectErrorStream(true).start();
+                p.getOutputStream().close();
+                String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                p.waitFor();
+                Matcher m = Pattern.compile("(\\d+\\.\\d+(?:\\.\\d+)?)").matcher(out);
+                version = m.find() ? m.group(1) : "";
+            } catch (IOException | InterruptedException e) {
+                // not installed
+            }
+            String v = version;
+            SwingUtilities.invokeLater(() -> {
+                if (!Settings.isLatestCheck(compilerLabel, token)) return;
+                String name = arduino ? "arduino-cli" : "avr-gcc";
+                if (v == null) {
+                    compilerLabel.setText(name + " not found - see Build for how to install it");
+                    compilerLabel.setForeground(new Color(190, 30, 30));
+                } else {
+                    compilerLabel.setText(name + " " + v + "  -  " + Board.forLang(Settings.board(), target.lang()).display);
+                    compilerLabel.setForeground(new Color(30, 130, 50));
+                }
+            });
+        }, "evia-board-tools").start();
+    }
+
+    /**
+     * Builds the code for the chosen board (arduino-cli for sketches, avr-gcc + avr-objcopy for bare-metal C)
+     * and, if asked, uploads it (arduino-cli upload, or avrdude).
+     */
+    private void buildForBoard(boolean upload) {
+        if (process != null) return;
+        String code = codePane.getText();
+        Target tg = target;
+        Board board = Board.forLang(Settings.board(), tg.lang());
+        String port = Settings.serialPort();
+        if (upload && port.isBlank()) {
+            port = JOptionPane.showInputDialog(this, "Serial port of the " + board.display + " (e.g. "
+                    + (ExternalEditor.WINDOWS ? "COM3" : "/dev/ttyACM0") + "):", "Upload", JOptionPane.QUESTION_MESSAGE);
+            if (port == null || port.isBlank()) return;
+            Settings.setSerialPort(port);
+        }
+        String thePort = port.trim();
+        output.setText("");
+        runBtn.setEnabled(false);
+        uploadBtn.setEnabled(false);
+        stopBtn.setEnabled(true);
+        Thread t = new Thread(() -> {
+            String tool = null;
+            try {
+                Path dir = Files.createTempDirectory("evia-board");
+                List<List<String>> steps = new ArrayList<>();
+                if (tg.lang() == Target.Lang.ARDUINO) {
+                    Path sketch = dir.resolve("program");
+                    Files.createDirectories(sketch);
+                    Files.writeString(sketch.resolve("program.ino"), code, StandardCharsets.UTF_8);
+                    String cli = Settings.arduinoCli();
+                    tool = cli;
+                    steps.add(List.of(cli, "compile", "--fqbn", board.fqbn, "--output-dir", dir.resolve("build").toString(), sketch.toString()));
+                    if (upload) {
+                        steps.add(List.of(cli, "upload", "--fqbn", board.fqbn, "-p", thePort, "--input-dir",
+                                dir.resolve("build").toString(), sketch.toString()));
+                    }
+                } else {
+                    Path src = dir.resolve("program.c"), elf = dir.resolve("program.elf"), hex = dir.resolve("program.hex");
+                    Files.writeString(src, code, StandardCharsets.UTF_8);
+                    String gcc = Settings.avrGcc();
+                    tool = gcc;
+                    steps.add(List.of(gcc, "-mmcu=" + board.mcu, "-DF_CPU=16000000UL", "-std=gnu11", "-Os", "-Wall", "-Wextra",
+                            "-o", elf.toString(), src.toString(), "-lm"));
+                    steps.add(List.of(sibling(gcc, "objcopy"), "-O", "ihex", "-R", ".eeprom", elf.toString(), hex.toString()));
+                    steps.add(List.of(sibling(gcc, "size"), elf.toString()));
+                    if (upload) {
+                        List<String> u = new ArrayList<>(List.of(Settings.avrdude(), "-p", board.mcu, "-c"));
+                        u.addAll(Settings.split(board.programmer));
+                        u.addAll(List.of("-P", thePort, "-D", "-U", "flash:w:" + hex + ":i"));
+                        steps.add(u);
+                    }
+                }
+                for (List<String> cmd : steps) {
+                    if (cmd.get(0).equals(Settings.avrdude())) tool = Settings.avrdude();
+                    append("$ " + String.join(" ", cmd) + "\n");
+                    int rc = runProcess(new ProcessBuilder(cmd).directory(dir.toFile()), false);
+                    if (rc != 0) {
+                        append(">> failed (exit code " + rc + ")\n");
+                        if (tg.lang() == Target.Lang.ARDUINO && lastOutput.toString().contains("not found")) append(installHelp(true));
+                        return;
+                    }
+                    lastOutput.setLength(0);
+                }
+                append(upload ? ">> uploaded to the " + board.display + " on " + thePort
+                        + ". Open a serial monitor at 115200 baud to see Print and answer Input.\n"
+                        : ">> built for the " + board.display + ". Upload sends it to the board.\n");
+            } catch (IOException e) {
+                append(">> " + e.getMessage() + "\n" + installHelp(tg.lang() == Target.Lang.ARDUINO && !Settings.avrdude().equals(tool)));
+            } catch (InterruptedException e) {
+                append(">> stopped\n");
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    process = null;
+                    runBtn.setEnabled(true);
+                    uploadBtn.setEnabled(true);
+                    stopBtn.setEnabled(false);
+                });
+            }
+        }, "evia-board-build");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    /** avr-gcc -> avr-objcopy / avr-size in the same folder. */
+    private static String sibling(String gcc, String tool) {
+        int slash = Math.max(gcc.lastIndexOf('/'), gcc.lastIndexOf('\\'));
+        String name = gcc.substring(slash + 1).replace("gcc", tool);
+        return gcc.substring(0, slash + 1) + name;
+    }
+
+    private static String installHelp(boolean arduino) {
+        if (arduino) {
+            return """
+                    >> Arduino sketches build with arduino-cli (https://arduino.github.io/arduino-cli/):
+                         arduino-cli core install arduino:avr
+                         arduino-cli core install esp32:esp32 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+                       then set its path in Settings if it isn't on PATH.
+                    """;
+        }
+        return """
+                >> Bare-metal AVR C builds with avr-gcc and avr-libc, uploads with avrdude:
+                     Linux:   sudo apt install gcc-avr avr-libc avrdude
+                     macOS:   brew tap osx-cross/avr && brew install avr-gcc avrdude
+                     Windows: an avr-gcc build (e.g. github.com/ZakKemble/avr-gcc-build) and avrdude (github.com/avrdudes/avrdude)
+                   then set their paths in Settings if they aren't on PATH.
+                """;
     }
 
     private void compileAndRun() {
         if (process != null) return;
+        if (target.embedded()) {
+            buildForBoard(false);
+            return;
+        }
         String code = codePane.getText();
         String command = Settings.commandFor(target);
         output.setText("");

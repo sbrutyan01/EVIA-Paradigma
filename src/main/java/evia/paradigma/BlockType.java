@@ -26,6 +26,22 @@ public enum BlockType {
     END("End", new Color(165, 165, 170), true, 0, false, "",
             "Program stops here."),
 
+    // ---- board: pins and time of a microcontroller (simulated when run on the computer)
+    PIN_MODE("Pin Mode", new Color(110, 190, 150), true, 1, true, "LED_BUILTIN, OUTPUT",
+            "pin, OUTPUT | INPUT | INPUT_PULLUP   e.g.  LED_BUILTIN, OUTPUT   or   4, INPUT_PULLUP"),
+    DIGITAL_WRITE("Digital Write", new Color(96, 182, 142), true, 1, true, "LED_BUILTIN, HIGH",
+            "pin, value   Sets a pin HIGH (any non-zero value) or LOW (0), e.g.  LED_BUILTIN, HIGH"),
+    DIGITAL_READ("Digital Read", new Color(132, 202, 166), true, 1, true, "pressed = 4",
+            "name = pin   Stores 1 if the pin is HIGH, 0 if LOW, e.g.  button = 4"),
+    ANALOG_READ("Analog Read", new Color(142, 206, 186), true, 1, true, "level = A0",
+            "name = pin   Stores the voltage on an analog pin: 0..1023 on AVR, 0..4095 on ESP32, e.g.  level = A0"),
+    ANALOG_WRITE("Analog Write", new Color(104, 188, 164), true, 1, true, "5, 128",
+            "pin, value   PWM output 0..255 (0 = off, 255 = always on), e.g.  5, brightness"),
+    DELAY("Delay", new Color(162, 202, 140), true, 1, true, "500",
+            "Waits this many milliseconds, e.g.  500"),
+    MILLIS("Millis", new Color(178, 212, 150), true, 1, true, "t",
+            "name   Stores the milliseconds since the program started, e.g.  t"),
+
     // ---- only inside custom block definitions
     ENTER("Enter", new Color(112, 204, 196), false, 1, false, "",
             "Where the method starts executing (one per method)."),
@@ -43,6 +59,14 @@ public enum BlockType {
     final boolean hasCode;
     final String defaultCode;
     final String hint;
+
+    /** Pin and time blocks (the Board group of the palette). */
+    boolean isBoard() {
+        return switch (this) {
+            case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS -> true;
+            default -> false;
+        };
+    }
 
     boolean isLoop() {
         return this == FOR || this == WHILE || this == DO_WHILE;

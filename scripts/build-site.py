@@ -11,7 +11,9 @@ import glob, json, os, re, shutil, subprocess, sys
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(root)
 jar = sys.argv[1] if len(sys.argv) > 1 else sorted(glob.glob("target/evia-paradigma-*.jar"))[-1]
-version = re.search(r"evia-paradigma-([0-9.]+)\.jar", jar).group(1)
+# the download links point at a published release: SITE_VERSION (the latest release, set by the workflow),
+# or else the version of the jar
+version = os.environ.get("SITE_VERSION", "").lstrip("v") or re.search(r"evia-paradigma-([0-9.]+)\.jar", jar).group(1)
 out = "build/site"
 shutil.rmtree(out, ignore_errors=True)
 shutil.copytree("site", out)

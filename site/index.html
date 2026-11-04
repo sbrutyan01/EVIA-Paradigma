@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EVIA Paradigma: visual programming that compiles to C and C++</title>
-<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang. Classes, modules, projects, Git, Vim. Free and open source (MIT).">
+<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).">
 <meta property="og:title" content="EVIA Paradigma">
 <meta property="og:description" content="Draw a program as blocks. Get C or C++.">
 <meta property="og:image" content="img/hero-diagram.png">
@@ -38,7 +38,8 @@
     <div class="hero-grid">
       <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets.
         Wire blocks on a canvas, run them, then turn them into one readable source file in
-        C99, C11, C17 or C++98 to C++20, and build it with Clang.</p>
+        C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program
+        Arduino and ESP32 boards.</p>
       <div class="side">
         <p class="actions">
           <a class="btn primary" href="#download">Download {{VERSION}}</a>
@@ -129,10 +130,32 @@
       <h3>See the code of any block</h3>
       <p>Right-click a block and choose View source code: the generated file opens with exactly the lines that
         block became highlighted. It works for a whole method or class too, in whichever language you chose.
-        Compile &amp; Run builds it with Clang right there; on Windows the app installs llvm-mingw for you, no
+        Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw for you, no
         Visual Studio needed.</p>
     </div>
     <img src="img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Arduino and ESP32 boards</h3>
+      <p>Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino
+        sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3,
+        -C3, -C6 and -H2. Run simulates an Uno on your computer, with every pin change in the output, so you can try
+        a program before there is a board on your desk.</p>
+    </div>
+    <img src="img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Bare metal, down to the registers</h3>
+      <p>AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core:
+        ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in
+        about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator
+        and checked against the interpreter.</p>
+    </div>
+    <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
 
   <article class="feature">
@@ -157,6 +180,7 @@
   <ul class="extras">
     <li><b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.</li>
     <li><b>Command line.</b> <code>evia --run program.evia</code> and <code>evia --gen program.evia --lang c11 -o program.c</code> for scripts and Makefiles.</li>
+    <li><b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.</li>
     <li><b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key.</li>
   </ul>
 </section>
@@ -226,7 +250,8 @@
   <ul class="doclinks">
     <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma#readme">README</a>: features, tutorial, menus, languages, command line</li>
     <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/docs/release-notes">Release notes</a> for every version</li>
-    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Example programs</a>, also under File, Open Example</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Example programs</a>, also under File, Open Example
+      (board programs in <a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/boards">examples/boards</a>)</li>
     <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">Report a problem or ask for a feature</a></li>
   </ul>
   <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia

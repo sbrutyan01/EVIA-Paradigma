@@ -24,6 +24,7 @@ final class HelpWindow extends JFrame {
             {"Projects", "projects"},
             {"Git and GitHub", "git"},
             {"C and C++ code", "cpp"},
+            {"Arduino and ESP32 boards", "boards"},
             {"Keyboard shortcuts", "keys"},
             {"Vim keys", "vim"},
     };

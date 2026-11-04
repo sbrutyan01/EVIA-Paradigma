@@ -92,6 +92,51 @@ public class AppChecks {
             check(e.getMessage().contains("fast values only hold numbers"), "fast values refuse text in fields: " + e.getMessage());
         }
 
+        // ---------- microcontrollers: languages, boards, board blocks
+        check(Target.parse("arduino").equals(new Target(Target.Lang.ARDUINO, Target.Flow.STRUCTURED, Target.Values.FAST))
+                && Target.parse("avr/goto/safe").values() == Target.Values.FAST
+                && Target.parse(Target.parse("avr/goto").key()).lang() == Target.Lang.AVR, "arduino / avr targets (always fast values)");
+        check(Board.parse("esp32-s3") == Board.ESP32_S3 && Board.parse("arduino:avr:uno") == Board.UNO
+                && Board.forLang(Board.ESP32_C6, Target.Lang.AVR) == Board.UNO && Board.forLang(Board.ESP32_C6, Target.Lang.ARDUINO) == Board.ESP32_C6
+                && java.util.Arrays.stream(Board.values()).filter(Board::isAvr).count() == 6, "boards");
+        Library board = newLib();
+        ProgramIO.load(board, Path.of("examples/boards/led_class.evia"));
+        String ino = CodeGenerator.generate(board, Target.parse("arduino"));
+        check(ino.contains("void setup()") && ino.contains("pinMode((int) (self->f_pin), OUTPUT);")
+                && ino.contains("rt_print_line(RT_TEXT(\"done\"));") && !ino.contains("printf"), "Arduino sketch");
+        String avr = CodeGenerator.generate(board, Target.parse("avr"));
+        check(avr.contains("int main(void)") && avr.contains("static void pinMode(uint8_t pin, uint8_t mode)")
+                && avr.contains("ISR(TIMER0_OVF_vect)") && !avr.contains("analogRead"), "bare-metal AVR: only the pieces it uses");
+        try {
+            CodeGenerator.generate(board, Target.parse("c11"));
+            check(false, "desktop C refuses board blocks");
+        } catch (FlowException e) {
+            check(e.getMessage().contains("runs on a microcontroller"), "desktop C refuses board blocks: " + e.getMessage());
+        }
+        List<String> events = new ArrayList<>(), printed = new ArrayList<>();
+        new Interpreter().run(Interpreter.prepare(board), new Interpreter.Host() {
+            @Override public void step(Block b) {}
+            @Override public void print(String text) { printed.add(text); }
+            @Override public String input(String var) { return null; }
+            @Override public boolean cancelled() { return false; }
+            @Override public void board(String e) { events.add(e); }
+        });
+        check(printed.get(0).equals("Led class on pin 13") && printed.get(printed.size() - 1).equals("done")
+                && events.contains("[0 ms] pin 13 HIGH") && events.contains("[250 ms] pin 13 LOW"), "simulated board: " + events);
+        try {
+            Interpreter.compile(new FlowCanvas(newLib(), null).addBlock(BlockType.SET, 0, 0), "HIGH = 2");
+            check(false, "board constants can't be assigned");
+        } catch (FlowException e) {
+            check(e.getMessage().contains("board constant"), "board constants can't be assigned");
+        }
+
+        // ---------- compiler family (Clang or GCC)
+        check(Settings.family("clang++ -O2") == ToolchainInstaller.Kind.CLANG && Settings.family("\"C:/w/mingw64/bin/g++.exe\" -O2") == ToolchainInstaller.Kind.GCC,
+                "compiler family from the command");
+        check(Settings.withFamily("clang++ -std=c++20 -O2 -o {exe} {src}", ToolchainInstaller.Kind.GCC).equals("g++ -std=c++20 -O2 -o {exe} {src}")
+                && Settings.commandFor("g++ -O2 -o {exe} {src}", Target.parse("c17")).equals("gcc -std=c17 -O2 -o {exe} {src} -lm"),
+                "switch to GCC; gcc for C");
+
         // ---------- export / import modules round trip
         Path prog = tmp.resolve("p/prog.evia");
         Files.createDirectories(prog.getParent());

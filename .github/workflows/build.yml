@@ -67,6 +67,62 @@ jobs:
             target/evia-paradigma-*.jar
             build/examples/*.cpp
 
+  # Microcontrollers: bare-metal AVR C with avr-gcc, run in simavr against the interpreter, and
+  # Arduino sketches for 6 Arduino AVR boards and 6 ESP32 chips with arduino-cli.
+  boards:
+    runs-on: ubuntu-24.04
+    env:
+      AVR_GCC_URL: https://github.com/ZakKemble/avr-gcc-build/releases/download/v14.1.0-1/avr-gcc-14.1.0-x64-linux.tar.bz2
+      SIMAVR_COMMIT: cb4aa607634469a6c1e1170fae30ece0672d4405
+      ESP32_INDEX: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: avr-gcc 14 and avr-libc
+        run: |
+          curl -sSL --retry 5 -o avr.tar.bz2 "$AVR_GCC_URL"
+          tar xjf avr.tar.bz2 -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/avr-gcc-14.1.0-x64-linux/bin" >> "$GITHUB_PATH"
+
+      - name: simavr (built as scripts/simavr/evia_sim)
+        run: |
+          git init -q "$RUNNER_TEMP/simavr"
+          git -C "$RUNNER_TEMP/simavr" fetch -q --depth 1 https://github.com/buserror/simavr.git "$SIMAVR_COMMIT"
+          git -C "$RUNNER_TEMP/simavr" checkout -q FETCH_HEAD
+          mkdir -p build
+          scripts/simavr/build.sh "$RUNNER_TEMP/simavr" "$RUNNER_TEMP/avr-gcc-14.1.0-x64-linux/avr/include" build/evia_sim
+
+      - name: Cache the Arduino cores
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.arduino15
+            ~/.cache/arduino
+          key: arduino-cores-${{ runner.os }}-v1
+
+      - name: arduino-cli with the AVR and ESP32 cores
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install the arduino:avr and esp32:esp32 cores
+        run: |
+          arduino-cli config init --overwrite --additional-urls "$ESP32_INDEX"
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr esp32:esp32
+          arduino-cli core list
+
+      - name: "Board examples: AVR C in simavr (328P, 2560, 32U4), Arduino sketches for 12 boards"
+        run: scripts/check-boards.sh
+
   # Windows without Visual Studio: Clang from llvm-mingw (its own libc++ and Windows headers),
   # the same toolchain EVIA Paradigma installs with "Install Clang...".
   windows-llvm-mingw:
@@ -122,3 +178,31 @@ jobs:
           done
           clang++ -dumpmachine
           clang++ -dumpmachine | grep -q windows-gnu
+
+      - name: Download the latest WinLibs GCC (what "Install GCC..." sets up)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url=$(gh api repos/brechtsanders/winlibs_mingw/releases/latest \
+                --jq '.assets[].browser_download_url | select(test("/winlibs-x86_64-posix-seh-gcc-[0-9.]+-mingw-w64ucrt-[0-9.]+-r[0-9]+\\.zip$"))' | head -n 1)
+          echo "$url"
+          curl -sSL -o winlibs.zip "$url"
+          7z x -y -o"$RUNNER_TEMP/winlibs" winlibs.zip > /dev/null
+          echo "GCC_BIN=$RUNNER_TEMP/winlibs/mingw64/bin" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/winlibs/mingw64/bin/g++" --version
+
+      - name: "C and C++ standards with WinLibs GCC (-static, no Visual Studio)"
+        env:
+          CXXFLAGS: -static
+          LANGS: c99 c17 c++98 c++14 c++20
+        run: PATH="$GCC_BIN:$PATH" CC=gcc CXX=g++ scripts/check-targets.sh
+
+      - name: Check the GCC programs need no compiler DLLs
+        run: |
+          for exe in build/targets/*.exe; do
+            dlls=$("$GCC_BIN/objdump" -p "$exe" | sed -n 's/.*DLL Name: //p' | tr '\n' ' ')
+            if echo "$dlls" | grep -qiE 'vcruntime|msvcp|msvcr|concrt|libstdc\+\+|libgcc|libwinpthread'; then
+              echo "::error::$exe depends on $dlls"; exit 1
+            fi
+          done
+          echo "all $(ls build/targets/*.exe | wc -l) programs are self-contained"

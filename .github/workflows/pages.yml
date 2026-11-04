@@ -9,6 +9,7 @@ on:
       - "site/**"
       - "docs/screenshots/**"
       - "examples/tutorial.evia"
+      - "src/main/java/evia/paradigma/EmbeddedRuntime.java"
       - "scripts/build-site.py"
       - "src/main/java/evia/paradigma/CodeGenerator.java"
       - "src/main/java/evia/paradigma/Runtimes.java"
@@ -44,7 +45,13 @@ jobs:
         run: mvn -B -DskipTests package
 
       - name: Build the site
-        run: python3 scripts/build-site.py "$(ls target/evia-paradigma-*.jar | head -n 1)"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # download links: the latest published release (a new version's links appear once it is released)
+          export SITE_VERSION=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName || true)
+          echo "download links for ${SITE_VERSION:-the jar's version}"
+          python3 scripts/build-site.py "$(ls target/evia-paradigma-*.jar | head -n 1)"
 
       - name: Publish to gh-pages
         run: |
