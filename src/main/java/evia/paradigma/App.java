@@ -1,7 +1,6 @@
 package evia.paradigma;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import java.awt.Desktop;
 import java.io.File;
 
@@ -15,7 +14,7 @@ import java.io.File;
  */
 public final class App {
     /** Released version, shown by --version and in the About dialog. */
-    public static final String VERSION = "0.4.0";
+    public static final String VERSION = "0.4.1";
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].startsWith("-")) {
@@ -24,11 +23,7 @@ public final class App {
         }
         File toOpen = args.length > 0 ? new File(args[0]) : null;
         SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception ignored) {
-                // default look and feel is fine
-            }
+            Theme.init();
             MainFrame f = new MainFrame();
             f.setVisible(true);
             if (toOpen != null) f.openFile(toOpen);

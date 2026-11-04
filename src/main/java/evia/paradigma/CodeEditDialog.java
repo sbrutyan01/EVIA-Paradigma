@@ -21,13 +21,13 @@ final class CodeEditDialog {
         AppIcon.apply(d);
 
         JTextField field = new JTextField(initial, 44);
-        field.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        field.setFont(Fonts.mono(Font.PLAIN, 14));
         JLabel hintLabel = new JLabel(hint);
         JLabel error = new JLabel(" ");
-        error.setForeground(new Color(190, 30, 30));
+        error.setForeground(Theme.error());
         JLabel mode = new JLabel(" ");
-        mode.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
-        mode.setForeground(new Color(30, 90, 170));
+        mode.setFont(Fonts.mono(Font.BOLD, 12));
+        mode.setForeground(Theme.accentText());
 
         String[] result = {null};
         Runnable accept = () -> {

@@ -26,6 +26,30 @@ final class Settings {
     private static final Preferences PREFS = Preferences.userNodeForPackage(Settings.class);
     private static final List<Runnable> listeners = new ArrayList<>();
 
+    static Theme.Mode themeMode() {
+        try {
+            return Theme.Mode.valueOf(PREFS.get("theme", "SYSTEM"));
+        } catch (IllegalArgumentException e) {
+            return Theme.Mode.SYSTEM;
+        }
+    }
+
+    static void setThemeMode(Theme.Mode m) {
+        PREFS.put("theme", m.name());
+    }
+
+    /** Language of the guide: "en", "ru" or "hy"; by default the language of the system. */
+    static String helpLanguage() {
+        String saved = PREFS.get("helpLanguage", null);
+        if (saved != null) return saved;
+        String sys = java.util.Locale.getDefault().getLanguage();
+        return sys.equals("ru") || sys.equals("hy") ? sys : "en";
+    }
+
+    static void setHelpLanguage(String lang) {
+        PREFS.put("helpLanguage", lang);
+    }
+
     static boolean vimKeys() {
         return PREFS.getBoolean("vimKeys", true);
     }
@@ -412,7 +436,7 @@ final class Settings {
 
     static void checkCompiler(String command, JLabel label, boolean c) {
         label.setText("Checking compiler...");
-        label.setForeground(Color.GRAY);
+        label.setForeground(Theme.muted());
         Object token = newCheck(label);
         new Thread(() -> {
             CompilerInfo ci = detectCompiler(command);
@@ -427,7 +451,7 @@ final class Settings {
                             + (ToolchainInstaller.supported() ? ": click \"Install " + family(command).display + "...\"" : "")
                             : "  - test compile failed"));
                     label.setToolTipText("<html><pre>" + problem.replace("&", "&amp;").replace("<", "&lt;") + "</pre></html>");
-                    label.setForeground(new Color(190, 30, 30));
+                    label.setForeground(Theme.error());
                 } else {
                     label.setToolTipText(null);
                 }
@@ -456,26 +480,26 @@ final class Settings {
             label.setText(ToolchainInstaller.supported()
                     ? "Compiler not found - click \"Install ...\" next to the compiler"
                     : "Compiler not found - install Clang " + LATEST_CLANG + " (clang++) or GCC " + MIN_GCC + "+ (g++) and put it on PATH");
-            label.setForeground(new Color(190, 30, 30));
+            label.setForeground(Theme.error());
         } else if (ci.needsVisualStudio()) {
             label.setText(ci.display() + " (" + ci.target() + ") - needs Visual Studio's C++ library"
                     + (ToolchainInstaller.supported() ? ": click \"Install Clang...\" for llvm-mingw" : ""));
-            label.setForeground(new Color(190, 30, 30));
+            label.setForeground(Theme.error());
         } else if (ci.isLatestClang()) {
             label.setText(ci.display() + "  (latest stable)");
-            label.setForeground(new Color(30, 130, 50));
+            label.setForeground(Theme.ok());
         } else if (ci.isClang()) {
             label.setText(ci.display() + "  - latest stable is Clang " + LATEST_CLANG);
-            label.setForeground(new Color(200, 110, 0));
+            label.setForeground(Theme.warn());
         } else if (ci.name().equals("GCC") && ci.major() >= MIN_GCC) {
             label.setText(ci.display() + "  (GNU)");
-            label.setForeground(new Color(30, 130, 50));
+            label.setForeground(Theme.ok());
         } else if (ci.name().equals("GCC")) {
             label.setText(ci.display() + "  - GCC " + MIN_GCC + " or newer is needed for C++20");
-            label.setForeground(new Color(200, 110, 0));
+            label.setForeground(Theme.warn());
         } else {
             label.setText(ci.display() + "  - Clang " + LATEST_CLANG + " is the recommended compiler");
-            label.setForeground(new Color(200, 110, 0));
+            label.setForeground(Theme.warn());
         }
     }
 
@@ -487,7 +511,7 @@ final class Settings {
     private static JLabel small(String s) {
         JLabel l = new JLabel(s);
         l.setFont(l.getFont().deriveFont(11f));
-        l.setForeground(Color.GRAY);
+        l.setForeground(Theme.muted());
         return l;
     }
 }

@@ -1,10 +1,19 @@
 package evia.paradigma;
 
+import java.awt.Color;
+import java.awt.Font;
+
 import java.nio.file.*;
 import java.util.*;
 
 public class AppChecks {
     static int fails = 0;
+    static int count(String s, String what) {
+        int n = 0;
+        for (int i = s.indexOf(what); i >= 0; i = s.indexOf(what, i + 1)) n++;
+        return n;
+    }
+
     static void check(boolean ok, String what) {
         System.out.println((ok ? "ok    " : "FAIL  ") + what);
         if (!ok) fails++;
@@ -206,6 +215,31 @@ public class AppChecks {
         String s1 = ProgramIO.snapshot(lib);
         lib.byName("Account").fields.add(new BlockDef.Field("z", "1"));
         check(!ProgramIO.snapshot(lib).equals(s1), "snapshot changes when a field is added");
+
+        // ---------- guide in three languages, fonts, theme
+        String[] anchors = {"start", "blocks", "expressions", "classes", "modules", "projects", "git", "cpp", "boards", "keys", "vim"};
+        String[] files = {"guide.html", "guide.ru.html", "guide.hy.html"};
+        String en = null;
+        for (String f : files) {
+            String html;
+            try (java.io.InputStream in = HelpWindow.class.getResourceAsStream("help/" + f)) {
+                html = in == null ? "" : new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            }
+            check(!html.isEmpty(), f + " is bundled");
+            if (en == null) en = html;
+            for (String an : anchors) check(html.contains("<a name=\"" + an + "\">"), f + " has the topic " + an);
+            check(count(html, "<table") == count(en, "<table") && count(html, "<h2") == count(en, "<h2"), f + " has the same tables and sections as the English guide");
+            check(count(html, "<code>") == count(en, "<code>"), f + " keeps every code sample");
+        }
+        check(Fonts.ui(Font.PLAIN, 13).canDisplay('Ա') && Fonts.ui(Font.BOLD, 13).canDisplay('\u0587'), "interface font has the Armenian letters");
+        check(Fonts.ui(Font.PLAIN, 13).canDisplay('Ж') && Fonts.mono(Font.PLAIN, 13).canDisplay('Ж'), "fonts have the Russian letters");
+        check(Fonts.mono(Font.PLAIN, 13).getFamily().equals("JetBrains Mono"), "code font is JetBrains Mono");
+        Theme.apply(Theme.Mode.DARK);
+        Color darkBg = Theme.canvas(false), darkKeyword = Theme.keyword();
+        check(Theme.dark(), "dark theme on");
+        Theme.apply(Theme.Mode.LIGHT);
+        check(!Theme.dark() && !Theme.canvas(false).equals(darkBg) && !Theme.keyword().equals(darkKeyword), "light theme has its own colors");
+        check(Theme.canvas(false).getRed() > 200 && darkBg.getRed() < 80, "canvas is light in the light theme and dark in the dark theme");
 
         System.out.println(fails == 0 ? "ALL PASSED" : fails + " FAILED");
         System.exit(fails == 0 ? 0 : 1);

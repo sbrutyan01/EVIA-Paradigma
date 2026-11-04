@@ -82,6 +82,7 @@ final class ClassEditor extends JFrame {
         setTitle("Class " + def.name + " - EVIA Paradigma");
         nameField.setText(def.name);
         colorBtn.setBackground(def.color);
+        colorBtn.setForeground(new Color(30, 30, 40));
         moduleLabel.setText(def.module == null ? "  stored in the program"
                 : "  stored in module " + Path.of(def.module).getFileName());
         for (int i = 1; i < tabs.getTabCount() && i - 1 < def.methods.size(); i++) {
@@ -144,7 +145,7 @@ final class ClassEditor extends JFrame {
     private JComponent fieldsPanel() {
         JTable table = new JTable(fieldsModel);
         table.setRowHeight(24);
-        table.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        table.setFont(Fonts.mono(Font.PLAIN, 13));
         JButton add = new JButton("+ Field");
         add.addActionListener(e -> {
             String base = "field";

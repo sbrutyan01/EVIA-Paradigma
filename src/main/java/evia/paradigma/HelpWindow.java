@@ -15,22 +15,31 @@ import java.util.regex.Pattern;
 final class HelpWindow extends JFrame {
     static final String REPO = "https://github.com/sbrutyan01/EVIA-Paradigma";
 
-    private static final String[][] TOPICS = {
-            {"Getting started", "start"},
-            {"Blocks", "blocks"},
-            {"Expressions", "expressions"},
-            {"Classes and objects", "classes"},
-            {"Modules", "modules"},
-            {"Projects", "projects"},
-            {"Git and GitHub", "git"},
-            {"C and C++ code", "cpp"},
-            {"Arduino and ESP32 boards", "boards"},
-            {"Keyboard shortcuts", "keys"},
-            {"Vim keys", "vim"},
+    /** Guide languages: code, name (in that language), window title, topic names (same order as ANCHORS). */
+    private record Lang(String code, String name, String title, String[] topics) {}
+
+    private static final String[] ANCHORS = {"start", "blocks", "expressions", "classes", "modules", "projects", "git", "cpp",
+            "boards", "keys", "vim"};
+
+    private static final Lang[] LANGS = {
+            new Lang("en", "English", "EVIA Paradigma Guide", new String[]{"Getting started", "Blocks", "Expressions",
+                    "Classes and objects", "Modules", "Projects", "Git and GitHub", "C and C++ code",
+                    "Arduino and ESP32 boards", "Keyboard shortcuts", "Vim keys"}),
+            new Lang("ru", "Русский", "Руководство EVIA Paradigma", new String[]{"Начало работы", "Блоки", "Выражения",
+                    "Классы и объекты", "Модули", "Проекты", "Git и GitHub", "Код на C и C++",
+                    "Платы Arduino и ESP32", "Горячие клавиши", "Клавиши Vim"}),
+            new Lang("hy", "Հայերեն", "EVIA Paradigma ուղեցույց", new String[]{"Սկսել", "Բլոկներ", "Արտահայտություններ",
+                    "Դասեր և օբյեկտներ", "Մոդուլներ", "Նախագծեր", "Git և GitHub", "C և C++ կոդ",
+                    "Arduino և ESP32 տախտակներ", "Ստեղնային համակցություններ", "Vim ստեղներ"}),
     };
 
     private static HelpWindow instance;
     private final JEditorPane page = new JEditorPane();
+    private final JList<String> list = new JList<>();
+    private final JComboBox<String> language = new JComboBox<>();
+    private Lang lang = LANGS[0];
+    private String anchor = "start";
+    private boolean loading;
 
     private HelpWindow() {
         super("EVIA Paradigma Guide");
@@ -40,32 +49,86 @@ final class HelpWindow extends JFrame {
         page.setEditable(false);
         page.setContentType("text/html");
         page.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-        try (InputStream in = HelpWindow.class.getResourceAsStream("help/guide.html")) {
-            page.setText(in == null ? "<html>Guide not found.</html>" : new String(in.readAllBytes(), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            page.setText("<html>Guide not available: " + e.getMessage() + "</html>");
-        }
         page.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED && e.getDescription() != null) {
                 if (e.getDescription().startsWith("#")) page.scrollToReference(e.getDescription().substring(1));
                 else browse(this, e.getDescription());
             }
         });
-        DefaultListModel<String> model = new DefaultListModel<>();
-        for (String[] t : TOPICS) model.addElement(t[0]);
-        JList<String> list = new JList<>(model);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setFixedCellHeight(26);
+        list.setFixedCellHeight(28);
         list.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         list.addListSelectionListener(e -> {
             int i = list.getSelectedIndex();
-            if (!e.getValueIsAdjusting() && i >= 0) page.scrollToReference(TOPICS[i][1]);
+            if (!e.getValueIsAdjusting() && !loading && i >= 0) {
+                anchor = ANCHORS[i];
+                page.scrollToReference(anchor);
+            }
         });
-        JScrollPane left = new JScrollPane(list);
-        left.setPreferredSize(new Dimension(200, 100));
+        for (Lang l : LANGS) language.addItem(l.name());
+        language.setToolTipText("Language of the guide");
+        language.addActionListener(e -> {
+            int i = language.getSelectedIndex();
+            if (!loading && i >= 0 && LANGS[i] != lang) {
+                lang = LANGS[i];
+                Settings.setHelpLanguage(lang.code());
+                reload();
+            }
+        });
+        JPanel left = new JPanel(new BorderLayout(0, 6));
+        left.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 0));
+        left.add(language, BorderLayout.NORTH);
+        left.add(new JScrollPane(list), BorderLayout.CENTER);
+        left.setPreferredSize(new Dimension(260, 100));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, new JScrollPane(page));
-        split.setDividerLocation(200);
+        split.setDividerLocation(260);
         getContentPane().add(split);
+
+        String saved = Settings.helpLanguage();
+        for (Lang l : LANGS) if (l.code().equals(saved)) lang = l;
+        reload();
+        Theme.onChange(this::reload);
+    }
+
+    /** Shows the guide in the current language and theme, keeping the current topic. */
+    private void reload() {
+        loading = true;
+        try {
+            setTitle(lang.title());
+            language.setSelectedItem(lang.name());
+            DefaultListModel<String> model = new DefaultListModel<>();
+            for (String t : lang.topics()) model.addElement(t);
+            list.setModel(model);
+            list.setSelectedIndex(java.util.Arrays.asList(ANCHORS).indexOf(anchor));
+            String file = lang.code().equals("en") ? "help/guide.html" : "help/guide." + lang.code() + ".html";
+            String html;
+            try (InputStream in = HelpWindow.class.getResourceAsStream(file)) {
+                html = in == null ? "<html>Guide not found.</html>" : new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                html = "<html>Guide not available: " + e.getMessage() + "</html>";
+            }
+            javax.swing.text.html.HTMLEditorKit kit = new javax.swing.text.html.HTMLEditorKit();
+            javax.swing.text.html.StyleSheet css = new javax.swing.text.html.StyleSheet();
+            Color bg = Theme.codeBg();
+            Color fg = Theme.plain();
+            Color rule = Theme.dark() ? new Color(85, 88, 92) : new Color(190, 194, 204);
+            Color head = Theme.dark() ? new Color(60, 63, 65) : new Color(238, 240, 246);
+            css.addRule("body { font-family: " + Fonts.uiCss() + "; font-size: 13pt; margin: 14px 22px; background-color: " + Theme.hex(bg)
+                    + "; color: " + Theme.hex(fg) + "; }");
+            css.addRule("h1 { font-size: 24pt; font-weight: bold; margin-top: 4px; } h2 { font-size: 17pt; font-weight: bold; margin-top: 22px; margin-bottom: 6px; }");
+            css.addRule("p, ul, ol { margin-top: 6px; margin-bottom: 6px; }");
+            css.addRule("code, pre { font-family: " + Fonts.monoCss() + "; font-size: 12pt; }");
+            css.addRule("a { color: " + Theme.hex(Theme.dark() ? new Color(110, 165, 255) : new Color(30, 90, 190)) + "; }");
+            css.addRule("table { border-color: " + Theme.hex(rule) + "; } th { background-color: " + Theme.hex(head)
+                    + "; } td, th { border-color: " + Theme.hex(rule) + "; }");
+            kit.setStyleSheet(css);
+            page.setEditorKit(kit);
+            page.setText(html);
+            page.setCaretPosition(0);
+            SwingUtilities.invokeLater(() -> page.scrollToReference(anchor));
+        } finally {
+            loading = false;
+        }
     }
 
     static void showTopic(Component parent, String anchor) {
@@ -75,6 +138,10 @@ final class HelpWindow extends JFrame {
         }
         instance.setVisible(true);
         instance.toFront();
+        instance.anchor = anchor;
+        instance.loading = true;
+        instance.list.setSelectedIndex(java.util.Arrays.asList(ANCHORS).indexOf(anchor));
+        instance.loading = false;
         SwingUtilities.invokeLater(() -> instance.page.scrollToReference(anchor));
     }
 

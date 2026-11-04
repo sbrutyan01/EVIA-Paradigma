@@ -20,9 +20,9 @@ public final class Block extends JComponent {
     static final int TOTAL_H = H + 2 * PAD;
     static final int DEFAULT_TOTAL_W = MIN_W + 2 * PAD;
 
-    private static final Font TITLE_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 11);
-    private static final Font CODE_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 13);
-    private static final Font PORT_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 10);
+    private static final Font TITLE_FONT = Fonts.ui(Font.BOLD, 11);
+    private static final Font CODE_FONT = Fonts.mono(Font.PLAIN, 13);
+    private static final Font PORT_FONT = Fonts.ui(Font.BOLD, 10);
 
     final int id;
     final BlockType type;
@@ -301,7 +301,7 @@ public final class Block extends JComponent {
         float width;
         if (error)         { border = new Color(220, 30, 30);  width = 3f; }
         else if (active)   { border = new Color(255, 150, 0);  width = 3.5f; }
-        else if (selected) { border = new Color(30, 90, 210);  width = 2.5f; }
+        else if (selected) { border = Theme.select();  width = 2.5f; }
         else               { border = blend(base, Color.BLACK, 0.45f); width = 1.2f; }
         g.setStroke(new BasicStroke(width));
         g.setColor(border);

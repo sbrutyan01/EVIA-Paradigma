@@ -36,12 +36,12 @@ final class InstanceDialog {
         object.setToolTipText("Blocks with the same object name share one object. Empty = this block has its own object.");
 
         JTextField args = new JTextField(b.getCode(), 36);
-        args.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        args.setFont(Fonts.mono(Font.PLAIN, 14));
         JLabel mode = new JLabel(" ");
-        mode.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
-        mode.setForeground(new Color(30, 90, 170));
+        mode.setFont(Fonts.mono(Font.BOLD, 12));
+        mode.setForeground(Theme.accentText());
         JLabel error = new JLabel(" ");
-        error.setForeground(new Color(190, 30, 30));
+        error.setForeground(Theme.error());
 
         Runnable accept = () -> {
             Method m = d.callable().get(Math.max(0, method.getSelectedIndex()));

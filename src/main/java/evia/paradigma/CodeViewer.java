@@ -78,13 +78,11 @@ final class CodeViewer extends JFrame {
         tb.add(stopBtn);
 
         // ---- code editor with Vim keys and a Vim-like mode line
-        codePane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
-        codePane.setBackground(new Color(250, 250, 247));
+        codePane.setFont(Fonts.mono(Font.PLAIN, 13));
         JScrollPane codeScroll = new JScrollPane(codePane);
         codeScroll.getVerticalScrollBar().setUnitIncrement(16);
-        modeLine.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+        modeLine.setFont(Fonts.mono(Font.BOLD, 12));
         modeLine.setOpaque(true);
-        modeLine.setBackground(new Color(235, 236, 240));
         modeLine.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
         JPanel codePanel = new JPanel(new BorderLayout());
         codePanel.add(codeScroll, BorderLayout.CENTER);
@@ -108,6 +106,9 @@ final class CodeViewer extends JFrame {
         });
 
         rehighlight = new Timer(350, e -> highlight());
+        Runnable colors = this::applyTheme;
+        colors.run();
+        Theme.onChange(colors);
         rehighlight.setRepeats(false);
         codePane.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { edited(); }
@@ -117,9 +118,7 @@ final class CodeViewer extends JFrame {
 
         // ---- output + stdin
         output.setEditable(false);
-        output.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
-        output.setBackground(new Color(30, 32, 38));
-        output.setForeground(new Color(220, 225, 230));
+        output.setFont(Fonts.mono(Font.PLAIN, 13));
         output.setMargin(new Insets(6, 8, 6, 8));
         inputField.setToolTipText("Type a line and press Enter to send it to the running program");
         inputField.addActionListener(e -> sendInput());
@@ -208,13 +207,30 @@ final class CodeViewer extends JFrame {
         codePane.requestFocusInWindow();
     }
 
-    private static final Color MARK = new Color(255, 236, 140);
+    private void applyTheme() {
+        codePane.setBackground(Theme.codeBg());
+        codePane.setCaretColor(Theme.plain());
+        modeLine.setBackground(Theme.modeLineBg());
+        output.setBackground(Theme.consoleBg());
+        output.setForeground(Theme.consoleFg());
+        output.setCaretColor(Theme.consoleFg());
+        SwingUtilities.updateComponentTreeUI(this);
+        highlight();
+        if (!marks.isEmpty() && lastMark != null) {
+            for (Object tag : marks) codePane.getHighlighter().removeHighlight(tag);
+            marks.clear();
+            markLines(lastMark);
+        }
+    }
+
+    private java.util.List<int[]> lastMark;
     private final List<Object> marks = new ArrayList<>();
 
     private void markLines(java.util.List<int[]> ranges) {
+        lastMark = ranges;
         javax.swing.text.Element root = codePane.getDocument().getDefaultRootElement();
         javax.swing.text.Highlighter.HighlightPainter painter =
-                new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(MARK);
+                new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(Theme.mark());
         int firstOffset = -1;
         for (int[] r : ranges) {
             int from = Math.min(r[0], root.getElementCount() - 1), to = Math.min(r[1], root.getElementCount()) - 1;
@@ -311,12 +327,12 @@ final class CodeViewer extends JFrame {
     private void highlight() {
         String code = codePane.getText();
         StyledDocument doc = codePane.getStyledDocument();
-        SimpleAttributeSet plain = style(new Color(25, 25, 30), false, false);
-        SimpleAttributeSet comment = style(new Color(110, 130, 110), false, true);
-        SimpleAttributeSet string = style(new Color(160, 80, 30), false, false);
-        SimpleAttributeSet keyword = style(new Color(30, 70, 170), true, false);
-        SimpleAttributeSet pre = style(new Color(140, 60, 150), false, false);
-        SimpleAttributeSet label = style(new Color(190, 30, 60), true, false);
+        SimpleAttributeSet plain = style(Theme.plain(), false, false);
+        SimpleAttributeSet comment = style(Theme.comment(), false, true);
+        SimpleAttributeSet string = style(Theme.string(), false, false);
+        SimpleAttributeSet keyword = style(Theme.keyword(), true, false);
+        SimpleAttributeSet pre = style(Theme.preproc(), false, false);
+        SimpleAttributeSet label = style(Theme.label(), true, false);
         vim.withoutUndo(() -> {
             doc.setCharacterAttributes(0, doc.getLength(), plain, true);
             Matcher m = TOKENS.matcher(code);
@@ -377,7 +393,7 @@ final class CodeViewer extends JFrame {
         boolean arduino = target.lang() == Target.Lang.ARDUINO;
         String tool = arduino ? Settings.arduinoCli() : Settings.avrGcc();
         compilerLabel.setText("Checking " + tool + "...");
-        compilerLabel.setForeground(Color.GRAY);
+        compilerLabel.setForeground(Theme.muted());
         Object token = Settings.newCheck(compilerLabel);
         new Thread(() -> {
             String version = null;
@@ -397,10 +413,10 @@ final class CodeViewer extends JFrame {
                 String name = arduino ? "arduino-cli" : "avr-gcc";
                 if (v == null) {
                     compilerLabel.setText(name + " not found - see Build for how to install it");
-                    compilerLabel.setForeground(new Color(190, 30, 30));
+                    compilerLabel.setForeground(Theme.error());
                 } else {
                     compilerLabel.setText(name + " " + v + "  -  " + Board.forLang(Settings.board(), target.lang()).display);
-                    compilerLabel.setForeground(new Color(30, 130, 50));
+                    compilerLabel.setForeground(Theme.ok());
                 }
             });
         }, "evia-board-tools").start();

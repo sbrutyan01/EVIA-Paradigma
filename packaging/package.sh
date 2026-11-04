@@ -29,7 +29,7 @@ image_opts=(
   --input dist/input
   --main-jar "$(basename "$JAR")"
   --main-class evia.paradigma.App
-  --add-modules java.base,java.desktop,java.prefs
+  --add-modules java.base,java.desktop,java.prefs,java.logging
   --jlink-options "--strip-debug --no-man-pages --no-header-files --strip-native-commands"
   --dest "$WORK/image"
 )

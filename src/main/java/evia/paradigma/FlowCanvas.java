@@ -55,7 +55,6 @@ public final class FlowCanvas extends JPanel {
         super(null);
         this.lib = lib;
         this.owner = owner;
-        setBackground(owner == null ? new Color(248, 249, 252) : new Color(244, 251, 250));
         setTransferHandler(new BlockDropHandler());
         setFocusable(true);
         setPreferredSize(new Dimension(1000, 800));
@@ -544,13 +543,18 @@ public final class FlowCanvas extends JPanel {
     }
 
     @Override
+    public Color getBackground() {
+        return Theme.canvas(isBody());
+    }
+
+    @Override
     protected void paintComponent(Graphics g0) {
         super.paintComponent(g0);
         Graphics2D g = (Graphics2D) g0.create();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // dot grid, every 20 diagram units (thinned out when zoomed far out)
-        g.setColor(isBody() ? new Color(200, 225, 222) : new Color(214, 218, 228));
+        g.setColor(Theme.grid(isBody()));
         Rectangle clip = g.getClipBounds();
         double step = 20 * zoom;
         while (step < 10) step *= 2;
@@ -563,9 +567,9 @@ public final class FlowCanvas extends JPanel {
 
         // selection rectangle (canvas pixels)
         if (band != null) {
-            g.setColor(new Color(30, 90, 210, 30));
+            g.setColor(Theme.selectFill());
             g.fill(band);
-            g.setColor(new Color(30, 90, 210, 160));
+            g.setColor(Theme.selectLine());
             g.setStroke(new BasicStroke(1f));
             g.draw(band);
         }
@@ -575,9 +579,9 @@ public final class FlowCanvas extends JPanel {
         g.setStroke(new BasicStroke(2.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         for (Link l : links()) {
             Color c = l.from().type == BlockType.IF
-                    ? (l.port() == 0 ? new Color(50, 150, 60) : new Color(200, 60, 50))
-                    : l.from().type.isLoop() && l.port() == 0 ? new Color(50, 150, 60)
-                    : new Color(70, 75, 90);
+                    ? (l.port() == 0 ? Theme.wireTrue() : Theme.wireFalse())
+                    : l.from().type.isLoop() && l.port() == 0 ? Theme.wireTrue()
+                    : Theme.wire();
             g.setColor(c);
             CubicCurve2D curve = linkShape(l.from().outPort(l.port()), l.to().inPort());
             g.draw(curve);
@@ -586,7 +590,7 @@ public final class FlowCanvas extends JPanel {
 
         // connection being dragged
         if (connFrom != null && connPoint != null) {
-            g.setColor(new Color(30, 90, 210));
+            g.setColor(Theme.select());
             g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                     1f, new float[]{6f, 5f}, 0f));
             g.draw(linkShape(connFrom.outPort(connPort), connPoint));

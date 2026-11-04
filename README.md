@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.4.0-blue" alt="version 0.4.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.4.1-blue" alt="version 0.4.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -33,7 +33,7 @@ program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file bui
 with structured or goto control flow and safe or fast values. The same diagrams program **Arduino and ESP32 boards**:
 pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
 -S2, -S3, -C3, -C6, -H2) or bare-metal **AVR C** that drives the chip's registers directly, and **Run** simulates the
-board on your computer. Pure Swing, no external libraries; a Maven project for NetBeans and Java 25.
+board on your computer. Java Swing with the [FlatLaf](https://github.com/JFormDesigner/FlatLaf) IntelliJ look (light and dark); a Maven project for NetBeans and Java 25.
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
@@ -48,11 +48,25 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.4.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.4.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.4.0-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.4.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.4.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.4.0.jar` | `java -jar evia-paradigma-0.4.0.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.4.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.4.1-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.4.1-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.4.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.4.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.4.1.jar` | `java -jar evia-paradigma-0.4.1.jar` |
+
+### Release 0.4.1
+
+[EVIA Paradigma v0.4.1](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.4.1) ([release notes](docs/release-notes/v0.4.1.md)):
+a dark mode, the look and fonts of IntelliJ IDEA, and the guide in Russian and Armenian.
+
+- **Dark mode:** **View → Theme**: *Same as system*, *Light (IntelliJ)* or *Dark (Darcula)*. It changes at once, also in
+  the diagram, the code window and the guide, and is remembered.
+- **IntelliJ look:** [FlatLaf](https://github.com/JFormDesigner/FlatLaf) themes, **Inter** for the interface and
+  **JetBrains Mono** for code and blocks, both bundled, so the app looks the same on Windows, macOS and Linux.
+- **Guide in three languages:** **Help → Guide** has an English / Русский / Հայերեն list above the topics.
+- The jar now contains FlatLaf (about 3 MB in all); `java -jar` still runs it.
+
+<p align="center"><img src="docs/screenshots/32-dark-theme.png" alt="EVIA Paradigma in the dark theme" width="900"></p>
 
 ### Release 0.4.0
 
@@ -293,9 +307,12 @@ See [Arduino and ESP32 boards](#arduino-and-esp32-boards).
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
-- **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys.
+- **Help → Guide** (F1) explains every block, expressions, classes, projects, Git, shortcuts and Vim keys, in English,
+  Russian or Armenian (the list above the topics). **View → Theme** switches between the light and dark look.
 
 <p align="center"><img src="docs/screenshots/20-help-guide.png" alt="The built-in guide" width="800"></p>
+
+<p align="center"><img src="docs/screenshots/33-help-russian.png" alt="The guide in Russian" width="420"> <img src="docs/screenshots/34-help-armenian-dark.png" alt="The guide in Armenian, dark theme" width="420"></p>
 
 ## Building from source
 
@@ -307,7 +324,7 @@ For boards (optional): [arduino-cli](https://arduino.github.io/arduino-cli/) wit
    (**Properties → Build → Compile → Java Platform**).
 3. Press **F6**. The main class is `evia.paradigma.App`.
 
-Command line: `mvn package` then `java -jar target/evia-paradigma-0.4.0.jar`.
+Command line: `mvn package` then `java -jar target/evia-paradigma-0.4.1.jar`.
 
 ### Installing Clang 23
 

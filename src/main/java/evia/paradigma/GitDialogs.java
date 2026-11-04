@@ -40,15 +40,15 @@ final class GitDialogs {
         String[] result = {null};
 
         JTextArea msg = new JTextArea(suggestion, 6, 60);
-        msg.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        msg.setFont(Fonts.mono(Font.PLAIN, 13));
         msg.setLineWrap(true);
         msg.setWrapStyleWord(true);
         JTextArea files = new JTextArea(changes, 8, 60);
         files.setEditable(false);
-        files.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        files.setFont(Fonts.mono(Font.PLAIN, 12));
         JLabel mode = new JLabel(" ");
-        mode.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
-        mode.setForeground(new Color(30, 90, 170));
+        mode.setFont(Fonts.mono(Font.BOLD, 12));
+        mode.setForeground(Theme.accentText());
 
         Runnable accept = () -> {
             String m = msg.getText().strip();
@@ -147,7 +147,7 @@ final class GitDialogs {
     static void showText(Component parent, String title, String text) {
         JTextArea a = new JTextArea(text, Math.min(24, Math.max(6, (int) text.lines().count() + 1)), 90);
         a.setEditable(false);
-        a.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        a.setFont(Fonts.mono(Font.PLAIN, 12));
         a.setCaretPosition(0);
         JOptionPane.showMessageDialog(parent, new JScrollPane(a), title, JOptionPane.PLAIN_MESSAGE);
     }

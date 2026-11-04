@@ -85,6 +85,9 @@ public class Tour {
         new File(OUT).mkdirs();
         robot = new Robot();
         Settings.setVimKeys(true);
+        Settings.setThemeMode(Theme.Mode.LIGHT);
+        Settings.setHelpLanguage("en");
+        ui(() -> Theme.init());
         MainFrame[] fr = new MainFrame[1];
         ui(() -> { fr[0] = new MainFrame(); fr[0].setBounds(0, 0, 1180, 880); fr[0].setVisible(true); });
         MainFrame f = fr[0];
@@ -350,6 +353,25 @@ public class Tour {
         capture(new Rectangle(fb.x, fb.y, fb.width, 560), "31-language-list");
         ui(() -> langList.hidePopup());
         ui(() -> Settings.setTarget(Target.DEFAULT));
+
+        // ---- dark theme and the guide in Russian and Armenian
+        ui(() -> f.setBounds(0, 0, 1180, 880));
+        ui(() -> Theme.apply(Theme.Mode.DARK));
+        settle(800);
+        capture(f, "32-dark-theme");
+        ui(() -> Theme.apply(Theme.Mode.LIGHT));
+        ui(() -> HelpWindow.showTopic(f, "boards"));
+        HelpWindow hw2 = waitFor(() -> { for (Window w : Window.getWindows()) if (w instanceof HelpWindow h && h.isShowing()) return h; return null; }, "help");
+        ui(() -> hw2.setBounds(40, 40, 1000, 700));
+        JComboBox<?> glang = (JComboBox<?>) field(hw2, "language");
+        ui(() -> glang.setSelectedIndex(1));
+        settle(1200);
+        capture(hw2, "33-help-russian");
+        ui(() -> Theme.apply(Theme.Mode.DARK));
+        ui(() -> glang.setSelectedIndex(2));
+        settle(1200);
+        capture(hw2, "34-help-armenian-dark");
+        ui(() -> { glang.setSelectedIndex(0); Theme.apply(Theme.Mode.LIGHT); });
         System.out.println("tour done");
         System.exit(0);
     }

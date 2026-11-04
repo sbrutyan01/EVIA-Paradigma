@@ -111,10 +111,14 @@ final class MainFrame extends JFrame {
 
         // ---- console
         console.setEditable(false);
-        console.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
-        console.setBackground(new Color(30, 32, 38));
-        console.setForeground(new Color(220, 225, 230));
-        console.setCaretColor(Color.WHITE);
+        console.setFont(Fonts.mono(Font.PLAIN, 13));
+        Runnable consoleColors = () -> {
+            console.setBackground(Theme.consoleBg());
+            console.setForeground(Theme.consoleFg());
+            console.setCaretColor(Theme.consoleFg());
+        };
+        consoleColors.run();
+        Theme.onChange(consoleColors);
         console.setMargin(new Insets(6, 8, 6, 8));
         JScrollPane consoleScroll = new JScrollPane(console);
         consoleScroll.setBorder(BorderFactory.createTitledBorder("Output"));
@@ -208,6 +212,17 @@ final class MainFrame extends JFrame {
         view.add(item("Zoom Out", KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, MENU), e -> canvas.zoomOut()));
         view.add(item("Actual Size (100%)", KeyStroke.getKeyStroke(KeyEvent.VK_0, MENU), e -> canvas.zoomReset()));
         view.add(item("Fit Diagram in Window", KeyStroke.getKeyStroke(KeyEvent.VK_9, MENU), e -> canvas.zoomToFit()));
+        view.addSeparator();
+        JMenu theme = new JMenu("Theme");
+        ButtonGroup themeGroup = new ButtonGroup();
+        for (Theme.Mode m : Theme.Mode.values()) {
+            String label = switch (m) { case SYSTEM -> "Same as system"; case LIGHT -> "Light (IntelliJ)"; case DARK -> "Dark (Darcula)"; };
+            JRadioButtonMenuItem it = new JRadioButtonMenuItem(label, Settings.themeMode() == m);
+            it.addActionListener(e -> Theme.apply(m));
+            themeGroup.add(it);
+            theme.add(it);
+        }
+        view.add(theme);
         view.addSeparator();
         JMenuItem wheelHelp = new JMenuItem("Mouse wheel zooms toward the pointer (setting in Settings)");
         wheelHelp.setEnabled(false);

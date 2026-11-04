@@ -232,8 +232,12 @@
   "<b>Clang կամ GCC։</b> Դրանք փոխվում են Settings-ում, իսկ Windows-ում ցանկացածն ինքն է տեղադրվում, Visual Studio պետք չէ։"
  ],
  [
-  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key.",
-  "<b>Ներկառուցված ուղեցույց։</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները։"
+  "<b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.",
+  "<b>Մուգ թեմա.</b> Ծրագիրը նման է IntelliJ IDEA-ին՝ Inter և JetBrains Mono տառատեսակներով։ View, Theme-ը ընտրում է բաց, մուգ կամ համակարգի թեմա։"
+ ],
+ [
+  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.",
+  "<b>Ներկառուցված ուղեցույց.</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները՝ անգլերեն, ռուսերեն և հայերեն։"
  ],
  [
   "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",

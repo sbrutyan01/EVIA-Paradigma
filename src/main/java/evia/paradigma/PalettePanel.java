@@ -132,8 +132,8 @@ final class PalettePanel extends JPanel {
         JTextArea a = new JTextArea(text);
         a.setEditable(false);
         a.setOpaque(false);
-        a.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
-        a.setForeground(new Color(90, 90, 100));
+        a.setFont(Fonts.ui(Font.PLAIN, 11));
+        a.setForeground(Theme.muted());
         a.setAlignmentX(LEFT_ALIGNMENT);
         return a;
     }
@@ -142,6 +142,7 @@ final class PalettePanel extends JPanel {
         JLabel item = new JLabel(text, SwingConstants.CENTER);
         item.setOpaque(true);
         item.setBackground(color);
+        item.setForeground(new Color(30, 30, 40));   // pastel blocks: dark text in both themes
         item.setFont(item.getFont().deriveFont(Font.BOLD, 13f));
         Color edge = color.darker();
         item.setBorder(def == null
