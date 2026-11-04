@@ -56,19 +56,28 @@ def current(page, lang):
 with open(out + "/index.html", "w") as f:
     f.write(current(html, "en"))
 
-# Russian and Armenian pages: site/i18n/<lang>.json holds [English, translation] pairs. Every English
-# text must still be on the page (whitespace may differ), so a changed page can't silently stay half-English.
-for lang in ["ru", "hy"]:
+# Russian and Armenian files hold [English, translation] pairs. The newer locales hold translations
+# in the same order as the source strings in site/i18n/ru.json. Every English string must still be
+# on the page (whitespace may differ), so a changed page can't silently stay half-English.
+source_pairs = json.load(open("site/i18n/ru.json", encoding="utf-8"))
+for lang in ["ru", "hy", "de", "zh-CN", "zh-TW", "ja"]:
     page = html.replace('<html lang="en">', f'<html lang="{lang}">', 1)
     with open(f"site/i18n/{lang}.json", encoding="utf-8") as f:
-        pairs = json.load(f)
+        translations = json.load(f)
+    if lang in ("ru", "hy"):
+        pairs = translations
+    else:
+        if len(translations) != len(source_pairs):
+            sys.exit(f"site/i18n/{lang}.json: expected {len(source_pairs)} translations, got {len(translations)}")
+        pairs = [[en, tr] for (en, _), tr in zip(source_pairs, translations)]
     for en, tr in sorted(pairs, key=lambda p: -len(p[0])):   # longer texts first
         pattern = r"\s+".join(re.escape(w) for w in en.replace("{{VERSION}}", version).split())
         page, n = re.subn(pattern, lambda m: tr.replace("{{VERSION}}", version), page)
         if n == 0:
             sys.exit(f"site/i18n/{lang}.json: not on the page any more: {en[:80]}")
-    font = {"ru": "NotoSans", "hy": "NotoSansArmenian"}[lang]   # the font the page's own letters need
-    page = page.replace('href="fonts/FamiljenGrotesk.woff"', f'href="fonts/{font}.woff"', 1)
+    font = {"ru": "NotoSans", "hy": "NotoSansArmenian"}.get(lang)
+    if font:
+        page = page.replace('href="fonts/FamiljenGrotesk.woff"', f'href="fonts/{font}.woff"', 1)
     # the page lives one folder down: relative links and files are one level up
     page = re.sub(r'(src|href)="(?!https?:|#|mailto:|/)', r'\1="../', page)
     os.makedirs(f"{out}/{lang}", exist_ok=True)
@@ -76,4 +85,4 @@ for lang in ["ru", "hy"]:
         f.write(current(page, lang))
 shutil.rmtree(out + "/i18n")
 open(out + "/.nojekyll", "w").close()
-print(f"site for {version}: {len(samples)} code samples, English, Russian and Armenian -> {out}")
+print(f"site for {version}: {len(samples)} code samples, English, Russian, Armenian, German, Chinese (simplified and traditional) and Japanese -> {out}")

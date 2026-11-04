@@ -23,7 +23,11 @@
   <a href="docs/tutorial/TUTORIAL.hy.md">Հայերեն</a> · Website:
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/">English</a> ·
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">Русский</a> ·
-  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">Հայերեն</a>
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">Հայերեն</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/de/">Deutsch</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-CN/">简体中文</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-TW/">繁體中文</a> ·
+  <a href="https://sbrutyan01.github.io/EVIA-Paradigma/ja/">日本語</a>
 </p>
 
 Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run the program. Define **classes** with
@@ -878,7 +882,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `scripts/fpga/` | FPGA checks: test programs, simulation against the interpreter (Icarus Verilog, GHDL), synthesis (yosys, nextpnr) |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
-| `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds the Russian and Armenian texts |
+| `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds its Russian, Armenian, German, Simplified Chinese, Traditional Chinese and Japanese texts |
 | `docs/tutorial/` | The tutorial in Russian and Armenian |
 
 ## Screenshots

@@ -105,7 +105,11 @@
 /* Familjen Grotesk has no Cyrillic or Armenian letters */
 :root:lang(ru) { --body: "Noto Sans", "Segoe UI", system-ui, sans-serif; }
 :root:lang(hy) { --body: "Noto Sans Armenian", "Noto Sans", "Segoe UI", system-ui, sans-serif; }
-:lang(ru) .hero h1, :lang(hy) .hero h1 { letter-spacing: -0.025em; }
+:root:lang(zh-CN) { --body: "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+:root:lang(zh-TW) { --body: "Noto Sans TC", "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif; }
+:root:lang(ja) { --body: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; }
+:lang(ru) .hero h1, :lang(hy) .hero h1, :lang(de) .hero h1,
+:lang(zh-CN) .hero h1, :lang(zh-TW) .hero h1, :lang(ja) .hero h1 { letter-spacing: -0.025em; }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
