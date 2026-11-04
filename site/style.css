@@ -138,14 +138,14 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex; align-items: center; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap;
   max-width: var(--wrap); margin: 0 auto; padding: 18px 24px;
 }
-.brand { display: flex; align-items: center; gap: 16px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: clamp(34px, 5.6vw, 76px); letter-spacing: -0.03em; line-height: 1; }
-.brand img { width: 136px; height: 136px; border-radius: 24px; }
+.brand { display: flex; align-items: center; gap: 16px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: clamp(30px, 4.4vw, 56px); letter-spacing: -0.03em; line-height: 1; }
+.brand img { width: 104px; height: 104px; border-radius: 18px; }
 .top nav { display: flex; gap: 22px; flex-wrap: wrap; }
 .top nav a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 16px; }
 .top nav a:hover { color: var(--set-deep); }
 .top nav { align-items: center; justify-content: flex-end; row-gap: 12px; }
 .brand { flex: none; }
-.top nav .gh { border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px 14px; }
+.top nav .gh { border: 1.5px solid var(--ink); border-radius: 999px; padding: 4px 14px; line-height: 1.4; }
 
 /* the logo in the matching color, and the light/dark switch */
 .logo-dark { display: none; }
@@ -155,17 +155,18 @@ img { max-width: 100%; height: auto; display: block; }
 }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
-.site-language { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-basis: 100%; }
+.top-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 12px 18px; }
+.site-language { display: flex; align-items: center; gap: 10px; }
 .site-language-label { color: var(--muted); font-size: 14.5px; font-weight: 600; }
 .site-langs { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
-.top nav .site-langs a { padding: 4px 11px; font-size: 14.5px; font-weight: 600; text-decoration: none; color: var(--ink); }
+.top nav .site-langs a { padding: 4px 12px; font-size: 15px; font-weight: 600; line-height: 1.4; text-decoration: none; color: var(--ink); }
 .site-langs a + a { border-left: 1.5px solid var(--ink); }
 .site-langs a:hover { background: var(--code-bg); }
 .top nav .site-langs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
 .themes { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
 .themes button {
   display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  font: 500 15px var(--body); color: var(--ink); background: transparent; border: 0; padding: 4px 13px;
+  font: 500 15px/1.4 var(--body); color: var(--ink); background: transparent; border: 0; padding: 4px 13px;
 }
 .themes button + button { border-left: 1.5px solid var(--ink); }
 .themes button:hover { background: var(--code-bg); }
@@ -335,7 +336,7 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
   body { font-size: 17px; }
   .top { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px; }
   .top nav { gap: 14px; }
-  .site-language { justify-content: flex-start; }
+  .top-tools { justify-content: flex-start; }
   .hero { padding: 44px 0 40px; }
   .hero-text, .bench { padding: 0 16px; }
   .results { display: block; overflow-x: auto; }
