@@ -62,6 +62,15 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
 - Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class).
 
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.4.0-windows-x64.exe` | Windows 10/11 x64 | 28.0 MB |
+| `EVIA-Paradigma-0.4.0-macos-arm64.dmg` | macOS, Apple Silicon | 28.3 MB |
+| `EVIA-Paradigma-0.4.0-macos-x64.dmg` | macOS, Intel | 29.7 MB |
+| `evia-paradigma_0.4.0_amd64.deb` | Ubuntu/Debian amd64 | 23.0 MB |
+| `evia-paradigma-0.4.0.jar` | Any OS with Java 25 | 0.5 MB |
+| `LICENSE` | MIT license | — |
+
 | CI check | Result |
 |---|---|
 | Board examples as bare-metal AVR C, avr-gcc 14.1, `-Werror`, run in simavr (ATmega328P, ATmega2560, ATmega32U4 × structured/goto) | 30 of 30 identical to the interpreter, LED on the right pin |
