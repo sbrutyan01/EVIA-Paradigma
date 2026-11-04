@@ -116,7 +116,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   max-width: var(--wrap); margin: 0 auto; padding: 18px 24px;
 }
-.brand { display: flex; align-items: center; gap: 16px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 19px; }
+.brand { display: flex; align-items: center; gap: 16px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 38px; letter-spacing: -0.02em; line-height: 1.1; }
 .brand img { width: 136px; height: 136px; border-radius: 24px; }
 .top nav { display: flex; gap: 22px; flex-wrap: wrap; }
 .top nav a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 16px; }
