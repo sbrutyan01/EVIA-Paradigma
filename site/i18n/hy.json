@@ -1,15 +1,15 @@
 [
  [
-  "<title>EVIA Paradigma: visual programming that compiles to C and C++</title>",
-  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C և C++ կոմպիլյացիայով</title>"
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>",
+  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, որոնվածքի և HDL կոմպիլյացիայով</title>"
  ],
  [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).\"",
-  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր C կամ C++ (C99-ից մինչև C++20) աղբյուր ֆայլի, որը կառուցվում է Clang-ով կամ GCC-ով, կամ Arduino և ESP32 տախտակների կոդի։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար և բաց կոդով (MIT)։\""
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնչորս լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։"
  ],
  [
-  "content=\"Draw a program as blocks. Get C or C++.\"",
-  "content=\"Նկարեք ծրագիրը բլոկներով։ Ստացեք C կամ C++։\""
+  "content=\"Draw a program as blocks. Pick the language it becomes.\"",
+  "content=\"Նկարեք ծրագիրը բլոկներով։ Ընտրեք լեզուն, որով այն կդարձվի։\""
  ],
  [
   ">Skip to content</a>",
@@ -56,12 +56,12 @@
   "</svg>Մութ</button>"
  ],
  [
-  "<h1>Draw a program.<br>Get C or C++.</h1>",
-  "<h1>Նկարեք ծրագիրը։<br>Ստացեք C կամ C++։</h1>"
+  "<h1>Draw a program.<br>Pick its language.</h1>",
+  "<h1>Նկարեք ծրագիրը։<br>Ընտրեք նրա լեզուն։</h1>"
  ],
  [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. Wire blocks on a canvas, run them, then turn them into one readable source file in C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program Arduino and ESP32 boards.",
-  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա վերածեք մեկ ընթեռնելի աղբյուր ֆայլի՝ C99, C11, C17 կամ C++98–C++20 լեզվով, և կառուցեք այն Clang-ով կամ GCC-ով։ Նույն բլոկները ծրագրավորում են նաև Arduino և ESP32 տախտակները։"
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։"
  ],
  [
   "href=\"#download\">Download {{VERSION}}</a>",
@@ -140,8 +140,8 @@
   "alt=\"Counter դասի պատուհանը՝ դաշտերի, կոնստրուկտորի և մեթոդների ներդիրներով, add(x) մեթոդը x-ը գումարում է this.total-ին։\""
  ],
  [
-  "<h3>Eight languages, two ways to write them</h3>",
-  "<h3>Ութ լեզու, գրելու երկու եղանակ</h3>"
+  "<h3>Eight C and C++ standards, two ways to write them</h3>",
+  "<h3>C-ի և C++-ի ութ ստանդարտ, գրելու երկու եղանակ</h3>"
  ],
  [
   "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
@@ -196,12 +196,12 @@
   "alt=\"blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։\""
  ],
  [
-  "<h3>Zoom with the mouse wheel</h3>",
-  "<h3>Մասշտաբ մկնիկի անիվով</h3>"
+  "<h3>Zoom and move the canvas with the mouse</h3>",
+  "<h3>Մասշտաբ և կտավի տեղափոխում մկնիկով</h3>"
  ],
  [
-  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.",
-  "Պտտեք անիվը սխեմայի վրա՝ մասշտաբը 25%-ից 300% փոխելու համար՝ դեպի ցուցիչը։ Բլոկները, տեքստը և կապերը մնում են հստակ, և խմբագրել կարելի է ցանկացած մասշտաբով։ Ctrl+0-ն վերադարձնում է 100%-ը, Ctrl+9-ը տեղավորում է ամբողջ սխեման։"
+  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.",
+  "Պտտեք անիվը սխեմայի վրա՝ մասշտաբը 25%-ից 300% փոխելու համար՝ դեպի ցուցիչը։ Բլոկները, տեքստը և կապերը մնում են հստակ, և խմբագրել կարելի է ցանկացած մասշտաբով։ Ctrl+0-ն վերադարձնում է 100%-ը, Ctrl+9-ը տեղավորում է ամբողջ սխեման։ Նորություն 0.6.1-ում՝ պահեք մկնիկի միջին կոճակը և քաշեք՝ կտավը տեղափոխելու համար՝ դատարկ տեղից կամ բլոկից։"
  ],
  [
   "alt=\"The diagram zoomed in to 161 percent.\"",
@@ -430,5 +430,21 @@
  [
   "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
   "Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։"
+ ],
+ [
+  "<h3>One diagram, fourteen languages</h3>",
+  "<h3>Մեկ սխեմա՝ տասնչորս լեզու</h3>"
+ ],
+ [
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
+ ],
+ [
+  "The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.",
+  "Գործիքագոտու Language ցանկը բացված՝ C99-ից մինչև C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL։"
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA ծրագրերի օրինակներ</a>, նաև File, Open Example, FPGA Boards-ում</li>"
  ]
 ]

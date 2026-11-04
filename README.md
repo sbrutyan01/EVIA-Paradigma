@@ -674,7 +674,7 @@ bit name exists with the right type. It does **not** run the program, and nothin
 a chip, so pin assignments, `#pragma config` names for a particular part, and timing are unproven. Treat the first
 build on real hardware as a test, and please report what you find.
 
-<p align="center"><img src="docs/screenshots/31-language-list.png" alt="The Language list with Arduino and AVR C" width="800"></p>
+<p align="center"><img src="docs/screenshots/31-language-list.png" alt="The Language list: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL" width="760"></p>
 
 How the board code is tested: CI builds the bare-metal AVR C of every board example for all three chips with
 `-Wall -Wextra -Werror`, in both flows, and runs each build in [simavr](https://github.com/buserror/simavr). The

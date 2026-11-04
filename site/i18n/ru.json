@@ -1,15 +1,15 @@
 [
  [
-  "<title>EVIA Paradigma: visual programming that compiles to C and C++</title>",
-  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C и C++</title>"
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>",
+  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, прошивки и HDL</title>"
  ],
  [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).\"",
-  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на C или C++ (от C99 до C++20), который собирается Clang или GCC, или в код для плат Arduino и ESP32. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT).\""
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из четырнадцати языков: от C99 до C++20 со сборкой Clang или GCC, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
  ],
  [
-  "content=\"Draw a program as blocks. Get C or C++.\"",
-  "content=\"Нарисуйте программу из блоков. Получите C или C++.\""
+  "content=\"Draw a program as blocks. Pick the language it becomes.\"",
+  "content=\"Нарисуйте программу из блоков. Выберите язык, в который она превратится.\""
  ],
  [
   ">Skip to content</a>",
@@ -56,12 +56,12 @@
   "</svg>Тёмная</button>"
  ],
  [
-  "<h1>Draw a program.<br>Get C or C++.</h1>",
-  "<h1>Нарисуйте программу.<br>Получите C или C++.</h1>"
+  "<h1>Draw a program.<br>Pick its language.</h1>",
+  "<h1>Нарисуйте программу.<br>Выберите её язык.</h1>"
  ],
  [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. Wire blocks on a canvas, run them, then turn them into one readable source file in C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program Arduino and ESP32 boards.",
-  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Соединяйте блоки на холсте, запускайте их, а затем превращайте в один читаемый исходный файл на C99, C11, C17 или C++98–C++20 и собирайте его с помощью Clang или GCC. Те же блоки программируют платы Arduino и ESP32."
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
  ],
  [
   "href=\"#download\">Download {{VERSION}}</a>",
@@ -140,8 +140,8 @@
   "alt=\"Окно класса Counter: вкладки полей, конструктора и методов; метод add(x) прибавляет x к this.total.\""
  ],
  [
-  "<h3>Eight languages, two ways to write them</h3>",
-  "<h3>Восемь языков и два стиля кода</h3>"
+  "<h3>Eight C and C++ standards, two ways to write them</h3>",
+  "<h3>Восемь стандартов C и C++ и два стиля кода</h3>"
  ],
  [
   "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
@@ -196,12 +196,12 @@
   "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
  ],
  [
-  "<h3>Zoom with the mouse wheel</h3>",
-  "<h3>Масштаб колесом мыши</h3>"
+  "<h3>Zoom and move the canvas with the mouse</h3>",
+  "<h3>Масштаб и перемещение холста мышью</h3>"
  ],
  [
-  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.",
-  "Прокрутите колесо над схемой, чтобы менять масштаб от 25% до 300% в сторону указателя. Блоки, текст и связи остаются чёткими, а редактировать можно при любом масштабе. Ctrl+0 возвращает 100%, Ctrl+9 вписывает всю схему."
+  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.",
+  "Прокрутите колесо над схемой, чтобы менять масштаб от 25% до 300% в сторону указателя. Блоки, текст и связи остаются чёткими, а редактировать можно при любом масштабе. Ctrl+0 возвращает 100%, Ctrl+9 вписывает всю схему. Новое в 0.6.1: удерживайте среднюю кнопку мыши и перетаскивайте, чтобы двигать холст — с пустого места или с блока."
  ],
  [
   "alt=\"The diagram zoomed in to 161 percent.\"",
@@ -430,5 +430,21 @@
  [
   "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
   "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
+ ],
+ [
+  "<h3>One diagram, fourteen languages</h3>",
+  "<h3>Одна схема — четырнадцать языков</h3>"
+ ],
+ [
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
+ ],
+ [
+  "The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.",
+  "Открытый список Language на панели инструментов: от C99 до C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL."
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">Примеры программ для FPGA</a>, также в File, Open Example, FPGA Boards</li>"
  ]
 ]

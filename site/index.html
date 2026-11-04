@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EVIA Paradigma: visual programming that compiles to C and C++</title>
-<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean C or C++ source file (C99 to C++20) built with Clang or GCC, or into code for Arduino and ESP32 boards. Classes, modules, projects, Git, Vim. Free and open source (MIT).">
+<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>
+<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).>
 <meta property="og:title" content="EVIA Paradigma">
-<meta property="og:description" content="Draw a program as blocks. Get C or C++.">
+<meta property="og:description" content="Draw a program as blocks. Pick the language it becomes.">
 <meta property="og:image" content="img/hero-diagram.png">
 <link rel="icon" type="image/png" href="img/logo.png">
 <link rel="preload" href="fonts/FamiljenGrotesk.woff" as="font" type="font/woff" crossorigin>
@@ -59,12 +59,9 @@
 
 <section class="hero" id="top">
   <div class="hero-text">
-    <h1>Draw a program.<br>Get C or C++.</h1>
+    <h1>Draw a program.<br>Pick its language.</h1>
     <div class="hero-grid">
-      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets.
-        Wire blocks on a canvas, run them, then turn them into one readable source file in
-        C99, C11, C17 or C++98 to C++20, and build it with Clang or GCC. The same blocks program
-        Arduino and ESP32 boards.</p>
+      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.</p>
       <div class="side">
         <p class="actions">
           <a class="btn primary" href="#download">Download {{VERSION}}</a>
@@ -140,7 +137,18 @@
 
   <article class="feature">
     <div class="feature-text">
-      <h3>Eight languages, two ways to write them</h3>
+      <h3>One diagram, fourteen languages</h3>
+      <p>A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++
+        standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an
+        FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target
+        cannot keep a block, the error names that block instead of quietly changing what the program means.</p>
+    </div>
+    <img src="img/31-language-list.png" loading="lazy" width="1500" height="760" alt="The Language list in the toolbar, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Eight C and C++ standards, two ways to write them</h3>
       <p>Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else,
         loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump.
         <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain
@@ -150,7 +158,7 @@
     <img src="img/22-c11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Code window showing the program as C11, compiled with Clang and run.">
   </article>
 
-  <article class="feature flip">
+  <article class="feature">
     <div class="feature-text">
       <h3>See the code of any block</h3>
       <p>Right-click a block and choose View source code: the generated file opens with exactly the lines that
@@ -161,7 +169,7 @@
     <img src="img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.">
   </article>
 
-  <article class="feature">
+  <article class="feature flip">
     <div class="feature-text">
       <h3>Arduino and ESP32 boards</h3>
       <p>Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino
@@ -172,7 +180,7 @@
     <img src="img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.">
   </article>
 
-  <article class="feature flip">
+  <article class="feature">
     <div class="feature-text">
       <h3>Bare metal, down to the registers</h3>
       <p>AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core:
@@ -187,16 +195,15 @@
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
 
-  <article class="feature">
+  <article class="feature flip">
     <div class="feature-text">
-      <h3>Zoom with the mouse wheel</h3>
-      <p>Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires
-        stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram.</p>
+      <h3>Zoom and move the canvas with the mouse</h3>
+      <p>Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.</p>
     </div>
     <img src="img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="The diagram zoomed in to 161 percent.">
   </article>
 
-  <article class="feature flip">
+  <article class="feature">
     <div class="feature-text">
       <h3>Projects, Git and GitHub</h3>
       <p>File, New Project creates a folder with the program, a modules folder, a README and a Git repository.
@@ -297,6 +304,7 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
       what's new in <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v{{VERSION}}">{{VERSION}}</a></li>
     <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Example programs</a>, also under File, Open Example
       (board programs in <a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/boards">examples/boards</a>)</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>
     <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">Report a problem or ask for a feature</a></li>
   </ul>
   <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia
