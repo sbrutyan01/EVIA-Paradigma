@@ -602,7 +602,8 @@ The website is built by [`.github/workflows/pages.yml`](.github/workflows/pages.
 the tutorial example or the code generator change, and when a release is published:
 [`scripts/build-site.py`](scripts/build-site.py) copies [`site/`](site) and the screenshots, generates the tutorial
 program in all 32 language/flow/values combinations with the freshly built jar (so the code shown on the front page
-is always the real output), and pushes the result to the `gh-pages` branch.
+is always the real output), and pushes the result to the `gh-pages` branch. The site has a light and a dark theme: it follows
+the system setting, and the **Light / Dark** buttons in its header choose one and remember it.
 
 **If a release ends up without installers** (for example a download failed while it was being built):
 open **Actions → release → Run workflow**, enter the tag (e.g. `v0.2.1`) and run it. It builds that tag's

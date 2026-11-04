@@ -44,7 +44,7 @@
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
 }
 
-/* Dark theme: follows the system unless the toggle in the header chose one (data-theme on <html>). */
+/* Dark theme: follows the system unless the Light / Dark buttons in the header chose one (data-theme on <html>). */
 :root { color-scheme: light; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -132,22 +132,15 @@ img { max-width: 100%; height: auto; display: block; }
 }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
-.theme {
-  display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; cursor: pointer;
-  border: 1.5px solid var(--ink); border-radius: 50%; background: transparent; color: var(--ink);
+.themes { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.themes button {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font: 500 15px var(--body); color: var(--ink); background: transparent; border: 0; padding: 4px 13px;
 }
-/* the app's screenshots are light: a little dimmer on the dark page */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .bench-diagram img, :root:not([data-theme="light"]) .feature img,
-  :root:not([data-theme="light"]) .steps img { filter: brightness(0.86); }
-}
-:root[data-theme="dark"] .bench-diagram img, :root[data-theme="dark"] .feature img,
-:root[data-theme="dark"] .steps img { filter: brightness(0.86); }
-.theme:hover { background: var(--ink); color: var(--bg); }
-.theme svg { width: 18px; height: 18px; }
-.theme .moon { display: none; }
-.theme[aria-pressed="true"] .sun { display: none; }
-.theme[aria-pressed="true"] .moon { display: block; }
+.themes button + button { border-left: 1.5px solid var(--ink); }
+.themes button:hover { background: var(--code-bg); }
+.themes button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.themes svg { width: 16px; height: 16px; flex: none; }
 
 /* ---------------------------------------------------------------- hero: the canvas */
 .hero {

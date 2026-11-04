@@ -76,24 +76,26 @@
   show();
 })();
 
-// Light / dark switch: remembers the choice; without one the page follows the system setting.
+// Light / Dark buttons: remember the choice; until one is chosen the page follows the system setting.
 (function () {
-  var btn = document.querySelector(".theme");
-  if (!btn) return;
+  var buttons = document.querySelectorAll("[data-theme-choice]");
+  if (!buttons.length) return;
   var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  function isDark() {
+  function current() {
     var t = document.documentElement.dataset.theme;
-    return t ? t === "dark" : !!(media && media.matches);
+    return t || (media && media.matches ? "dark" : "light");
   }
   function sync() {
-    var dark = isDark();
-    btn.setAttribute("aria-pressed", dark ? "true" : "false");   // a toggle: "Dark theme" on or off
+    var t = current();
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.themeChoice === t ? "true" : "false"); });
   }
-  btn.addEventListener("click", function () {
-    var next = isDark() ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("evia-theme", next); } catch (e) {}
-    sync();
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.dataset.themeChoice;
+      document.documentElement.dataset.theme = t;
+      try { localStorage.setItem("evia-theme", t); } catch (e) {}
+      sync();
+    });
   });
   if (media && media.addEventListener) media.addEventListener("change", sync);
   sync();
