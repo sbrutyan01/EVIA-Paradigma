@@ -27,6 +27,14 @@
   --start: #7cc781;
   --class: #ffb38c;
   --board: #6ebe96;
+  --bg: #fff;
+  --text-soft: #2c3547;
+  --code-bg: #eef1f7;
+  --wire: #464d5e;
+  --shot-bg: #f8f9fc;      /* around screenshots (the app's canvas) */
+  --primary: var(--set-deep);
+  --primary-hover: #1f458f;
+  --primary-ink: #fff;
   --console: #1f232e;
   --console-ink: #dfe3ea;
   --console-dim: #8b93a7;
@@ -36,13 +44,58 @@
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
 }
 
+/* Dark theme: follows the system unless the toggle in the header chose one (data-theme on <html>). */
+:root { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  --paper: #131823;
+  --dots: #2a3243;
+  --ink: #e7ebf3;
+  --muted: #9ba5b9;
+  --rule: #283042;
+  --set-deep: #9bbcff;
+  --bg: #0c1018;
+  --text-soft: #c9d0dd;
+  --code-bg: #1d2431;
+  --wire: #9aa3b5;
+  --shot-bg: #1a202c;
+  --primary: #7da7ec;
+  --primary-hover: #a3c0f3;
+  --primary-ink: #0c1730;
+  --console: #161b25;
+  --console-ink: #dfe3ea;
+  --console-dim: #8b93a7;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #131823;
+  --dots: #2a3243;
+  --ink: #e7ebf3;
+  --muted: #9ba5b9;
+  --rule: #283042;
+  --set-deep: #9bbcff;
+  --bg: #0c1018;
+  --text-soft: #c9d0dd;
+  --code-bg: #1d2431;
+  --wire: #9aa3b5;
+  --shot-bg: #1a202c;
+  --primary: #7da7ec;
+  --primary-hover: #a3c0f3;
+  --primary-ink: #0c1730;
+  --console: #161b25;
+  --console-ink: #dfe3ea;
+  --console-dim: #8b93a7;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   margin: 0;
-  background: #fff;
+  background: var(--bg);
   color: var(--ink);
   font: 400 18px/1.6 var(--body);
   -webkit-font-smoothing: antialiased;
@@ -52,10 +105,10 @@ a { color: var(--set-deep); text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--set-deep); outline-offset: 2px; border-radius: 4px; }
 code, pre { font-variant-ligatures: none; }   /* "<=" must stay "<=" in code */
-code { font: 500 0.86em var(--mono); background: #eef1f7; padding: 0.1em 0.35em; border-radius: 4px; }
+code { font: 500 0.86em var(--mono); background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
 img { max-width: 100%; height: auto; display: block; }
 
-.skip { position: absolute; left: -999px; top: 8px; background: #fff; padding: 8px 12px; z-index: 10; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--bg); padding: 8px 12px; z-index: 10; }
 .skip:focus { left: 8px; }
 
 /* ---------------------------------------------------------------- header */
@@ -68,7 +121,33 @@ img { max-width: 100%; height: auto; display: block; }
 .top nav { display: flex; gap: 22px; flex-wrap: wrap; }
 .top nav a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 16px; }
 .top nav a:hover { color: var(--set-deep); }
+.top nav { align-items: center; }
 .top nav .gh { border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px 14px; }
+
+/* the logo in the matching color, and the light/dark switch */
+.logo-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-light { display: none; }
+  :root:not([data-theme="light"]) .logo-dark { display: block; }
+}
+:root[data-theme="dark"] .logo-light { display: none; }
+:root[data-theme="dark"] .logo-dark { display: block; }
+.theme {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; cursor: pointer;
+  border: 1.5px solid var(--ink); border-radius: 50%; background: transparent; color: var(--ink);
+}
+/* the app's screenshots are light: a little dimmer on the dark page */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bench-diagram img, :root:not([data-theme="light"]) .feature img,
+  :root:not([data-theme="light"]) .steps img { filter: brightness(0.86); }
+}
+:root[data-theme="dark"] .bench-diagram img, :root[data-theme="dark"] .feature img,
+:root[data-theme="dark"] .steps img { filter: brightness(0.86); }
+.theme:hover { background: var(--ink); color: var(--bg); }
+.theme svg { width: 18px; height: 18px; }
+.theme .moon { display: none; }
+.theme[aria-pressed="true"] .sun { display: none; }
+.theme[aria-pressed="true"] .moon { display: block; }
 
 /* ---------------------------------------------------------------- hero: the canvas */
 .hero {
@@ -90,15 +169,15 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: end; }
 .hero-grid .lede { margin: 0; }
 .hero-grid .side { padding-bottom: 4px; }
-.lede { font-size: 21px; max-width: 34em; color: #2c3547; margin: 0 0 28px; }
+.lede { font-size: 21px; max-width: 34em; color: var(--text-soft); margin: 0 0 28px; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
 .btn {
   display: inline-block; text-decoration: none; font-weight: 600; font-size: 17px;
-  padding: 12px 22px; border-radius: 999px; border: 2px solid var(--ink); color: var(--ink); background: #fff;
+  padding: 12px 22px; border-radius: 999px; border: 2px solid var(--ink); color: var(--ink); background: var(--bg);
 }
-.btn:hover { background: var(--ink); color: #fff; }
-.btn.primary { background: var(--set-deep); border-color: var(--set-deep); color: #fff; }
-.btn.primary:hover { background: #1f458f; border-color: #1f458f; }
+.btn:hover { background: var(--ink); color: var(--bg); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
 .fine { font-size: 15px; color: var(--muted); }
 
 /* the bench: diagram -> code */
@@ -107,18 +186,18 @@ img { max-width: 100%; height: auto; display: block; }
   display: grid; grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1.05fr); align-items: stretch;
 }
 .bench-diagram {   /* the screenshot's own canvas color continues around it */
-  background-color: #f8f9fc;
+  background-color: var(--shot-bg);
   border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px;
   display: flex; align-items: center;
 }
 .bench-diagram img { border-radius: 6px; }
 .bench-arrow { position: relative; }
 .bench-arrow::before {   /* a wire, like the ones between blocks */
-  content: ""; position: absolute; left: 6px; right: 12px; top: 50%; height: 2.5px; background: #464d5e;
+  content: ""; position: absolute; left: 6px; right: 12px; top: 50%; height: 2.5px; background: var(--wire);
 }
 .bench-arrow::after {
   content: ""; position: absolute; right: 2px; top: calc(50% - 6.5px);
-  border: 7.5px solid transparent; border-left: 11px solid #464d5e; border-right: 0;
+  border: 7.5px solid transparent; border-left: 11px solid var(--wire); border-right: 0;
 }
 .bench-code {
   background: var(--console); color: var(--console-ink); border-radius: var(--radius);
@@ -156,7 +235,7 @@ img { max-width: 100%; height: auto; display: block; }
 main > section:not(.hero) { max-width: var(--wrap); margin: 0 auto; padding: 88px 24px 0; }
 h2 { font-size: clamp(32px, 4.2vw, 48px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 18px; font-weight: 700; }
 h3 { font-size: 24px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01em; }
-.section-lede { max-width: 40em; color: #2c3547; margin: 0 0 32px; }
+.section-lede { max-width: 40em; color: var(--text-soft); margin: 0 0 32px; }
 
 /* features: text beside a real screenshot, alternating sides */
 .feature {
@@ -165,7 +244,7 @@ h3 { font-size: 24px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01e
 }
 .feature:first-of-type { border-top: 0; }
 .feature.flip .feature-text { order: 2; }
-.feature p { margin: 0; color: #2c3547; }
+.feature p { margin: 0; color: var(--text-soft); }
 .feature img { border: 1px solid var(--rule); border-radius: 8px; }
 .feature h3 { padding-left: 14px; border-left: 5px solid var(--set); }
 .feature:nth-of-type(2) h3 { border-color: var(--class); }
@@ -175,7 +254,7 @@ h3 { font-size: 24px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01e
 .feature:nth-of-type(7) h3 { border-color: var(--start); }
 .feature:nth-of-type(8) h3 { border-color: #c4a1e6; }
 .extras { list-style: none; margin: 8px 0 0; padding: 28px 0 0; border-top: 1px solid var(--rule);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; font-size: 16.5px; color: #2c3547; }
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; font-size: 16.5px; color: var(--text-soft); }
 .extras b { display: block; color: var(--ink); font-size: 18px; margin-bottom: 4px; }
 
 /* tutorial: a real sequence, so it is numbered */
@@ -222,7 +301,7 @@ td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-a
   .bench-arrow { height: 40px; }
   .bench-arrow::before { left: 50%; right: auto; top: 6px; bottom: 12px; width: 2.5px; height: auto; }
   .bench-arrow::after { left: calc(50% - 6.3px); right: auto; top: auto; bottom: 2px;
-    border: 7.5px solid transparent; border-top: 11px solid #464d5e; border-bottom: 0; }
+    border: 7.5px solid transparent; border-top: 11px solid var(--wire); border-bottom: 0; }
   .feature, .feature.flip { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .feature.flip .feature-text { order: 0; }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }

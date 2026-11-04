@@ -75,3 +75,26 @@
   if (outEl) outEl.textContent = (window.EVIA_OUTPUT || "").trim();
   show();
 })();
+
+// Light / dark switch: remembers the choice; without one the page follows the system setting.
+(function () {
+  var btn = document.querySelector(".theme");
+  if (!btn) return;
+  var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function isDark() {
+    var t = document.documentElement.dataset.theme;
+    return t ? t === "dark" : !!(media && media.matches);
+  }
+  function sync() {
+    var dark = isDark();
+    btn.setAttribute("aria-pressed", dark ? "true" : "false");   // a toggle: "Dark theme" on or off
+  }
+  btn.addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("evia-theme", next); } catch (e) {}
+    sync();
+  });
+  if (media && media.addEventListener) media.addEventListener("change", sync);
+  sync();
+})();

@@ -10,6 +10,11 @@
 <meta property="og:image" content="img/hero-diagram.png">
 <link rel="icon" type="image/png" href="img/logo.png">
 <link rel="preload" href="fonts/FamiljenGrotesk.woff" as="font" type="font/woff" crossorigin>
+<meta name="color-scheme" content="light dark">
+<script>
+  // the theme chosen with the header switch (otherwise the system's), before the page is drawn
+  try { var t = localStorage.getItem("evia-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +23,8 @@
 
 <header class="top">
   <a class="brand" href="#top" aria-label="EVIA Paradigma home">
-    <img src="img/logo.png" alt="" width="136" height="136">
+    <img class="logo-light" src="img/logo.png" alt="" width="136" height="136">
+    <img class="logo-dark" src="img/logo-dark.png" alt="" width="136" height="136">
     <span>EVIA Paradigma</span>
   </a>
   <nav aria-label="Main">
@@ -27,6 +33,14 @@
     <a href="#download">Download</a>
     <a href="#docs">Docs</a>
     <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+    <button class="theme" type="button" aria-pressed="false" aria-label="Dark theme" title="Dark theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+      </svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>
+      </svg>
+    </button>
   </nav>
 </header>
 
@@ -130,7 +144,7 @@
       <h3>See the code of any block</h3>
       <p>Right-click a block and choose View source code: the generated file opens with exactly the lines that
         block became highlighted. It works for a whole method or class too, in whichever language you chose.
-        Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw for you, no
+        Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no
         Visual Studio needed.</p>
     </div>
     <img src="img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.">
@@ -204,7 +218,7 @@
 <section class="download" id="download" aria-labelledby="download-h">
   <h2 id="download-h">Download EVIA Paradigma {{VERSION}}</h2>
   <p class="section-lede">Each installer brings its own Java runtime, so nothing else needs to be installed.
-    To compile the generated code you need Clang (the app sets it up on Windows).</p>
+    To compile the generated code you need Clang or GCC (the app sets either up on Windows).</p>
   <table class="dl">
     <thead><tr><th scope="col">System</th><th scope="col">File</th><th scope="col">Notes</th></tr></thead>
     <tbody>
@@ -266,7 +280,8 @@ clang -std=c11 -O2 -o program program.c -lm</code></pre>
 </main>
 
 <footer class="foot">
-  <img src="img/logo.png" alt="" width="28" height="28">
+  <img class="logo-light" src="img/logo.png" alt="" width="28" height="28">
+  <img class="logo-dark" src="img/logo-dark.png" alt="" width="28" height="28">
   <p>EVIA Paradigma {{VERSION}}. Copyright 2026 Sergey Brutyan. Released under the
     <a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/LICENSE">MIT license</a>.</p>
 </footer>
