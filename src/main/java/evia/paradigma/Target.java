@@ -30,7 +30,10 @@ record Target(Lang lang, Flow flow, Values values) {
         CPP20("C++20", "c++20", 20, "ISO C++ 2020"),
         ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR and ESP32 boards"),
         AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core"),
-        PIC32("PIC32 C", "gnu99", 0, "bare-metal xc32-gcc for PIC32MX, no Harmony");
+        PIC32("PIC32 C", "gnu99", 0, "bare-metal xc32-gcc for PIC32MX, no Harmony"),
+        SYSTEMVERILOG("SystemVerilog", "", 0, "FPGA: Artix-7 and GateMate"),
+        VERILOG("Verilog-2001", "", 0, "FPGA: Artix-7 and GateMate"),
+        VHDL("VHDL", "", 0, "FPGA: Artix-7 and GateMate");
 
         final String display, std, note;
         final int year;
@@ -43,12 +46,26 @@ record Target(Lang lang, Flow flow, Values values) {
         }
 
         boolean isC() {
-            return this != ARDUINO && !std.startsWith("c++") && !std.startsWith("gnu++");
+            return this != ARDUINO && !fpga() && !std.startsWith("c++") && !std.startsWith("gnu++");
         }
 
-        /** Runs on a microcontroller (Arduino sketch, bare-metal AVR or PIC32). */
+        /** Runs on a board: a microcontroller (Arduino sketch, bare-metal AVR or PIC32) or an FPGA. */
         boolean embedded() {
-            return this == ARDUINO || this == AVR || this == PIC32;
+            return this == ARDUINO || this == AVR || this == PIC32 || fpga();
+        }
+
+        /** A hardware description language for an FPGA. */
+        boolean fpga() {
+            return this == SYSTEMVERILOG || this == VERILOG || this == VHDL;
+        }
+
+        Rtl.Hdl hdl() {
+            return switch (this) {
+                case SYSTEMVERILOG -> Rtl.Hdl.SYSTEMVERILOG;
+                case VERILOG -> Rtl.Hdl.VERILOG;
+                case VHDL -> Rtl.Hdl.VHDL;
+                default -> throw new IllegalStateException(display + " is not an FPGA language");
+            };
         }
 
         /** The name used on the command line and in saved files. */
@@ -57,13 +74,16 @@ record Target(Lang lang, Flow flow, Values values) {
                 case ARDUINO -> "arduino";
                 case AVR -> "avr";
                 case PIC32 -> "pic32";
+                case SYSTEMVERILOG -> "sv";
+                case VERILOG -> "verilog";
+                case VHDL -> "vhdl";
                 default -> std;
             };
         }
 
         /** "(2011)", or what it runs on for microcontroller targets. */
         String tag() {
-            return embedded() ? (this == ARDUINO ? "AVR, ESP32" : this == PIC32 ? "PIC32MX" : "registers") : note.substring(note.length() - 4);
+            return fpga() ? "Artix-7, GateMate" : embedded() ? (this == ARDUINO ? "AVR, ESP32" : this == PIC32 ? "PIC32MX" : "registers") : note.substring(note.length() - 4);
         }
 
         /** 98, 11, 14, 17, 20 for C++ (0 for C); compares chronologically. */
@@ -72,7 +92,7 @@ record Target(Lang lang, Flow flow, Values values) {
         }
 
         String ext() {
-            return this == ARDUINO ? ".ino" : isC() ? ".c" : ".cpp";
+            return this == ARDUINO ? ".ino" : this == SYSTEMVERILOG ? ".sv" : this == VERILOG ? ".v" : this == VHDL ? ".vhd" : isC() ? ".c" : ".cpp";
         }
 
         @Override public String toString() {
@@ -112,7 +132,7 @@ record Target(Lang lang, Flow flow, Values values) {
     }
 
     String languageName() {
-        return lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
+        return lang.fpga() ? lang.display : lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
     }
 
     String ext() {

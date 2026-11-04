@@ -16,3 +16,5 @@ licenses are in `src/main/resources/evia/paradigma/fonts/`.
 ## Microchip device headers
 
 The PIC32 checks in CI (`scripts/check-pic32.sh`) read Microchip's device headers, fetched at test time from the Pinguino project. They are not part of this repository, the jar or the installers.
+
+The FPGA pin locations in `Fpga.java` are facts read from the boards' published constraint and design files (Digilent master XDC files, Olimex KiCad design, Cologne Chip examples). No code or file text from them is copied. The FPGA checks in CI (`scripts/check-fpga.sh`) use the OSS CAD Suite, downloaded at test time; it is not part of this repository, the jar or the installers.

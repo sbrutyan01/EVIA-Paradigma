@@ -191,6 +191,22 @@ MyProject/
 fade, analog meter, класс Led и примеры UART, SPI и I2C.</p>
 <p>Языки для компьютера (C, C++) не могут использовать блоки Board; Generate code укажет, какой блок нужно заменить.</p>
 
+<a name="fpga"></a>
+<h2>FPGA: Artix-7 и GateMate</h2>
+<p>Ещё три языка, <b>SystemVerilog</b>, <b>Verilog-2001</b> и <b>VHDL</b> (VHDL-2008), превращают ту же схему в аппаратуру. Каждый блок становится одним состоянием конечного автомата и занимает один такт. Переменные — знаковые 32-битные регистры.</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Плата</th><th>Микросхема</th><th>Частота</th><th>Доступные выводы</th></tr>
+<tr><td>Digilent Nexys A7-100T</td><td>Artix-7 XC7A100T</td><td>100 МГц</td><td>LED0-15, SW0-15, BTNC/U/L/R/D, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Arty A7-35 / A7-100</td><td>Artix-7</td><td>100 МГц</td><td>4 светодиода, 4 переключателя, 4 кнопки, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Basys 3</td><td>Artix-7 XC7A35T</td><td>100 МГц</td><td>16 светодиодов, 16 переключателей, 5 кнопок, JA-JC, USB-UART</td></tr>
+<tr><td>Olimex GateMateA1-EVB</td><td>GateMate CCGM1A1</td><td>10 МГц</td><td>LED0, BTN0, отладочный UART</td></tr>
+<tr><td>Cologne Chip GateMate A1 evaluation board</td><td>GateMate CCGM1A1</td><td>10 МГц</td><td>только LED0</td></tr>
+</table>
+<p>Выводы фиксируются при сборке, поэтому вывод должен быть числом или именем: <code>LED0</code>, <code>SW3</code>, <code>BTNC</code>, <code>BTN0</code>, <code>JA1</code>. Если на плате нет такого вывода, будет ошибка со списком имеющихся. Вывод нельзя одновременно читать и записывать.</p>
+<p><b>Целые числа.</b> Арифметика переполняется по модулю 32 бит; <code>/</code> и <code>%</code> округляют к нулю, деление на 0 даёт 0. <b>Запуск</b> использует числа double, поэтому <code>5 / 2</code> в Запуске равно 2.5, а на FPGA — 2. Пока не поддерживаются: классы, Input, Analog Read, SPI, I2C и текст в переменных (в Print текст работает).</p>
+<p><b>Сборка и загрузка.</b> Artix-7: Vivado в пакетном режиме или открытая цепочка (yosys, nextpnr-xilinx, Project X-Ray), выбирается в Настройках. GateMate: yosys, nextpnr-himbaechel, gmpack. Загрузка — Vivado или openFPGALoader. Ограничения выводов лежат в первом комментарии файла, а <code>-o</code> в командной строке также записывает файл <code>.xdc</code> или <code>.ccf</code>.</p>
+<p><b>Проверено:</b> моделирование в сравнении с Запуском и синтез открытыми средствами. <b>Не проверено:</b> Vivado, openXC7 и реальные платы.</p>
+<p>Примеры: Файл &gt; Открыть пример &gt; FPGA Boards.</p>
 <a name="keys"></a>
 <h2>Горячие клавиши</h2>
 <table border="1" cellpadding="4" cellspacing="0">

@@ -153,7 +153,19 @@ chip family are listed at the top of the generated file.
 *Please note:* the PIC32 code is checked against Microchip's real device headers, but it has not yet been built with
 XC32 or run on a chip. Treat the first build on your board as a test.
 
-## 10. Keep going
+## 10. Build hardware for an FPGA
+
+Choose **Language: SystemVerilog**, **Verilog-2001** or **VHDL**, then a board in the **Board** list: Digilent Nexys A7-100T, Arty A7-35 or A7-100, Basys 3 (Artix-7), or the Olimex GateMateA1-EVB and Cologne Chip GateMate A1 evaluation board. Open **File → Open Example → FPGA Boards → Blink** and press **Generate code** (F7).
+
+Every block becomes one state of a state machine and takes one clock cycle. Pins are fixed when the design is built, so write them as names: `LED0`, `SW3`, `BTNC`, `JA1`. The first comment of the file holds the pin constraints; with `-o` on the command line they are also written as `.xdc` (Vivado) or `.ccf` (GateMate).
+
+- **Build** and **Upload** use Vivado or the open-source flow for Artix-7 (choose in **Settings**), and yosys, nextpnr-himbaechel, gmpack and openFPGALoader for GateMate.
+- Numbers are whole 32-bit values, so `5 / 2` is 2 on the FPGA but 2.5 in **Run**.
+- Classes, Input, Analog Read, SPI, I2C and text in variables are not supported yet; the error names the block.
+
+*Please note:* the output was simulated and synthesised with open-source tools, but not run through Vivado or loaded onto a board.
+
+## 11. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).

@@ -40,13 +40,13 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr, pic32)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr, pic32, sv, verilog, vhdl)");
                                 t = t.withLang(l);
                             }
                             case "--board" -> {
                                 Board b = Board.parse(v);
                                 if (!b.key().equals(v.trim().toLowerCase().replace('_', '-')) && !b.fqbn.equals(v.trim())) {
-                                    throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b)");
+                                    throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b, nexys-a7-100t, arty-a7-35, basys3, olimex-gatemate, ccgm1a1-evb)");
                                 }
                                 Settings.useBoard(b);
                             }
@@ -63,7 +63,15 @@ final class Cli {
                             default -> throw new IllegalArgumentException("unknown option " + opt + " (see --help)");
                         }
                     }
-                    String code = CodeGenerator.generate(load(args[1]), t);
+                    Library program = load(args[1]);
+                    String code = CodeGenerator.generate(program, t);
+                    if (t.lang().fpga() && output != null) {
+                        // the pin constraints go next to the HDL file: x.sv -> x.xdc (Artix-7) or x.ccf (GateMate)
+                        Board b = Settings.board(t.lang());
+                        HdlGenerator.Result r = HdlGenerator.generate(program, t.lang().hdl(), b.fpga(), b.display, "evia_top");
+                        String base = output.contains(".") ? output.substring(0, output.lastIndexOf('.')) : output;
+                        Files.writeString(Path.of(base + Fpga.constraintExt(b.fpga())), r.constraints(), StandardCharsets.UTF_8);
+                    }
                     if (output != null) Files.writeString(Path.of(output), code, StandardCharsets.UTF_8);
                     else out.print(code);
                     return 0;
@@ -94,8 +102,12 @@ final class Cli {
                                                        arduino (a sketch for Arduino AVR and ESP32 boards),
                                                        avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4),
                                                        pic32 (bare-metal C for xc32-gcc: PIC32MX1xx/2xx, 3xx/4xx, 5xx/6xx/7xx)
+                                                       sv, verilog, vhdl (FPGA: SystemVerilog, Verilog-2001, VHDL; with -o FILE the
+                                                       pin constraints are written next to it as .xdc or .ccf)
                                   --board BOARD        the board or chip the code is for (pic32 needs one of the pic32mx... chips,
-                                                       e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b)
+                                                       e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b;
+                                                       FPGA: nexys-a7-100t (default), arty-a7-35, arty-a7-100, basys3,
+                                                       olimex-gatemate, ccgm1a1-evb)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
                                   --values MODE        safe (default): numbers and text, the interpreter's checks

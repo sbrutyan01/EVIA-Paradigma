@@ -48,6 +48,15 @@ final class MainFrame extends JFrame {
             {"boards/spi_loopback.evia", "SPI: transfer a byte"},
             {"boards/i2c_memory.evia", "I2C: write and read a device register"},
     };
+    /** Programs for FPGA boards (LED0, SW0, BTN0 ... are the pins of Digilent boards; Run simulates them like an Uno). */
+    static final String[][] FPGA_EXAMPLES = {
+            {"fpga/blink.evia", "Blink LED0"},
+            {"fpga/switches.evia", "Switches control LEDs"},
+            {"fpga/counter.evia", "Binary counter on the LEDs, printed over the serial port"},
+            {"fpga/button_counter.evia", "Count button presses"},
+            {"fpga/fade.evia", "Fade an LED with PWM"},
+            {"fpga/uart_hello.evia", "Serial port: hello, then echo"},
+    };
     static final String[] EXAMPLE_FILES = {"modules/counter.eviam"};
 
     private final Library lib = new Library();
@@ -317,7 +326,7 @@ final class MainFrame extends JFrame {
                 Target cur = Settings.target();
                 ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
                 for (Target.Lang l : Target.Lang.values()) {
-                    if (l == Target.Lang.CPP98 || l == Target.Lang.ARDUINO) m.addSeparator();
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.ARDUINO || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + l.note + ")", l == cur.lang());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
                     g1.add(i);
@@ -328,6 +337,7 @@ final class MainFrame extends JFrame {
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(f.display + " flow"
                             + (f == Target.Flow.STRUCTURED ? "   (if/else, loops, switch)" : "   (labels and jumps)"), f == cur.flow());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withFlow(f)));
+                    i.setEnabled(!cur.lang().fpga());
                     g2.add(i);
                     m.add(i);
                 }
@@ -367,8 +377,11 @@ final class MainFrame extends JFrame {
         for (String[] ex : EXAMPLES) m.add(item(ex[1], null, e -> openExample(ex[0])));
         JMenu boards = new JMenu("Arduino and ESP32 Boards");
         for (String[] ex : BOARD_EXAMPLES) boards.add(item(ex[1], null, e -> openExample(ex[0])));
+        JMenu fpga = new JMenu("FPGA Boards (Artix-7, GateMate)");
+        for (String[] ex : FPGA_EXAMPLES) fpga.add(item(ex[1], null, e -> openExample(ex[0])));
         m.addSeparator();
         m.add(boards);
+        m.add(fpga);
         return m;
     }
 
@@ -875,7 +888,12 @@ final class MainFrame extends JFrame {
             if (name.startsWith("boards/") && !Settings.target().embedded()) {
                 Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // its code is for a board
             }
-            status.setText(name.startsWith("boards/")
+            if (name.startsWith("fpga/") && !Settings.target().lang().fpga()) {
+                Settings.setTarget(Settings.target().withLang(Target.Lang.SYSTEMVERILOG));   // its code is for an FPGA
+            }
+            status.setText(name.startsWith("fpga/")
+                    ? "Example " + name + ". Run (F5) simulates it; Generate Code (F7) makes the hardware design for your FPGA board."
+                    : name.startsWith("boards/")
                     ? "Example " + name + ". Run (F5) simulates an Arduino Uno; Generate Code (F7) makes the sketch for your board."
                     : "Example " + name + ". Press Run (F5). Save it to keep your changes.");
         } catch (IOException e) {

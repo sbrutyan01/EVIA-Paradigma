@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.5.0-blue" alt="version 0.5.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.0-blue" alt="version 0.6.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -33,13 +33,15 @@ program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file bui
 with structured or goto control flow and safe or fast values. The same diagrams program **Arduino and ESP32 boards**:
 pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
 -S2, -S3, -C3, -C6, -H2), bare-metal **AVR C** or bare-metal **PIC32 C** (nine PIC32MX chips) that drive the chip's
-registers directly, with **UART, SPI and I2C** blocks, and **Run** simulates the board on your computer. Java Swing with the [FlatLaf](https://github.com/JFormDesigner/FlatLaf) IntelliJ look (light and dark); a Maven project for NetBeans and Java 25.
+registers directly, with **UART, SPI and I2C** blocks, and **Run** simulates the board on your computer. They also become
+hardware for **FPGAs**: **SystemVerilog**, **Verilog-2001** or **VHDL** for Xilinx **Artix-7** (Digilent Nexys A7, Arty A7, Basys 3)
+and Cologne Chip **GateMate** boards, built with Vivado or the open-source tools. Java Swing with the [FlatLaf](https://github.com/JFormDesigner/FlatLaf) IntelliJ look (light and dark); a Maven project for NetBeans and Java 25.
 
 <p align="center"><img src="docs/screenshots/08-run-with-class.png" alt="EVIA Paradigma main window: a loop that calls a Counter object, with the output below" width="900"></p>
 
 **Contents:** [Download](#download) · [Tutorial](#tutorial) · [Building from source](#building-from-source) ·
 [Blocks](#blocks) · [Classes](#classes-and-objects) · [Zoom](#zoom) · [Menus](#menus) · [Projects and GitHub](#projects-and-github) ·
-[Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Arduino and ESP32](#arduino-and-esp32-boards) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
+[Vim](#vim) · [C and C++](#c-and-c-code-generation) · [Arduino and ESP32](#arduino-and-esp32-boards) · [FPGA](#fpga-artix-7-and-gatemate) · [Command line](#command-line) · [CI](#continuous-integration) · [Screenshots](#screenshots)
 
 ## Download
 
@@ -48,11 +50,29 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.5.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.5.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
-| macOS, Intel | `EVIA-Paradigma-0.5.0-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.5.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.5.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.5.0.jar` | `java -jar evia-paradigma-0.5.0.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.6.0-macos-arm64.dmg` | Drag to Applications. Not notarized yet: the first time, right-click the app → **Open** |
+| macOS, Intel | `EVIA-Paradigma-0.6.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.0.jar` | `java -jar evia-paradigma-0.6.0.jar` |
+
+### Release 0.6.0
+
+[Release notes](docs/release-notes/v0.6.0.md): FPGAs. SystemVerilog, Verilog-2001 and VHDL for Artix-7 and GateMate boards.
+
+- **Three new languages** (`--lang sv|verilog|vhdl`): the flowchart becomes a state machine, one state per block, with
+  32-bit whole-number variables, exact `Delay`, `Millis`, PWM, a serial port for Print and the UART blocks, and a
+  shared divider. The three outputs describe the same circuit. See [FPGA](#fpga-artix-7-and-gatemate).
+- **Six boards:** Digilent Nexys A7-100T, Arty A7-35, Arty A7-100 and Basys 3 (Artix-7, 100 MHz), Olimex GateMateA1-EVB
+  and the Cologne Chip GateMate A1 evaluation board (10 MHz). Pins are named `LED0`, `SW0`, `BTNC`, `JA1` ... on every board
+  and in Run; the pin constraints (`.xdc` or `.ccf`) are written into the header of the generated file and next to it by `-o`.
+- **Build and Upload** for FPGAs: Artix-7 with Vivado or the open-source openXC7 tools (your choice in Settings), GateMate with
+  yosys, nextpnr-himbaechel and gmpack; openFPGALoader loads the bitstream.
+- **Six examples** under **File → Open Example → FPGA Boards**; a **tutorial step** on FPGAs (all three languages).
+- **Tested** by simulating nine test programs in all three languages (Icarus Verilog, GHDL) against the interpreter, 27 of 27
+  equal, and by synthesising every example with yosys; the GateMate designs are placed, routed and packed into bitstreams.
+  **Not tested:** Vivado, nextpnr-xilinx and any real board.
+- Integer arithmetic in the hardware differs from **Run** in one way (`5 / 2` is 2, not 2.5): see the FPGA section.
 
 ### Release 0.5.0
 
@@ -359,7 +379,11 @@ chip family are listed at the top of the generated file.
 *Please note:* the PIC32 code is checked against Microchip's real device headers, but it has not yet been built with
 XC32 or run on a chip. Treat the first build on your board as a test.
 
-### 10. Keep going
+### 10. Build hardware for an FPGA
+
+Choose SystemVerilog, Verilog-2001 or VHDL and an Artix-7 or GateMate board; see "FPGA: Artix-7 and GateMate" above.
+
+### 11. Keep going
 
 - Share classes between programs: **File → Export Classes as Module…**, then **File → Import Module…** in another program.
 - **File → Open Example** has ready-made programs, including `classes.evia` (fields, constructor, methods, a module).
@@ -655,6 +679,65 @@ simulator gets the same button and analog signal as EVIA Paradigma's simulated U
 interpreter, and the built-in LED must switch the same number of times on the right port bit (PB5, PB7 or PC7). The
 Arduino sketches are built with arduino-cli for all 12 boards, and the Uno and Mega 2560 builds run in simavr too.
 
+## FPGA: Artix-7 and GateMate
+
+Three more entries in the **Language** list, **SystemVerilog**, **Verilog-2001** and **VHDL** (VHDL-2008), turn the
+diagram into hardware. All three write the same circuit; choose by what your tools and course use. The **Board** list
+next to the language picks the board, and with it the chip, the clock and the pin constraints.
+
+| Board | Chip | Clock | Pins the design can use |
+|---|---|---|---|
+| Digilent **Nexys A7-100T** | Artix-7 XC7A100T | 100 MHz | `LED0`..`LED15`, `SW0`..`SW15`, `BTNC` `BTNU` `BTNL` `BTNR` `BTND`, Pmod `JA`..`JD`, USB-UART |
+| Digilent **Arty A7-35** and **A7-100** | Artix-7 XC7A35T, XC7A100T | 100 MHz | `LED0`..`LED3`, `SW0`..`SW3`, `BTN0`..`BTN3`, Pmod `JA`..`JD`, USB-UART |
+| Digilent **Basys 3** | Artix-7 XC7A35T | 100 MHz | `LED0`..`LED15`, `SW0`..`SW15`, `BTNC` `BTNU` `BTNL` `BTNR` `BTND`, Pmod `JA`..`JC`, USB-UART |
+| **Olimex GateMateA1-EVB** | GateMate CCGM1A1 | 10 MHz | `LED0`, `BTN0`, the RP2040's debug UART |
+| **Cologne Chip GateMate A1** evaluation board | GateMate CCGM1A1 | 10 MHz | `LED0` only, no serial port |
+
+Pins have the same names on every board and in **Run**: `LED_BUILTIN` is `LED0`, and a Pmod connector's signal pins
+are `JA1` `JA2` `JA3` `JA4` `JA7` `JA8` `JA9` `JA10` (pins 5 and 6 are ground and power). A pin the board does not have is an
+error that lists the pins it has. The two GateMate boards offer only the pins whose location is known from the manufacturers'
+files; more can be added in [`Fpga.java`](src/main/java/evia/paradigma/Fpga.java).
+
+**How a diagram becomes hardware**
+
+- Each block is one **state** of a state machine and takes one clock cycle. Variables are **signed 32-bit** registers
+  that start at 0. There is one clock input, one port per pin the program uses, and `uart_tx` / `uart_rx` if it uses the serial port.
+- **Pin Mode**, **Digital Write**, **Digital Read** and **Analog Write** drive and read the pins. Reading a switch or button
+  goes through two flip-flops. Analog Write is 8-bit PWM (about 1.5 kHz at 100 MHz). A pin must be a **constant** (a number
+  or a name like `LED0`) because it is wired when the design is built, and a pin can't be both read and written.
+- **Delay** counts exact clock cycles, **Millis** is a free-running millisecond counter.
+- **Print** and the **UART** blocks share one serial port, 115200 baud unless **UART Open** says otherwise. Numbers are printed
+  in decimal, text comes from a table, and every Print ends with a carriage return and line feed. The receiver keeps one byte,
+  so read it before the next one arrives.
+- `/` and `%` use one shared divider (about 35 clock cycles each).
+- Not supported yet (the error names the block): classes, **Input**, **Analog Read**, **SPI** and **I2C**, and text in variables
+  or comparisons (text works in Print).
+
+**Whole numbers.** `+ - *` wrap around at 32 bits; `/` and `%` truncate toward zero and give 0 for a zero divisor. **Run**
+uses double numbers, so `5 / 2` is 2.5 in Run and 2 in the hardware, and a fractional number in the diagram is an error when
+generating. The bundled examples are written so that Run and the hardware agree.
+
+**Building.** Generate the code (F7), then **Build** or **Upload** in the code window. The pin constraints are in the header
+comment of the generated file; on the command line `-o design.sv` also writes `design.xdc` (Artix-7) or `design.ccf` (GateMate).
+
+| Chip | Build | Upload |
+|---|---|---|
+| Artix-7, **Vivado** (default) | `vivado -mode batch -source build.tcl`: read, synthesise, place, route, `write_bitstream` | Vivado Hardware Manager |
+| Artix-7, **open source** (choose in Settings) | yosys `synth_xilinx`, nextpnr-xilinx, `fasm2frames`, `xc7frames2bit` ([openXC7](https://github.com/openXC7)) | `openFPGALoader --board …` |
+| GateMate | yosys `synth_gatemate`, nextpnr-himbaechel, `gmpack` | `openFPGALoader --board …` |
+
+Settings holds the Artix-7 flow and the path of each tool; VHDL through yosys needs its ghdl plugin. The upload is volatile: the
+board forgets the design at power off.
+
+**What is checked, and what is not.** [`scripts/check-fpga.sh`](scripts/check-fpga.sh) (CI job `fpga`) generates nine test
+programs in all three languages and simulates them, SystemVerilog and Verilog with Icarus Verilog and VHDL with GHDL, against
+the interpreter: pin changes, printed text, serial bytes, PWM duty and the divider (against a 32-bit reference) agree, 27 of 27. It
+also synthesises every example with yosys for Artix-7 and takes the GateMate designs through nextpnr-himbaechel to a
+bitstream. It does **not** run Vivado, nextpnr-xilinx or openFPGALoader, and nothing has been loaded into a board. The Artix-7
+pin locations come from Digilent's published master constraint files, the GateMate ones from Olimex's KiCad design and Cologne
+Chip's example, and the `.xdc` and `.ccf` follow their formats, but no vendor tool has read them. Whether the Olimex board's debug UART
+reaches the USB port depends on the RP2040 firmware. Treat the first build on your board as a test, and please report what you find.
+
 ## Command line
 
 ```
@@ -679,6 +762,8 @@ avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o blink.elf blink.c -lm && avr-
 java -jar evia-paradigma.jar --gen blink.evia --lang pic32 --board pic32mx795f512l -o blink.c
 xc32-gcc -mprocessor=32MX795F512L -std=gnu99 -Os -o blink.elf blink.c -lm && xc32-bin2hex blink.elf   # then pic32prog blink.hex
 java -jar evia-paradigma.jar --run blink.evia                # simulated Uno; pin changes go to stderr
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv   # also writes blink.xdc
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd   # also writes blink.ccf
 ```
 
 This lets you write a program in the editor and then generate and build it from Vim (`:!java -jar … --gen %`)
@@ -710,6 +795,9 @@ Every push runs [`.github/workflows/build.yml`](.github/workflows/build.yml), wh
    three PIC32MX families and both flows, compiled syntax-only with gcc (`-Wall -Wextra -Werror`) against Microchip's
    real device headers (fetched from the Pinguino project; they are not part of this repository). There is no XC32
    compiler or chip in CI.
+9. the **fpga** job runs [`scripts/check-fpga.sh`](scripts/check-fpga.sh) with the OSS CAD Suite: nine test programs in all
+   three HDLs simulated (Icarus Verilog, GHDL) and compared with the interpreter, every example synthesised with yosys for
+   Artix-7, and the GateMate designs placed, routed and packed into a bitstream. There is no Vivado or board in CI.
 
 The website is built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) whenever `site/`, the screenshots,
 the tutorial example or the code generator change, and when a release is published:
@@ -748,7 +836,9 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `ExternalEditor.java` / `CodeEditDialog.java` | Real Vim integration; Vim-enabled block code dialog |
 | `Settings.java` | Vim, editor and compiler settings; Clang version check |
 | `AppIcon.java` | EVIA logo icons and About dialog |
-| `Board.java` / `BoardSim.java` | The 21 boards (arduino-cli names, AVR chips, PIC32MX chips); the simulated board used by Run |
+| `Board.java` / `BoardSim.java` | The 27 boards (arduino-cli names, AVR chips, PIC32MX chips, FPGA boards); the simulated board used by Run |
+| `HdlGenerator.java` / `Rtl.java` / `Fpga.java` | FPGA: flowchart to state machine, written as SystemVerilog, Verilog-2001 or VHDL; the boards' pins and clocks, constraint files and build commands |
+| `scripts/fpga/` | FPGA checks: test programs, simulation against the interpreter (Icarus Verilog, GHDL), synthesis (yosys, nextpnr) |
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds the Russian and Armenian texts |

@@ -38,7 +38,37 @@ final class BoardSim {
             default:
                 if (name.matches("A(\\d|1[0-5])")) return 14.0 + Integer.parseInt(name.substring(1));
                 if (name.matches("R[A-G](\\d|1[0-5])")) return 16.0 * (name.charAt(1) - 'A') + Integer.parseInt(name.substring(2));
-                return null;
+                return fpgaPin(name);
+        }
+    }
+
+    /**
+     * The pin names of the FPGA boards, numbered the same on every board: LED0..LED15 = 0..15, SW0..SW15 = 16..31,
+     * BTNC BTNU BTNL BTNR BTND = 32..36 (BTN0..BTN3 = 32..35), Pmod JA JB JC JD = 40.. in steps of 8
+     * (pins 1 2 3 4 7 8 9 10 of the connector).
+     */
+    static Double fpgaPin(String name) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(LED|SW|BTN|J[A-D])(\\d+)").matcher(name);
+        if (m.matches()) {
+            int n = Integer.parseInt(m.group(2));
+            switch (m.group(1)) {
+                case "LED": return n <= 15 ? (double) n : null;
+                case "SW": return n <= 15 ? 16.0 + n : null;
+                case "BTN": return n <= 3 ? 32.0 + n : null;
+                default: {
+                    int slot = m.group(1).charAt(1) - 'A';
+                    int i = java.util.Arrays.binarySearch(new int[] {1, 2, 3, 4, 7, 8, 9, 10}, n);
+                    return i < 0 ? null : 40.0 + 8 * slot + i;
+                }
+            }
+        }
+        switch (name) {
+            case "BTNC": return 32.0;
+            case "BTNU": return 33.0;
+            case "BTNL": return 34.0;
+            case "BTNR": return 35.0;
+            case "BTND": return 36.0;
+            default: return null;
         }
     }
 

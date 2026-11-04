@@ -187,6 +187,68 @@ public class AppChecks {
                     && !pic.contains("i2cRead") && !pic.contains("analogRead"), "PIC32 C: only the pieces it uses");
         }
 
+        // ---------- FPGA: SystemVerilog, Verilog, VHDL for Artix-7 and GateMate
+        check(Target.parse("sv").lang() == Target.Lang.SYSTEMVERILOG && Target.parse("verilog/goto").values() == Target.Values.FAST
+                && Target.parse(Target.parse("vhdl").key()).lang() == Target.Lang.VHDL
+                && Target.Lang.VHDL.fpga() && Target.Lang.VHDL.embedded() && !Target.Lang.VHDL.isC() && Target.Lang.SYSTEMVERILOG.ext().equals(".sv"),
+                "FPGA languages (always fast values)");
+        check(java.util.Arrays.stream(Board.values()).filter(Board::isFpga).count() == 6 && !Board.UNO.supports(Target.Lang.VHDL)
+                && Board.NEXYS_A7_100T.supports(Target.Lang.SYSTEMVERILOG) && !Board.NEXYS_A7_100T.supports(Target.Lang.ARDUINO)
+                && Board.forLang(Board.UNO, Target.Lang.VERILOG) == Board.NEXYS_A7_100T && Board.parse("olimex-gatemate").isFpga(),
+                "FPGA boards");
+        for (Board b : Board.values()) {
+            if (!b.isFpga()) continue;
+            Fpga.Spec spec = b.fpga();
+            java.util.Set<Integer> seen = new java.util.HashSet<>();
+            java.util.Set<String> locs = new java.util.HashSet<>(), ports = new java.util.HashSet<>();
+            boolean unique = spec.pin(0) != null;
+            for (Fpga.Pin p : spec.pins()) unique &= seen.add(p.index()) && locs.add(p.loc()) && ports.add(p.port()) && !p.loc().equals(spec.clkLoc());
+            check(unique, b.display + ": pins are unique, LED0 exists, none shares the clock pin");
+        }
+        {
+            Library fpga = newLib();
+            ProgramIO.load(fpga, Path.of("examples/fpga/uart_hello.evia"));
+            Settings.useBoard(Board.NEXYS_A7_100T);
+            String sv = CodeGenerator.generate(fpga, Target.parse("sv")), v = CodeGenerator.generate(fpga, Target.parse("verilog")),
+                    vhd = CodeGenerator.generate(fpga, Target.parse("vhdl"));
+            check(sv.contains("module evia_top") && sv.contains("always_ff") && v.contains("module evia_top") && !v.contains("always_ff")
+                    && vhd.contains("entity evia_top") && vhd.contains("rising_edge(clk)"), "the three HDLs are written");
+            check(sv.contains("PACKAGE_PIN E3") && sv.contains("PACKAGE_PIN C4") && sv.contains("PACKAGE_PIN D4"), "Nexys A7 constraints (clock, serial port) are in the header");
+            check(Fpga.constraintsFromHeader(sv, Rtl.Hdl.SYSTEMVERILOG).contains("create_clock")
+                    && Fpga.constraintsFromHeader(vhd, Rtl.Hdl.VHDL).contains("[get_ports { uart_tx }]"), "constraints are read back from the header comment");
+            Settings.useBoard(Board.OLIMEX_GATEMATE);
+            String gm = CodeGenerator.generate(fpga, Target.parse("sv"));
+            check(gm.contains("Pin_in \"clk\" Loc = \"IO_SB_A8\"") && gm.contains("Pin_out \"uart_tx\"") && !gm.contains("PACKAGE_PIN"), "GateMate constraints (CCF)");
+            Settings.useBoard(Board.CCGM1A1_EVB);
+            try {
+                CodeGenerator.generate(fpga, Target.parse("sv"));
+                check(false, "a board without a serial port refuses Print and UART");
+            } catch (FlowException e) {
+                check(e.getMessage().contains("no serial port"), "a board without a serial port refuses Print and UART: " + e.getMessage());
+            }
+            Settings.useBoard(Board.NEXYS_A7_100T);
+            for (String[] bad : new String[][] {{"SET x = 1.5", "whole numbers"}, {"SET x = \"hello\"", "text"}, {"INPUT n", "Input"},
+                    {"DIGITAL_WRITE 99, HIGH", "does not exist"}, {"DIGITAL_WRITE SW0, HIGH", "input"}, {"DIGITAL_READ x = LED0", "output"},
+                    {"ANALOG_READ x = A0", "Analog Read"}, {"SPI_OPEN 1000", "SPI Open"}, {"DIGITAL_WRITE n, HIGH", "constant"}}) {
+                Library one = newLib();
+                String[] parts = bad[0].split(" ", 2);
+                Block st = one.main.addBlock(BlockType.START, 0, 0), b1 = one.main.addBlock(BlockType.valueOf(parts[0]), 0, 90);
+                b1.setCode(parts[1]);
+                one.main.connect(st, 0, b1);
+                try {
+                    CodeGenerator.generate(one, Target.parse("sv"));
+                    check(false, "FPGA refuses: " + bad[0]);
+                } catch (FlowException e) {
+                    check(e.getMessage().toLowerCase().contains(bad[1].toLowerCase()), "FPGA refuses '" + bad[0] + "' (" + e.getMessage() + ")");
+                }
+            }
+            Settings.useBoard(null);
+            check(Fpga.buildSteps(Board.NEXYS_A7_100T.fpga(), Rtl.Hdl.VHDL, Settings.fpgaTools(), "t.vhd", "t.xdc").get(0).command().get(0).equals("vivado")
+                    && Fpga.buildSteps(Board.OLIMEX_GATEMATE.fpga(), Rtl.Hdl.SYSTEMVERILOG, Settings.fpgaTools(), "t.sv", "t.ccf").size() == 3
+                    && Fpga.uploadStep(Board.OLIMEX_GATEMATE.fpga(), Settings.fpgaTools()).command().contains("olimex_gatemateevb"),
+                    "FPGA build and upload commands");
+        }
+
         // ---------- compiler family (Clang or GCC)
         check(Settings.family("clang++ -O2") == ToolchainInstaller.Kind.CLANG && Settings.family("\"C:/w/mingw64/bin/g++.exe\" -O2") == ToolchainInstaller.Kind.GCC,
                 "compiler family from the command");

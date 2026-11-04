@@ -105,7 +105,7 @@ final class Settings {
     /** The board that Build and Upload use for Arduino and AVR code. */
     static Board board() {
         Board b = Board.parse(PREFS.get("board", "uno"));
-        return b.isPic32() ? Board.UNO : b;
+        return b.isPic32() || b.isFpga() ? Board.UNO : b;
     }
 
     /** The board for a language: the Arduino/AVR choice, or the PIC32 chip for PIC32 C. */
@@ -114,6 +114,11 @@ final class Settings {
             if (override != null && override.isPic32()) return override;
             Board b = Board.parse(PREFS.get("board.pic32", "pic32mx250f128b"));
             return b.isPic32() ? b : Board.PIC32MX250F128B;
+        }
+        if (lang.fpga()) {
+            if (override != null && override.isFpga()) return override;
+            Board b = Board.parse(PREFS.get("board.fpga", "nexys-a7-100t"));
+            return b.isFpga() ? b : Board.NEXYS_A7_100T;
         }
         if (override != null && override.supports(lang)) return override;
         return Board.forLang(board(), lang);
@@ -127,7 +132,10 @@ final class Settings {
     }
 
     static void setBoard(Board b) {
-        if (b.isPic32()) {
+        if (b.isFpga()) {
+            if (b == board(Target.Lang.VHDL)) return;
+            PREFS.put("board.fpga", b.key());
+        } else if (b.isPic32()) {
             if (b == board(Target.Lang.PIC32)) return;
             PREFS.put("board.pic32", b.key());
         } else {
@@ -153,6 +161,20 @@ final class Settings {
     /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
     static String pic32Upload() {
         return PREFS.get("pic32Upload", "pic32prog {hex}");
+    }
+
+    // ---- FPGA tools (Vivado, or the open-source flows)
+
+    static boolean artixOpenSource() {
+        return PREFS.get("artixFlow", "vivado").equals("open");
+    }
+
+    static Fpga.Tools fpgaTools() {
+        return new Fpga.Tools(artixOpenSource(), PREFS.get("vivado", "vivado"), PREFS.get("yosys", "yosys"),
+                PREFS.get("nextpnrGateMate", "nextpnr-himbaechel"), PREFS.get("gmpack", "gmpack"),
+                PREFS.get("openFpgaLoader", "openFPGALoader"), PREFS.get("nextpnrXilinx", "nextpnr-xilinx"),
+                PREFS.get("xilinxChipdb", "chipdb"), PREFS.get("prjxrayDb", "prjxray-db"),
+                PREFS.get("fasm2frames", "fasm2frames"), PREFS.get("frames2bit", "xc7frames2bit"));
     }
 
     static String avrdude() {
@@ -380,7 +402,7 @@ final class Settings {
                 checkCompiler(compiler.getText(), compilerStatus);
             }
         });
-        JComboBox<Board> boardBox = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(b -> !b.isPic32()).toArray(Board[]::new));
+        JComboBox<Board> boardBox = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(b -> !b.isPic32() && !b.isFpga()).toArray(Board[]::new));
         boardBox.setSelectedItem(board());
         JTextField port = new JTextField(serialPort(), 14);
         port.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
@@ -391,6 +413,14 @@ final class Settings {
         JTextField pic32Up = new JTextField(pic32Upload(), 30);
         JButton check = new JButton("Check");
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
+        JComboBox<String> artixFlow = new JComboBox<>(new String[] {"Vivado", "Open source (openXC7)"});
+        artixFlow.setSelectedIndex(artixOpenSource() ? 1 : 0);
+        Fpga.Tools ft = fpgaTools();
+        JTextField vivado = new JTextField(ft.vivado(), 30), yosys = new JTextField(ft.yosys(), 30),
+                gatemate = new JTextField(ft.nextpnrGateMate(), 30), gmpack = new JTextField(ft.gmpack(), 30),
+                loader = new JTextField(ft.loader(), 30), nextpnrXilinx = new JTextField(ft.nextpnrXilinx(), 30),
+                chipdb = new JTextField(ft.chipdbDir(), 30), prjxray = new JTextField(ft.prjxrayDb(), 30),
+                fasm2frames = new JTextField(ft.fasm2frames(), 30), frames2bit = new JTextField(ft.frames2bit(), 30);
 
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
@@ -457,9 +487,33 @@ final class Settings {
         g.gridy++;
         p.add(small("<html>Arduino sketches build with arduino-cli (cores: arduino:avr, esp32:esp32); bare-metal AVR C with avr-gcc,<br>"
                 + "uploaded with avrdude. Leonardo / Micro: press reset just before uploading bare-metal code.</html>"), g);
+        g.gridy++; g.gridx = 0; g.gridwidth = 3;
+        p.add(new JSeparator(), withFill(g));
+        g.fill = GridBagConstraints.NONE;
+        g.gridwidth = 1;
+        String[][] fpgaRows = {{"Artix-7 flow:", null}, {"Vivado:", "v"}, {"yosys:", "y"}, {"nextpnr-xilinx:", "nx"}, {"Chip database folder:", "cd"},
+                {"prjxray-db folder:", "px"}, {"fasm2frames:", "f2f"}, {"xc7frames2bit:", "f2b"}, {"nextpnr-himbaechel:", "gm"}, {"gmpack:", "gp"},
+                {"openFPGALoader:", "ol"}};
+        for (String[] row : fpgaRows) {
+            g.gridy++; g.gridx = 0;
+            p.add(new JLabel(row[0]), g);
+            g.gridx = 1;
+            p.add(switch (row[1] == null ? "" : row[1]) {
+                case "v" -> vivado; case "y" -> yosys; case "nx" -> nextpnrXilinx; case "cd" -> chipdb; case "px" -> prjxray;
+                case "f2f" -> fasm2frames; case "f2b" -> frames2bit; case "gm" -> gatemate; case "gp" -> gmpack; case "ol" -> loader;
+                default -> artixFlow;
+            }, g);
+        }
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small("<html>FPGA: Artix-7 builds with Vivado (batch mode) or with the open-source openXC7 tools (yosys, nextpnr-xilinx, Project X-Ray);<br>"
+                + "the GateMate always uses yosys, nextpnr-himbaechel and gmpack. openFPGALoader loads the bitstream. VHDL needs yosys with its ghdl plugin.</html>"), g);
         checkCompiler(compiler.getText(), compilerStatus);
 
-        int r = JOptionPane.showConfirmDialog(parent, p, "Settings - EVIA Paradigma",
+        JScrollPane scroll = new JScrollPane(p);
+        scroll.setBorder(null);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.setPreferredSize(new Dimension(Math.min(p.getPreferredSize().width + 24, 900), Math.min(p.getPreferredSize().height + 8, 640)));
+        int r = JOptionPane.showConfirmDialog(parent, scroll, "Settings - EVIA Paradigma",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (r != JOptionPane.OK_OPTION) return;
         PREFS.put("editor", editor.getText().trim());
@@ -472,8 +526,23 @@ final class Settings {
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
         PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
         PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
+        PREFS.put("artixFlow", artixFlow.getSelectedIndex() == 1 ? "open" : "vivado");
+        putTool("vivado", vivado, "vivado");
+        putTool("yosys", yosys, "yosys");
+        putTool("nextpnrXilinx", nextpnrXilinx, "nextpnr-xilinx");
+        putTool("xilinxChipdb", chipdb, "chipdb");
+        putTool("prjxrayDb", prjxray, "prjxray-db");
+        putTool("fasm2frames", fasm2frames, "fasm2frames");
+        putTool("frames2bit", frames2bit, "xc7frames2bit");
+        putTool("nextpnrGateMate", gatemate, "nextpnr-himbaechel");
+        putTool("gmpack", gmpack, "gmpack");
+        putTool("openFpgaLoader", loader, "openFPGALoader");
         PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
+    }
+
+    private static void putTool(String key, JTextField field, String fallback) {
+        PREFS.put(key, field.getText().trim().isEmpty() ? fallback : field.getText().trim());
     }
 
     static void checkCompiler(String command, JLabel label) {

@@ -186,6 +186,22 @@ a button on every input pin is pressed during the second half of each 2 seconds,
 <b>File &gt; Open Example &gt; Arduino and ESP32 Boards</b> has blink, button, fade, an analog meter, a Led class, and UART, SPI and I2C examples.</p>
 <p>Desktop languages (C, C++) can't use the Board blocks; Generate code says which block to change.</p>
 
+<a name="fpga"></a>
+<h2>FPGA: Artix-7 and GateMate</h2>
+<p>Three more languages, <b>SystemVerilog</b>, <b>Verilog-2001</b> and <b>VHDL</b> (VHDL-2008), turn the same diagram into hardware. Every block becomes one state of a state machine and takes one clock cycle. Variables are signed 32-bit registers.</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Board</th><th>Chip</th><th>Clock</th><th>Pins you can use</th></tr>
+<tr><td>Digilent Nexys A7-100T</td><td>Artix-7 XC7A100T</td><td>100 MHz</td><td>LED0-15, SW0-15, BTNC/U/L/R/D, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Arty A7-35 / A7-100</td><td>Artix-7</td><td>100 MHz</td><td>4 LEDs, 4 switches, 4 buttons, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Basys 3</td><td>Artix-7 XC7A35T</td><td>100 MHz</td><td>16 LEDs, 16 switches, 5 buttons, JA-JC, USB-UART</td></tr>
+<tr><td>Olimex GateMateA1-EVB</td><td>GateMate CCGM1A1</td><td>10 MHz</td><td>LED0, BTN0, debug UART</td></tr>
+<tr><td>Cologne Chip GateMate A1 evaluation board</td><td>GateMate CCGM1A1</td><td>10 MHz</td><td>LED0 only</td></tr>
+</table>
+<p>Pins are fixed when the design is built, so a pin must be a number or a name: <code>LED0</code>, <code>SW3</code>, <code>BTNC</code>, <code>BTN0</code>, <code>JA1</code>. A pin the board does not have is an error that lists the pins it has. A pin cannot be both read and written.</p>
+<p><b>Whole numbers.</b> Arithmetic wraps at 32 bits; <code>/</code> and <code>%</code> truncate toward zero, and dividing by 0 gives 0. <b>Run</b> uses double numbers, so <code>5 / 2</code> is 2.5 in Run and 2 on the FPGA. Not supported yet: classes, Input, Analog Read, SPI, I2C and text in variables (text works in Print).</p>
+<p><b>Build and Upload.</b> Artix-7: Vivado in batch mode, or the open-source flow (yosys, nextpnr-xilinx, Project X-Ray), chosen in Settings. GateMate: yosys, nextpnr-himbaechel, gmpack. Upload uses Vivado or openFPGALoader. The pin constraints are in the first comment of the file, and <code>-o</code> on the command line also writes a <code>.xdc</code> or <code>.ccf</code> file.</p>
+<p><b>Tested:</b> simulation against Run, and synthesis with open-source tools. <b>Not tested:</b> Vivado, openXC7 and real boards.</p>
+<p>Examples are in File &gt; Open Example &gt; FPGA Boards.</p>
 <a name="keys"></a>
 <h2>Keyboard shortcuts</h2>
 <table border="1" cellpadding="4" cellspacing="0">

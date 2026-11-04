@@ -390,6 +390,10 @@ final class CodeViewer extends JFrame {
 
     /** Shows whether arduino-cli (Arduino) or avr-gcc (AVR C) is installed. */
     private void checkBoardTools() {
+        if (target.lang().fpga()) {
+            checkFpgaTools();
+            return;
+        }
         boolean arduino = target.lang() == Target.Lang.ARDUINO;
         boolean pic = target.lang() == Target.Lang.PIC32;
         String tool = arduino ? Settings.arduinoCli() : pic ? Settings.xc32() : Settings.avrGcc();
@@ -423,12 +427,117 @@ final class CodeViewer extends JFrame {
         }, "evia-board-tools").start();
     }
 
+    /** Shows whether Vivado (Artix-7 with Vivado) or yosys (the open-source flows) is installed. */
+    private void checkFpgaTools() {
+        Board board = Settings.board(target.lang());
+        Fpga.Tools tools = Settings.fpgaTools();
+        boolean vivado = board.fpga().family() == Fpga.Family.ARTIX7 && !tools.openSourceArtix();
+        String tool = vivado ? tools.vivado() : tools.yosys();
+        compilerLabel.setText("Checking " + tool + "...");
+        compilerLabel.setForeground(Theme.muted());
+        Object token = Settings.newCheck(compilerLabel);
+        new Thread(() -> {
+            String version = null;
+            try {
+                Process p = new ProcessBuilder(tool, vivado ? "-version" : "-V").redirectErrorStream(true).start();
+                p.getOutputStream().close();
+                String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                p.waitFor();
+                Matcher m = Pattern.compile("(\\d+\\.\\d+(?:\\.\\d+)?)").matcher(out);
+                version = m.find() ? m.group(1) : "";
+            } catch (IOException | InterruptedException e) {
+                // not installed
+            }
+            String v = version;
+            SwingUtilities.invokeLater(() -> {
+                if (!Settings.isLatestCheck(compilerLabel, token)) return;
+                String name = vivado ? "Vivado" : "yosys";
+                if (v == null) {
+                    compilerLabel.setText(name + " not found - see Build for how to install it");
+                    compilerLabel.setForeground(Theme.error());
+                } else {
+                    compilerLabel.setText(name + " " + v + "  -  " + board.display);
+                    compilerLabel.setForeground(Theme.ok());
+                }
+            });
+        }, "evia-fpga-tools").start();
+    }
+
+    /**
+     * Builds the design for the chosen FPGA board and, if asked, loads it: Vivado, or yosys + nextpnr, then
+     * openFPGALoader. The pin constraints are read back from the header comment of the generated code.
+     */
+    private void buildFpga(boolean upload) {
+        String code = codePane.getText();
+        Target tg = target;
+        Board board = Settings.board(tg.lang());
+        Fpga.Spec spec = board.fpga();
+        Fpga.Tools tools = Settings.fpgaTools();
+        Rtl.Hdl hdl = tg.lang().hdl();
+        String constraints = Fpga.constraintsFromHeader(code, hdl);
+        output.setText("");
+        if (constraints.isEmpty()) {
+            append(">> the pin constraints in the header comment are missing; generate the code again\n");
+            return;
+        }
+        runBtn.setEnabled(false);
+        uploadBtn.setEnabled(false);
+        stopBtn.setEnabled(true);
+        Thread t = new Thread(() -> {
+            try {
+                Path dir = Files.createTempDirectory("evia-fpga");
+                String hdlFile = "evia_top" + hdl.ext, constraintFile = "evia_top" + Fpga.constraintExt(spec);
+                Files.writeString(dir.resolve(hdlFile), code, StandardCharsets.UTF_8);
+                Files.writeString(dir.resolve(constraintFile), constraints, StandardCharsets.UTF_8);
+                List<Fpga.Step> steps = new ArrayList<>(Fpga.buildSteps(spec, hdl, tools, hdlFile, constraintFile));
+                if (upload) steps.add(Fpga.uploadStep(spec, tools));
+                for (Fpga.Step step : steps) {
+                    if (step.writeFile() != null) Files.writeString(dir.resolve(step.writeFile()), step.writeContent(), StandardCharsets.UTF_8);
+                    append("$ " + String.join(" ", step.command()) + "\n");
+                    int rc = runProcess(new ProcessBuilder(step.command()).directory(dir.toFile()), false);
+                    if (rc != 0) {
+                        append(">> failed (exit code " + rc + ")\n");
+                        return;
+                    }
+                }
+                append(upload ? ">> loaded into the " + board.display + " (it is gone at power off; the bitstream is " + dir.resolve("top.bit") + ")\n"
+                        : ">> built " + dir.resolve("top.bit") + " for the " + board.display + ". Upload loads it into the board.\n");
+            } catch (IOException e) {
+                append(">> " + e.getMessage() + "\n" + FPGA_HELP);
+            } catch (InterruptedException e) {
+                append(">> stopped\n");
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    process = null;
+                    runBtn.setEnabled(true);
+                    uploadBtn.setEnabled(true);
+                    stopBtn.setEnabled(false);
+                });
+            }
+        }, "evia-fpga-build");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private static final String FPGA_HELP = """
+            >> FPGA designs build with
+                 Artix-7:   Vivado (batch mode, https://www.xilinx.com/support/download.html), or the open-source openXC7 tools
+                            (yosys, nextpnr-xilinx, Project X-Ray: https://github.com/openXC7)
+                 GateMate:  yosys, nextpnr-himbaechel and gmpack from Cologne Chip (https://colognechip.com) or the OSS CAD Suite
+                 loading:   openFPGALoader (https://github.com/trabucayre/openFPGALoader); VHDL needs yosys with the ghdl plugin
+               Set their paths in Settings if they aren't on PATH.
+            """;
+
     /**
      * Builds the code for the chosen board (arduino-cli for sketches, avr-gcc + avr-objcopy for bare-metal C)
      * and, if asked, uploads it (arduino-cli upload, or avrdude).
      */
     private void buildForBoard(boolean upload) {
         if (process != null) return;
+        if (target.lang().fpga()) {
+            buildFpga(upload);
+            return;
+        }
         String code = codePane.getText();
         Target tg = target;
         Board board = Settings.board(tg.lang());

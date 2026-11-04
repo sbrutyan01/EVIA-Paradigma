@@ -187,6 +187,22 @@ esp32:esp32 միջուկներով։</td></tr>
 <b>File &gt; Open Example &gt; Arduino and ESP32 Boards</b>-ում կան օրինակներ՝ blink, button, fade, analog meter, Led դաս և UART, SPI ու I2C օրինակներ։</p>
 <p>Համակարգչի լեզուները (C, C++) չեն կարող օգտագործել Board բլոկները. Generate code-ը կասի, թե որ բլոկը փոխել։</p>
 
+<a name="fpga"></a>
+<h2>FPGA՝ Artix-7 և GateMate</h2>
+<p>Եվս երեք լեզու՝ <b>SystemVerilog</b>, <b>Verilog-2001</b> և <b>VHDL</b> (VHDL-2008), նույն սխեման դարձնում են սարքակազմ։ Յուրաքանչյուր բլոկ վերջավոր ավտոմատի մեկ վիճակ է և տևում է մեկ տակտ։ Փոփոխականները նշանով 32-բիթանոց ռեգիստրներ են։</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Տախտակ</th><th>Չիպ</th><th>Հաճախություն</th><th>Հասանելի կոնտակտներ</th></tr>
+<tr><td>Digilent Nexys A7-100T</td><td>Artix-7 XC7A100T</td><td>100 ՄՀց</td><td>LED0-15, SW0-15, BTNC/U/L/R/D, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Arty A7-35 / A7-100</td><td>Artix-7</td><td>100 ՄՀց</td><td>4 LED, 4 անջատիչ, 4 կոճակ, JA-JD, USB-UART</td></tr>
+<tr><td>Digilent Basys 3</td><td>Artix-7 XC7A35T</td><td>100 ՄՀց</td><td>16 LED, 16 անջատիչ, 5 կոճակ, JA-JC, USB-UART</td></tr>
+<tr><td>Olimex GateMateA1-EVB</td><td>GateMate CCGM1A1</td><td>10 ՄՀց</td><td>LED0, BTN0, վրիպազերծման UART</td></tr>
+<tr><td>Cologne Chip GateMate A1 evaluation board</td><td>GateMate CCGM1A1</td><td>10 ՄՀց</td><td>միայն LED0</td></tr>
+</table>
+<p>Կոնտակտները ֆիքսվում են կառուցելիս, ուստի կոնտակտը պետք է լինի թիվ կամ անուն՝ <code>LED0</code>, <code>SW3</code>, <code>BTNC</code>, <code>BTN0</code>, <code>JA1</code>։ Եթե տախտակը այդպիսի կոնտակտ չունի, սխալը ցույց է տալիս առկաների ցանկը։ Կոնտակտը չի կարելի միաժամանակ կարդալ և գրել։</p>
+<p><b>Ամբողջ թվեր։</b> Թվաբանությունը 32 բիթով շրջվում է; <code>/</code> և <code>%</code> կլորացնում են դեպի զրո, 0-ի բաժանումը տալիս է 0։ <b>Գործարկումը</b> օգտագործում է double թվեր, ուստի <code>5 / 2</code>-ը Գործարկման մեջ 2.5 է, իսկ FPGA-ում՝ 2։ Դեռ չեն աջակցվում՝ դասերը, Input, Analog Read, SPI, I2C և տեքստը փոփոխականներում (Print-ում տեքստը աշխատում է)։</p>
+<p><b>Կառուցում և բեռնում։</b> Artix-7՝ Vivado խմբաքանակային ռեժիմով կամ բաց շղթա (yosys, nextpnr-xilinx, Project X-Ray), ընտրվում է Կարգավորումներում։ GateMate՝ yosys, nextpnr-himbaechel, gmpack։ Բեռնումը՝ Vivado կամ openFPGALoader։ Կոնտակտների սահմանափակումները ֆայլի առաջին մեկնաբանության մեջ են, իսկ հրամանի տողում <code>-o</code>-ն գրում է նաև <code>.xdc</code> կամ <code>.ccf</code> ֆայլ։</p>
+<p><b>Ստուգված է՝</b> սիմուլյացիա՝ Գործարկման հետ համեմատած, և սինթեզ բաց գործիքներով։ <b>Ստուգված չէ՝</b> Vivado, openXC7 և իրական տախտակներ։</p>
+<p>Օրինակներ՝ File &gt; Open Example &gt; FPGA Boards։</p>
 <a name="keys"></a>
 <h2>Ստեղնային համակցություններ</h2>
 <table border="1" cellpadding="4" cellspacing="0">

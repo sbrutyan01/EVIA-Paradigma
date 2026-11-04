@@ -36,7 +36,15 @@ enum Board {
     PIC32MX440F256H("PIC32MX440F256H (64 pins)", "32MX440F256H", 3, 'H', "RF0"),
     PIC32MX460F512L("PIC32MX460F512L (Cerebot MX4cK)", "32MX460F512L", 3, 'L', "RB10"),
     PIC32MX695F512L("PIC32MX695F512L (chipKIT WF32)", "32MX695F512L", 5, 'L', "RF0"),
-    PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1");
+    PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1"),
+
+    // FPGA boards: the pins, clock and chip are in Fpga
+    NEXYS_A7_100T("Digilent Nexys A7-100T (Artix-7)", Fpga::nexysA7100T),
+    ARTY_A7_35("Digilent Arty A7-35 (Artix-7)", Fpga::artyA7_35),
+    ARTY_A7_100("Digilent Arty A7-100 (Artix-7)", Fpga::artyA7_100),
+    BASYS3("Digilent Basys 3 (Artix-7)", Fpga::basys3),
+    OLIMEX_GATEMATE("Olimex GateMateA1-EVB (GateMate)", Fpga::olimexGateMate),
+    CCGM1A1_EVB("Cologne Chip GateMate A1 evaluation board", Fpga::cologneChipGateMate);
 
     final String display, fqbn, mcu, programmer, pic;
     /** PIC32 only: 1, 3 or 5 (see above), and the package letter; 0 for the other boards. */
@@ -44,6 +52,20 @@ enum Board {
     final char pkg;
     /** PIC32 only: the pin of the board's LED, which LED_BUILTIN names. */
     final String led;
+    /** FPGA only: the chip, clock and pins of the board. */
+    private final java.util.function.Supplier<Fpga.Spec> fpga;
+
+    Board(String display, java.util.function.Supplier<Fpga.Spec> fpga) {
+        this.display = display;
+        this.fqbn = "";
+        this.mcu = null;
+        this.programmer = null;
+        this.pic = null;
+        this.family = 0;
+        this.pkg = 0;
+        this.led = null;
+        this.fpga = fpga;
+    }
 
     Board(String display, String fqbn, String mcu, String programmer) {
         this.display = display;
@@ -54,6 +76,7 @@ enum Board {
         this.family = 0;
         this.pkg = 0;
         this.led = null;
+        this.fpga = null;
     }
 
     Board(String display, String pic, int family, char pkg, String led) {
@@ -65,6 +88,7 @@ enum Board {
         this.family = family;
         this.pkg = pkg;
         this.led = led;
+        this.fpga = null;
     }
 
     boolean isAvr() {
@@ -75,6 +99,15 @@ enum Board {
         return pic != null;
     }
 
+    boolean isFpga() {
+        return fpga != null;
+    }
+
+    /** The chip, clock and pins of an FPGA board. */
+    Fpga.Spec fpga() {
+        return fpga.get();
+    }
+
     /** Short stored and command-line name: "uno", "esp32-s3". */
     String key() {
         return name().toLowerCase(Locale.ROOT).replace('_', '-');
@@ -83,9 +116,10 @@ enum Board {
     /** The boards a language can build for: the Arduino and ESP32 ones for sketches, the AVR ones for AVR C, the PIC32 ones for PIC32 C. */
     boolean supports(Target.Lang lang) {
         return switch (lang) {
-            case ARDUINO -> !isPic32();
+            case ARDUINO -> !isPic32() && !isFpga();
             case AVR -> isAvr();
             case PIC32 -> isPic32();
+            case SYSTEMVERILOG, VERILOG, VHDL -> isFpga();
             default -> false;
         };
     }
@@ -99,7 +133,7 @@ enum Board {
 
     /** The first board of {@code lang}, if {@code b} can't be built for it. */
     static Board forLang(Board b, Target.Lang lang) {
-        return b.supports(lang) ? b : lang == Target.Lang.PIC32 ? PIC32MX250F128B : UNO;
+        return b.supports(lang) ? b : lang == Target.Lang.PIC32 ? PIC32MX250F128B : lang.fpga() ? NEXYS_A7_100T : UNO;
     }
 
     /** "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os ..." for bare-metal C. */

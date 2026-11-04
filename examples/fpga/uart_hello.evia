@@ -1,0 +1,16 @@
+# EVIA Paradigma program v3
+B|M|1|START|300|20||-|-|
+B|M|2|UART_OPEN|300|110|115200|-|-|
+B|M|3|PRINT|300|200|%22Hello+from+the+FPGA%21%22|-|-|
+B|M|4|WHILE|300|290|1|-|-|
+B|M|5|UART_READ|300|380|c|-|-|
+B|M|6|IF|300|470|c+%3E%3D+0|-|-|
+B|M|7|UART_WRITE|300|560|c|-|-|
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5
+L|M|5|0|6
+L|M|6|0|4
+L|M|6|1|7
+L|M|7|0|4

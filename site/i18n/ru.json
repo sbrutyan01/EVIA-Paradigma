@@ -188,6 +188,10 @@
   "Новое в 0.5: PIC32 C делает то же для девяти микросхем PIC32MX с Microchip XC32, а UART, SPI и I2C стали блоками, в Run и во всех трёх языках для плат. Код PIC32 проверен по заголовочным файлам Microchip, но ещё не собирался XC32 и не запускался на микросхеме."
  ],
  [
+  "New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.",
+  "Новое в 0.6: поддержка FPGA. SystemVerilog, Verilog-2001 и VHDL превращают ту же схему в аппаратуру для Artix-7 (Nexys A7, Arty A7, Basys 3) и плат Cologne Chip GateMate. Результат моделировался в сравнении с Run и синтезировался открытыми средствами, но не проходил через Vivado и не загружался в плату."
+ ],
+ [
   "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
   "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
  ],

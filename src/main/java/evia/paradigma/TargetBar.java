@@ -40,8 +40,9 @@ final class TargetBar extends JPanel {
         add(flow);
         add(new JLabel(" Values:"));
         add(values);
-        board.setToolTipText("<html>The board that Build and Upload use. The generated code is the same for every board:"
-                + "<br>pins are written as LED_BUILTIN, A0 ... and each board's headers say where they are.</html>");
+        board.setToolTipText("<html>The board that Build and Upload use. For microcontrollers the generated code is the same for every board:"
+                + "<br>pins are written as LED_BUILTIN, A0 ... and each board's headers say where they are."
+                + "<br>For an FPGA the board decides the chip, the clock and the pin constraints.</html>");
         board.setMaximumRowCount(Board.values().length);
         add(boardLabel);
         add(board);
@@ -69,8 +70,10 @@ final class TargetBar extends JPanel {
             lang.setSelectedItem(t.lang());
             flow.setSelectedItem(t.flow());
             values.setSelectedItem(t.values());
+            flow.setEnabled(!t.lang().fpga());
             values.setEnabled(!t.embedded());
-            values.setToolTipText(t.embedded() ? "Microcontrollers use fast values: numbers only, text only in Print" : valuesTip);
+            values.setToolTipText(t.lang().fpga() ? "FPGAs use whole numbers: signed 32-bit, text only in Print"
+                    : t.embedded() ? "Microcontrollers use fast values: numbers only, text only in Print" : valuesTip);
             board.removeAllItems();
             for (Board b : Board.values()) if (b.supports(t.lang())) board.addItem(b);
             board.setSelectedItem(Settings.board(t.lang()));

@@ -86,6 +86,11 @@ final class CodeGenerator {
     }
 
     static Result generateWithMap(Library lib, Target t) {
+        if (t.lang().fpga()) {
+            Board b = Settings.board(t.lang());
+            HdlGenerator.Result r = HdlGenerator.generate(lib, t.lang().hdl(), b.fpga(), b.display, "evia_top");
+            return new Result(r.hdl(), new HashMap<>());
+        }
         Interpreter.prepare(lib);
         CodeGenerator g = new CodeGenerator(lib, t);
         String code = g.build();

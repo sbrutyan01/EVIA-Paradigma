@@ -144,6 +144,56 @@ jobs:
       - name: "PIC32 examples against the device headers (MX1xx/2xx, MX3xx/4xx, MX5xx/6xx/7xx)"
         run: scripts/check-pic32.sh
 
+  # FPGA designs (SystemVerilog, Verilog-2001, VHDL for Artix-7 and GateMate): simulated against the interpreter
+  # with Icarus Verilog and GHDL, synthesised with yosys, and for the GateMate placed, routed and packed into a
+  # bitstream with nextpnr-himbaechel and gmpack. There is no Vivado or board in CI.
+  fpga:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: Find the latest OSS CAD Suite
+        id: oss
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh api repos/YosysHQ/oss-cad-suite-build/releases/latest --jq .tag_name)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the OSS CAD Suite
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: oss-cad-suite
+          key: oss-cad-suite-${{ steps.oss.outputs.tag }}
+
+      - name: Download the OSS CAD Suite (yosys, nextpnr, GHDL, Icarus Verilog, gmpack)
+        if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url=$(gh api repos/YosysHQ/oss-cad-suite-build/releases/latest \
+                --jq '.assets[].browser_download_url | select(test("oss-cad-suite-linux-x64-.*\\.tgz$"))')
+          echo "$url"
+          curl -sSL -o oss.tgz "$url"
+          tar xzf oss.tgz
+          rm oss.tgz
+
+      - name: "FPGA examples: simulation against the interpreter, synthesis, GateMate place and route"
+        run: |
+          source oss-cad-suite/environment
+          scripts/check-fpga.sh
+
   # Windows without Visual Studio: Clang from llvm-mingw (its own libc++ and Windows headers),
   # the same toolchain EVIA Paradigma installs with "Install Clang...".
   windows-llvm-mingw:

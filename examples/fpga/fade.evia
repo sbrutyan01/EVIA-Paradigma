@@ -1,0 +1,21 @@
+# EVIA Paradigma program v3
+B|M|1|START|300|20||-|-|
+B|M|2|PIN_MODE|300|110|LED0%2C+OUTPUT|-|-|
+B|M|3|WHILE|300|200|1|-|-|
+B|M|4|FOR|300|290|b+%3D+0%3B+b+%3C%3D+255%3B+b+%3D+b+%2B+5|-|-|
+B|M|5|ANALOG_WRITE|300|380|LED0%2C+b|-|-|
+B|M|6|DELAY|300|470|10|-|-|
+B|M|7|FOR|300|560|b+%3D+255%3B+b+%3E%3D+0%3B+b+%3D+b+-+5|-|-|
+B|M|8|ANALOG_WRITE|300|650|LED0%2C+b|-|-|
+B|M|9|DELAY|300|740|10|-|-|
+L|M|1|0|2
+L|M|2|0|3
+L|M|3|0|4
+L|M|4|0|5
+L|M|5|0|6
+L|M|6|0|4
+L|M|4|1|7
+L|M|7|0|8
+L|M|8|0|9
+L|M|9|0|7
+L|M|7|1|3
