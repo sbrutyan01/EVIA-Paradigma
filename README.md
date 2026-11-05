@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.5-blue" alt="version 0.6.5"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.6-blue" alt="version 0.6.6"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -58,9 +58,25 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.1.jar` | `java -jar evia-paradigma-0.6.1.jar` |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.6-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.6_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.6_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.6.jar` | `java -jar evia-paradigma-0.6.6.jar` |
+
+### Release 0.6.6
+
+[EVIA Paradigma v0.6.6](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.6) ([release notes](docs/release-notes/v0.6.6.md)):
+the PIC32 Ethernet Starter Kit II, and an MQTT example for it.
+
+- **The starter kit is a board of its own** in the **Board** list: PIC32 Ethernet Starter Kit II (MX795F512L), with
+  LED1 on RD0, so `LED_BUILTIN` and the generated pin names match the kit instead of a chipKIT board.
+- **New example** *MQTT on the PIC32 Ethernet Starter Kit II* (**File → Open Example → Arduino and ESP32 Boards**):
+  SW1 (RD6) goes to the broker, LED1 (RD0) follows what comes back and LED2 (RD1) follows the button directly, so the
+  round trip through the broker is visible. Both MQTT examples are in that menu now.
+- **Checks:** the PIC32 output of every example, for the boards of the three chip families and both flows, compiles
+  against Microchip's real device headers (180 of 180); the board checks skip programs whose pin names belong to
+  another chip, and the MQTT blocks say so on the ESP32-H2, which has no WiFi.
+- The kit's **Ethernet port is still not used**: MQTT goes through the WiFi module on UART2 (RF4 / RF5 on the
+  expansion connector), as on the other PIC32 chips.
 
 ### Release 0.6.5
 

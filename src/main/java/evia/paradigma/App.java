@@ -14,7 +14,7 @@ import java.io.File;
  */
 public final class App {
     /** Released version, shown by --version and in the About dialog. */
-    public static final String VERSION = "0.6.5";
+    public static final String VERSION = "0.6.6";
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].startsWith("-")) {
