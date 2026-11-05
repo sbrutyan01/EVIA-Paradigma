@@ -172,8 +172,8 @@
   "<h3>Платы Arduino и ESP32</h3>"
  ],
  [
-  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
-  "Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе."
+  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
+  "Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. UART, SPI, I2C и MQTT — тоже блоки. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе."
  ],
  [
   "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
@@ -360,8 +360,8 @@
   "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
  ],
  [
-  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. The MQTT client is compiled on the build machine and run against a real broker. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Клиент MQTT собирается на машине сборки и проверяется на настоящем брокере. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
  ],
  [
   "<h2 id=\"docs-h\">Documentation</h2>",

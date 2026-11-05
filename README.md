@@ -60,7 +60,7 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 |---|---|---|
 | Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.6-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.6_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.6_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.6.jar` | `java -jar evia-paradigma-0.6.6.jar` |
+| Any OS with Java 25 | `evia-paradigma-0.6.6.jar` | `java -jar evia-paradigma-0.6.6.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
 
 ### Release 0.6.6
 
@@ -78,6 +78,15 @@ the PIC32 Ethernet Starter Kit II, and an MQTT example for it.
 - The kit's **Ethernet port is still not used**: MQTT goes through the WiFi module on UART2 (RF4 / RF5 on the
   expansion connector), as on the other PIC32 chips.
 
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.6.6-windows-x64.exe` | Windows 10/11 x64 | 44.6 MB |
+| `evia-paradigma_0.6.6_amd64.deb` | Ubuntu/Debian amd64 | 39.1 MB |
+| `evia-paradigma-0.6.6.jar` | Any OS with Java 25 | 17.1 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
+
 ### Release 0.6.5
 
 [EVIA Paradigma v0.6.5](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.5) ([release notes](docs/release-notes/v0.6.5.md)):
@@ -94,6 +103,15 @@ MQTT blocks, and Settings fetches the outside tools.
 - **Tested** by compiling the generated MQTT client and running it against a real broker (`scripts/check-mqtt.sh`),
   compiling the ESP32 sketch as C++, and compiling the PIC32 output against Microchip's headers (180 of 180). No WiFi
   module, ESP32 or PIC32 chip was part of that; Ethernet MQTT on the MX695/795 chips is not supported yet.
+
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.6.5-windows-x64.exe` | Windows 10/11 x64 | 44.6 MB |
+| `evia-paradigma_0.6.5_amd64.deb` | Ubuntu/Debian amd64 | 39.1 MB |
+| `evia-paradigma-0.6.5.jar` | Any OS with Java 25 | 17.1 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
 
 ### Release 0.6.1
 
