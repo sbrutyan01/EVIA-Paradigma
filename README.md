@@ -76,6 +76,9 @@ the interface itself in Russian and Armenian, and MQTT over a PIC32's own Ethern
   without a translation simply stays English, so adding to them cannot break the application.
 - [`scripts/i18n/collect.py`](scripts/i18n/collect.py) lists what the interface asks for and what is still missing,
   and the checks fail when a language falls behind — all 171 strings are translated in both.
+- [`scripts/publish-gitlab.sh`](scripts/publish-gitlab.sh) publishes a release to a self-hosted GitLab as well:
+  `GITLAB_TOKEN=... scripts/publish-gitlab.sh v0.6.7` pushes `main` and the tag, then creates the release with
+  that version's notes file as its description. The token is read from the environment and never written down.
 - **MQTT over the chip's own Ethernet port** (experimental), on the MX695F512L, the MX795F512L and the Ethernet
   Starter Kit II: **Settings → PIC32 MQTT over → Ethernet, Harmony TCP/IP**, or `--net ethernet`. The four transport
   functions change and nothing above them does, so the blocks and the diagram are untouched; the generated file
