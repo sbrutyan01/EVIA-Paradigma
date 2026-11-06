@@ -90,6 +90,15 @@ the interface itself in Russian and Armenian, and MQTT over a PIC32's own Ethern
   no MQTT in it, which `xc32-gcc` then could not compile on its own. Harmony now needs the setting **and** an
   *MQTT Connect* block in the program.
 
+| File | Platform | Size |
+|---|---|---|
+| `EVIA-Paradigma-0.6.7-windows-x64.exe` | Windows 10/11 x64 | 44.6 MB |
+| `evia-paradigma_0.6.7_amd64.deb` | Ubuntu/Debian amd64 | 39.2 MB |
+| `evia-paradigma-0.6.7.jar` | Any OS with Java 25 | 17.1 MB |
+| `LICENSE` | MIT license | 1 KB |
+
+macOS installers are not part of this release; they will return in a later one.
+
 ### Release 0.6.6
 
 [EVIA Paradigma v0.6.6](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.6) ([release notes](docs/release-notes/v0.6.6.md)):
