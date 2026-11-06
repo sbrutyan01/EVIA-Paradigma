@@ -62,6 +62,12 @@ jobs:
         run: |
           "$CXX" --version
           scripts/check-examples.sh "$CXX"
+      - name: How big the jar came out
+        run: |
+          for f in target/evia-paradigma-*.jar; do
+            b=$(wc -c < "$f")
+            printf 'ASSET SIZE  %-44s %s bytes  %.1f MB\n' "$(basename "$f")" "$b" "$(echo "$b" | awk '{print $1/1048576}')"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: jar
@@ -105,6 +111,16 @@ jobs:
       - name: Test the .deb on Ubuntu 22.04/24.04 and Debian 12/13
         if: matrix.kind == 'linux'
         run: packaging/test-deb.sh packages/*.deb
+      - name: How big the installer came out
+        shell: bash
+        run: |
+          # The size each file will have as a release asset, for the download tables in the README
+          # and the release notes. MiB to one decimal, which is how GitHub shows an asset.
+          for f in packages/*; do
+            [ -f "$f" ] || continue
+            b=$(wc -c < "$f")
+            printf 'ASSET SIZE  %-44s %s bytes  %.1f MB\n' "$(basename "$f")" "$b" "$(echo "$b" | awk '{print $1/1048576}')"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: installer-${{ matrix.kind }}
