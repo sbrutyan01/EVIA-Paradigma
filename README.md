@@ -65,7 +65,7 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 ### Release 0.6.7
 
 [EVIA Paradigma v0.6.7](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.7) ([release notes](docs/release-notes/v0.6.7.md)):
-the interface itself in Russian and Armenian.
+the interface itself in Russian and Armenian, and MQTT over a PIC32's own Ethernet port.
 
 - **Settings → Interface language**: English, Русский or Հայերեն. The menus, the toolbar, the palette, the buttons,
   the dialogs and the names on the blocks (`СТАРТ`, `ՍԿԻԶԲ`) all follow; the change takes effect when the application
@@ -76,6 +76,13 @@ the interface itself in Russian and Armenian.
   without a translation simply stays English, so adding to them cannot break the application.
 - [`scripts/i18n/collect.py`](scripts/i18n/collect.py) lists what the interface asks for and what is still missing,
   and the checks fail when a language falls behind — all 171 strings are translated in both.
+- **MQTT over the chip's own Ethernet port** (experimental), on the MX695F512L, the MX795F512L and the Ethernet
+  Starter Kit II: **Settings → PIC32 MQTT over → Ethernet, Harmony TCP/IP**, or `--net ethernet`. The four transport
+  functions change and nothing above them does, so the blocks and the diagram are untouched; the generated file
+  becomes an application for an **MPLAB X Harmony project** — `app_run()` instead of `main()`, the project's own
+  device configuration and clock, `SYS_Tasks()` inside every wait, and DHCP for the address.
+  [How to set the project up](#mqtt-over-the-chips-own-ethernet-port-mx695--mx795-experimental). It compiles only
+  against stub headers here, never against real Harmony or a board, so the WiFi module remains the tested path.
 - **Fixed:** *PIC32 MQTT over: Ethernet* was turning every PIC32 program into a Harmony application, even one with
   no MQTT in it, which `xc32-gcc` then could not compile on its own. Harmony now needs the setting **and** an
   *MQTT Connect* block in the program.
@@ -528,10 +535,11 @@ to the project and call `app_run()`.
 The client in the generated file is MQTT 3.1.1 with quality of service 0, about 150 lines of C and no library.
 `examples/boards/mqtt_sensor.evia` publishes a temperature, sends itself a command and reads it back, and
 `examples/boards/mqtt_esk2.evia` is written for the **PIC32 Ethernet Starter Kit II**: SW1 (RD6) goes to the broker,
-LED1 (RD0) follows what comes back, LED2 (RD1) follows the button directly, so you can see the round trip. The kit's
-Ethernet port is not used — the WiFi module on UART2 (RF4 / RF5 on the expansion connector) is. CI compiles the
-client on the build machine and runs it against a real broker (`scripts/check-mqtt.sh`); no WiFi module or ESP32 was
-part of that, and MQTT over the Ethernet port of the MX695/795 chips is not supported yet.
+LED1 (RD0) follows what comes back, LED2 (RD1) follows the button directly, so you can see the round trip. That example
+runs either way — through the WiFi module on UART2 (RF4 / RF5 on the expansion connector) as it stands, or through the
+kit's own Ethernet port if you switch **PIC32 MQTT over** to *Ethernet*, as described above. CI compiles the client on
+the build machine and runs it against a real broker (`scripts/check-mqtt.sh`), and compiles both shapes of the
+generated output; no WiFi module, ESP32 or starter kit was part of that.
 
 For a Microchip PIC32MX chip choose **Language: PIC32 C** and the chip in the **Board** list (nine chips from the MX1xx/2xx,
 MX3xx/4xx and MX5xx/6xx/7xx families), then **Generate code** (F7). The result is bare-metal C for Microchip's free XC32

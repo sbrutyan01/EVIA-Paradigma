@@ -114,6 +114,6 @@
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGAサンプルプログラム</a>。File、Open Example、FPGA Boardsからも開けます</li>",
  "<tr><td>シミュレーションでのFPGA設計（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27件中27件</td></tr>",
  "<li><b>PDF版チュートリアル。</b> Help, Tutorial で全体の手引きを7言語のいずれかで開けます。</li>",
- "0.6.5 の新機能：MQTT。5つのブロックがプログラムの数値をブローカーへ公開し、コマンドを読み戻します。UART2 に WiFi モジュールをつないだ PIC32MX、自前の WiFi を持つ ESP32、そして自分のパソコン上のブローカーに対する Run で動きます。生成されたクライアントは実際のブローカーで検査していますが、WiFi モジュールやチップは含まれていません。2つの例が付属し、そのうち1つは PIC32 Ethernet Starter Kit II 用です。0.6.7 の新機能：画面そのものを英語・ロシア語・アルメニア語から設定で選べます。",
+ "0.6.5 の新機能：MQTT。5つのブロックがプログラムの数値をブローカーへ公開し、コマンドを読み戻します。UART2 に WiFi モジュールをつないだ PIC32MX、自前の WiFi を持つ ESP32、そして自分のパソコン上のブローカーに対する Run で動きます。生成されたクライアントは実際のブローカーで検査していますが、WiFi モジュールやチップは含まれていません。2つの例が付属し、そのうち1つは PIC32 Ethernet Starter Kit II 用です。0.6.7 の新機能：MX695、MX795、スターターキットでは、MQTT はチップ自身の Ethernet ポートから出ることもでき、MPLAB X Harmony プロジェクト用のアプリケーションになります。これは実験的で、実際の Harmony でのビルドはまだ行っていません。画面そのものも英語・ロシア語・アルメニア語から設定で選べます。",
  "<li><b>設定が道具を取ってきます。</b> arduino-cli、avr-gcc、FPGA 一式はアプリ専用のフォルダーへダウンロードされ、XC32 は Microchip のページを開きます。</li>"
 ]

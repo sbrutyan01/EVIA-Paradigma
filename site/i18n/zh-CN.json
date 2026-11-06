@@ -114,6 +114,6 @@
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA 示例程序</a>，也可在 File、Open Example、FPGA Boards 中找到</li>",
  "<tr><td>仿真中的 FPGA 设计（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27 项中的 27 项</td></tr>",
  "<li><b>PDF 教程。</b> Help, Tutorial 可用七种语言中的任意一种打开完整教程。</li>",
- "0.6.5 新增：MQTT。五个积木把程序的数字发布给代理服务器并读回命令：UART2 接 WiFi 模块的 PIC32MX、自带 WiFi 的 ESP32，以及对着你电脑上代理服务器运行的 Run。生成的客户端对着真实代理服务器检查过，但没有 WiFi 模块或芯片参与。随附两个示例，其中一个用于 PIC32 Ethernet Starter Kit II。0.6.7 新增：界面本身可在设置中选择英语、俄语或亚美尼亚语。",
+ "0.6.5 新增：MQTT。五个积木把程序的数字发布给代理服务器并读回命令：UART2 接 WiFi 模块的 PIC32MX、自带 WiFi 的 ESP32，以及对着你电脑上代理服务器运行的 Run。生成的客户端对着真实代理服务器检查过，但没有 WiFi 模块或芯片参与。随附两个示例，其中一个用于 PIC32 Ethernet Starter Kit II。0.6.7 新增：在 MX695、MX795 和入门套件上，MQTT 还可以从芯片自带的以太网口出去，生成的文件成为 MPLAB X Harmony 项目的应用程序；这是实验性的，尚未用真正的 Harmony 构建过。界面本身也可在设置中选择英语、俄语或亚美尼亚语。",
  "<li><b>设置会下载工具。</b> arduino-cli、avr-gcc 和 FPGA 套件会下载到应用自己的文件夹；XC32 会打开 Microchip 的页面。</li>"
 ]
