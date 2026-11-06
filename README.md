@@ -960,6 +960,11 @@ scripts/local-ci.sh                 # build, then every check whose tools are pr
 scripts/local-ci.sh app mqtt        # only those: build app mqtt examples targets zoom pic32 boards fpga
 ```
 
+[`scripts/setup-toolchains.sh`](scripts/setup-toolchains.sh) installs the outside ones into `/opt`, each in its own
+folder: `--check` reports what is there, `--fpga` fetches the OSS CAD Suite (yosys, nextpnr, iverilog, ghdl, gmpack),
+`--avr` fetches avr-gcc and arduino-cli with its cores and builds simavr. It finishes by printing the two lines to put
+in the runner's environment or in the repository variables.
+
 Point it at your toolchains with `OSS_CAD_SUITE` (the folder holding its `environment` file), `XC32_BIN`,
 `AVR_GCC_BIN`, and `CXX` / `CC`.
 
@@ -1019,7 +1024,7 @@ needs no incoming connection at all: the runner polls GitHub outbound, so nothin
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `EmbeddedRuntime.MQTT_CORE` / `Pic32Runtime.java` | The MQTT 3.1.1 client that goes into the generated file, and the network under it: the ESP32's WiFi, or a WiFi module on the PIC32's UART2 |
 | `Toolchains.java` | Fetches arduino-cli, avr-gcc and the OSS CAD Suite into the app's own folder; XC32 opens Microchip's page |
-| `scripts/local-ci.sh`, `scripts/setup-runner.sh`, `.github/workflows/local-ci.yml` | The whole check suite on a machine of your own, through a self-hosted runner |
+| `scripts/local-ci.sh`, `scripts/setup-runner.sh`, `scripts/setup-toolchains.sh`, `.github/workflows/local-ci.yml` | The whole check suite on a machine of your own, through a self-hosted runner |
 | `scripts/mqtt/` | The MQTT check: a socket in place of the chip's network, and a small broker that reads what the client sends |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds its Russian, Armenian, German, Simplified Chinese, Traditional Chinese and Japanese texts |
