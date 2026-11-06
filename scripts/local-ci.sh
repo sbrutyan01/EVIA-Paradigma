@@ -45,12 +45,30 @@ run() {    # name, command...
 
 # ---------------------------------------------------------------- the toolchains that are here
 
-if [ -n "${OSS_CAD_SUITE:-}" ] && [ -f "$OSS_CAD_SUITE/environment" ]; then
+: "${PREFIX:=/opt}"
+
+# Where setup-toolchains.sh puts things, so a machine it has run on needs no variables set at all.
+# An explicit OSS_CAD_SUITE / AVR_GCC_BIN / XC32_BIN always wins over these.
+for d in "${OSS_CAD_SUITE:-}" "$PREFIX/oss-cad-suite" "$HOME/tools/oss-cad-suite" /opt/oss-cad-suite; do
+    [ -n "$d" ] && [ -f "$d/environment" ] || continue
     # shellcheck disable=SC1091
-    source "$OSS_CAD_SUITE/environment"
-fi
-[ -n "${XC32_BIN:-}" ] && PATH="$XC32_BIN:$PATH"
-[ -n "${AVR_GCC_BIN:-}" ] && PATH="$AVR_GCC_BIN:$PATH"
+    source "$d/environment"
+    break
+done
+for d in "${AVR_GCC_BIN:-}" "$PREFIX/avr-gcc/bin" "$HOME/tools/avr-gcc/bin" /opt/avr-gcc/bin; do
+    [ -n "$d" ] && [ -x "$d/avr-gcc" ] || continue
+    PATH="$d:$PATH"
+    break
+done
+for d in "${XC32_BIN:-}" /opt/microchip/xc32/v4.35/bin; do
+    [ -n "$d" ] && [ -x "$d/xc32-gcc" ] || continue
+    PATH="$d:$PATH"
+    break
+done
+# arduino-cli and simavr land beside them
+[ -x "$PREFIX/arduino-cli/arduino-cli" ] && PATH="$PREFIX/arduino-cli:$PATH"
+[ -x "$HOME/tools/arduino-cli/arduino-cli" ] && PATH="$HOME/tools/arduino-cli:$PATH"
+[ -z "${EVIA_SIM:-}" ] && [ -x "$PREFIX/simavr/bin/simavr" ] && export EVIA_SIM="$PREFIX/simavr/bin/simavr"
 export PATH
 
 PICK=("$@")
