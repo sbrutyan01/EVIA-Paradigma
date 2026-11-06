@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, որոնվածքի և HDL կոմպիլյացիայով</title>
+<meta name="description" content="Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնչորս լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։>
+<meta property="og:title" content="EVIA Paradigma">
+<meta property="og:description" content="Նկարեք ծրագիրը բլոկներով։ Ընտրեք լեզուն, որով այն կդարձվի։">
+<meta property="og:image" content="img/hero-diagram.png">
+<link rel="icon" type="image/png" href="../img/logo.png">
+<link rel="preload" href="../fonts/NotoSansArmenian.woff" as="font" type="font/woff" crossorigin>
+<meta name="color-scheme" content="light dark">
+<script>
+  // the theme chosen with the header switch (otherwise the system's), before the page is drawn
+  try { var t = localStorage.getItem("evia-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="alternate" hreflang="en" href="https://sbrutyan01.github.io/EVIA-Paradigma/">
+<link rel="alternate" hreflang="ru" href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">
+<link rel="alternate" hreflang="hy" href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">
+<link rel="alternate" hreflang="de" href="https://sbrutyan01.github.io/EVIA-Paradigma/de/">
+<link rel="alternate" hreflang="zh-CN" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-CN/">
+<link rel="alternate" hreflang="zh-TW" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-TW/">
+<link rel="alternate" hreflang="ja" href="https://sbrutyan01.github.io/EVIA-Paradigma/ja/">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Անցնել բովանդակությանը</a>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="EVIA Paradigma՝ գլխավոր էջ">
+    <img class="logo-light" src="../img/logo.png" alt="" width="136" height="136">
+    <img class="logo-dark" src="../img/logo-dark.png" alt="" width="136" height="136">
+    <span>EVIA Paradigma</span>
+  </a>
+  <nav aria-label="Գլխավոր ընտրացանկ">
+    <a href="#features">Հնարավորություններ</a>
+    <a href="#tutorial">Ուսուցում</a>
+    <a href="#fpga">FPGA</a>
+    <a href="#download">Ներբեռնել</a>
+    <a href="#docs">Փաստաթղթեր</a>
+    <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+    <div class="top-tools">
+    <div class="site-language" role="group" aria-label="Կայքի լեզուն">
+      <span class="site-language-label">Կայքի լեզուն</span>
+      <div class="site-langs">
+        <a href=".././" hreflang="en" lang="en" title="English">EN</a>
+        <a href="../ru/" hreflang="ru" lang="ru" title="Русский">RU</a>
+        <a href="../hy/" hreflang="hy" lang="hy" aria-current="page" title="Հայերեն">ՀԱՅ</a>
+        <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a>
+        <a href="../zh-CN/" hreflang="zh-CN" lang="zh-CN" title="简体中文">简</a>
+        <a href="../zh-TW/" hreflang="zh-TW" lang="zh-TW" title="繁體中文">繁</a>
+        <a href="../ja/" hreflang="ja" lang="ja" title="日本語">日本語</a>
+      </div>
+    </div>
+    <div class="themes" role="group" aria-label="Գունային թեմա">
+      <button type="button" data-theme-choice="light" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+        </svg>Լուսավոր</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>
+        </svg>Մութ</button>
+    </div>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-text">
+    <h1>Նկարեք ծրագիրը։<br>Ընտրեք նրա լեզուն։</h1>
+    <div class="hero-grid">
+      <p class="lede">EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։</p>
+      <div class="side">
+        <p class="actions">
+          <a class="btn primary" href="#download">Ներբեռնել 0.6.7</a>
+          <a class="btn" href="https://github.com/sbrutyan01/EVIA-Paradigma">Կոդը GitHub-ում</a>
+        </p>
+        <p class="fine">Windows և Linux. macOS-ի տարբերակները կվերադառնան ավելի ուշ։ Անվճար, բաց կոդ, MIT լիցենզիա։</p>
+      </div>
+    </div>
+  </div>
+
+  <figure class="bench" aria-labelledby="bench-caption">
+    <div class="bench-diagram">
+      <img src="../img/hero-diagram.png" width="1440" height="1048"
+           alt="Բլոկ-սխեմա՝ Start, Set n = 3, For ցիկլ 1-ից n, որը տպում է քայլը և կանչում c.add(i)-ը Counter օբյեկտի վրա, հետո c.show() և End։">
+    </div>
+    <div class="bench-arrow" aria-hidden="true"></div>
+    <div class="bench-code">
+      <div class="controls" role="group" aria-label="Գեներացվող կոդի ընտրանքներ">
+        <div class="langs" role="tablist" aria-label="Լեզու">
+          <button role="tab" data-lang="c99">C99</button>
+          <button role="tab" data-lang="c11">C11</button>
+          <button role="tab" data-lang="c17">C17</button>
+          <button role="tab" data-lang="c++98">C++98</button>
+          <button role="tab" data-lang="c++11">C++11</button>
+          <button role="tab" data-lang="c++14">C++14</button>
+          <button role="tab" data-lang="c++17">C++17</button>
+          <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
+        </div>
+        <div class="modes">
+          <span class="mode" role="radiogroup" aria-label="Կառավարման հոսք">
+            <button role="radio" data-flow="structured" aria-checked="true">Structured</button>
+            <button role="radio" data-flow="goto" aria-checked="false">Goto</button>
+          </span>
+          <span class="mode" role="radiogroup" aria-label="Արժեքներ">
+            <button role="radio" data-values="safe" aria-checked="true">Safe</button>
+            <button role="radio" data-values="fast" aria-checked="false">Fast</button>
+          </span>
+        </div>
+      </div>
+      <pre class="code" tabindex="0" aria-live="polite"><code id="sample"></code></pre>
+      <div class="run">
+        <pre id="output" aria-label="Ծրագրի ելքը"></pre>
+      </div>
+    </div>
+    <figcaption id="bench-caption"><span id="sample-note" data-note="Ձախ կողմի սխեման {lang} լեզվով՝ {fn}, գեներացված {lines} տողանոց ֆայլից։">Ձախ կողմի սխեման՝ այնպես, ինչպես այն գրում է գեներատորը։</span>
+      Բոլոր 32 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։</figcaption>
+  </figure>
+</section>
+
+<section class="features" id="features" aria-labelledby="features-h">
+  <h2 id="features-h">Ինչ է անում ծրագիրը</h2>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Ծրագիրը բլոկներ և կապեր է</h3>
+      <p>Start, Set, Input, Print, If/Else, For, While և Do-While բլոկներ են, իսկ դրանց միջև կապերը որոշում են կատարման հերթականությունը։ Սեղմեք Run, և կատարվող բլոկը լուսավորվում է։ Արտահայտություններն աշխատում են թվերի և տեքստի հետ՝ <code>&amp;&amp; || !</code>, համեմատություններ և սովորական թվաբանություն։</p>
+    </div>
+    <img src="../img/03-first-run.png" loading="lazy" width="2360" height="1760" alt="Բլոկներից հավաքված For ցիկլը և դրա ելքը՝ step 1, step 2, step 3։">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Դասեր, օբյեկտներ և մոդուլներ</h3>
+      <p>Դասն ունի սկզբնական արժեքներով դաշտեր, կոնստրուկտոր և մեթոդներ, և յուրաքանչյուր մեթոդ առանձին բլոկ-սխեմա է՝ Enter-ից մինչև Exit։ Յուրաքանչյուր Exit դառնում է կանչող բլոկի ելք։ Նույն օբյեկտի անունով բլոկներն աշխատում են մեկ օբյեկտի հետ։ Դասերը կարելի է պահել որպես մոդուլներ (<code>.eviam</code>) և ներմուծել այլ ծրագրերում։</p>
+    </div>
+    <img src="../img/05-class-method.png" loading="lazy" width="2160" height="1280" alt="Counter դասի պատուհանը՝ դաշտերի, կոնստրուկտորի և մեթոդների ներդիրներով, add(x) մեթոդը x-ը գումարում է this.total-ին։">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Մեկ սխեմա՝ տասնչորս լեզու</h3>
+      <p>Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։</p>
+    </div>
+    <img src="../img/24-menu-code-language.png" loading="lazy" width="1536" height="1220" alt="Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>C-ի և C++-ի ութ ստանդարտ, գրելու երկու եղանակ</h3>
+      <p>Գործիքագոտուց ընտրեք C99, C11, C17, C++98, C++11, C++14, C++17 կամ C++20։ <b>Structured</b>-ը գրում է if/else, ցիկլեր և switch, իսկ <b>Goto</b>-ն յուրաքանչյուր բլոկ դարձնում է նշիչ, յուրաքանչյուր կապ՝ անցում։ <b>Safe</b> արժեքները պահում են տեքստը և ինտերպրետատորի բոլոր ստուգումները, իսկ <b>Fast</b> արժեքները պարզ <code>double</code>-ներ են՝ առանց կատարման ժամանակի ստուգումների։ C-ի runtime-ը պարունակում է միայն այն, ինչ օգտագործում է ծրագիրը, ուստի կոդը կոմպիլյացվում է առանց նախազգուշացումների <code>-Wall -Wextra -Wpedantic -Werror</code>-ով։</p>
+    </div>
+    <img src="../img/22-c11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Կոդի պատուհանը՝ ծրագիրը C11-ով, կոմպիլյացված Clang-ով և գործարկված։">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Ցանկացած բլոկի կոդը</h3>
+      <p>Սեղմեք բլոկի վրա մկնիկի աջ կոճակով և ընտրեք View source code։ Կբացվի գեներացված ֆայլը, որտեղ ընդգծված են հենց այն տողերը, որոնց վերածվել է բլոկը։ Նույնն աշխատում է ամբողջ մեթոդի կամ դասի համար՝ ձեր ընտրած ցանկացած լեզվով։ Compile &amp; Run-ը անմիջապես կառուցում է կոդը Clang-ով կամ GCC-ով, իսկ Windows-ում ծրագիրն ինքն է տեղադրում llvm-mingw կամ WinLibs GCC, Visual Studio պետք չէ։</p>
+    </div>
+    <img src="../img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Գեներացված C++՝ c.add(i) բլոկի ընդգծված տողերով, կոմպիլյացված Clang-ով և գործարկված։">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Arduino և ESP32 տախտակներ</h3>
+      <p>Pin Mode, Digital Write և Read, Analog Read և Write, Delay և Millis նույնպես բլոկներ են։ Մեկ Arduino սքեթչ կառուցվում է Uno, Nano, Mega 2560, Leonardo, Micro և Pro Mini, ինչպես նաև ESP32, ESP32-S2, -S3, -C3, -C6 և -H2 տախտակների համար։ Run-ը համակարգչի վրա նմանակում է Uno-ն և ցույց է տալիս պինների յուրաքանչյուր փոփոխություն, այնպես որ ծրագիրը կարող եք փորձել դեռ մինչև տախտակը ձեռքի տակ ունենալը։ UART-ը, SPI-ը, I2C-ն և MQTT-ն նույնպես բլոկներ են։</p>
+    </div>
+    <img src="../img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="blink օրինակը՝ Board բլոկները գունապնակում, ելքում երևում է, թե ինչպես է նմանակված 13-րդ պինը փոխարկվում 500 մվ-ն մեկ։">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Առանց Arduino-ի՝ ուղիղ ռեգիստրներով</h3>
+      <p>AVR C-ն ծրագիրը գրում է ATmega328P, ATmega2560 կամ ATmega32U4-ի համար՝ առանց Arduino միջուկի. պորտերը, թայմերները, PWM-ը, ԱԹՓ-ն և UART-ը կարգավորվում են ընթեռնելի C-ով։ avr-gcc-ն այն կառուցում է մոտ 4 ԿԲ-ով, իսկ Upload-ը avrdude-ով բեռնում է այն տախտակի վրա։ Յուրաքանչյուր օրինակ գործարկվում է simavr սիմուլյատորում և համեմատվում ինտերպրետատորի հետ։</p>
+      <p>Նորություն 0.5-ում. PIC32 C-ն նույնն անում է ինը PIC32MX չիպի համար Microchip-ի XC32-ով, իսկ UART-ը, SPI-ն և I2C-ն դարձել են բլոկներ՝ Run-ում և տախտակների բոլոր երեք լեզուներում։ PIC32-ի կոդը ստուգվել է Microchip-ի վերնագրային ֆայլերով, բայց դեռ չի կառուցվել XC32-ով և չի աշխատել չիպի վրա։</p>
+      <p>Նորություն 0.6-ում՝ FPGA աջակցություն։ SystemVerilog, Verilog-2001 և VHDL նույն սխեման դարձնում են սարքակազմ Artix-7 (Nexys A7, Arty A7, Basys 3) և Cologne Chip GateMate տախտակների համար։ Արդյունքը սիմուլացվել է Run-ի համեմատ և սինթեզվել բաց գործիքներով, բայց չի անցել Vivado-ով և չի բեռնվել տախտակի մեջ։</p>
+      <p>Նորություն 0.6.5-ում՝ MQTT։ Հինգ բլոկ ծրագրի թվերը հրապարակում են բրոքերին և կարդում հրամաններ՝ PIC32MX-ի վրա UART2-ի WiFi մոդուլով, ESP32-ի վրա սեփական WiFi-ով, իսկ Run-ում՝ ձեր համակարգչի բրոքերով։ Ստեղծված հաճախորդը ստուգվում է իրական բրոքերով. ոչ WiFi մոդուլ, ոչ չիպ այդ ստուգման մաս չեն եղել։ Դրան ուղեկցում են երկու օրինակ, որոնցից մեկը՝ PIC32 Ethernet Starter Kit II-ի համար։ Նորություն 0.6.7-ում՝ միջերեսն ինքը անգլերեն, ռուսերեն կամ հայերեն է՝ ընտրվում է Կարգավորումներում։</p>
+    </div>
+    <img src="../img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Մասշտաբ և կտավի տեղափոխում մկնիկով</h3>
+      <p>Պտտեք անիվը սխեմայի վրա՝ մասշտաբը 25%-ից 300% փոխելու համար՝ դեպի ցուցիչը։ Բլոկները, տեքստը և կապերը մնում են հստակ, և խմբագրել կարելի է ցանկացած մասշտաբով։ Ctrl+0-ն վերադարձնում է 100%-ը, Ctrl+9-ը տեղավորում է ամբողջ սխեման։ Նորություն 0.6.1-ում՝ պահեք մկնիկի միջին կոճակը և քաշեք՝ կտավը տեղափոխելու համար՝ դատարկ տեղից կամ բլոկից։</p>
+    </div>
+    <img src="../img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="Սխեման՝ 161% մասշտաբով։">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Նախագծեր, Git և GitHub</h3>
+      <p>File, New Project-ը ստեղծում է թղթապանակ՝ ծրագրով, մոդուլների թղթապանակով, README-ով և Git պահոցով։ Commit, push և pull՝ Git ընտրացանկից։ Connect to GitHub-ը հրապարակում է նախագիծն այն հաշվով, որն արդեն օգտագործում է ձեր git-ը։ Ծրագիրը երբեք գաղտնաբառ չի խնդրում և չի պահում։</p>
+    </div>
+    <img src="../img/18-connect-github.png" loading="lazy" width="1110" height="392" alt="Connect to GitHub պատուհանը՝ sbrutyan01/CounterDemo պահոցի անունով։">
+  </article>
+
+  <ul class="extras">
+    <li><b>Vim ամենուր։</b> Կոդի դաշտերում, կոդի պատուհանում և commit-ների հաղորդագրություններում աշխատում են Vim ստեղները, իսկ Edit in Vim-ը բացում է իսկական Vim-ը։</li>
+    <li><b>Հրամանային տող։</b> <code>evia --run program.evia</code> և <code>evia --gen program.evia --lang c11 -o program.c</code>՝ սկրիպտների և Makefile-երի համար։</li>
+    <li><b>Clang կամ GCC։</b> Դրանք փոխվում են Settings-ում, իսկ Windows-ում ցանկացածն ինքն է տեղադրվում, Visual Studio պետք չէ։</li>
+    <li><b>Մուգ թեմա.</b> Ծրագիրը նման է IntelliJ IDEA-ին՝ Inter և JetBrains Mono տառատեսակներով։ View, Theme-ը ընտրում է բաց, մուգ կամ համակարգի թեմա։</li>
+    <li><b>Ներկառուցված ուղեցույց.</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները՝ անգլերեն, ռուսերեն և հայերեն։</li>
+    <li><b>Ուսուցումը PDF-ով։</b> Help, Tutorial-ը բացում է ամբողջ ուղեցույցը յոթ լեզուներից ցանկացածով։</li>
+    <li><b>Կարգավորումները բերում են գործիքները։</b> arduino-cli-ն, avr-gcc-ն և FPGA-ի հավաքածուն ներբեռնվում են հավելվածի սեփական պանակը, իսկ XC32-ը բացում է Microchip-ի էջը։</li>
+  </ul>
+</section>
+
+<section class="tutorial" id="tutorial" aria-labelledby="tutorial-h">
+  <h2 id="tutorial-h">Առաջին ծրագիրը ութ քայլով</h2>
+  <p class="section-lede">Բոլոր սքրինշոթներով ամբողջական քայլ առ քայլ ուսուցումը հասանելի է PDF-ով յոթ լեզվով՝ <a href="../tutorial/EVIA-Paradigma-Tutorial.en.pdf">English</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.ru.pdf">Русский</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.hy.pdf">Հայերեն</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.de.pdf">Deutsch</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf">简体中文</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf">繁體中文</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.ja.pdf">日本語</a>։ Այն հասանելի է նաև ծրագրի Help, Tutorial ընտրացանկում և <a href="https://github.com/sbrutyan01/EVIA-Paradigma#tutorial">README</a>-ում։</p>
+  <ol class="steps">
+    <li><img src="../img/01-new-project.png" loading="lazy" alt=""><h3>Ստեղծեք նախագիծ</h3><p>File, New Project։ Թողեք Create a Git repository-ն նշված։</p></li>
+    <li><img src="../img/03-first-run.png" loading="lazy" alt=""><h3>Կառուցեք ցիկլ</h3><p>Քաշեք Set, For և Print բլոկները կտավի վրա, միացրեք դրանք և սեղմեք Run։</p></li>
+    <li><img src="../img/04-class-fields.png" loading="lazy" alt=""><h3>Ստեղծեք դաս</h3><p>Edit, New Class։ Counter դասին տվեք total և calls դաշտերը։</p></li>
+    <li><img src="../img/07-call-dialog.png" loading="lazy" alt=""><h3>Օգտագործեք դասը</h3><p>Քաշեք Counter.add(x)-ը ցիկլի մեջ և օբյեկտն անվանեք c։</p></li>
+    <li><img src="../img/09-block-menu.png" loading="lazy" alt=""><h3>Տեսեք կոդը</h3><p>Աջ սեղմում բլոկի վրա, View source code։</p></li>
+    <li><img src="../img/21-language-dropdown.png" loading="lazy" alt=""><h3>Ընտրեք լեզուն</h3><p>Անցեք C11-ի կամ C++-ի ցանկացած ստանդարտի, և կոդը նորից կգեներացվի։</p></li>
+    <li><img src="../img/17-commit.png" loading="lazy" alt=""><h3>Commit և հրապարակում</h3><p>Git, Commit, ապա Connect to GitHub։</p></li>
+    <li><img src="../img/20-help-guide.png" loading="lazy" alt=""><h3>Շարունակեք</h3><p>Մոդուլներ, օրինակներ և ուղեցույց (F1)։</p></li>
+  </ol>
+</section>
+
+<section class="tutorial" id="fpga" aria-labelledby="fpga-h">
+  <h2 id="fpga-h">Ձեր առաջին FPGA ծրագիրը չորս քայլով</h2>
+  <p class="section-lede">Նույն թարթման սխեման դառնում է սարքակազմ Artix-7 և GateMate տախտակների համար։ Ամբողջական ձեռնարկը՝ քայլ 10, վերևի PDF-ում է, իսկ ուղեցույցում կա FPGA թեմա (F1)։</p>
+  <ol class="steps">
+    <li><h3>Ընտրեք լեզու և տախտակ</h3><p>Լեզու՝ SystemVerilog, Verilog-2001 կամ VHDL։ Տախտակ՝ Nexys A7, Arty A7, Basys 3 կամ GateMate տախտակ։</p></li>
+    <li><h3>Բացեք Blink օրինակը</h3><p>File, Open Example, FPGA Boards, Blink։ Կոնտակտները անուններ են՝ LED0, SW3, BTNC, JA1։</p></li>
+    <li><h3>Ստեղծեք կոդը</h3><p>Սեղմեք F7։ Կոնտակտների սահմանափակումները առաջին մեկնաբանության մեջ են, իսկ հրամանի տողը դրանք գրում է առանձին ֆայլում։</p></li>
+    <li><h3>Կառուցում և բեռնում</h3><p>Vivado կամ բաց գործիքներ՝ ընտրվում է Կարգավորումներում։ Upload-ը ծրագրավորում է տախտակը։</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv
+# writes blink.sv and blink.xdc
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd
+# writes blink.vhd and blink.ccf</code></pre>
+  <p class="fine">Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։</p>
+</section>
+
+<section class="download" id="download" aria-labelledby="download-h">
+  <h2 id="download-h">Ներբեռնել EVIA Paradigma 0.6.7</h2>
+  <p class="section-lede">Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը)։</p>
+  <table class="dl">
+    <thead><tr><th scope="col">Համակարգ</th><th scope="col">Ֆայլ</th><th scope="col">Նշումներ</th></tr></thead>
+    <tbody>
+      <tr><td>Windows 10 / 11, x64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/EVIA-Paradigma-0.6.7-windows-x64.exe">EVIA-Paradigma-0.6.7-windows-x64.exe</a></td>
+        <td>Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։</td></tr>
+      <tr><td>Ubuntu 22.04+ / Debian 12+</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/evia-paradigma_0.6.7_amd64.deb">evia-paradigma_0.6.7_amd64.deb</a></td>
+        <td><code>sudo apt install ./evia-paradigma_0.6.7_amd64.deb</code></td></tr>
+      <tr><td>Ցանկացած համակարգ Java 25-ով</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/evia-paradigma-0.6.7.jar">evia-paradigma-0.6.7.jar</a></td>
+        <td><code>java -jar evia-paradigma-0.6.7.jar</code></td></tr>
+    </tbody>
+  </table>
+  <p class="fine"><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases">Բոլոր թողարկումները և դրանց նշումները</a></p>
+</section>
+
+<section class="tested" aria-labelledby="tested-h">
+  <h2 id="tested-h">Ստուգված սեփական ինտերպրետատորով</h2>
+  <p class="section-lede">Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 32 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ, գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։</p>
+  <table class="results">
+    <thead><tr><th scope="col">Որտեղ</th><th scope="col">Կոմպիլյատոր</th><th scope="col">Համընկնում է ինտերպրետատորի հետ</th></tr></thead>
+    <tbody>
+      <tr><td>Linux, C-ի և C++-ի բոլոր 8 ստանդարտները</td><td>Clang 23</td><td>416 / 416</td></tr>
+      <tr><td>Linux, C-ի և C++-ի բոլոր 8 ստանդարտները</td><td>GCC 13</td><td>416 / 416</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, ստատիկ</td><td>260 / 260</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, ստատիկ</td><td>260 / 260</td></tr>
+      <tr><td>Տախտակների օրինակներ, AVR C առանց Arduino-ի simavr-ում (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 / 30</td></tr>
+      <tr><td>Arduino Uno և Mega 2560 սքեթչներ simavr-ում</td><td>arduino-cli, arduino:avr</td><td>15 / 15</td></tr>
+      <tr><td>FPGA նախագծերը սիմուլյացիայում (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27-ից 27</td></tr>
+    </tbody>
+  </table>
+  <p class="fine">Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ PIC32-ի օրինակները կոմպիլացվում են (միայն շարահյուսություն) Microchip-ի վերնագրերով (144-ից 144)։ FPGA-ի յուրաքանչյուր օրինակ և թեստ սինթեզվում է yosys-ով Artix-7-ի համար, իսկ GateMate նախագծերը տեղակայվում, երթուղավորվում և փաթեթավորվում են բիթսթրիմների մեջ. Vivado-ն, openXC7-ը և իրական տախտակները CI-ում չեն։ MQTT հաճախորդը կառուցվում է կառուցման մեքենայի վրա և ստուգվում իրական բրոքերով։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի, մասշտաբավորման և կտավի տեղափոխման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>-ում։</p>
+</section>
+
+<section class="docs" id="docs" aria-labelledby="docs-h">
+  <h2 id="docs-h">Փաստաթղթեր</h2>
+  <ul class="doclinks">
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md">Ուսուցում հայերենով</a> և <a href="https://github.com/sbrutyan01/EVIA-Paradigma#readme">README</a> (անգլերեն)՝ հնարավորություններ, ընտրացանկեր, լեզուներ, հրամանային տող</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/docs/release-notes">Թողարկումների նշումներ</a> յուրաքանչյուր տարբերակի համար, նորությունները՝ <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.7">0.6.7</a></li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Ծրագրերի օրինակներ</a>, նաև File, Open Example-ում (տախտակների ծրագրերը՝ <a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/boards">examples/boards</a>)</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga">FPGA ծրագրերի օրինակներ</a>, նաև File, Open Example, FPGA Boards-ում</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">Հաղորդել խնդրի մասին կամ առաջարկել գաղափար</a></li>
+  </ul>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia
+java -jar evia-paradigma.jar --gen program.evia --lang c11 -o program.c
+clang -std=c11 -O2 -o program program.c -lm</code></pre>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img class="logo-light" src="../img/logo.png" alt="" width="28" height="28">
+  <img class="logo-dark" src="../img/logo-dark.png" alt="" width="28" height="28">
+  <p>EVIA Paradigma 0.6.7. © 2026 Սերգեյ Բրուտյան։ Տարածվում է
+    <a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/LICENSE">MIT լիցենզիայով</a>։</p>
+</footer>
+
+<script src="../samples.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>

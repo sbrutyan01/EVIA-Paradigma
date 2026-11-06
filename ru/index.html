@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, прошивки и HDL</title>
+<meta name="description" content="Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из четырнадцати языков: от C99 до C++20 со сборкой Clang или GCC, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT).>
+<meta property="og:title" content="EVIA Paradigma">
+<meta property="og:description" content="Нарисуйте программу из блоков. Выберите язык, в который она превратится.">
+<meta property="og:image" content="img/hero-diagram.png">
+<link rel="icon" type="image/png" href="../img/logo.png">
+<link rel="preload" href="../fonts/NotoSans.woff" as="font" type="font/woff" crossorigin>
+<meta name="color-scheme" content="light dark">
+<script>
+  // the theme chosen with the header switch (otherwise the system's), before the page is drawn
+  try { var t = localStorage.getItem("evia-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="alternate" hreflang="en" href="https://sbrutyan01.github.io/EVIA-Paradigma/">
+<link rel="alternate" hreflang="ru" href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">
+<link rel="alternate" hreflang="hy" href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">
+<link rel="alternate" hreflang="de" href="https://sbrutyan01.github.io/EVIA-Paradigma/de/">
+<link rel="alternate" hreflang="zh-CN" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-CN/">
+<link rel="alternate" hreflang="zh-TW" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-TW/">
+<link rel="alternate" hreflang="ja" href="https://sbrutyan01.github.io/EVIA-Paradigma/ja/">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="EVIA Paradigma: на главную">
+    <img class="logo-light" src="../img/logo.png" alt="" width="136" height="136">
+    <img class="logo-dark" src="../img/logo-dark.png" alt="" width="136" height="136">
+    <span>EVIA Paradigma</span>
+  </a>
+  <nav aria-label="Главное меню">
+    <a href="#features">Возможности</a>
+    <a href="#tutorial">Учебник</a>
+    <a href="#fpga">FPGA</a>
+    <a href="#download">Скачать</a>
+    <a href="#docs">Документация</a>
+    <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+    <div class="top-tools">
+    <div class="site-language" role="group" aria-label="Язык сайта">
+      <span class="site-language-label">Язык сайта</span>
+      <div class="site-langs">
+        <a href=".././" hreflang="en" lang="en" title="English">EN</a>
+        <a href="../ru/" hreflang="ru" lang="ru" aria-current="page" title="Русский">RU</a>
+        <a href="../hy/" hreflang="hy" lang="hy" title="Հայերեն">ՀԱՅ</a>
+        <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a>
+        <a href="../zh-CN/" hreflang="zh-CN" lang="zh-CN" title="简体中文">简</a>
+        <a href="../zh-TW/" hreflang="zh-TW" lang="zh-TW" title="繁體中文">繁</a>
+        <a href="../ja/" hreflang="ja" lang="ja" title="日本語">日本語</a>
+      </div>
+    </div>
+    <div class="themes" role="group" aria-label="Цветовая тема">
+      <button type="button" data-theme-choice="light" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+        </svg>Светлая</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>
+        </svg>Тёмная</button>
+    </div>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-text">
+    <h1>Нарисуйте программу.<br>Выберите её язык.</h1>
+    <div class="hero-grid">
+      <p class="lede">EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA.</p>
+      <div class="side">
+        <p class="actions">
+          <a class="btn primary" href="#download">Скачать 0.6.7</a>
+          <a class="btn" href="https://github.com/sbrutyan01/EVIA-Paradigma">Исходный код на GitHub</a>
+        </p>
+        <p class="fine">Windows и Linux; сборки для macOS вернутся позже. Бесплатно, открытый исходный код, лицензия MIT.</p>
+      </div>
+    </div>
+  </div>
+
+  <figure class="bench" aria-labelledby="bench-caption">
+    <div class="bench-diagram">
+      <img src="../img/hero-diagram.png" width="1440" height="1048"
+           alt="Блок-схема: Start, Set n = 3, цикл For от 1 до n, который печатает шаг и вызывает c.add(i) у объекта Counter, затем c.show() и End.">
+    </div>
+    <div class="bench-arrow" aria-hidden="true"></div>
+    <div class="bench-code">
+      <div class="controls" role="group" aria-label="Параметры генерируемого кода">
+        <div class="langs" role="tablist" aria-label="Язык">
+          <button role="tab" data-lang="c99">C99</button>
+          <button role="tab" data-lang="c11">C11</button>
+          <button role="tab" data-lang="c17">C17</button>
+          <button role="tab" data-lang="c++98">C++98</button>
+          <button role="tab" data-lang="c++11">C++11</button>
+          <button role="tab" data-lang="c++14">C++14</button>
+          <button role="tab" data-lang="c++17">C++17</button>
+          <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
+        </div>
+        <div class="modes">
+          <span class="mode" role="radiogroup" aria-label="Поток управления">
+            <button role="radio" data-flow="structured" aria-checked="true">Structured</button>
+            <button role="radio" data-flow="goto" aria-checked="false">Goto</button>
+          </span>
+          <span class="mode" role="radiogroup" aria-label="Значения">
+            <button role="radio" data-values="safe" aria-checked="true">Safe</button>
+            <button role="radio" data-values="fast" aria-checked="false">Fast</button>
+          </span>
+        </div>
+      </div>
+      <pre class="code" tabindex="0" aria-live="polite"><code id="sample"></code></pre>
+      <div class="run">
+        <pre id="output" aria-label="Вывод программы"></pre>
+      </div>
+    </div>
+    <figcaption id="bench-caption"><span id="sample-note" data-note="Схема слева на {lang}: {fn} из сгенерированного файла ({lines} строк).">Схема слева в том виде, в каком её пишет генератор.</span>
+      Все 32 варианта выводят то же, что и встроенный интерпретатор.</figcaption>
+  </figure>
+</section>
+
+<section class="features" id="features" aria-labelledby="features-h">
+  <h2 id="features-h">Что умеет программа</h2>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Программа — это блоки и связи</h3>
+      <p>Start, Set, Input, Print, If/Else, For, While и Do-While — это блоки, а связи между ними задают порядок выполнения. Нажмите Run, и выполняемый блок подсвечивается. Выражения работают с числами и текстом: <code>&amp;&amp; || !</code>, сравнения и обычная арифметика.</p>
+    </div>
+    <img src="../img/03-first-run.png" loading="lazy" width="2360" height="1760" alt="Цикл For, собранный из блоков, и его вывод: step 1, step 2, step 3.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Классы, объекты и модули</h3>
+      <p>У класса есть поля с начальными значениями, конструктор и методы, и каждый метод — отдельная блок-схема от Enter до Exit. Каждый Exit становится выходом вызывающего блока. Блоки с одинаковым именем объекта работают с одним объектом. Классы можно сохранить как модули (<code>.eviam</code>) и подключать в другие программы.</p>
+    </div>
+    <img src="../img/05-class-method.png" loading="lazy" width="2160" height="1280" alt="Окно класса Counter: вкладки полей, конструктора и методов; метод add(x) прибавляет x к this.total.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Одна схема — четырнадцать языков</h3>
+      <p>Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы.</p>
+    </div>
+    <img src="../img/24-menu-code-language.png" loading="lazy" width="1536" height="1220" alt="Открытое меню Code Language and Mode: от C99 до C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Восемь стандартов C и C++ и два стиля кода</h3>
+      <p>Выберите на панели инструментов C99, C11, C17, C++98, C++11, C++14, C++17 или C++20. <b>Structured</b> пишет if/else, циклы и switch; <b>Goto</b> превращает каждый блок в метку, а каждую связь — в переход. Значения <b>Safe</b> хранят текст и сохраняют все проверки интерпретатора; значения <b>Fast</b> — это простые <code>double</code> без проверок во время выполнения. Среда выполнения C содержит только то, что использует программа, поэтому код компилируется без предупреждений с <code>-Wall -Wextra -Wpedantic -Werror</code>.</p>
+    </div>
+    <img src="../img/22-c11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Окно кода: программа на C11, скомпилированная Clang и запущенная.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Код любого блока</h3>
+      <p>Щёлкните блок правой кнопкой и выберите View source code: откроется сгенерированный файл, в котором подсвечены именно те строки, в которые превратился блок. Так же это работает для целого метода или класса, на любом выбранном языке. Compile &amp; Run тут же собирает код с помощью Clang или GCC; в Windows программа сама устанавливает llvm-mingw или WinLibs GCC, Visual Studio не нужна.</p>
+    </div>
+    <img src="../img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Сгенерированный C++ с подсвеченными строками блока c.add(i), скомпилированный Clang и запущенный.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Платы Arduino и ESP32</h3>
+      <p>Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. UART, SPI, I2C и MQTT — тоже блоки. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе.</p>
+    </div>
+    <img src="../img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="Пример blink с блоками Board в палитре; в выводе видно, как имитируемый пин 13 переключается каждые 500 мс.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Без Arduino, прямо на регистрах</h3>
+      <p>AVR C пишет программу для ATmega328P, ATmega2560 или ATmega32U4 без ядра Arduino: порты, таймеры, ШИМ, АЦП и UART настраиваются на понятном C. avr-gcc собирает её примерно в 4 КБ, а Upload загружает на плату через avrdude. Каждый пример запускается в симуляторе simavr и сверяется с интерпретатором.</p>
+      <p>Новое в 0.5: PIC32 C делает то же для девяти микросхем PIC32MX с Microchip XC32, а UART, SPI и I2C стали блоками, в Run и во всех трёх языках для плат. Код PIC32 проверен по заголовочным файлам Microchip, но ещё не собирался XC32 и не запускался на микросхеме.</p>
+      <p>Новое в 0.6: поддержка FPGA. SystemVerilog, Verilog-2001 и VHDL превращают ту же схему в аппаратуру для Artix-7 (Nexys A7, Arty A7, Basys 3) и плат Cologne Chip GateMate. Результат моделировался в сравнении с Run и синтезировался открытыми средствами, но не проходил через Vivado и не загружался в плату.</p>
+      <p>Новое в 0.6.5: MQTT. Пять блоков публикуют числа программы брокеру и читают команды обратно: на PIC32MX с модулем WiFi на UART2, на ESP32 с собственным WiFi и в Run — брокеру на вашем компьютере. Сгенерированный клиент проверяется на настоящем брокере; ни модуля WiFi, ни микросхемы в этой проверке не было. К нему идут два примера, один — для PIC32 Ethernet Starter Kit II. Новое в 0.6.7: MQTT может уходить и через собственный порт Ethernet чипов MX695, MX795 и стартового набора — как приложение для MPLAB X Harmony; это экспериментально и ещё не собиралось с настоящей Harmony. Сам интерфейс тоже теперь на английском, русском или армянском — выбирается в Настройках.</p>
+    </div>
+    <img src="../img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>Масштаб и перемещение холста мышью</h3>
+      <p>Прокрутите колесо над схемой, чтобы менять масштаб от 25% до 300% в сторону указателя. Блоки, текст и связи остаются чёткими, а редактировать можно при любом масштабе. Ctrl+0 возвращает 100%, Ctrl+9 вписывает всю схему. Новое в 0.6.1: удерживайте среднюю кнопку мыши и перетаскивайте, чтобы двигать холст — с пустого места или с блока.</p>
+    </div>
+    <img src="../img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="Схема в масштабе 161%.">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Проекты, Git и GitHub</h3>
+      <p>File, New Project создаёт папку с программой, папкой модулей, README и Git-репозиторием. Commit, push и pull — в меню Git; Connect to GitHub публикует проект под той учётной записью, которую уже использует ваш git. Программа никогда не запрашивает и не хранит пароль.</p>
+    </div>
+    <img src="../img/18-connect-github.png" loading="lazy" width="1110" height="392" alt="Окно Connect to GitHub с именем репозитория sbrutyan01/CounterDemo.">
+  </article>
+
+  <ul class="extras">
+    <li><b>Vim повсюду.</b> В полях кода, окне кода и сообщениях коммитов работают клавиши Vim; Edit in Vim открывает настоящий Vim.</li>
+    <li><b>Командная строка.</b> <code>evia --run program.evia</code> и <code>evia --gen program.evia --lang c11 -o program.c</code> для скриптов и Makefile.</li>
+    <li><b>Clang или GCC.</b> Переключаются в Settings; в Windows любой из них устанавливается сам, Visual Studio не нужна.</li>
+    <li><b>Тёмная тема.</b> Программа выглядит как IntelliJ IDEA, со шрифтами Inter и JetBrains Mono. View, Theme выбирает светлую, тёмную или системную.</li>
+    <li><b>Встроенное руководство.</b> Help, Guide (F1) описывает каждый блок, выражения, возможности классов, сочетания клавиш и клавиши Vim, на английском, русском и армянском.</li>
+    <li><b>Учебник в PDF.</b> Help, Tutorial открывает всё руководство на любом из семи языков.</li>
+    <li><b>Настройки скачивают инструменты.</b> arduino-cli, avr-gcc и набор для FPGA загружаются в собственную папку приложения; XC32 открывает страницу Microchip.</li>
+  </ul>
+</section>
+
+<section class="tutorial" id="tutorial" aria-labelledby="tutorial-h">
+  <h2 id="tutorial-h">Первая программа за восемь шагов</h2>
+  <p class="section-lede">Полный пошаговый учебник со всеми снимками экрана доступен в PDF на семи языках: <a href="../tutorial/EVIA-Paradigma-Tutorial.en.pdf">English</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.ru.pdf">Русский</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.hy.pdf">Հայերեն</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.de.pdf">Deutsch</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf">简体中文</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf">繁體中文</a>, <a href="../tutorial/EVIA-Paradigma-Tutorial.ja.pdf">日本語</a>. Он доступен в программе в меню Help, Tutorial и в <a href="https://github.com/sbrutyan01/EVIA-Paradigma#tutorial">README</a>.</p>
+  <ol class="steps">
+    <li><img src="../img/01-new-project.png" loading="lazy" alt=""><h3>Создайте проект</h3><p>File, New Project. Оставьте отмеченным Create a Git repository.</p></li>
+    <li><img src="../img/03-first-run.png" loading="lazy" alt=""><h3>Соберите цикл</h3><p>Перетащите Set, For и Print на холст, соедините их и нажмите Run.</p></li>
+    <li><img src="../img/04-class-fields.png" loading="lazy" alt=""><h3>Создайте класс</h3><p>Edit, New Class: задайте классу Counter поля total и calls.</p></li>
+    <li><img src="../img/07-call-dialog.png" loading="lazy" alt=""><h3>Используйте класс</h3><p>Перетащите Counter.add(x) в цикл и назовите объект c.</p></li>
+    <li><img src="../img/09-block-menu.png" loading="lazy" alt=""><h3>Посмотрите код</h3><p>Правый щелчок по блоку, View source code.</p></li>
+    <li><img src="../img/21-language-dropdown.png" loading="lazy" alt=""><h3>Выберите язык</h3><p>Переключитесь на C11 или любой стандарт C++, и код сгенерируется заново.</p></li>
+    <li><img src="../img/17-commit.png" loading="lazy" alt=""><h3>Коммит и публикация</h3><p>Git, Commit, затем Connect to GitHub.</p></li>
+    <li><img src="../img/20-help-guide.png" loading="lazy" alt=""><h3>Что дальше</h3><p>Модули, примеры и руководство (F1).</p></li>
+  </ol>
+</section>
+
+<section class="tutorial" id="fpga" aria-labelledby="fpga-h">
+  <h2 id="fpga-h">Ваша первая программа для FPGA в четыре шага</h2>
+  <p class="section-lede">Та же схема мигания становится аппаратурой для плат Artix-7 и GateMate. Полное руководство, шаг 10, в PDF выше, а в справке есть раздел про FPGA (F1).</p>
+  <ol class="steps">
+    <li><h3>Выберите язык и плату</h3><p>Язык: SystemVerilog, Verilog-2001 или VHDL. Плата: Nexys A7, Arty A7, Basys 3 или плата GateMate.</p></li>
+    <li><h3>Откройте пример Blink</h3><p>Файл, Открыть пример, FPGA Boards, Blink. Выводы задаются именами: LED0, SW3, BTNC, JA1.</p></li>
+    <li><h3>Создайте код</h3><p>Нажмите F7. Ограничения выводов лежат в первом комментарии, а командная строка записывает их в отдельный файл.</p></li>
+    <li><h3>Сборка и загрузка</h3><p>Vivado или открытые средства, выбор в Настройках. Загрузка прошивает плату.</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv
+# writes blink.sv and blink.xdc
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd
+# writes blink.vhd and blink.ccf</code></pre>
+  <p class="fine">Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате.</p>
+</section>
+
+<section class="download" id="download" aria-labelledby="download-h">
+  <h2 id="download-h">Скачать EVIA Paradigma 0.6.7</h2>
+  <p class="section-lede">Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама).</p>
+  <table class="dl">
+    <thead><tr><th scope="col">Система</th><th scope="col">Файл</th><th scope="col">Примечания</th></tr></thead>
+    <tbody>
+      <tr><td>Windows 10 / 11, x64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/EVIA-Paradigma-0.6.7-windows-x64.exe">EVIA-Paradigma-0.6.7-windows-x64.exe</a></td>
+        <td>Пока без цифровой подписи: в предупреждении SmartScreen выберите «Подробнее», затем «Выполнить в любом случае».</td></tr>
+      <tr><td>Ubuntu 22.04+ / Debian 12+</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/evia-paradigma_0.6.7_amd64.deb">evia-paradigma_0.6.7_amd64.deb</a></td>
+        <td><code>sudo apt install ./evia-paradigma_0.6.7_amd64.deb</code></td></tr>
+      <tr><td>Любая система с Java 25</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.6.7/evia-paradigma-0.6.7.jar">evia-paradigma-0.6.7.jar</a></td>
+        <td><code>java -jar evia-paradigma-0.6.7.jar</code></td></tr>
+    </tbody>
+  </table>
+  <p class="fine"><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases">Все выпуски и примечания к ним</a></p>
+</section>
+
+<section class="tested" aria-labelledby="tested-h">
+  <h2 id="tested-h">Проверено собственным интерпретатором</h2>
+  <p class="section-lede">При каждом изменении CI генерирует все примеры и тестовые программы во всех 32 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками, запускает и сравнивает stdout, stderr и код выхода с интерпретатором.</p>
+  <table class="results">
+    <thead><tr><th scope="col">Где</th><th scope="col">Компилятор</th><th scope="col">Совпадает с интерпретатором</th></tr></thead>
+    <tbody>
+      <tr><td>Linux, все 8 стандартов C и C++</td><td>Clang 23</td><td>416 из 416</td></tr>
+      <tr><td>Linux, все 8 стандартов C и C++</td><td>GCC 13</td><td>416 из 416</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, статически</td><td>260 из 260</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, статически</td><td>260 из 260</td></tr>
+      <tr><td>Примеры для плат, AVR C без Arduino в simavr (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 из 30</td></tr>
+      <tr><td>Скетчи Arduino Uno и Mega 2560 в simavr</td><td>arduino-cli, arduino:avr</td><td>15 из 15</td></tr>
+      <tr><td>Проекты для FPGA в моделировании (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 из 27</td></tr>
+    </tbody>
+  </table>
+  <p class="fine">Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Клиент MQTT собирается на машине сборки и проверяется на настоящем брокере. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>.</p>
+</section>
+
+<section class="docs" id="docs" aria-labelledby="docs-h">
+  <h2 id="docs-h">Документация</h2>
+  <ul class="doclinks">
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.ru.md">Учебник на русском</a> и <a href="https://github.com/sbrutyan01/EVIA-Paradigma#readme">README</a> (на английском): возможности, меню, языки, командная строка</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/docs/release-notes">Примечания к выпускам</a> для каждой версии; что нового в <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.7">0.6.7</a></li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">Примеры программ</a>, также в File, Open Example (программы для плат — в <a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/boards">examples/boards</a>)</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga">Примеры программ для FPGA</a>, также в File, Open Example, FPGA Boards</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">Сообщить о проблеме или предложить идею</a></li>
+  </ul>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia
+java -jar evia-paradigma.jar --gen program.evia --lang c11 -o program.c
+clang -std=c11 -O2 -o program program.c -lm</code></pre>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img class="logo-light" src="../img/logo.png" alt="" width="28" height="28">
+  <img class="logo-dark" src="../img/logo-dark.png" alt="" width="28" height="28">
+  <p>EVIA Paradigma 0.6.7. © 2026 Сергей Брутян. Распространяется по
+    <a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/LICENSE">лицензии MIT</a>.</p>
+</footer>
+
+<script src="../samples.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>
