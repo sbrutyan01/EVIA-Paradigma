@@ -38,15 +38,21 @@ jobs:
           fetch-depth: 0        # the mirror pushes every branch and tag
 
       - name: Is the token here
+        id: token
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          if [ -z "${{ secrets.GITLAB_TOKEN }}" ]; then
-            echo "::error::No GITLAB_TOKEN secret. Add one in Settings > Secrets and variables >"
-            echo "::error::Actions, from GitLab > User settings > Access tokens with the api scope."
-            exit 1
+          if [ -z "${GITLAB_TOKEN:-}" ]; then
+            echo "::warning::No GITLAB_TOKEN secret, so nothing was mirrored. Add one in Settings > Secrets and variables >"
+            echo "::warning::Actions, from GitLab > User settings > Access tokens with the api scope."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          echo "present=true" >> "$GITHUB_OUTPUT"
           echo "the secret is set"
 
       - name: Mirror
+        if: steps.token.outputs.present == 'true'
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
           GITLAB_URL: ${{ vars.GITLAB_URL }}
