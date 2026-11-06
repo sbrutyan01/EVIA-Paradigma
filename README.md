@@ -76,6 +76,9 @@ the interface itself in Russian and Armenian.
   without a translation simply stays English, so adding to them cannot break the application.
 - [`scripts/i18n/collect.py`](scripts/i18n/collect.py) lists what the interface asks for and what is still missing,
   and the checks fail when a language falls behind — all 171 strings are translated in both.
+- **Fixed:** *PIC32 MQTT over: Ethernet* was turning every PIC32 program into a Harmony application, even one with
+  no MQTT in it, which `xc32-gcc` then could not compile on its own. Harmony now needs the setting **and** an
+  *MQTT Connect* block in the program.
 
 ### Release 0.6.6
 
