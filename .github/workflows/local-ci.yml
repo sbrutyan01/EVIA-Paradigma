@@ -26,10 +26,11 @@ jobs:
     runs-on: [self-hosted, linux, dell]
     timeout-minutes: 180
     env:
-      # where the runner's own machine keeps its toolchains; override in the runner's .env if they move
-      OSS_CAD_SUITE: ${{ vars.OSS_CAD_SUITE || '/opt/oss-cad-suite' }}
-      XC32_BIN: ${{ vars.XC32_BIN || '/opt/microchip/xc32/v4.60/bin' }}
-      AVR_GCC_BIN: ${{ vars.AVR_GCC_BIN || '/opt/avr-gcc/bin' }}
+      # Empty unless set as repository variables (Settings > Actions > Variables): a tool already on the
+      # runner's PATH needs nothing here, and an empty value adds no bogus PATH entry.
+      OSS_CAD_SUITE: ${{ vars.OSS_CAD_SUITE }}
+      XC32_BIN: ${{ vars.XC32_BIN }}
+      AVR_GCC_BIN: ${{ vars.AVR_GCC_BIN }}
     steps:
       - uses: actions/checkout@v5
 
