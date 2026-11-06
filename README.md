@@ -963,7 +963,16 @@ scripts/local-ci.sh app mqtt        # only those: build app mqtt examples target
 Point it at your toolchains with `OSS_CAD_SUITE` (the folder holding its `environment` file), `XC32_BIN`,
 `AVR_GCC_BIN`, and `CXX` / `CC`.
 
-To let GitHub start it on that machine, register it as a **self-hosted runner** (Settings → Actions → Runners → New
+[`scripts/setup-runner.sh`](scripts/setup-runner.sh) does the setting up: `--check` prints what the machine has and
+what is missing, and `--token <TOKEN>` installs the build tools and a Java 25 if needed, fetches the current runner,
+registers it and installs it as a service that starts with the machine.
+
+```bash
+scripts/setup-runner.sh --check
+scripts/setup-runner.sh --token <FROM THE RUNNERS PAGE> --name dell --labels self-hosted,linux,dell
+```
+
+To do it by hand instead, register it as a **self-hosted runner** (Settings → Actions → Runners → New
 self-hosted runner gives the exact commands, pinned to the current runner version), with the labels this repository's
 workflow expects:
 
@@ -1010,7 +1019,7 @@ needs no incoming connection at all: the runner polls GitHub outbound, so nothin
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `EmbeddedRuntime.MQTT_CORE` / `Pic32Runtime.java` | The MQTT 3.1.1 client that goes into the generated file, and the network under it: the ESP32's WiFi, or a WiFi module on the PIC32's UART2 |
 | `Toolchains.java` | Fetches arduino-cli, avr-gcc and the OSS CAD Suite into the app's own folder; XC32 opens Microchip's page |
-| `scripts/local-ci.sh`, `.github/workflows/local-ci.yml` | The whole check suite on a machine of your own, through a self-hosted runner |
+| `scripts/local-ci.sh`, `scripts/setup-runner.sh`, `.github/workflows/local-ci.yml` | The whole check suite on a machine of your own, through a self-hosted runner |
 | `scripts/mqtt/` | The MQTT check: a socket in place of the chip's network, and a small broker that reads what the client sends |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds its Russian, Armenian, German, Simplified Chinese, Traditional Chinese and Japanese texts |
