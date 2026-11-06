@@ -1008,8 +1008,19 @@ final class Pic32Runtime {
         return source(b, program, false);
     }
 
+    /**
+     * True when {@code program} is a Harmony application rather than a program of its own: the Ethernet
+     * setting alone is not enough, the program has to actually use MQTT. A program with no MQTT in it is
+     * plain bare-metal PIC32 C whatever that setting says, so it keeps its own {@code #pragma config},
+     * clock and {@code main()} and compiles with xc32-gcc alone.
+     */
+    static boolean harmony(String program, boolean ethernet) {
+        return ethernet && program.contains("mqttConnect");
+    }
+
     /** With {@code ethernet}, MQTT goes through Harmony's TCP/IP stack instead of a WiFi module on UART2. */
-    static String source(Board b, String program, boolean ethernet) {
+    static String source(Board b, String program, boolean ethernetSetting) {
+        boolean ethernet = harmony(program, ethernetSetting);
         Map<String, EmbeddedRuntime.Piece> pieces = PIECES;
         if (ethernet) {
             pieces = new LinkedHashMap<>(PIECES);

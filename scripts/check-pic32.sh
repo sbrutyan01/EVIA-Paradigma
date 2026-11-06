@@ -52,17 +52,34 @@ for src in examples/boards/*.evia; do
     set -- $b
     board=$1; header=$2
     [ -f "$PIC32_PROC/$header.h" ] || { echo "skip  $board ($header.h missing)"; continue; }
+    # The WiFi module on UART2 works on every chip. Harmony over the built-in Ethernet MAC exists only on
+    # the MX695/795, and only for a program that actually connects to a broker, so that pass is added just
+    # for those: it is a different output shape (no #pragma config, no main(), app_run() instead).
+    nets=uart
+    case $board in pic32mx695f512l | pic32mx795f512l) grep -q MQTT_CONNECT "$src" && nets="uart ethernet";; esac
     for flow in structured goto; do
-      c="$OUT/$name-$board-$flow.c"
-      if ! java -jar "$JAR" --gen "$src" --lang pic32 --board "$board" --flow "$flow" -o "$c" 2> "$c.err"; then
-        fail "$name $board $flow: generate"; cat "$c.err"; continue
-      fi
-      if ! gcc -fsyntax-only -std=gnu99 -Wall -Wextra -Werror -Wno-unknown-pragmas \
-            -D__LANGUAGE_C__ -D__PIC32MX__ "-DEVIA_PROC_HEADER=\"$header.h\"" \
-            -I"$OUT/mock" -I"$PIC32_PROC" -I"$PIC32_INC" "$c" 2> "$c.log"; then
-        fail "$name $board $flow: gcc"; head -12 "$c.log"; continue
-      fi
-      ok=$((ok + 1))
+      for net in $nets; do
+        c="$OUT/$name-$board-$flow-$net.c"
+        # --net is pinned, never taken from the saved settings: a leftover "ethernet" there would otherwise
+        # put every MQTT program on the Harmony path and change what this check compiles.
+        if ! java -jar "$JAR" --gen "$src" --lang pic32 --board "$board" --flow "$flow" --net "$net" -o "$c" 2> "$c.err"; then
+          fail "$name $board $flow $net: generate"; cat "$c.err"; continue
+        fi
+        # A Harmony application (#include "definitions.h") is compiled against the stubs in
+        # scripts/mqtt/harmony-stubs/; every other program against xc.h and the device header.
+        if grep -q '^#include "definitions.h"' "$c"; then
+          if ! gcc -fsyntax-only -std=gnu99 -Wall -Wextra -Werror -Wno-unknown-pragmas \
+                -D__LANGUAGE_C__ -D__PIC32MX__ "-DEVIA_PROC_HEADER=\"$header.h\"" \
+                -I"$(dirname "$0")/mqtt/harmony-stubs" -I"$PIC32_PROC" "$c" 2> "$c.log"; then
+            fail "$name $board $flow $net: gcc (Harmony)"; head -12 "$c.log"; continue
+          fi
+        elif ! gcc -fsyntax-only -std=gnu99 -Wall -Wextra -Werror -Wno-unknown-pragmas \
+              -D__LANGUAGE_C__ -D__PIC32MX__ "-DEVIA_PROC_HEADER=\"$header.h\"" \
+              -I"$OUT/mock" -I"$PIC32_PROC" -I"$PIC32_INC" "$c" 2> "$c.log"; then
+          fail "$name $board $flow $net: gcc"; head -12 "$c.log"; continue
+        fi
+        ok=$((ok + 1))
+      done
     done
   done
   echo "done  $name"

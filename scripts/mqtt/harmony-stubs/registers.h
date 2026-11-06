@@ -79,6 +79,7 @@ extern volatile uint32_t OC5RS;
 extern volatile uint32_t ON;
 extern volatile uint32_t PHY;
 extern volatile uint32_t PIC32;
+extern volatile uint32_t PIC32MX795F512L;
 extern volatile uint32_t PORT;
 extern volatile uint32_t PORTA;
 extern volatile uint32_t PORTB;
@@ -144,5 +145,13 @@ extern volatile struct { unsigned int ON : 4; } OC4CONbits;
 extern volatile struct { unsigned int ON : 4; } OC5CONbits;
 extern volatile struct { unsigned int BRGH : 4; unsigned int ON : 4; } U1MODEbits;
 extern volatile struct { unsigned int TRMT : 4; unsigned int URXEN : 4; unsigned int UTXBF : 4; unsigned int UTXEN : 4; } U1STAbits;
+
+#define _PORTA_BASE_ADDRESS 0
+#define _PORTB_BASE_ADDRESS 0
+#define _PORTC_BASE_ADDRESS 0
+#define _PORTD_BASE_ADDRESS 0
+#define _PORTE_BASE_ADDRESS 0
+#define _PORTF_BASE_ADDRESS 0
+#define _PORTG_BASE_ADDRESS 0
 
 #endif

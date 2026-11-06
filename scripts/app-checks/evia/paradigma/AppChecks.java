@@ -253,6 +253,7 @@ public class AppChecks {
         {
             Library mq = newLib();
             ProgramIO.load(mq, Path.of("examples/boards/mqtt_sensor.evia"));
+            Settings.usePic32Net(false);   // the WiFi module, whatever is saved in the settings of this computer
             String out = run(mq);
             check(out.contains("command 10") && out.contains("command 50") && out.trim().endsWith("done"),
                     "Run answers MQTT Read from its own broker");

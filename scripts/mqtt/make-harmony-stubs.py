@@ -49,4 +49,14 @@ print()
 for sym in sorted(bits):
     members = " ".join(f"unsigned int {m} : 4;" for m in sorted(bits[sym]))
     print(f"extern volatile struct {{ {members} }} {sym}bits;")
+
+# The runtime guards each port of rt_port_reg() with #if defined(_PORTx_BASE_ADDRESS), which is how the
+# real device header says the chip has that port. Without these the whole switch compiles away and its
+# "which" parameter goes unused, which -Werror=unused-parameter then rejects. A port counts as present
+# when its three registers were declared above.
+ports = sorted({m.group(2) for m in (re.fullmatch(r"(TRIS|LAT|PORT)([A-G])", r) for r in regs) if m})
+if ports:
+    print()
+    for p in ports:
+        print(f"#define _PORT{p}_BASE_ADDRESS 0")
 print("\n#endif")
