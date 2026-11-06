@@ -14,6 +14,22 @@ jar = sys.argv[1] if len(sys.argv) > 1 else sorted(glob.glob("target/evia-paradi
 # the download links point at a published release: SITE_VERSION (the latest release, set by the workflow),
 # or else the version of the jar
 version = os.environ.get("SITE_VERSION", "").lstrip("v") or re.search(r"evia-paradigma-([0-9.]+)\.jar", jar).group(1)
+
+# Where the installers are fetched from. By default the GitHub release of that version; DOWNLOAD_BASE
+# points the three download links at another server instead - a mirror, or a machine of your own. The
+# file names do not change, so whatever is given has to serve them directly under that base:
+#
+#   DOWNLOAD_BASE=https://downloads.example.com/evia/v0.6.7 python3 scripts/build-site.py
+#
+# A private address (192.168.x.x, a .local name) only works for visitors on that network, so it does
+# not belong on the published site; it is fine for a site served inside the same network.
+github_downloads = f"https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{version}"
+download_base = os.environ.get("DOWNLOAD_BASE", "").rstrip("/")
+
+
+def relink(page):
+    """Sends the download links somewhere other than GitHub, when DOWNLOAD_BASE says so."""
+    return page.replace(github_downloads, download_base) if download_base else page
 out = "build/site"
 shutil.rmtree(out, ignore_errors=True)
 shutil.copytree("site", out)
@@ -54,7 +70,7 @@ def current(page, lang):
 
 
 with open(out + "/index.html", "w") as f:
-    f.write(current(html, "en"))
+    f.write(relink(current(html, "en")))
 
 # Russian and Armenian files hold [English, translation] pairs. The newer locales hold translations
 # in the same order as the source strings in site/i18n/ru.json. Every English string must still be
@@ -82,7 +98,7 @@ for lang in ["ru", "hy", "de", "zh-CN", "zh-TW", "ja"]:
     page = re.sub(r'(src|href)="(?!https?:|#|mailto:|/)', r'\1="../', page)
     os.makedirs(f"{out}/{lang}", exist_ok=True)
     with open(f"{out}/{lang}/index.html", "w", encoding="utf-8") as f:
-        f.write(current(page, lang))
+        f.write(relink(current(page, lang)))
 shutil.rmtree(out + "/i18n")
 open(out + "/.nojekyll", "w").close()
 print(f"site for {version}: {len(samples)} code samples, English, Russian, Armenian, German, Chinese (simplified and traditional) and Japanese -> {out}")

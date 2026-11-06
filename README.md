@@ -79,6 +79,13 @@ the interface itself in Russian and Armenian, and MQTT over a PIC32's own Ethern
 - [`scripts/publish-gitlab.sh`](scripts/publish-gitlab.sh) publishes a release to a self-hosted GitLab as well:
   `GITLAB_TOKEN=... scripts/publish-gitlab.sh v0.6.7` pushes `main` and the tag, then creates the release with
   that version's notes file as its description. The token is read from the environment and never written down.
+- [`scripts/mirror-to-gitlab.sh`](scripts/mirror-to-gitlab.sh) copies the whole repository there instead of one
+  release: every branch, every tag, and all 13 releases with their installers fetched from GitHub and attached, so
+  the GitLab can serve the downloads itself. Run it where both are reachable; `--prune` also removes refs that exist
+  only on the GitLab.
+- The website's download links are no longer tied to GitHub: `DOWNLOAD_BASE=https://host/path python3
+  scripts/build-site.py` points all three at another server, in every language, leaving the file names as they are.
+  Without it they go to that version's GitHub release, as before.
 - **MQTT over the chip's own Ethernet port** (experimental), on the MX695F512L, the MX795F512L and the Ethernet
   Starter Kit II: **Settings → PIC32 MQTT over → Ethernet, Harmony TCP/IP**, or `--net ethernet`. The four transport
   functions change and nothing above them does, so the blocks and the diagram are untouched; the generated file
