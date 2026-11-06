@@ -1,0 +1,28 @@
+name: ssh-diag
+
+# A read-only check of the runner machine's own authorized_keys while an SSH key problem is
+# being tracked down. It prints fingerprints, never keys, and changes nothing.
+# Temporary: delete this file once SSH works.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diag:
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 5
+    steps:
+      - name: authorized_keys of this account
+        run: |
+          f="$HOME/.ssh/authorized_keys"
+          echo "account: $(id -un)   file: $f"
+          ls -l "$f" 2>&1 || { echo "MISSING"; exit 0; }
+          echo "--- lines: $(wc -l < "$f")"
+          echo "--- fingerprints:"
+          ssh-keygen -lf "$f" 2>&1 || echo "nothing readable"
+          echo "--- is the desktop-8vek96u key (SHA256:7Y/u33flNNEXYgux0opStuFnuO9Hwb0PWklQO2osKEw) present?"
+          if ssh-keygen -lf "$f" 2>/dev/null | grep -q '7Y/u33flNNEXYgux0opStuFnuO9Hwb0PWklQO2osKEw'; then
+            echo "YES - the workstation will accept that key"
+          else
+            echo "NO - that key is not in the file"
+          fi
