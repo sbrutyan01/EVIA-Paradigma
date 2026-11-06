@@ -22,8 +22,9 @@ concurrency:
 
 jobs:
   checks:
-    # the labels given to ./config.sh --labels on the machine
-    runs-on: [self-hosted, linux, dell]
+    # any self-hosted Linux runner of this repository: the labels every runner carries by default,
+    # so no custom label has to be set when registering one
+    runs-on: [self-hosted, linux]
     timeout-minutes: 180
     env:
       # Empty unless set as repository variables (Settings > Actions > Variables): a tool already on the
