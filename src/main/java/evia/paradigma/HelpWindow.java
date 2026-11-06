@@ -66,7 +66,7 @@ final class HelpWindow extends JFrame {
             }
         });
         for (Lang l : LANGS) language.addItem(l.name());
-        language.setToolTipText("Language of the guide");
+        language.setToolTipText(Text.t("Language of the guide"));
         language.addActionListener(e -> {
             int i = language.getSelectedIndex();
             if (!loading && i >= 0 && LANGS[i] != lang) {

@@ -41,25 +41,25 @@ final class PalettePanel extends JPanel {
 
     private void build() {
         removeAll();
-        add(header("Blocks"));
+        add(header(Text.t("Blocks")));
         for (BlockType t : BlockType.values()) {
             if (t == BlockType.CUSTOM || t.isBoard() || !target.allows(t)) continue;
-            add(item(t.title, t.color, t.hint, "TYPE:" + t.name(), null, null));
+            add(item(Text.t(t.title), t.color, Text.t(t.hint), "TYPE:" + t.name(), null, null));
             add(Box.createVerticalStrut(5));
         }
 
         add(Box.createVerticalStrut(10));
-        add(header("Board"));
+        add(header(Text.t("Board")));
         for (BlockType t : BlockType.values()) {
             if (!t.isBoard() || !target.allows(t)) continue;
-            add(item(t.title, t.color, "<html>" + t.hint + "<br><i>Arduino / AVR C code; Run simulates an Arduino Uno.</i></html>",
+            add(item(Text.t(t.title), t.color, "<html>" + Text.t(t.hint) + "<br><i>" + Text.t("Arduino / AVR C code; Run simulates an Arduino Uno.") + "</i></html>",
                     "TYPE:" + t.name(), null, null));
             add(Box.createVerticalStrut(5));
         }
 
         add(Box.createVerticalStrut(10));
-        add(header("Classes"));
-        JButton newBtn = new JButton("+ New class...");
+        add(header(Text.t("Classes")));
+        JButton newBtn = new JButton(Text.t("+ New class..."));
         newBtn.setAlignmentX(LEFT_ALIGNMENT);
         newBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         newBtn.addActionListener(e -> newDefinition(this, lib));
@@ -67,7 +67,7 @@ final class PalettePanel extends JPanel {
         add(Box.createVerticalStrut(6));
 
         if (lib.defs().isEmpty()) {
-            add(note("None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a class."));
+            add(note(Text.t("None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a class.")));
         }
         for (BlockDef d : lib.defs()) {
             boolean self = target.owner != null && target.owner.cls == d;
@@ -76,8 +76,8 @@ final class PalettePanel extends JPanel {
                 String label = simple ? d.signature() : d.name + "." + m.signature();
                 String tip = "<html><b>" + d.name + "." + m.signature() + "</b>"
                         + (d.module != null ? " &nbsp;<i>(module " + java.nio.file.Path.of(d.module).getFileName() + ")</i>" : "")
-                        + "<br>exits: " + String.join(", ", m.exitNames())
-                        + "<br>Drag to call it. Double-click to open the class."
+                        + "<br>" + Text.t("exits:") + " " + String.join(", ", m.exitNames())
+                        + "<br>" + Text.t("Drag to call it. Double-click to open the class.")
                         + (self ? "<br><i>Calling it from its own class makes it recursive.</i>" : "") + "</html>";
                 add(item(label, d.color, tip, "DEF:" + d.id + "/" + m.name, () -> lib.openEditor(d), d));
                 add(Box.createVerticalStrut(5));

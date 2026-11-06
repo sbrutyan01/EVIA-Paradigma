@@ -13,7 +13,7 @@ final class TargetBar extends JPanel {
     private final JComboBox<Target.Flow> flow = new JComboBox<>(Target.Flow.values());
     private final JComboBox<Target.Values> values = new JComboBox<>(Target.Values.values());
     private final JComboBox<Board> board = new JComboBox<>();
-    private final JLabel boardLabel = new JLabel(" Board:");
+    private final JLabel boardLabel = new JLabel(Text.t(" Board:"));
     private boolean updating;
     private static final String valuesTip = "<html><b>Safe</b>: numbers and text with the interpreter's checks (undefined variables, division by zero ...)"
             + "<br><b>Fast</b>: plain <code>double</code> numbers, text only in Print, no runtime checks</html>";
@@ -21,7 +21,7 @@ final class TargetBar extends JPanel {
     TargetBar() {
         super(new FlowLayout(FlowLayout.LEFT, 4, 0));
         setOpaque(false);
-        lang.setToolTipText("Language of the generated code");
+        lang.setToolTipText(Text.t("Language of the generated code"));
         lang.setMaximumRowCount(Target.Lang.values().length);
         lang.setRenderer(new DefaultListCellRenderer() {
             @Override public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -34,11 +34,11 @@ final class TargetBar extends JPanel {
         flow.setToolTipText("<html><b>Structured</b>: if/else, for, while, do-while and switch (labels only where the wiring needs them)"
                 + "<br><b>Goto</b>: every block is a label and every wire a jump - closest to the block diagram</html>");
         values.setToolTipText(valuesTip);
-        add(new JLabel("Language:"));
+        add(new JLabel(Text.t("Language:")));
         add(lang);
-        add(new JLabel(" Flow:"));
+        add(new JLabel(Text.t(" Flow:")));
         add(flow);
-        add(new JLabel(" Values:"));
+        add(new JLabel(Text.t(" Values:")));
         add(values);
         board.setToolTipText("<html>The board that Build and Upload use. For microcontrollers the generated code is the same for every board:"
                 + "<br>pins are written as LED_BUILTIN, A0 ... and each board's headers say where they are."

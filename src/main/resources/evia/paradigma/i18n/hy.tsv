@@ -1,0 +1,172 @@
+# The interface in Armenian: the English on the left, the translation on the right, one tab between them.
+Double-click to edit	Կրկնակի սեղմումով խմբագրել
+Vim keys	Vim ստեղներ
+Compile & Run	Կոմպիլացնել և գործարկել
+Stop	Կանգ
+Upload	Բեռնել
+Compiler: 	Կոմպիլյատոր՝ 
+Build, then upload to the board on the serial port set in Settings	Կառուցել և բեռնել տախտակի մեջ՝ Կարգավորումներում նշված պորտով
+Type a line and press Enter to send it to the running program	Մուտքագրեք տողը և սեղմեք Enter՝ աշխատող ծրագրին ուղարկելու համար
+ Input: 	 Մուտք՝ 
+Choose a unique, non-empty name.	Ընտրեք ոչ դատարկ և չկրկնվող անուն։
+View source code	Տեսնել ելակետային կոդը
+Make class from this...	Սրանից դաս ստեղծել...
+Remove outgoing connections	Հեռացնել ելքային կապերը
+Delete block	Ջնջել բլոկը
+Delete connection	Ջնջել կապը
+Only one Start block is allowed.	Start բլոկը կարող է լինել միայն մեկը։
+Language of the guide	Ուղեցույցի լեզուն
+ Step delay: 	 Քայլի հետաձգում՝ 
+Delay between blocks (0 = full speed)	Հետաձգում բլոկների միջև (0՝ լրիվ արագություն)
+Drag blocks from the palette, connect them, press Run (F5). Help > Guide (F1) explains everything.	Քաշեք բլոկները ներկապնակից, միացրեք և սեղմեք Run (F5)։ Help > Guide (F1)-ը բացատրում է ամեն ինչ։
+File	Ֆայլ
+New Program	Նոր ծրագիր
+New Project...	Նոր նախագիծ...
+Open...	Բացել...
+Open Project...	Բացել նախագիծը...
+Save	Պահել
+Save As...	Պահել որպես...
+Import Module...	Ներմուծել մոդուլ...
+Export Classes as Module...	Արտահանել դասերը որպես մոդուլ...
+Close Project	Փակել նախագիծը
+Exit	Ելք
+Edit	Խմբագրել
+Select All Blocks	Նշել բոլոր բլոկները
+Delete Selected Blocks	Ջնջել նշված բլոկները
+New Class...	Նոր դաս...
+Group Selection into Class	Նշվածը խմբավորել դասի մեջ
+Settings...	Կարգավորումներ...
+View	Տեսք
+Zoom In	Մեծացնել
+Zoom Out	Փոքրացնել
+Actual Size (100%)	Իրական չափ (100%)
+Fit Diagram in Window	Տեղավորել սխեման պատուհանում
+Theme	Թեմա
+Mouse wheel zooms toward the pointer (setting in Settings)	Մկնիկի անիվը մասշտաբում է դեպի ցուցիչը (կարգավորվում է Կարգավորումներում)
+Run	Գործարկել
+Generate Code	Ստեղծել կոդը
+Clear Output	Մաքրել ելքը
+Git	Git
+Initialize Repository	Ստեղծել պահոց
+Commit...	Հաստատել...
+Push	Ուղարկել
+Pull	Ստանալ
+Connect to GitHub...	Միացնել GitHub...
+Open on GitHub	Բացել GitHub-ում
+Status	Վիճակ
+History	Պատմություն
+Help	Օգնություն
+Guide	Ուղեցույց
+Classes and Objects	Դասեր և օբյեկտներ
+Expressions	Արտահայտություններ
+Projects and Git	Նախագծեր և Git
+Keyboard Shortcuts	Ստեղնային դյուրանցումներ
+Vim Keys	Vim ստեղներ
+Tutorial (PDF)	Ձեռնարկ (PDF)
+Online Documentation	Փաստաթղթերը համացանցում
+Report an Issue...	Հաղորդել խնդրի մասին...
+Check for Updates...	Ստուգել թարմացումները...
+About EVIA Paradigma	EVIA Paradigma-ի մասին
+Code Language and Mode	Կոդի լեզուն և ռեժիմը
+Arduino and ESP32 Boards	Arduino և ESP32 տախտակներ
+FPGA Boards (Artix-7, GateMate)	FPGA տախտակներ (Artix-7, GateMate)
+Open Class	Բացել դասը
+(no classes)	(դասեր չկան)
+ EVIA Paradigma	 EVIA Paradigma
+Running...	Կատարվում է...
+Finished.	Ավարտվեց։
+Stopped.	Կանգնեցվեց։
+Error.	Սխալ։
+Stop the running program first.	Նախ կանգնեցրեք աշխատող ծրագիրը։
+New program. Drag blocks from the palette.	Նոր ծրագիր։ Քաշեք բլոկները ներկապնակից։
+Open program or project	Բացել ծրագիր կամ նախագիծ
+Open project folder	Բացել նախագծի պանակը
+No project is open.	Բաց նախագիծ չկա։
+Import module	Ներմուծել մոդուլ
+There are no classes yet. Create one with Edit > New Class.	Դասեր դեռ չկան։ Ստեղծեք մեկը՝ Խմբագրել > Նոր դաս։
+Save module	Պահել մոդուլը
+Browse...	Ընտրել...
+Project name:	Նախագծի անունը՝
+Location:	Տեղը՝
+Choose a folder name without / \\ : * ? \" < > |	Ընտրեք պանակի անուն առանց / \\ : * ? \" < > | նշանների
+Git is still busy...	Git-ը դեռ զբաղված է...
+Nothing to commit - everything is committed.	Հաստատելու բան չկա՝ ամեն ինչ հաստատված է։
+Nothing to commit: all changes are already committed.	Հաստատելու բան չկա՝ բոլոր փոփոխությունները արդեն հաստատված են։
+Blocks	Բլոկներ
+Board	Տախտակ
+Arduino / AVR C code; Run simulates an Arduino Uno.	Arduino / AVR C կոդ. Run-ը նմանակում է Arduino Uno։
+Classes	Դասեր
++ New class...	+ Նոր դաս...
+None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a class.	Դեռ ոչինչ չկա։ Ստեղծեք դաս\nկամ նշեք բլոկները և սեղմեք Ctrl+G՝\nդրանք դասի մեջ խմբավորելու համար։
+exits:	ելքեր՝
+Drag to call it. Double-click to open the class.	Քաշեք՝ կանչելու համար։ Կրկնակի սեղմումը բացում է դասը։
+Vim keys in code editors (NORMAL / INSERT / VISUAL modes)	Vim ստեղներ կոդի խմբագրիչներում (NORMAL / INSERT / VISUAL ռեժիմներ)
+Detect	Հայտնաբերել
+Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)	Ո՞ր կոմպիլյատորը կառուցի ստեղծված C-ն և C++-ը (C-ի կոմպիլյատորը հետևում է՝ clang / gcc)
+Default	Լռելյայն
+The default command for the chosen compiler	Ընտրված կոմպիլյատորի լռելյայն հրամանը
+Check	Ստուգել
+External editor (Vim):	Արտաքին խմբագրիչ (Vim)՝
+Compiler:	Կոմպիլյատոր՝
+Command (C++):	Հրաման (C++)՝
+Board:	Տախտակ՝
+  Serial port:	  Սերիական պորտ՝
+arduino-cli:	arduino-cli՝
+avr-gcc:	avr-gcc՝
+avrdude:	avrdude՝
+xc32-gcc:	xc32-gcc՝
+PIC32 upload:	PIC32-ի բեռնում՝
+PIC32 MQTT over:	PIC32-ի MQTT-ն՝
+Get FPGA tools	Բերել FPGA գործիքները
+Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below	Ներբեռնել OSS CAD Suite-ը (yosys, nextpnr, gmpack, openFPGALoader) և լրացնել ներքևի դաշտերը
+Checking compiler...	Կոմպիլյատորի ստուգում...
+ Board:	 Տախտակ՝
+Language of the generated code	Ստեղծվող կոդի լեզուն
+Language:	Լեզու՝
+ Flow:	 Հոսք՝
+ Values:	 Արժեքներ՝
+Interface language:	Միջերեսի լեզուն՝
+The menus, buttons and block names. Messages from the compilers and the generated code stay in English.	Ընտրացանկերը, կոճակները և բլոկների անունները։ Կոմպիլյատորների հաղորդագրությունները և ստեղծված կոդը մնում են անգլերեն։
+The interface is in %s the next time EVIA Paradigma starts.	Միջերեսը կլինի %s՝ EVIA Paradigma-ի հաջորդ գործարկման ժամանակ։
+Interface language	Միջերեսի լեզու
+Start	Սկիզբ
+Set	Վերագրել
+Input	Մուտք
+Print	Տպել
+If / Else	Եթե / Այլապես
+For	For ցիկլ
+While	Քանի դեռ
+Do-While	Կրկնել-քանի դեռ
+End	Վերջ
+Pin Mode	Կոնտակտի ռեժիմ
+Digital Write	Թվային գրում
+Digital Read	Թվային ընթերցում
+Analog Read	Անալոգային ընթերցում
+Analog Write	Անալոգային գրում
+Delay	Հետաձգում
+Millis	Միլիվայրկյաններ
+UART Open	UART՝ բացել
+UART Write	UART՝ գրել
+UART Read	UART՝ կարդալ
+SPI Open	SPI՝ բացել
+SPI Transfer	SPI՝ փոխանակում
+I2C Open	I2C՝ բացել
+I2C Write	I2C՝ գրել
+I2C Read	I2C՝ կարդալ
+MQTT Connect	MQTT՝ միանալ
+MQTT Publish	MQTT՝ հրապարակել
+MQTT Subscribe	MQTT՝ բաժանորդագրվել
+MQTT Has Message	MQTT՝ կա հաղորդագրություն
+MQTT Read	MQTT՝ կարդալ
+Enter	Մուտք
+Custom	Սեփական բլոկ
+Output	Ելք
+Save...	Պահել...
+Copy	Պատճենել
+Edit in Vim...	Խմբագրել Vim-ում...
+New	Նոր
+New class...	Նոր դաս...
+Group into class	Խմբավորել դասի մեջ
+Generate code	Ստեղծել կոդը
+Open Example	Բացել օրինակ
+Examples	Օրինակներ

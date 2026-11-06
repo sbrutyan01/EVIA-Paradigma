@@ -1,0 +1,172 @@
+# The interface in Russian: the English on the left, the translation on the right, one tab between them.
+Double-click to edit	Двойной щелчок для правки
+Vim keys	Клавиши Vim
+Compile & Run	Собрать и запустить
+Stop	Стоп
+Upload	Загрузить
+Compiler: 	Компилятор: 
+Build, then upload to the board on the serial port set in Settings	Собрать и загрузить на плату через порт, указанный в Настройках
+Type a line and press Enter to send it to the running program	Введите строку и нажмите Enter, чтобы отправить её работающей программе
+ Input: 	 Ввод: 
+Choose a unique, non-empty name.	Выберите непустое и неповторяющееся имя.
+View source code	Показать исходный код
+Make class from this...	Создать класс из этого...
+Remove outgoing connections	Убрать исходящие связи
+Delete block	Удалить блок
+Delete connection	Удалить связь
+Only one Start block is allowed.	Блок Start может быть только один.
+Language of the guide	Язык справки
+ Step delay: 	 Задержка шага: 
+Delay between blocks (0 = full speed)	Задержка между блоками (0 — полная скорость)
+Drag blocks from the palette, connect them, press Run (F5). Help > Guide (F1) explains everything.	Перетащите блоки из палитры, соедините их и нажмите Запуск (F5). Справка > Guide (F1) объясняет всё.
+File	Файл
+New Program	Новая программа
+New Project...	Новый проект...
+Open...	Открыть...
+Open Project...	Открыть проект...
+Save	Сохранить
+Save As...	Сохранить как...
+Import Module...	Импорт модуля...
+Export Classes as Module...	Экспорт классов как модуль...
+Close Project	Закрыть проект
+Exit	Выход
+Edit	Правка
+Select All Blocks	Выделить все блоки
+Delete Selected Blocks	Удалить выделенные блоки
+New Class...	Новый класс...
+Group Selection into Class	Сгруппировать выделение в класс
+Settings...	Настройки...
+View	Вид
+Zoom In	Увеличить
+Zoom Out	Уменьшить
+Actual Size (100%)	Настоящий размер (100%)
+Fit Diagram in Window	Вписать схему в окно
+Theme	Тема
+Mouse wheel zooms toward the pointer (setting in Settings)	Колесо мыши масштабирует к указателю (настраивается в Настройках)
+Run	Запуск
+Generate Code	Создать код
+Clear Output	Очистить вывод
+Git	Git
+Initialize Repository	Создать репозиторий
+Commit...	Коммит...
+Push	Отправить
+Pull	Получить
+Connect to GitHub...	Подключить GitHub...
+Open on GitHub	Открыть на GitHub
+Status	Состояние
+History	История
+Help	Справка
+Guide	Руководство
+Classes and Objects	Классы и объекты
+Expressions	Выражения
+Projects and Git	Проекты и Git
+Keyboard Shortcuts	Горячие клавиши
+Vim Keys	Клавиши Vim
+Tutorial (PDF)	Учебник (PDF)
+Online Documentation	Документация в интернете
+Report an Issue...	Сообщить о проблеме...
+Check for Updates...	Проверить обновления...
+About EVIA Paradigma	О программе EVIA Paradigma
+Code Language and Mode	Язык и режим кода
+Arduino and ESP32 Boards	Платы Arduino и ESP32
+FPGA Boards (Artix-7, GateMate)	Платы FPGA (Artix-7, GateMate)
+Open Class	Открыть класс
+(no classes)	(классов нет)
+ EVIA Paradigma	 EVIA Paradigma
+Running...	Выполняется...
+Finished.	Готово.
+Stopped.	Остановлено.
+Error.	Ошибка.
+Stop the running program first.	Сначала остановите работающую программу.
+New program. Drag blocks from the palette.	Новая программа. Перетащите блоки из палитры.
+Open program or project	Открыть программу или проект
+Open project folder	Открыть папку проекта
+No project is open.	Проект не открыт.
+Import module	Импорт модуля
+There are no classes yet. Create one with Edit > New Class.	Классов пока нет. Создайте класс через Правка > Новый класс.
+Save module	Сохранить модуль
+Browse...	Обзор...
+Project name:	Имя проекта:
+Location:	Расположение:
+Choose a folder name without / \\ : * ? \" < > |	Выберите имя папки без / \\ : * ? \" < > |
+Git is still busy...	Git ещё занят...
+Nothing to commit - everything is committed.	Нечего фиксировать — всё уже зафиксировано.
+Nothing to commit: all changes are already committed.	Нечего фиксировать: все изменения уже зафиксированы.
+Blocks	Блоки
+Board	Плата
+Arduino / AVR C code; Run simulates an Arduino Uno.	Код Arduino / AVR C; Запуск имитирует Arduino Uno.
+Classes	Классы
++ New class...	+ Новый класс...
+None yet. Create one, or select\nblocks and press Ctrl+G to group\nthem into a class.	Пока ничего нет. Создайте класс\nили выделите блоки и нажмите Ctrl+G,\nчтобы сгруппировать их в класс.
+exits:	выходы:
+Drag to call it. Double-click to open the class.	Перетащите, чтобы вызвать. Двойной щелчок открывает класс.
+Vim keys in code editors (NORMAL / INSERT / VISUAL modes)	Клавиши Vim в редакторах кода (режимы NORMAL / INSERT / VISUAL)
+Detect	Определить
+Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)	Какой компилятор собирает созданный C и C++ (компилятор C следует за ним: clang / gcc)
+Default	По умолчанию
+The default command for the chosen compiler	Команда по умолчанию для выбранного компилятора
+Check	Проверить
+External editor (Vim):	Внешний редактор (Vim):
+Compiler:	Компилятор:
+Command (C++):	Команда (C++):
+Board:	Плата:
+  Serial port:	  Последовательный порт:
+arduino-cli:	arduino-cli:
+avr-gcc:	avr-gcc:
+avrdude:	avrdude:
+xc32-gcc:	xc32-gcc:
+PIC32 upload:	Загрузка PIC32:
+PIC32 MQTT over:	MQTT на PIC32 через:
+Get FPGA tools	Получить инструменты FPGA
+Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below	Скачать OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) и заполнить поля ниже
+Checking compiler...	Проверка компилятора...
+ Board:	 Плата:
+Language of the generated code	Язык создаваемого кода
+Language:	Язык:
+ Flow:	 Поток:
+ Values:	 Значения:
+Interface language:	Язык интерфейса:
+The menus, buttons and block names. Messages from the compilers and the generated code stay in English.	Меню, кнопки и названия блоков. Сообщения компиляторов и созданный код остаются на английском.
+The interface is in %s the next time EVIA Paradigma starts.	Интерфейс будет на %s при следующем запуске EVIA Paradigma.
+Interface language	Язык интерфейса
+Start	Старт
+Set	Задать
+Input	Ввод
+Print	Печать
+If / Else	Если / Иначе
+For	Цикл For
+While	Пока
+Do-While	Повторять-пока
+End	Конец
+Pin Mode	Режим вывода
+Digital Write	Цифровая запись
+Digital Read	Цифровое чтение
+Analog Read	Аналоговое чтение
+Analog Write	Аналоговая запись
+Delay	Задержка
+Millis	Миллисекунды
+UART Open	UART: открыть
+UART Write	UART: запись
+UART Read	UART: чтение
+SPI Open	SPI: открыть
+SPI Transfer	SPI: обмен
+I2C Open	I2C: открыть
+I2C Write	I2C: запись
+I2C Read	I2C: чтение
+MQTT Connect	MQTT: подключиться
+MQTT Publish	MQTT: опубликовать
+MQTT Subscribe	MQTT: подписаться
+MQTT Has Message	MQTT: есть сообщение
+MQTT Read	MQTT: прочитать
+Enter	Вход
+Custom	Свой блок
+Output	Вывод
+Save...	Сохранить...
+Copy	Копировать
+Edit in Vim...	Править в Vim...
+New	Новая
+New class...	Новый класс...
+Group into class	Сгруппировать в класс
+Generate code	Создать код
+Open Example	Открыть пример
+Examples	Примеры

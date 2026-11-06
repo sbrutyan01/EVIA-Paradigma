@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.6-blue" alt="version 0.6.6"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.7-blue" alt="version 0.6.7"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -58,9 +58,24 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.6-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.6_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.6_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.6.jar` | `java -jar evia-paradigma-0.6.6.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.7-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.7_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.7_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.7.jar` | `java -jar evia-paradigma-0.6.7.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.6.7
+
+[EVIA Paradigma v0.6.7](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.7) ([release notes](docs/release-notes/v0.6.7.md)):
+the interface itself in Russian and Armenian.
+
+- **Settings → Interface language**: English, Русский or Հայերեն. The menus, the toolbar, the palette, the buttons,
+  the dialogs and the names on the blocks (`СТАРТ`, `ՍԿԻԶԲ`) all follow; the change takes effect when the application
+  starts again.
+- The **generated code and the compilers' messages stay in English**, so a program looks the same whoever opens it.
+- The translations are plain tab-separated files, [`i18n/ru.tsv`](src/main/resources/evia/paradigma/i18n/ru.tsv) and
+  [`hy.tsv`](src/main/resources/evia/paradigma/i18n/hy.tsv): English on the left, the translation on the right. A line
+  without a translation simply stays English, so adding to them cannot break the application.
+- [`scripts/i18n/collect.py`](scripts/i18n/collect.py) lists what the interface asks for and what is still missing,
+  and the checks fail when a language falls behind — all 171 strings are translated in both.
 
 ### Release 0.6.6
 

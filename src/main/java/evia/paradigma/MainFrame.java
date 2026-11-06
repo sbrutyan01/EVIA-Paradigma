@@ -116,10 +116,10 @@ final class MainFrame extends JFrame {
         tb.add(new JButton(runAction));
         tb.add(new JButton(stopAction));
         tb.addSeparator();
-        tb.add(new JLabel(" Step delay: "));
+        tb.add(new JLabel(Text.t(" Step delay: ")));
         speed.setMaximumSize(new Dimension(160, 30));
         speed.setPreferredSize(new Dimension(130, 30));
-        speed.setToolTipText("Delay between blocks (0 = full speed)");
+        speed.setToolTipText(Text.t("Delay between blocks (0 = full speed)"));
         speed.addChangeListener(e -> status.setText("Step delay: " + speed.getValue() + " ms"));
         tb.add(speed);
 
@@ -135,7 +135,7 @@ final class MainFrame extends JFrame {
         Theme.onChange(consoleColors);
         console.setMargin(new Insets(6, 8, 6, 8));
         JScrollPane consoleScroll = new JScrollPane(console);
-        consoleScroll.setBorder(BorderFactory.createTitledBorder("Output"));
+        consoleScroll.setBorder(BorderFactory.createTitledBorder(Text.t("Output")));
 
         // ---- layout
         JScrollPane canvasScroll = new JScrollPane(canvas);
@@ -156,7 +156,7 @@ final class MainFrame extends JFrame {
         main.setDividerLocation(220);
 
         status.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
-        status.setText("Drag blocks from the palette, connect them, press Run (F5). Help > Guide (F1) explains everything.");
+        status.setText(Text.t("Drag blocks from the palette, connect them, press Run (F5). Help > Guide (F1) explains everything."));
 
         getContentPane().add(tb, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
@@ -227,18 +227,18 @@ final class MainFrame extends JFrame {
         view.add(item("Actual Size (100%)", KeyStroke.getKeyStroke(KeyEvent.VK_0, MENU), e -> canvas.zoomReset()));
         view.add(item("Fit Diagram in Window", KeyStroke.getKeyStroke(KeyEvent.VK_9, MENU), e -> canvas.zoomToFit()));
         view.addSeparator();
-        JMenu theme = new JMenu("Theme");
+        JMenu theme = new JMenu(Text.t("Theme"));
         ButtonGroup themeGroup = new ButtonGroup();
         for (Theme.Mode m : Theme.Mode.values()) {
             String label = switch (m) { case SYSTEM -> "Same as system"; case LIGHT -> "Light (IntelliJ)"; case DARK -> "Dark (Darcula)"; };
-            JRadioButtonMenuItem it = new JRadioButtonMenuItem(label, Settings.themeMode() == m);
+            JRadioButtonMenuItem it = new JRadioButtonMenuItem(Text.t(label), Settings.themeMode() == m);
             it.addActionListener(e -> Theme.apply(m));
             themeGroup.add(it);
             theme.add(it);
         }
         view.add(theme);
         view.addSeparator();
-        JMenuItem wheelHelp = new JMenuItem("Mouse wheel zooms toward the pointer (setting in Settings)");
+        JMenuItem wheelHelp = new JMenuItem(Text.t("Mouse wheel zooms toward the pointer (setting in Settings)"));
         wheelHelp.setEnabled(false);
         view.add(wheelHelp);
         bar.add(view);
@@ -291,7 +291,7 @@ final class MainFrame extends JFrame {
         help.add(item("Keyboard Shortcuts", null, e -> HelpWindow.showTopic(this, "keys")));
         help.add(item("Vim Keys", null, e -> HelpWindow.showTopic(this, "vim")));
         help.add(examplesMenu("Examples"));
-        JMenu tutorial = new JMenu("Tutorial (PDF)");
+        JMenu tutorial = new JMenu(Text.t("Tutorial (PDF)"));
         for (String[] t : HelpWindow.TUTORIALS) tutorial.add(item(t[1], null, e -> HelpWindow.openTutorial(this, t[0])));
         help.add(tutorial);
         help.addSeparator();
@@ -307,13 +307,13 @@ final class MainFrame extends JFrame {
     }
 
     private static JMenu menu(String text, int mnemonic) {
-        JMenu m = new JMenu(text);
+        JMenu m = new JMenu(Text.t(text));
         if (!ExternalEditor.MAC) m.setMnemonic(mnemonic);
         return m;
     }
 
     private static JMenuItem item(String text, KeyStroke key, java.awt.event.ActionListener l) {
-        JMenuItem i = new JMenuItem(text);
+        JMenuItem i = new JMenuItem(Text.t(text));
         if (key != null) i.setAccelerator(key);
         i.addActionListener(l);
         return i;
@@ -321,7 +321,7 @@ final class MainFrame extends JFrame {
 
     /** Run > Code: the same choices as the drop-down lists (language, flow, values) as radio items. */
     private JMenu targetMenu() {
-        JMenu m = new JMenu("Code Language and Mode");
+        JMenu m = new JMenu(Text.t("Code Language and Mode"));
         m.addMenuListener(new javax.swing.event.MenuListener() {
             @Override public void menuSelected(javax.swing.event.MenuEvent e) {
                 m.removeAll();
@@ -329,15 +329,15 @@ final class MainFrame extends JFrame {
                 ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
                 for (Target.Lang l : Target.Lang.values()) {
                     if (l == Target.Lang.CPP98 || l == Target.Lang.ARDUINO || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
-                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + l.note + ")", l == cur.lang());
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + Text.t(l.note) + ")", l == cur.lang());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
                     g1.add(i);
                     m.add(i);
                 }
                 m.addSeparator();
                 for (Target.Flow f : Target.Flow.values()) {
-                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(f.display + " flow"
-                            + (f == Target.Flow.STRUCTURED ? "   (if/else, loops, switch)" : "   (labels and jumps)"), f == cur.flow());
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(Text.t(f.display + " flow")
+                            + "   (" + Text.t(f == Target.Flow.STRUCTURED ? "if/else, loops, switch" : "labels and jumps") + ")", f == cur.flow());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withFlow(f)));
                     i.setEnabled(!cur.lang().fpga());
                     g2.add(i);
@@ -345,8 +345,8 @@ final class MainFrame extends JFrame {
                 }
                 m.addSeparator();
                 for (Target.Values v : Target.Values.values()) {
-                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(v.display + " values"
-                            + (v == Target.Values.SAFE ? "   (numbers and text, all checks)" : "   (double numbers, no checks)"), v == cur.values());
+                    JRadioButtonMenuItem i = new JRadioButtonMenuItem(Text.t(v.display + " values")
+                            + "   (" + Text.t(v == Target.Values.SAFE ? "numbers and text, all checks" : "double numbers, no checks") + ")", v == cur.values());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withValues(v)));
                     i.setEnabled(!cur.embedded());
                     g3.add(i);
@@ -365,7 +365,7 @@ final class MainFrame extends JFrame {
     }
 
     private Action action(String name, KeyStroke key, java.awt.event.ActionListener l) {
-        Action a = new AbstractAction(name) {
+        Action a = new AbstractAction(Text.t(name)) {
             @Override public void actionPerformed(java.awt.event.ActionEvent e) {
                 l.actionPerformed(e);
             }
@@ -375,11 +375,12 @@ final class MainFrame extends JFrame {
     }
 
     private JMenu examplesMenu(String title) {
+        title = Text.t(title);
         JMenu m = new JMenu(title);
         for (String[] ex : EXAMPLES) m.add(item(ex[1], null, e -> openExample(ex[0])));
-        JMenu boards = new JMenu("Arduino and ESP32 Boards");
+        JMenu boards = new JMenu(Text.t("Arduino and ESP32 Boards"));
         for (String[] ex : BOARD_EXAMPLES) boards.add(item(ex[1], null, e -> openExample(ex[0])));
-        JMenu fpga = new JMenu("FPGA Boards (Artix-7, GateMate)");
+        JMenu fpga = new JMenu(Text.t("FPGA Boards (Artix-7, GateMate)"));
         for (String[] ex : FPGA_EXAMPLES) fpga.add(item(ex[1], null, e -> openExample(ex[0])));
         m.addSeparator();
         m.add(boards);
@@ -389,12 +390,12 @@ final class MainFrame extends JFrame {
 
     /** Edit > Open Class: one entry per class to open its window. */
     private JMenu classesMenu() {
-        JMenu m = new JMenu("Open Class");
+        JMenu m = new JMenu(Text.t("Open Class"));
         m.addMenuListener(new javax.swing.event.MenuListener() {
             @Override public void menuSelected(javax.swing.event.MenuEvent e) {
                 m.removeAll();
                 if (lib.defs().isEmpty()) {
-                    JMenuItem none = new JMenuItem("(no classes)");
+                    JMenuItem none = new JMenuItem(Text.t("(no classes)"));
                     none.setEnabled(false);
                     m.add(none);
                 }
@@ -454,14 +455,14 @@ final class MainFrame extends JFrame {
 
     /** EVIA logo and name at the top of the palette; click for About. */
     private JComponent brand() {
-        JLabel l = new JLabel(" EVIA Paradigma");
+        JLabel l = new JLabel(Text.t(" EVIA Paradigma"));
         l.setFont(l.getFont().deriveFont(Font.BOLD, 15f));
         for (Image img : AppIcon.icons()) {
             if (img.getWidth(null) == 40) l.setIcon(new ImageIcon(img));
         }
         l.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 10));
         l.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        l.setToolTipText("About EVIA Paradigma");
+        l.setToolTipText(Text.t("About EVIA Paradigma"));
         l.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) { AppIcon.showAbout(MainFrame.this); }
         });
@@ -469,7 +470,7 @@ final class MainFrame extends JFrame {
     }
 
     private static JButton button(String text, java.awt.event.ActionListener l) {
-        JButton b = new JButton(text);
+        JButton b = new JButton(Text.t(text));
         b.addActionListener(l);
         return b;
     }
@@ -534,7 +535,7 @@ final class MainFrame extends JFrame {
         lib.setLocked(true);
         runAction.setEnabled(false);
         stopAction.setEnabled(true);
-        status.setText("Running...");
+        status.setText(Text.t("Running..."));
 
         worker = new SwingWorker<>() {
             @Override
@@ -595,10 +596,10 @@ final class MainFrame extends JFrame {
                 try {
                     get();
                     console.append(">> finished\n");
-                    status.setText("Finished.");
+                    status.setText(Text.t("Finished."));
                 } catch (CancellationException e) {
                     console.append(">> stopped\n");
-                    status.setText("Stopped.");
+                    status.setText(Text.t("Stopped."));
                 } catch (ExecutionException e) {
                     Throwable c = e.getCause();
                     if (c instanceof FlowException fe) {
@@ -607,7 +608,7 @@ final class MainFrame extends JFrame {
                         console.append(">> internal error: " + c + "\n");
                         c.printStackTrace();
                     }
-                    status.setText("Error.");
+                    status.setText(Text.t("Error."));
                 } catch (InterruptedException ignored) {
                     Thread.currentThread().interrupt();
                 }
@@ -726,7 +727,7 @@ final class MainFrame extends JFrame {
     /** Asks about unsaved changes. Returns false if the user cancelled. */
     private boolean confirmDiscard() {
         if (worker != null) {
-            JOptionPane.showMessageDialog(this, "Stop the running program first.");
+            JOptionPane.showMessageDialog(this, Text.t("Stop the running program first."));
             return false;
         }
         if (!isDirty()) return true;
@@ -758,7 +759,7 @@ final class MainFrame extends JFrame {
         lib.clear();
         canvas.addBlock(BlockType.START, 300, 30);
         resetTo(null, null);
-        status.setText("New program. Drag blocks from the palette.");
+        status.setText(Text.t("New program. Drag blocks from the palette."));
     }
 
     private JFileChooser chooser(boolean forOpen) {
@@ -776,7 +777,7 @@ final class MainFrame extends JFrame {
     private void open() {
         if (worker != null) return;
         JFileChooser fc = chooser(true);
-        fc.setDialogTitle("Open program or project");
+        fc.setDialogTitle(Text.t("Open program or project"));
         if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
         openFile(fc.getSelectedFile());
     }
@@ -805,7 +806,7 @@ final class MainFrame extends JFrame {
     private void openProject() {
         if (worker != null) return;
         JFileChooser fc = new JFileChooser(Files.isDirectory(Project.defaultParent()) ? Project.defaultParent().toFile() : null);
-        fc.setDialogTitle("Open project folder");
+        fc.setDialogTitle(Text.t("Open project folder"));
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fc.setFileFilter(new FileNameExtensionFilter("EVIA Paradigma projects (*.eviaproj)", "eviaproj"));
         if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
@@ -816,7 +817,7 @@ final class MainFrame extends JFrame {
 
     private void closeProject() {
         if (project == null) {
-            status.setText("No project is open.");
+            status.setText(Text.t("No project is open."));
             return;
         }
         if (!confirmDiscard()) return;
@@ -913,7 +914,7 @@ final class MainFrame extends JFrame {
     private void importModule() {
         if (worker != null) return;
         JFileChooser fc = new JFileChooser(modulesDir());
-        fc.setDialogTitle("Import module");
+        fc.setDialogTitle(Text.t("Import module"));
         fc.setFileFilter(new FileNameExtensionFilter("EVIA Paradigma modules (*.eviam)", "eviam"));
         if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
         try {
@@ -932,7 +933,7 @@ final class MainFrame extends JFrame {
     private void exportModule() {
         if (worker != null) return;
         if (lib.defs().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There are no classes yet. Create one with Edit > New Class.");
+            JOptionPane.showMessageDialog(this, Text.t("There are no classes yet. Create one with Edit > New Class."));
             return;
         }
         JPanel boxes = new JPanel(new GridLayout(0, 1));
@@ -952,7 +953,7 @@ final class MainFrame extends JFrame {
 
         File dir = modulesDir();
         JFileChooser fc = new JFileChooser(dir);
-        fc.setDialogTitle("Save module");
+        fc.setDialogTitle(Text.t("Save module"));
         fc.setFileFilter(new FileNameExtensionFilter("EVIA Paradigma modules (*.eviam)", "eviam"));
         fc.setSelectedFile(new File(dir, Project.safeName(chosen.size() == 1 ? chosen.get(0).name : "classes") + ProgramIO.MODULE_EXT));
         if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
@@ -975,7 +976,7 @@ final class MainFrame extends JFrame {
         if (!confirmDiscard()) return;
         JTextField name = new JTextField("MyProject", 22);
         JTextField location = new JTextField(Project.defaultParent().toString(), 30);
-        JButton browse = new JButton("Browse...");
+        JButton browse = new JButton(Text.t("Browse..."));
         browse.addActionListener(e -> {
             JFileChooser fc = new JFileChooser(location.getText());
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -1001,9 +1002,9 @@ final class MainFrame extends JFrame {
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(4, 4, 4, 4);
         g.anchor = GridBagConstraints.WEST;
-        g.gridx = 0; g.gridy = 0; p.add(new JLabel("Project name:"), g);
+        g.gridx = 0; g.gridy = 0; p.add(new JLabel(Text.t("Project name:")), g);
         g.gridx = 1; g.fill = GridBagConstraints.HORIZONTAL; p.add(name, g);
-        g.gridx = 0; g.gridy = 1; g.fill = GridBagConstraints.NONE; p.add(new JLabel("Location:"), g);
+        g.gridx = 0; g.gridy = 1; g.fill = GridBagConstraints.NONE; p.add(new JLabel(Text.t("Location:")), g);
         g.gridx = 1; g.fill = GridBagConstraints.HORIZONTAL; p.add(location, g);
         g.gridx = 2; g.fill = GridBagConstraints.NONE; p.add(browse, g);
         g.gridx = 1; g.gridy = 2; g.gridwidth = 2; p.add(git, g);
@@ -1013,7 +1014,7 @@ final class MainFrame extends JFrame {
             if (JOptionPane.showConfirmDialog(this, p, "New Project", JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) return;
             if (Project.validName(name.getText().trim())) break;
-            JOptionPane.showMessageDialog(this, "Choose a folder name without / \\ : * ? \" < > |");
+            JOptionPane.showMessageDialog(this, Text.t("Choose a folder name without / \\ : * ? \" < > |"));
         }
         try {
             Project proj = Project.create(Path.of(location.getText().trim()), name.getText().trim());
@@ -1069,7 +1070,7 @@ final class MainFrame extends JFrame {
     /** Runs a git step in the background, logs its output to the console, then runs {@code next} (on the EDT). */
     private void gitTask(String what, GitStep step, Runnable next) {
         if (gitBusy) {
-            status.setText("Git is still busy...");
+            status.setText(Text.t("Git is still busy..."));
             return;
         }
         gitBusy = true;
@@ -1148,8 +1149,8 @@ final class MainFrame extends JFrame {
             }
             String changes = GitService.status(dir);
             if (changes.isBlank()) {
-                status.setText("Nothing to commit - everything is committed.");
-                JOptionPane.showMessageDialog(this, "Nothing to commit: all changes are already committed.", "Commit",
+                status.setText(Text.t("Nothing to commit - everything is committed."));
+                JOptionPane.showMessageDialog(this, Text.t("Nothing to commit: all changes are already committed."), "Commit",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }

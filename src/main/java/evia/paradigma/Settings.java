@@ -191,6 +191,16 @@ final class Settings {
         return PREFS.get("pic32Net", "uart").equals("ethernet");
     }
 
+    /** The language of the interface itself: English, Russian or Armenian. */
+    static Text.Lang uiLanguage() {
+        return Text.of(PREFS.get("uiLang", "en"));
+    }
+
+    static void useUiLanguage(Text.Lang l) {
+        PREFS.put("uiLang", l.code);
+        Text.use(l);
+    }
+
     /** Chooses how PIC32 MQTT reaches the network; see {@link #pic32Ethernet()}. */
     static void usePic32Net(boolean ethernet) {
         PREFS.put("pic32Net", ethernet ? "ethernet" : "uart");
@@ -390,17 +400,17 @@ final class Settings {
     // ================================================================ dialog
 
     static void showDialog(Component parent) {
-        JCheckBox vim = new JCheckBox("Vim keys in code editors (NORMAL / INSERT / VISUAL modes)", vimKeys());
+        JCheckBox vim = new JCheckBox(Text.t("Vim keys in code editors (NORMAL / INSERT / VISUAL modes)"), vimKeys());
         JCheckBox wheel = new JCheckBox("<html>Mouse wheel zooms block diagrams<br><font size='-2' color='#777777'>"
                 + "Shift+wheel scrolls sideways, Ctrl+wheel up and down. Off: the wheel scrolls and Ctrl+wheel zooms.</font></html>",
                 wheelZooms());
         JTextField editor = new JTextField(editorCommand(), 42);
         JTextField compiler = new JTextField(compilerCommand(), 42);
         JLabel compilerStatus = new JLabel(" ");
-        JButton detectEditor = new JButton("Detect");
+        JButton detectEditor = new JButton(Text.t("Detect"));
         detectEditor.addActionListener(e -> editor.setText(ExternalEditor.defaultCommand()));
         JComboBox<String> familyBox = new JComboBox<>(new String[]{"Clang (LLVM)", "GCC (GNU)"});
-        familyBox.setToolTipText("Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)");
+        familyBox.setToolTipText(Text.t("Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)"));
         familyBox.setSelectedIndex(family(compiler.getText()) == ToolchainInstaller.Kind.GCC ? 1 : 0);
         JButton install = new JButton();
         Runnable familyChanged = () -> {
@@ -417,8 +427,8 @@ final class Settings {
             familyChanged.run();
             checkCompiler(compiler.getText(), compilerStatus);
         });
-        JButton defCompiler = new JButton("Default");
-        defCompiler.setToolTipText("The default command for the chosen compiler");
+        JButton defCompiler = new JButton(Text.t("Default"));
+        defCompiler.setToolTipText(Text.t("The default command for the chosen compiler"));
         defCompiler.addActionListener(e -> {
             ToolchainInstaller.Kind k = familyBox.getSelectedIndex() == 1 ? ToolchainInstaller.Kind.GCC : ToolchainInstaller.Kind.CLANG;
             String managed = ToolchainInstaller.managedCommand(k);
@@ -442,7 +452,7 @@ final class Settings {
         JTextField avrdude = new JTextField(avrdude(), 30);
         JTextField xc32 = new JTextField(xc32(), 30);
         JTextField pic32Up = new JTextField(pic32Upload(), 30);
-        JButton check = new JButton("Check");
+        JButton check = new JButton(Text.t("Check"));
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
         JComboBox<String> pic32Net = new JComboBox<>(new String[] {
                 "WiFi module on UART2 (every chip)", "Ethernet, Harmony TCP/IP (MX695/795)"});
@@ -456,26 +466,34 @@ final class Settings {
                 chipdb = new JTextField(ft.chipdbDir(), 30), prjxray = new JTextField(ft.prjxrayDb(), 30),
                 fasm2frames = new JTextField(ft.fasm2frames(), 30), frames2bit = new JTextField(ft.frames2bit(), 30);
 
+        JComboBox<Text.Lang> uiLang = new JComboBox<>(Text.Lang.values());
+        uiLang.setSelectedItem(uiLanguage());
+
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
         g.anchor = GridBagConstraints.WEST;
         g.insets = new Insets(4, 4, 4, 4);
-        g.gridx = 0; g.gridy = 0; g.gridwidth = 3;
+        g.gridx = 0; g.gridy = 0; g.gridwidth = 1;
+        p.add(new JLabel(Text.t("Interface language:")), g);
+        g.gridx = 1; p.add(uiLang, g);
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small(Text.t("The menus, buttons and block names. Messages from the compilers and the generated code stay in English.")), g);
+        g.gridy++; g.gridx = 0; g.gridwidth = 3;
         p.add(vim, g);
-        g.gridy = 1;
+        g.gridy++;
         p.add(wheel, g);
-        g.gridy = 2;
+        g.gridy++;
         g.gridwidth = 1;
-        p.add(new JLabel("External editor (Vim):"), g);
+        p.add(new JLabel(Text.t("External editor (Vim):")), g);
         g.gridx = 1; p.add(editor, g);
         g.gridx = 2; p.add(detectEditor, g);
         g.gridx = 1; g.gridy = 3; g.gridwidth = 2;
         p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
         g.gridx = 0; g.gridy = 4; g.gridwidth = 1;
-        p.add(new JLabel("Compiler:"), g);
+        p.add(new JLabel(Text.t("Compiler:")), g);
         g.gridx = 1; p.add(familyBox, g);
         g.gridx = 0; g.gridy = 5;
-        p.add(new JLabel("Command (C++):"), g);
+        p.add(new JLabel(Text.t("Command (C++):")), g);
         g.gridx = 1; p.add(compiler, g);
         g.gridy = 4;
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -495,32 +513,32 @@ final class Settings {
         p.add(new JSeparator(), withFill(g));
         g.fill = GridBagConstraints.NONE;
         g.gridy++; g.gridwidth = 1;
-        p.add(new JLabel("Board:"), g);
+        p.add(new JLabel(Text.t("Board:")), g);
         JPanel boardRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         boardRow.add(boardBox);
-        boardRow.add(new JLabel("  Serial port:"));
+        boardRow.add(new JLabel(Text.t("  Serial port:")));
         boardRow.add(port);
         g.gridx = 1; g.gridwidth = 2; p.add(boardRow, g);
         g.gridy++; g.gridx = 0; g.gridwidth = 1;
-        p.add(new JLabel("arduino-cli:"), g);
+        p.add(new JLabel(Text.t("arduino-cli:")), g);
         g.gridx = 1; p.add(cli, g);
         g.gridx = 2; p.add(getButton(p, Toolchains.Tool.ARDUINO_CLI, cli), g);
         g.gridy++; g.gridx = 0;
-        p.add(new JLabel("avr-gcc:"), g);
+        p.add(new JLabel(Text.t("avr-gcc:")), g);
         g.gridx = 1; p.add(avrGcc, g);
         g.gridx = 2; p.add(getButton(p, Toolchains.Tool.AVR_GCC, avrGcc), g);
         g.gridy++; g.gridx = 0;
-        p.add(new JLabel("avrdude:"), g);
+        p.add(new JLabel(Text.t("avrdude:")), g);
         g.gridx = 1; p.add(avrdude, g);
         g.gridy++; g.gridx = 0;
-        p.add(new JLabel("xc32-gcc:"), g);
+        p.add(new JLabel(Text.t("xc32-gcc:")), g);
         g.gridx = 1; p.add(xc32, g);
         g.gridx = 2; p.add(getButton(p, Toolchains.Tool.XC32, xc32), g);
         g.gridy++; g.gridx = 0;
-        p.add(new JLabel("PIC32 upload:"), g);
+        p.add(new JLabel(Text.t("PIC32 upload:")), g);
         g.gridx = 1; p.add(pic32Up, g);
         g.gridy++; g.gridx = 0;
-        p.add(new JLabel("PIC32 MQTT over:"), g);
+        p.add(new JLabel(Text.t("PIC32 MQTT over:")), g);
         g.gridx = 1; p.add(pic32Net, g);
         g.gridy++; g.gridx = 1; g.gridwidth = 2;
         p.add(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."), g);
@@ -535,8 +553,8 @@ final class Settings {
         p.add(new JSeparator(), withFill(g));
         g.fill = GridBagConstraints.NONE;
         g.gridwidth = 1;
-        JButton getOss = new JButton("Get FPGA tools");
-        getOss.setToolTipText("Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below");
+        JButton getOss = new JButton(Text.t("Get FPGA tools"));
+        getOss.setToolTipText(Text.t("Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below"));
         getOss.addActionListener(e -> {
             java.nio.file.Path exe = Toolchains.install(p, Toolchains.Tool.OSS_CAD);
             if (exe == null) return;
@@ -585,6 +603,8 @@ final class Settings {
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
         PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
         PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
+        Text.Lang beforeLang = uiLanguage();
+        useUiLanguage((Text.Lang) uiLang.getSelectedItem());
         PREFS.put("pic32Net", pic32Net.getSelectedIndex() == 1 ? "ethernet" : "uart");
         PREFS.put("artixFlow", artixFlow.getSelectedIndex() == 1 ? "open" : "vivado");
         putTool("vivado", vivado, "vivado");
@@ -599,6 +619,11 @@ final class Settings {
         putTool("openFpgaLoader", loader, "openFPGALoader");
         PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
+        if (uiLanguage() != beforeLang) {
+            JOptionPane.showMessageDialog(parent,
+                    Text.t("The interface is in %s the next time EVIA Paradigma starts.", uiLanguage().display),
+                    Text.t("Interface language"), JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private static void putTool(String key, JTextField field, String fallback) {
@@ -610,7 +635,7 @@ final class Settings {
     }
 
     static void checkCompiler(String command, JLabel label, boolean c) {
-        label.setText("Checking compiler...");
+        label.setText(Text.t("Checking compiler..."));
         label.setForeground(Theme.muted());
         Object token = newCheck(label);
         new Thread(() -> {

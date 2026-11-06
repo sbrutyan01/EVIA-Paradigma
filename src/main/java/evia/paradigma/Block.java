@@ -140,7 +140,7 @@ public final class Block extends JComponent {
     }
 
     String title() {
-        if (def == null) return type.title.toUpperCase();
+        if (def == null) return Text.t(type.title).toUpperCase(Text.locale());
         return objectName.isEmpty() ? def.name : objectName + " : " + def.name;
     }
 
@@ -212,7 +212,7 @@ public final class Block extends JComponent {
                     + "Double-click to choose method, object and arguments"
                     + "</html>");
         } else if (type.hasCode) {
-            setToolTipText("<html><b>" + type.title + "</b>: <code>" + esc + "</code><br>Double-click to edit</html>");
+            setToolTipText("<html><b>" + Text.t(type.title) + "</b>: <code>" + esc + "</code><br>" + Text.t("Double-click to edit") + "</html>");
         } else {
             setToolTipText(type.hint);
         }

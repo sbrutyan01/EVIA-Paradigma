@@ -297,7 +297,7 @@ public final class FlowCanvas extends JPanel {
         if (name == null) return;
         name = name.trim();
         if (name.isEmpty() || lib.nameTaken(name, null)) {
-            JOptionPane.showMessageDialog(this, "Choose a unique, non-empty name.", "Group", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, Text.t("Choose a unique, non-empty name."), "Group", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
@@ -494,7 +494,7 @@ public final class FlowCanvas extends JPanel {
                 edit.addActionListener(e -> editBlock(b));
                 menu.add(edit);
             }
-            JMenuItem src = new JMenuItem("View source code");
+            JMenuItem src = new JMenuItem(Text.t("View source code"));
             src.addActionListener(e -> lib.viewSource(b));
             menu.add(src);
             if (b.def != null) {
@@ -504,12 +504,12 @@ public final class FlowCanvas extends JPanel {
             }
             if (b.type != BlockType.START && b.type != BlockType.END
                     && b.type != BlockType.ENTER && b.type != BlockType.EXIT) {
-                JMenuItem grp = new JMenuItem("Make class from this...");
+                JMenuItem grp = new JMenuItem(Text.t("Make class from this..."));
                 grp.addActionListener(e -> groupSelection());
                 menu.add(grp);
             }
             if (b.next.length > 0) {
-                JMenuItem disc = new JMenuItem("Remove outgoing connections");
+                JMenuItem disc = new JMenuItem(Text.t("Remove outgoing connections"));
                 disc.addActionListener(e -> {
                     Arrays.fill(b.next, null);
                     repaint();
@@ -517,7 +517,7 @@ public final class FlowCanvas extends JPanel {
                 menu.add(disc);
             }
             if (b.type != BlockType.ENTER) {
-                JMenuItem del = new JMenuItem("Delete block");
+                JMenuItem del = new JMenuItem(Text.t("Delete block"));
                 del.addActionListener(e -> removeBlock(b));
                 menu.add(del);
             }
@@ -530,7 +530,7 @@ public final class FlowCanvas extends JPanel {
         Link l = linkAt(e.getPoint());
         if (l == null) return false;
         JPopupMenu menu = new JPopupMenu();
-        JMenuItem del = new JMenuItem("Delete connection");
+        JMenuItem del = new JMenuItem(Text.t("Delete connection"));
         del.addActionListener(ev -> {
             l.from().next[l.port()] = null;
             repaint();
@@ -690,7 +690,7 @@ public final class FlowCanvas extends JPanel {
             BlockType t = BlockType.valueOf(data.substring(5));
             if (!allows(t)) return null;
             if (t == BlockType.START && hasStart()) {
-                JOptionPane.showMessageDialog(this, "Only one Start block is allowed.");
+                JOptionPane.showMessageDialog(this, Text.t("Only one Start block is allowed."));
                 return null;
             }
             return addBlock(t, x, y);
