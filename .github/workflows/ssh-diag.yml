@@ -1,0 +1,37 @@
+name: ssh-diag
+
+# A one-off diagnostic for the self-hosted runner's own machine: why an SSH key is refused.
+# It only READS state - the address, the permissions, the key fingerprints and sshd's settings.
+# It changes nothing and installs nothing. Delete this file once the question is answered; the
+# run logs of a public repository are public, which is why it prints fingerprints and never keys.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diag:
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 5
+    steps:
+      - name: Which account and which address
+        run: |
+          echo "runner account : $(id -un)   home: $HOME"
+          echo "hostname       : $(hostname)"
+          echo "addresses      : $(hostname -I)"
+
+      - name: This account's SSH key state
+        run: |
+          for p in "$HOME" "$HOME/.ssh" "$HOME/.ssh/authorized_keys"; do
+            if [ -e "$p" ]; then ls -ld "$p"; else echo "MISSING  $p"; fi
+          done
+          echo "--- lines in authorized_keys:"
+          [ -f "$HOME/.ssh/authorized_keys" ] && wc -l < "$HOME/.ssh/authorized_keys" || echo "no file"
+          echo "--- fingerprints of the keys in it (never the keys themselves):"
+          ssh-keygen -lf "$HOME/.ssh/authorized_keys" 2>&1 || echo "nothing readable"
+
+      - name: What sshd is set to accept
+        run: |
+          echo "--- listening on 22?"
+          ss -ltn 2>/dev/null | grep -E ':22[[:space:]]' || echo "nothing listening on 22"
+          echo "--- sshd_config, without the comments:"
+          grep -hvE '^[[:space:]]*(#|$)' /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf 2>/dev/null || echo "cannot read sshd_config"
