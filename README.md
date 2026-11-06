@@ -949,6 +949,38 @@ falls back to Ubuntu's Clang with a warning.
 
 Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma-0.1.2-CI.pdf) · [SHA-256 checksums](docs/reports/SHA256SUMS-0.1.2.txt)
 
+## Running the checks on a machine of your own
+
+[`scripts/local-ci.sh`](scripts/local-ci.sh) runs the same checks GitHub runs, with the toolchains already
+installed on that machine instead of downloading them each time. A check whose tool is missing is skipped with the
+reason, so a computer without, say, XC32 still runs everything else; the exit status is the number of failures.
+
+```bash
+scripts/local-ci.sh                 # build, then every check whose tools are present
+scripts/local-ci.sh app mqtt        # only those: build app mqtt examples targets zoom pic32 boards fpga
+```
+
+Point it at your toolchains with `OSS_CAD_SUITE` (the folder holding its `environment` file), `XC32_BIN`,
+`AVR_GCC_BIN`, and `CXX` / `CC`.
+
+To let GitHub start it on that machine, register it as a **self-hosted runner** (Settings → Actions → Runners → New
+self-hosted runner gives the exact commands, pinned to the current runner version), with the labels this repository's
+workflow expects:
+
+```bash
+./config.sh --url https://github.com/sbrutyan01/EVIA-Paradigma --token <FROM THAT PAGE> \
+            --name dell --labels self-hosted,linux,dell --unattended
+sudo ./svc.sh install "$USER" && sudo ./svc.sh start      # starts with the machine
+```
+
+Then **Actions → local-ci → Run workflow** runs [`local-ci.yml`](.github/workflows/local-ci.yml) there, and the box
+needs no incoming connection at all: the runner polls GitHub outbound, so nothing has to be forwarded on the router.
+
+> **This repository is public, so the workflow is `workflow_dispatch` only, on purpose.** A self-hosted runner that a
+> pull request can trigger would run a stranger's code on your computer. Keep that trigger as it is, keep
+> *Settings → Actions → General → Require approval for all external contributors* on, and prefer a machine you can
+> rebuild over your main desktop.
+
 ## Code map
 
 | File | Role |
@@ -978,6 +1010,7 @@ Reports: [v0.1.2: CI checks and release files (PDF)](docs/reports/EVIA-Paradigma
 | `EmbeddedRuntime.java` | Arduino sketch and bare-metal AVR runtimes (pins, timers, PWM, ADC, UART), only the pieces a program uses |
 | `EmbeddedRuntime.MQTT_CORE` / `Pic32Runtime.java` | The MQTT 3.1.1 client that goes into the generated file, and the network under it: the ESP32's WiFi, or a WiFi module on the PIC32's UART2 |
 | `Toolchains.java` | Fetches arduino-cli, avr-gcc and the OSS CAD Suite into the app's own folder; XC32 opens Microchip's page |
+| `scripts/local-ci.sh`, `.github/workflows/local-ci.yml` | The whole check suite on a machine of your own, through a self-hosted runner |
 | `scripts/mqtt/` | The MQTT check: a socket in place of the chip's network, and a small broker that reads what the client sends |
 | `scripts/simavr/` | `evia_sim`: runs AVR builds in simavr with a button, an analog signal and pin watching (CI) |
 | `site/` / `scripts/build-site.py` | The [project website](https://sbrutyan01.github.io/EVIA-Paradigma/) and its build; `site/i18n/` holds its Russian, Armenian, German, Simplified Chinese, Traditional Chinese and Japanese texts |
