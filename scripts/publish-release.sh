@@ -69,21 +69,32 @@ fi
 # ---------------------------------------------------------------- the tag
 say "$TAG"
 if git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
-    at=$(git rev-parse "refs/tags/$TAG") head=$(git rev-parse HEAD)
+    at=$(git rev-parse "refs/tags/$TAG^{commit}") head=$(git rev-parse HEAD)
     if [ "$at" != "$head" ]; then
-        die "$TAG already exists and points at $(git rev-parse --short "$at"), not at
-    $(git rev-parse --short "$head"). Move it with: git tag -f -a $TAG, or delete it first."
+        die "$TAG already exists on commit $(git rev-parse --short "$at"), not on
+    $(git rev-parse --short "$head"). Delete it first with: git tag -d $TAG"
     fi
     echo "   exists already, on the right commit"
 else
     run git -c user.name="Sergey Brutyan" -c user.email=sbrutyan01@gmail.com \
         tag -a "$TAG" -m "EVIA Paradigma ${TAG#v}"
-    [ "$DRY" = 0 ] && echo "   created on $(git rev-parse --short "$TAG")"
+    [ "$DRY" = 0 ] && echo "   created on $(git rev-parse --short "$TAG^{commit}")"
 fi
 
 # ---------------------------------------------------------------- push
 say "pushing $TAG to $GH"
-run git push "$GH" "refs/tags/$TAG"
+if ! run git push "$GH" "refs/tags/$TAG"; then
+    echo
+    echo "   The push failed, so nothing has been released." >&2
+    echo "   \"Password authentication is not supported\" means git needs a token or a key:" >&2
+    echo "     - a token: github.com/settings/tokens, scope repo, and give it as the PASSWORD" >&2
+    echo "       (the username does not matter), or run  gh auth login  if gh is installed;" >&2
+    echo "     - or SSH: add this machine's ~/.ssh/id_ed25519.pub at github.com/settings/keys" >&2
+    echo "       and switch the remote with" >&2
+    echo "         git remote set-url $GH git@github.com:sbrutyan01/EVIA-Paradigma.git" >&2
+    echo "   The tag is made and waiting; re-run this script once git can authenticate." >&2
+    exit 1
+fi
 echo "   that is all GitHub needs: the release workflow builds the installers, creates the release"
 echo "   from $NOTES, and the site rebuilds with this version's download links."
 
