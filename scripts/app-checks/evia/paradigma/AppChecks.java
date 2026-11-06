@@ -312,6 +312,36 @@ public class AppChecks {
             Settings.useBoard(null);
         }
 
+        // ---------- MQTT over the chip's own Ethernet port, as a Harmony application
+        {
+            Library esk = newLib();
+            ProgramIO.load(esk, Path.of("examples/boards/mqtt_esk2.evia"));
+            Settings.useBoard(Board.PIC32_ESK2);
+            Settings.usePic32Net(true);
+            String c = CodeGenerator.generate(esk, Target.parse("pic32"));
+            check(c.contains("void app_run(void)") && !c.contains("int main(void)"),
+                    "the Harmony application has app_run and no main of its own");
+            check(!c.contains("#pragma config") && c.contains("#include \"definitions.h\""),
+                    "the device configuration is left to the Harmony project");
+            check(c.contains("TCPIP_TCP_ClientOpen") && c.contains("TCPIP_DNS_Resolve") && c.contains("SYS_Tasks()")
+                            && !c.contains("AT+CIPSTART"),
+                    "the network under MQTT is Harmony's TCP/IP, not a WiFi module");
+            Settings.useBoard(Board.PIC32MX250F128B);
+            try {
+                CodeGenerator.generate(esk, Target.parse("pic32"));
+                check(false, "a chip without Ethernet refuses the Ethernet setting");
+            } catch (FlowException e) {
+                check(e.getMessage().contains("no Ethernet port"),
+                        "a chip without Ethernet refuses the Ethernet setting (" + e.getMessage() + ")");
+            }
+            Settings.usePic32Net(false);
+            Settings.useBoard(Board.PIC32_ESK2);
+            String at = CodeGenerator.generate(esk, Target.parse("pic32"));
+            check(at.contains("AT+CIPSTART") && at.contains("int main(void)") && at.contains("#pragma config"),
+                    "the same diagram still builds as a self-contained program for the WiFi module");
+            Settings.useBoard(null);
+        }
+
         // ---------- the toolchains EVIA Paradigma can fetch
         {
             Path rel = tmp.resolve("releases");

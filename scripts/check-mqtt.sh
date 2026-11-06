@@ -13,7 +13,7 @@ CC="${CC:-cc}"
 rm -rf "$OUT" && mkdir -p "$OUT"
 fails=0
 
-java -jar "$JAR" --gen examples/boards/mqtt_sensor.evia --lang pic32 --board pic32mx250f128b -o "$OUT/program.c" > /dev/null
+java -jar "$JAR" --gen examples/boards/mqtt_sensor.evia --lang pic32 --board pic32mx250f128b --net uart -o "$OUT/program.c" > /dev/null
 python3 scripts/mqtt/extract.py "$OUT/program.c" > "$OUT/core.c"
 cp scripts/mqtt/harness.c "$OUT/harness.c"
 "$CC" -std=c11 -Wall -Wextra -Werror -I"$OUT" -o "$OUT/harness" "$OUT/harness.c" -lm || { echo "FAIL  the MQTT client does not compile"; exit 1; }
@@ -49,6 +49,25 @@ if "${CXX:-c++}" -std=gnu++17 -I scripts/mqtt/arduino-stubs -include scripts/mqt
   echo "ok    the ESP32 sketch compiles as C++"
 else
   echo "FAIL  the ESP32 sketch does not compile"; head -10 "$OUT/sketch.log"; fails=$((fails + 1))
+fi
+
+# 3. the Harmony application for the Ethernet path: C against our own stub headers, since Microchip's
+#    are not redistributable. It catches our mistakes, not a mismatch with the real Harmony API.
+java -jar "$JAR" --gen examples/boards/mqtt_esk2.evia --lang pic32 --board pic32-esk2 --net ethernet \
+     -o "$OUT/harmony.c" > /dev/null
+if "${CC:-cc}" -std=gnu99 -I scripts/mqtt/harmony-stubs -Wall -Wextra -fsyntax-only "$OUT/harmony.c" 2> "$OUT/harmony.log"; then
+  echo "ok    the Harmony application compiles"
+else
+  echo "FAIL  the Harmony application does not compile"; head -10 "$OUT/harmony.log"; fails=$((fails + 1))
+fi
+for want in 'void app_run(void)' 'TCPIP_TCP_ClientOpen' 'SYS_Tasks()'; do
+  if grep -qF "$want" "$OUT/harmony.c"; then echo "ok    the Harmony application has $want"
+  else echo "FAIL  the Harmony application is missing $want"; fails=$((fails + 1)); fi
+done
+if grep -q '#pragma config' "$OUT/harmony.c"; then
+  echo "FAIL  the Harmony application sets the device configuration, which belongs to the project"; fails=$((fails + 1))
+else
+  echo "ok    the device configuration is left to the Harmony project"
 fi
 
 if [ "$fails" = 0 ]; then echo "all MQTT checks passed"; else echo "$fails MQTT check(s) failed"; cat "$OUT/broker.log" "$OUT/client.log"; fi

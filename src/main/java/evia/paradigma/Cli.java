@@ -50,6 +50,11 @@ final class Cli {
                                 }
                                 Settings.useBoard(b);
                             }
+                            case "--net" -> Settings.usePic32Net(switch (v.toLowerCase()) {
+                                case "uart", "at", "wifi" -> false;
+                                case "ethernet", "eth", "harmony" -> true;
+                                default -> throw new IllegalArgumentException("--net is uart (a WiFi module on UART2) or ethernet (Harmony's TCP/IP)");
+                            });
                             case "--flow" -> t = t.withFlow(switch (v.toLowerCase()) {
                                 case "structured" -> Target.Flow.STRUCTURED;
                                 case "goto" -> Target.Flow.GOTO;
@@ -108,6 +113,10 @@ final class Cli {
                                                        e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b;
                                                        FPGA: nexys-a7-100t (default), arty-a7-35, arty-a7-100, basys3,
                                                        olimex-gatemate, ccgm1a1-evb)
+                                  --net WHERE          where the MQTT blocks reach the network on a PIC32: uart (default, a WiFi
+                                                       module with AT firmware on UART2, every chip) or ethernet (the chip's own
+                                                       port through Harmony's TCP/IP stack: the file is then an application for an
+                                                       MPLAB X Harmony project, MX695/MX795 only)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
                                   --values MODE        safe (default): numbers and text, the interpreter's checks

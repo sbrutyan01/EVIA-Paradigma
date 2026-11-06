@@ -184,6 +184,7 @@ from a broker on your computer: publishing to a topic you subscribed to brings t
 MQTT blocks (one serial port, which Print uses), and so does an FPGA. A message is a number, written as Print writes it;
 since -1 also means "nothing has arrived", MQTT Has Message tells a real -1 apart. MQTT over the Ethernet port of the
 MX695/795 chips is not supported yet.</p>
+<p><b>MQTT over Ethernet (experimental).</b> For the MX695F512L, the MX795F512L and the PIC32 Ethernet Starter Kit II, <i>Settings</i> &gt; <i>PIC32 MQTT over</i> &gt; <i>Ethernet</i> makes the generated file an application for an MPLAB X Harmony project: Harmony brings the TCP/IP stack, the project keeps its own configuration, clock and main(), and you call <code>app_run()</code> from it. Enable TCP, the DHCP and DNS clients, the Ethernet MAC driver and the board's PHY (LAN8740 on the starter kit). The address comes from DHCP, so the network name and password are not used. This path compiles against stub headers in the checks, but has not been built against real Harmony or run on a board: the WiFi module is the tested one.</p>
 <p>Pins can be numbers, expressions or the board's names <code>LED_BUILTIN</code>, <code>A0</code> ... <code>A15</code>;
 <code>HIGH</code> and <code>LOW</code> work in any expression. These names can't be used as variables.</p>
 <p>The bus blocks work in Run and in all three board languages. Open a bus before using it; addresses are 7-bit and the

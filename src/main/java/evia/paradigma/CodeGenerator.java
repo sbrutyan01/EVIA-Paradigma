@@ -183,6 +183,17 @@ final class CodeGenerator {
                     ? "UART1 RX RB13, TX RB3; SPI1 SDI RA1, SDO RA4, SCK RB14; I2C1 SCL RB8, SDA RB9; PWM RB15, RB8, RB9, RB2"
                     : "UART1 RX RF2, TX " + (b.pkg == 'H' && b.family == 3 ? "RF3" : "RF8") + "; SPI2 SDI RG7, SDO RG8, SCK RG6; I2C1 "
                             + (b.pkg == 'L' ? "SCL RA14, SDA RA15" : "SCL RG2, SDA RG3") + "; PWM RD0 ... RD4";
+            if (Settings.pic32Ethernet()) {
+                return stamp
+                        + "// Chip:     " + b.display + "  (xc32-gcc -mprocessor=" + b.pic + ")\n"
+                        + "// This is an application for an MPLAB X Harmony project, not a program on its own: MQTT goes through\n"
+                        + "// Harmony's TCP/IP stack over the chip's Ethernet port. The project keeps its own device configuration,\n"
+                        + "// clock and main(); add this file to it and call app_run() from main() in place of its idle loop.\n"
+                        + "// Harmony:  enable the TCP/IP stack with TCP, DHCP Client, DNS Client, the Ethernet MAC driver and the\n"
+                        + "//           board's PHY (LAN8740 on the Ethernet Starter Kit II), then build in MPLAB X as usual.\n"
+                        + "// Pins:     " + pins + "\n"
+                        + "// Print and Input use UART1 at 115200 baud, straight to the registers, beside whatever Harmony does.\n\n";
+            }
             return stamp
                     + "// Chip:     " + b.display + "  (xc32-gcc -mprocessor=" + b.pic + ")\n"
                     + "// Build:    " + b.xc32("xc32-gcc", "program.c", "program.elf") + "\n"
@@ -528,6 +539,16 @@ final class CodeGenerator {
 
                     void loop() {
                         // the program ran once in setup(); pins keep their last state
+                    }
+                    """);
+        } else if (EMB && t.lang() == Target.Lang.PIC32 && Settings.pic32Ethernet()) {
+            out.append("""
+                    /* Call this from the Harmony project's main(), in place of  while (true) { SYS_Tasks(); } :
+                       the program then runs the diagram and keeps the TCP/IP stack going while it waits. */
+                    void app_run(void) {
+                        rt_begin();
+                        run_program();
+                        rt_end();   /* waits for the UART, then sleeps; pins keep their last state */
                     }
                     """);
         } else if (EMB) {
@@ -1203,7 +1224,13 @@ final class CodeGenerator {
         /** MQTT needs a network: the ESP32's own WiFi, or a PIC32 with an AT module or Ethernet. */
         void mqttCheck(Block b) {
             Board board = Settings.board(t.lang());
-            if (t.lang() == Target.Lang.PIC32) return;
+            if (t.lang() == Target.Lang.PIC32) {
+                if (!Settings.pic32Ethernet()) return;
+                if (board == Board.PIC32MX695F512L || board == Board.PIC32MX795F512L || board == Board.PIC32_ESK2) return;
+                throw new FlowException(b, "the " + b.type.title + " block is set to use Ethernet (Settings, PIC32 MQTT over),"
+                        + " and " + board.display + " has no Ethernet port: choose the MX695F512L, the MX795F512L or the"
+                        + " Ethernet Starter Kit II, or switch back to the WiFi module on UART2.");
+            }
             if (t.lang() == Target.Lang.ARDUINO && board.fqbn.startsWith("esp32:")) {
                 if (board != Board.ESP32_H2) return;
                 throw new FlowException(b, "the " + b.type.title + " block needs WiFi, and the ESP32-H2 has none"

@@ -183,6 +183,19 @@ final class Settings {
 
     // ---- FPGA tools (Vivado, or the open-source flows)
 
+    /**
+     * True when PIC32 MQTT should go through the chip's own Ethernet port with Harmony's TCP/IP stack,
+     * false (the default) when it should drive a WiFi module with AT firmware on UART2.
+     */
+    static boolean pic32Ethernet() {
+        return PREFS.get("pic32Net", "uart").equals("ethernet");
+    }
+
+    /** Chooses how PIC32 MQTT reaches the network; see {@link #pic32Ethernet()}. */
+    static void usePic32Net(boolean ethernet) {
+        PREFS.put("pic32Net", ethernet ? "ethernet" : "uart");
+    }
+
     static boolean artixOpenSource() {
         return PREFS.get("artixFlow", "vivado").equals("open");
     }
@@ -431,6 +444,9 @@ final class Settings {
         JTextField pic32Up = new JTextField(pic32Upload(), 30);
         JButton check = new JButton("Check");
         check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
+        JComboBox<String> pic32Net = new JComboBox<>(new String[] {
+                "WiFi module on UART2 (every chip)", "Ethernet, Harmony TCP/IP (MX695/795)"});
+        pic32Net.setSelectedIndex(pic32Ethernet() ? 1 : 0);
         JComboBox<String> artixFlow = new JComboBox<>(new String[] {"Vivado", "Open source (openXC7)"});
         artixFlow.setSelectedIndex(artixOpenSource() ? 1 : 0);
         Fpga.Tools ft = fpgaTools();
@@ -503,8 +519,15 @@ final class Settings {
         g.gridy++; g.gridx = 0;
         p.add(new JLabel("PIC32 upload:"), g);
         g.gridx = 1; p.add(pic32Up, g);
+        g.gridy++; g.gridx = 0;
+        p.add(new JLabel("PIC32 MQTT over:"), g);
+        g.gridx = 1; p.add(pic32Net, g);
         g.gridy++; g.gridx = 1; g.gridwidth = 2;
         p.add(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."), g);
+        g.gridy++;
+        p.add(small("<html>The MQTT blocks reach the network through a WiFi module with AT firmware on UART2, which every PIC32MX can do,<br>"
+                + "or through the chip's own Ethernet port on the MX695/MX795, which needs Harmony's TCP/IP stack: the generated file is then<br>"
+                + "an application for an MPLAB X Harmony project instead of a self-contained program. See the guide.</html>"), g);
         g.gridy++;
         p.add(small("<html>Arduino sketches build with arduino-cli (cores: arduino:avr, esp32:esp32); bare-metal AVR C with avr-gcc,<br>"
                 + "uploaded with avrdude. Leonardo / Micro: press reset just before uploading bare-metal code.</html>"), g);
@@ -562,6 +585,7 @@ final class Settings {
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
         PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
         PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
+        PREFS.put("pic32Net", pic32Net.getSelectedIndex() == 1 ? "ethernet" : "uart");
         PREFS.put("artixFlow", artixFlow.getSelectedIndex() == 1 ? "open" : "vivado");
         putTool("vivado", vivado, "vivado");
         putTool("yosys", yosys, "yosys");

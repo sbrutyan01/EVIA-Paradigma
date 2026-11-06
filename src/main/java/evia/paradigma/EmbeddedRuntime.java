@@ -1080,7 +1080,9 @@ final class EmbeddedRuntime {
 
     /** The runtime for a microcontroller program: only the pieces {@code program} uses. */
     static String source(Target t, String program) {
-        if (t.lang() == Target.Lang.PIC32) return Pic32Runtime.source(Settings.board(Target.Lang.PIC32), program);
+        if (t.lang() == Target.Lang.PIC32) {
+            return Pic32Runtime.source(Settings.board(Target.Lang.PIC32), program, Settings.pic32Ethernet());
+        }
         boolean arduino = t.lang() == Target.Lang.ARDUINO;
         return assemble(arduino ? "Arduino sketch" : "bare-metal AVR", arduino ? ARDUINO_HEAD : AVR_HEAD,
                 arduino ? ARDUINO : AVR, program);

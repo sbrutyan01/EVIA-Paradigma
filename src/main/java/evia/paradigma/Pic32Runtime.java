@@ -41,10 +41,48 @@ final class Pic32Runtime {
 
     /** The head for a chip; {@code used} is all code that follows, so only the pin names it uses are defined. */
     static String head(Board b, String used) {
+        return head(b, used, false);
+    }
+
+    /**
+     * The top of the generated file. A bare-metal program carries the device configuration, the clock
+     * and its own {@code main}; a Harmony application leaves all three to the project it belongs to.
+     */
+    static String head(Board b, String used, boolean ethernet) {
         java.util.Set<String> names = new java.util.HashSet<>();
         java.util.regex.Matcher m = PIN_NAME.matcher(used + " " + b.led);
         while (m.find()) names.add(m.group(1));
         StringBuilder s = new StringBuilder();
+        if (ethernet) {
+            s.append("""
+                    /* An application for an MPLAB X Harmony project: the device configuration, the clock and main()
+                       belong to the project's own files, and MQTT goes through its TCP/IP stack.
+                       Add this file to the project and call app_run() from main() in place of its idle loop. */
+                    #include "definitions.h"
+                    #include <cp0defs.h>
+                    #include <math.h>
+                    #include <stdint.h>
+                    #include <stdlib.h>
+                    #include <string.h>
+
+                    #define RT_PUMP() SYS_Tasks()      /* keeps the TCP/IP stack running while the program waits */
+
+                    #ifndef RT_SYSCLK
+                    #  if defined(CPU_CLOCK_FREQUENCY)
+                    #    define RT_SYSCLK CPU_CLOCK_FREQUENCY
+                    #  else
+                    #    define RT_SYSCLK 80000000UL    /* the Ethernet Starter Kit II runs at 80 MHz */
+                    #  endif
+                    #endif
+                    #ifndef RT_PBCLK
+                    #  if defined(PERIPHERAL_CLOCK_FREQUENCY)
+                    #    define RT_PBCLK PERIPHERAL_CLOCK_FREQUENCY
+                    #  else
+                    #    define RT_PBCLK RT_SYSCLK
+                    #  endif
+                    #endif
+                    #define RT_FAMILY\040""").append(b.family).append("\n");
+        } else {
         s.append("""
                 #include <xc.h>
                 #include <cp0defs.h>
@@ -78,7 +116,10 @@ final class Pic32Runtime {
 
                 #define RT_SYSCLK 30000000UL
                 #define RT_PBCLK 30000000UL
-                #define RT_FAMILY\040""").append(b.family).append("""
+                #define RT_PUMP() (void) 0
+                #define RT_FAMILY\040""").append(b.family).append("\n");
+        }
+        s.append("""
 
                 #define RT_TEXT(s) s
                 typedef const char *rt_text;
@@ -443,6 +484,7 @@ final class Pic32Runtime {
                 static void delay(unsigned long ms) {
                     unsigned long start = millis();
                     while (millis() - start < ms) {
+                        RT_PUMP();      /* nothing in a bare-metal program; runs the TCP/IP stack under Harmony */
                     }
                 }
                 """);
@@ -863,10 +905,118 @@ final class Pic32Runtime {
                 """);
     }
 
+    /**
+     * MQTT over the chip's own Ethernet port, on the MX695 and MX795. The four functions the MQTT client
+     * needs are the only thing that changes: underneath them is Harmony's TCP/IP stack, which the
+     * generated file expects to be part of an MPLAB X Harmony project (see the guide).
+     */
+    private static final Map<String, EmbeddedRuntime.Piece> ETHERNET = new LinkedHashMap<>();
+
+    static {
+        EmbeddedRuntime.piece(ETHERNET, "rt_net_join rt_net_connect rt_net_write rt_net_read", "millis", """
+                /* ---- the network under MQTT: the chip's Ethernet port through Harmony's TCP/IP stack.
+                   The address comes from DHCP, so MQTT Connect's network name and password are not used here. */
+                #define RT_MQTT_CLIENT "evia-paradigma"
+
+                static TCP_SOCKET rt_sock = INVALID_SOCKET;
+
+                /* Waits for the cable and for an address from DHCP. */
+                static int rt_net_join(const char *network, const char *password) {
+                    TCPIP_NET_HANDLE net = TCPIP_STACK_NetHandleGet("eth0");
+                    unsigned long start = millis();
+                    (void) network;
+                    (void) password;
+                    if (net == 0) net = TCPIP_STACK_IndexToNet(0);
+                    while (millis() - start < 30000UL) {
+                        SYS_Tasks();
+                        if (TCPIP_STACK_NetIsLinked(net) && TCPIP_STACK_NetAddress(net) != 0) return 1;
+                    }
+                    return 0;                      /* no cable, or no answer from DHCP */
+                }
+
+                static int rt_net_connect(const char *host, int port) {
+                    IP_MULTI_ADDRESS addr;
+                    unsigned long start;
+                    if (rt_sock != INVALID_SOCKET) {
+                        TCPIP_TCP_Close(rt_sock);
+                        rt_sock = INVALID_SOCKET;
+                    }
+                    if (!TCPIP_Helper_StringToIPAddress(host, &addr.v4Add)) {    /* a name, so ask the DNS */
+                        if (TCPIP_DNS_Resolve(host, TCPIP_DNS_TYPE_A) != TCPIP_DNS_RES_OK) return 0;
+                        start = millis();
+                        while (TCPIP_DNS_IsResolved(host, &addr, IP_ADDRESS_TYPE_IPV4) == TCPIP_DNS_RES_PENDING) {
+                            SYS_Tasks();
+                            if (millis() - start > 10000UL) return 0;
+                        }
+                    }
+                    rt_sock = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4, (uint16_t) port, &addr);
+                    if (rt_sock == INVALID_SOCKET) return 0;
+                    start = millis();
+                    while (!TCPIP_TCP_IsConnected(rt_sock)) {
+                        SYS_Tasks();
+                        if (millis() - start > 15000UL) {
+                            TCPIP_TCP_Close(rt_sock);
+                            rt_sock = INVALID_SOCKET;
+                            return 0;
+                        }
+                    }
+                    return 1;
+                }
+
+                static int rt_net_write(const unsigned char *p, int n) {
+                    int done = 0;
+                    unsigned long start = millis();
+                    if (rt_sock == INVALID_SOCKET) return 0;
+                    while (done < n) {
+                        uint16_t room = TCPIP_TCP_PutIsReady(rt_sock);
+                        if (room > 0) {
+                            uint16_t want = (uint16_t) (n - done);
+                            uint16_t put = TCPIP_TCP_ArrayPut(rt_sock, p + done, room < want ? room : want);
+                            done += put;
+                            start = millis();
+                        }
+                        SYS_Tasks();
+                        if (millis() - start > 5000UL) break;
+                        if (!TCPIP_TCP_IsConnected(rt_sock)) break;
+                    }
+                    TCPIP_TCP_Flush(rt_sock);
+                    return done;
+                }
+
+                /* Up to n bytes; waits up to ms milliseconds for the first one. */
+                static int rt_net_read(unsigned char *p, int n, unsigned long ms) {
+                    int got = 0;
+                    unsigned long start = millis();
+                    if (rt_sock == INVALID_SOCKET) return 0;
+                    while (got < n) {
+                        if (TCPIP_TCP_GetIsReady(rt_sock) > 0) {
+                            got += (int) TCPIP_TCP_ArrayGet(rt_sock, p + got, (uint16_t) (n - got));
+                            start = millis();
+                            continue;
+                        }
+                        SYS_Tasks();
+                        if (millis() - start >= ms) break;
+                        if (!TCPIP_TCP_IsConnected(rt_sock)) break;
+                    }
+                    return got;
+                }
+                """);
+    }
+
     /** The runtime for a PIC32 program: the head for this chip, then only the pieces {@code program} uses. */
     static String source(Board b, String program) {
-        String title = "bare-metal PIC32 " + b.pic.substring(2);
-        String body = EmbeddedRuntime.assemble(title, "", PIECES, program);
-        return EmbeddedRuntime.assemble(title, head(b, program + body), PIECES, program);
+        return source(b, program, false);
+    }
+
+    /** With {@code ethernet}, MQTT goes through Harmony's TCP/IP stack instead of a WiFi module on UART2. */
+    static String source(Board b, String program, boolean ethernet) {
+        Map<String, EmbeddedRuntime.Piece> pieces = PIECES;
+        if (ethernet) {
+            pieces = new LinkedHashMap<>(PIECES);
+            pieces.putAll(ETHERNET);      /* the same four names, a different piece behind them */
+        }
+        String title = ethernet ? "PIC32 " + b.pic.substring(2) + " on Harmony" : "bare-metal PIC32 " + b.pic.substring(2);
+        String body = EmbeddedRuntime.assemble(title, "", pieces, program);
+        return EmbeddedRuntime.assemble(title, head(b, program + body, ethernet), pieces, program);
     }
 }
