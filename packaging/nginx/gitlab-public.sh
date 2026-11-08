@@ -43,6 +43,13 @@ reload() {
 say "$GIT"
 pub=$(curl -fsS -m 10 https://api.ipify.org 2> /dev/null) || die "cannot work out this connection's public address"
 ips=$(getent ahostsv4 "$GIT" 2> /dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')
+# A new record can take a while to reach this machine's resolver, which may still remember "no such
+# name". Let's Encrypt asks the domain's own nameservers, so a public resolver's answer is enough.
+if ! echo "$ips" | grep -qw "$pub" && command -v dig > /dev/null; then
+    for r in 1.1.1.1 8.8.8.8 9.9.9.9; do
+        ips="$ips$(dig +short +time=3 +tries=1 "$GIT" A @"$r" 2> /dev/null | tr '\n' ' ')"
+    done
+fi
 echo "$ips" | grep -qw "$pub" || die "$GIT resolves to '${ips:-nothing}', not to this machine ($pub).
     Add an A record at the DNS provider: name \"git\", type A, value $pub. Wait for it, then run this again."
 ok "$GIT points here ($pub)"
@@ -108,7 +115,7 @@ ss -ltn | grep -q '127.0.0.1:8081' || warn "nothing on 127.0.0.1:8081 now - chec
 
 say "check"
 for i in $(seq 1 30); do
-    code=$(curl -s -o /dev/null -w '%{http_code}' -m 10 "https://$GIT/users/sign_in")
+    code=$(curl -s -o /dev/null -w '%{http_code}' -m 10 --resolve "$GIT:443:$pub" "https://$GIT/users/sign_in")
     [ "$code" = 200 ] && break
     sleep 5
 done
