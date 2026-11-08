@@ -69,6 +69,19 @@ with open(out + "/samples.js", "w") as f:
 with open(out + "/index.html") as f:
     html = f.read().replace("{{VERSION}}", version)
 
+# Browsers keep scripts and styles for a day (the server's Cache-Control), so a page from a new build
+# could run last week's samples.js: a new language tab then does nothing. Each link carries a
+# fingerprint of the file's content, so a changed file is a new address and is fetched at once.
+import hashlib
+for name in ("samples.js", "app.js", "style.css"):
+    with open(f"{out}/{name}", "rb") as f:
+        stamp = hashlib.sha256(f.read()).hexdigest()[:10]
+    attr = "href" if name.endswith(".css") else "src"
+    before = f'{attr}="{name}"'
+    if before not in html:
+        sys.exit(f"index.html no longer links {name} as {before}")
+    html = html.replace(before, f'{attr}="{name}?v={stamp}"')
+
 
 def current(page, lang):
     """Marks the page's own entry in the language switcher."""
