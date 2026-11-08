@@ -54,9 +54,20 @@ jobs:
         run: |
           set +e
           d="${{ inputs.domain }}"
-          echo "A    : $(getent ahostsv4 "$d" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')"
-          echo "AAAA : $(getent ahostsv6 "$d" 2>/dev/null | awk '$1 ~ /:/ {print $1}' | sort -u | tr '\n' ' ')"
-          for u in "http://$d/" "https://$d/"; do
-            printf '%-24s ' "$u"
-            curl -sSk -m 8 -o /dev/null -w 'HTTP %{http_code}\n' "$u" 2>&1 | head -1
+          own=$(ip -4 -o addr show scope global 2>/dev/null \
+                | awk '$2 !~ /docker|tailscale/ {split($4,a,"/"); print a[1]; exit}')
+          for n in "$d" "www.$d"; do
+            a=$(getent ahostsv4 "$n" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')
+            q=$(getent ahostsv6 "$n" 2>/dev/null | awk '$1 ~ /:/ {print $1}' | sort -u | tr '\n' ' ')
+            printf '\n%-14s A: %-40s AAAA: %s\n' "$n" "${a:-none}" "${q:-none}"
+            # more than one A, or any AAAA, means a browser may reach a different host than this one
+            c=$(echo "$a" | wc -w)
+            [ "$c" -gt 1 ] && echo "   !! $c A records - a browser may land on any of them"
+            [ -n "$q" ] && echo "   !! an AAAA record exists - browsers prefer IPv6 over the A record"
+            case " $a " in *" $own "*) echo "   -> includes this machine" ;;
+                           *) [ -n "$a" ] && echo "   -> does NOT include this machine ($own)" ;; esac
+            for u in "http://$n/" "https://$n/"; do
+              printf '   %-26s ' "$u"
+              curl -sSk -m 8 -o /dev/null -w 'HTTP %{http_code} from %{remote_ip}\n' "$u" 2>&1 | head -1
+            done
           done
