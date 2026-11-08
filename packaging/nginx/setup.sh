@@ -140,13 +140,17 @@ EOF
         if [ -f "$SELF/fullchain.pem" ]; then
             ok "already there: $SELF/fullchain.pem"
         else
+            # The public address goes in too, so testing over https by address does not add a
+            # second warning about the name not matching on top of the untrusted one.
+            san="DNS:$DOMAIN,DNS:www.$DOMAIN,IP:$LAN_IP"
+            pub=$(curl -fsS -m 8 https://api.ipify.org 2> /dev/null || true)
+            case "$pub" in [0-9]*.[0-9]*.[0-9]*.[0-9]*) san="$san,IP:$pub" ;; esac
             openssl req -x509 -newkey rsa:2048 -nodes -days 365 -sha256 \
                 -keyout "$SELF/privkey.pem" -out "$SELF/fullchain.pem" \
-                -subj "/CN=$DOMAIN" \
-                -addext "subjectAltName=DNS:$DOMAIN,DNS:www.$DOMAIN,IP:$LAN_IP" \
+                -subj "/CN=$DOMAIN" -addext "subjectAltName=$san" \
                 2> /dev/null || die "openssl could not make a certificate"
             chmod 600 "$SELF/privkey.pem"
-            ok "made one for $DOMAIN, www.$DOMAIN and $LAN_IP, valid a year"
+            ok "made one for $san, valid a year"
         fi
         sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g; \
              s#/etc/letsencrypt/live/$DOMAIN#$SELF#g" \
