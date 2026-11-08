@@ -37,6 +37,7 @@
   <nav aria-label="Main">
     <a href="#features">Features</a>
     <a href="#tutorial">Tutorial</a>
+    <a href="#python">Python</a>
     <a href="#fpga">FPGA</a>
     <a href="#download">Download</a>
     <a href="#docs">Docs</a>
@@ -74,7 +75,7 @@
   <div class="hero-text">
     <h1>Draw a program.<br>Pick its language.</h1>
     <div class="hero-grid">
-      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.</p>
+      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.</p>
       <div class="side">
         <p class="actions">
           <a class="btn primary" href="#download">Download {{VERSION}}</a>
@@ -157,7 +158,7 @@
         FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target
         cannot keep a block, the error names that block instead of quietly changing what the program means.</p>
     </div>
-    <img src="img/24-menu-code-language.png" loading="lazy" width="1536" height="1220" alt="The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.">
+    <img src="img/24-menu-code-language.png" loading="lazy" width="1516" height="1286" alt="The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.">
   </article>
 
   <article class="feature flip">
@@ -174,6 +175,18 @@
 
   <article class="feature">
     <div class="feature-text">
+      <h3>Python 3, nothing to compile</h3>
+      <p>Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages
+        and no compiler. Classes become Python classes and program variables module globals; Run in the code window
+        starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes
+        if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input,
+        the number text and every error message are the interpreter's own.</p>
+    </div>
+    <img src="img/35-python-run.png" loading="lazy" width="2120" height="1520" alt="The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
       <h3>See the code of any block</h3>
       <p>Right-click a block and choose View source code: the generated file opens with exactly the lines that
         block became highlighted. It works for a whole method or class too, in whichever language you chose.
@@ -183,7 +196,7 @@
     <img src="img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.">
   </article>
 
-  <article class="feature flip">
+  <article class="feature">
     <div class="feature-text">
       <h3>Arduino and ESP32 boards</h3>
       <p>Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.</p>
@@ -191,7 +204,7 @@
     <img src="img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.">
   </article>
 
-  <article class="feature">
+  <article class="feature flip">
     <div class="feature-text">
       <h3>Bare metal, down to the registers</h3>
       <p>AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core:
@@ -208,7 +221,7 @@
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
 
-  <article class="feature flip">
+  <article class="feature">
     <div class="feature-text">
       <h3>Zoom and move the canvas with the mouse</h3>
       <p>Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.</p>
@@ -216,7 +229,7 @@
     <img src="img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="The diagram zoomed in to 161 percent.">
   </article>
 
-  <article class="feature">
+  <article class="feature flip">
     <div class="feature-text">
       <h3>Projects, Git and GitHub</h3>
       <p>File, New Project creates a folder with the program, a modules folder, a README and a Git repository.
@@ -229,6 +242,7 @@
   <ul class="extras">
     <li><b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.</li>
     <li><b>Command line.</b> <code>evia --run program.evia</code> and <code>evia --gen program.evia --lang c11 -o program.c</code> for scripts and Makefiles.</li>
+    <li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>
     <li><b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.</li>
     <li><b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.</li>
     <li><b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.</li>
@@ -253,6 +267,22 @@
   </ol>
 </section>
 
+<section class="tutorial" id="python" aria-labelledby="python-h">
+  <h2 id="python-h">Your first Python program in four steps</h2>
+  <p class="section-lede">Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.</p>
+  <ol class="steps">
+    <li><h3>Choose Python 3</h3><p>Pick Python 3 in the Language list, in the toolbar or in the code window.</p></li>
+    <li><h3>Generate the Python code</h3><p>Press F7. Right-click a block and choose View source code to see the lines it became.</p></li>
+    <li><h3>Run it in the code window</h3><p>Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.</p></li>
+    <li><h3>Keep the .py file</h3><p>Save writes the file, and it runs anywhere with python3 program.py.</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang python -o tutorial.py
+python3 tutorial.py
+# goto flow and fast values work too
+java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang python --flow goto --values fast -o tutorial.py</code></pre>
+  <p class="fine">Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.</p>
+</section>
+
 <section class="tutorial" id="fpga" aria-labelledby="fpga-h">
   <h2 id="fpga-h">Your first FPGA program in four steps</h2>
   <p class="section-lede">The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).</p>
@@ -272,7 +302,7 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
 <section class="download" id="download" aria-labelledby="download-h">
   <h2 id="download-h">Download EVIA Paradigma {{VERSION}}</h2>
   <p class="section-lede">Each installer brings its own Java runtime, so nothing else needs to be installed.
-    To compile the generated code you need Clang or GCC (the app sets either up on Windows).</p>
+    To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.</p>
   <table class="dl">
     <thead><tr><th scope="col">System</th><th scope="col">File</th><th scope="col">Notes</th></tr></thead>
     <tbody>
@@ -298,14 +328,14 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
 
 <section class="tested" aria-labelledby="tested-h">
   <h2 id="tested-h">Tested against its own interpreter</h2>
-  <p class="section-lede">On every change, CI generates every example and test program in all 32 combinations of
-    language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the
+  <p class="section-lede">On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the
     exit code with the interpreter.</p>
   <table class="results">
     <thead><tr><th scope="col">Where</th><th scope="col">Compiler</th><th scope="col">Identical to the interpreter</th></tr></thead>
     <tbody>
       <tr><td>Linux, all 8 C and C++ standards</td><td>Clang 23</td><td>416 of 416</td></tr>
       <tr><td>Linux, all 8 C and C++ standards</td><td>GCC 13</td><td>416 of 416</td></tr>
+      <tr><td>Linux, Python 3: every example and test, both flows, both value modes</td><td>Python 3.12</td><td>52 of 52</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>260 of 260</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, static</td><td>260 of 260</td></tr>
       <tr><td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 of 30</td></tr>

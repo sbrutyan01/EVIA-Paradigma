@@ -243,6 +243,13 @@ public class Tour {
         waitFor(() -> out.getText().contains("exited with code") || out.getText().contains("failed") ? Boolean.TRUE : null, "compile C++17");
         settle(800);
         capture(cv, "23-cpp17-goto-fast");
+        ui(() -> Settings.setTarget(new Target(Target.Lang.PYTHON, Target.Flow.STRUCTURED, Target.Values.SAFE)));
+        waitFor(() -> cv.getTitle().contains("Python") ? Boolean.TRUE : null, "Python code");
+        settle(500);
+        click(cv.getContentPane(), "Run");
+        waitFor(() -> out.getText().contains("exited with code") ? Boolean.TRUE : null, "run Python");
+        settle(800);
+        capture(cv, "35-python-run");
         ui(() -> Settings.setTarget(Target.DEFAULT));
         settle(500);
         ui(() -> cv.setVisible(false));

@@ -64,8 +64,8 @@
   "<h1>Նկարեք ծրագիրը։<br>Ընտրեք նրա լեզուն։</h1>"
  ],
  [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
-  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։"
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3 ծրագիր, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։"
  ],
  [
   "href=\"#download\">Download {{VERSION}}</a>",
@@ -296,8 +296,8 @@
   "<h2 id=\"download-h\">Ներբեռնել EVIA Paradigma {{VERSION}}</h2>"
  ],
  [
-  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows).",
-  "Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը)։"
+  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
+  "Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը), իսկ գեներացված Python-ի համար պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ։"
  ],
  [
   "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
@@ -332,8 +332,8 @@
   "<h2 id=\"tested-h\">Ստուգված սեփական ինտերպրետատորով</h2>"
  ],
  [
-  "On every change, CI generates every example and test program in all 32 combinations of language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the exit code with the interpreter.",
-  "Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 32 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ, գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։"
+  "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 36 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ (Python-ը՝ ստուգում է), գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։"
  ],
  [
   "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
@@ -456,8 +456,8 @@
   "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Python 3, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
  ],
  [
-  "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
-  "Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։"
+  "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+  "Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։"
  ],
  [
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
@@ -482,5 +482,73 @@
  [
   "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
   "<p>Նորություն 0.6.9-ում՝ Python 3։ Նույն սխեման դառնում է մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց որևէ այլ բան տեղադրելու, իսկ կոդի պատուհանի Run կոճակը գործարկում է այն։ Արդյունքը, սխալները և ավարտի կոդը համընկնում են ինտերպրետատորի հետ, ինչպես C-ի և C++-ի յուրաքանչյուր ստանդարտում։</p>"
+ ],
+ [
+  "<h3>Python 3, nothing to compile</h3>",
+  "<h3>Python 3՝ առանց կոմպիլյացիայի</h3>"
+ ],
+ [
+  "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
+  "Ընտրեք Python 3, և նույն սխեման կդառնա մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց փաթեթների և կոմպիլյատորի։ Դասերը դառնում են Python-ի դասեր, իսկ ծրագրի փոփոխականները՝ մոդուլի գլոբալ փոփոխականներ։ Կոդի պատուհանի Run-ը գործարկում է ծրագիրը, իսկ Input-ում մուտքագրված տեքստը փոխանցվում է նրան։ Python-ում goto չկա, ուստի <b>Structured</b>-ը գրում է if/else և while ցիկլեր, իսկ <b>Goto</b>-ն դառնում է փոքր վիճակների մեքենա՝ յուրաքանչյուր բլոկի համար մեկ ճյուղով։ Print-ը, Input-ը, թվերի գրառումը և բոլոր սխալների հաղորդագրությունները նույնն են, ինչ ինտերպրետատորինը։"
+ ],
+ [
+  "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
+  "alt=\"Ուսուցողական ծրագիրը Python 3-ով կոդի պատուհանում՝ գործարկված Python 3.13-ով. c.add(i) բլոկի տողերը ընդգծված են։\""
+ ],
+ [
+  "Your first Python program in four steps",
+  "Ձեր առաջին Python ծրագիրը չորս քայլով"
+ ],
+ [
+  "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
+  "Ցանկացած սխեմա աշխատում է որպես Python ծրագիր։ Պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ python.org-ից, որը EVIA Paradigma-ն ինքն է գտնում։"
+ ],
+ [
+  "Choose Python 3",
+  "Ընտրեք Python 3"
+ ],
+ [
+  "Pick Python 3 in the Language list, in the toolbar or in the code window.",
+  "Ընտրեք Python 3-ը Language ցանկում՝ գործիքագոտում կամ կոդի պատուհանում։"
+ ],
+ [
+  "Generate the Python code",
+  "Գեներացրեք Python կոդը"
+ ],
+ [
+  "Press F7. Right-click a block and choose View source code to see the lines it became.",
+  "Սեղմեք F7։ Աջ սեղմեք բլոկի վրա և ընտրեք View source code՝ տեսնելու, թե ինչ տողերի է այն վերածվել։"
+ ],
+ [
+  "Run it in the code window",
+  "Գործարկեք կոդի պատուհանում"
+ ],
+ [
+  "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
+  "Սեղմեք Run։ Input-ում մուտքագրված տեքստը փոխանցվում է ծրագրին, իսկ սխալը կանգնեցնում է այն նույն հաղորդագրությամբ, ինչ խմբագրիչում։"
+ ],
+ [
+  "Keep the .py file",
+  "Պահպանեք .py ֆայլը"
+ ],
+ [
+  "Save writes the file, and it runs anywhere with python3 program.py.",
+  "Save-ը գրում է ֆայլը, և այն աշխատում է ցանկացած տեղում՝ python3 program.py հրամանով։"
+ ],
+ [
+  "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
+  "Settings, Python-ը պահում է հրամանը՝ python3, Windows-ում py գործարկիչը կամ ամբողջական ուղի։ Detect-ը նորից է փնտրում այն, իսկ Check-ը ցույց է տալիս տարբերակը։"
+ ],
+ [
+  "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
+  "<li><b>Python-ը գտնվում է ինքնուրույն։</b> Settings, Python-ն օգտագործում է python3-ը կամ Windows-ում py գործարկիչը՝ առանց կարգավորման. Check-ը ցույց է տալիս տարբերակը։</li>"
+ ],
+ [
+  "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
+  "<td>Linux, Python 3՝ բոլոր օրինակներն ու թեստերը, երկու հոսքերը, արժեքների երկու ռեժիմները</td>"
+ ],
+ [
+  "<td>52 of 52</td>",
+  "<td>52 / 52</td>"
  ]
 ]

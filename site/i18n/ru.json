@@ -64,8 +64,8 @@
   "<h1>Нарисуйте программу.<br>Выберите её язык.</h1>"
  ],
  [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
-  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, программа на Python 3, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
  ],
  [
   "href=\"#download\">Download {{VERSION}}</a>",
@@ -296,8 +296,8 @@
   "<h2 id=\"download-h\">Скачать EVIA Paradigma {{VERSION}}</h2>"
  ],
  [
-  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows).",
-  "Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама)."
+  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
+  "Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама); для сгенерированного Python нужен только Python 3.8 или новее."
  ],
  [
   "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
@@ -332,8 +332,8 @@
   "<h2 id=\"tested-h\">Проверено собственным интерпретатором</h2>"
  ],
  [
-  "On every change, CI generates every example and test program in all 32 combinations of language, flow and values, compiles it with warnings as errors, runs it, and compares stdout, stderr and the exit code with the interpreter.",
-  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 32 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками, запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
+  "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 36 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками (Python — проверяет), запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
  ],
  [
   "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
@@ -456,8 +456,8 @@
   "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
  ],
  [
-  "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
-  "Открытое меню Code Language and Mode: от C99 до C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения."
+  "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+  "Открытое меню Code Language and Mode: от C99 до C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения."
  ],
  [
   "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
@@ -482,5 +482,73 @@
  [
   "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
   "<p>Новое в 0.6.9: Python 3. Та же схема превращается в один файл .py, который работает в Python 3.8 и новее без установки чего-либо ещё, а кнопка Run в окне кода запускает его. Вывод, ошибки и код завершения совпадают с интерпретатором, как у каждого стандарта C и C++.</p>"
+ ],
+ [
+  "<h3>Python 3, nothing to compile</h3>",
+  "<h3>Python 3 — без компиляции</h3>"
+ ],
+ [
+  "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
+  "Выберите Python 3, и та же схема станет одним файлом .py, который работает в Python 3.8 и новее без пакетов и без компилятора. Классы становятся классами Python, а переменные программы — глобальными переменными модуля; Run в окне кода запускает программу, а текст, введённый в Input, передаётся ей. В Python нет goto, поэтому <b>Structured</b> пишет if/else и циклы while, а <b>Goto</b> превращается в небольшой конечный автомат с одной веткой на блок. Print, Input, запись чисел и все сообщения об ошибках — те же, что у интерпретатора."
+ ],
+ [
+  "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
+  "alt=\"Программа из учебника на Python 3 в окне кода, запущенная в Python 3.13; строки блока c.add(i) подсвечены.\""
+ ],
+ [
+  "Your first Python program in four steps",
+  "Ваша первая программа на Python в четыре шага"
+ ],
+ [
+  "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
+  "Любая схема работает как программа на Python. Нужен только Python 3.8 или новее с python.org, а EVIA Paradigma находит его сама."
+ ],
+ [
+  "Choose Python 3",
+  "Выберите Python 3"
+ ],
+ [
+  "Pick Python 3 in the Language list, in the toolbar or in the code window.",
+  "Выберите Python 3 в списке Language на панели инструментов или в окне кода."
+ ],
+ [
+  "Generate the Python code",
+  "Создайте код на Python"
+ ],
+ [
+  "Press F7. Right-click a block and choose View source code to see the lines it became.",
+  "Нажмите F7. Щёлкните блок правой кнопкой и выберите View source code, чтобы увидеть, в какие строки он превратился."
+ ],
+ [
+  "Run it in the code window",
+  "Запустите в окне кода"
+ ],
+ [
+  "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
+  "Нажмите Run. Текст, введённый в Input, передаётся программе, а ошибка останавливает её с тем же сообщением, что и в редакторе."
+ ],
+ [
+  "Keep the .py file",
+  "Сохраните файл .py"
+ ],
+ [
+  "Save writes the file, and it runs anywhere with python3 program.py.",
+  "Save записывает файл, и он запускается где угодно командой python3 program.py."
+ ],
+ [
+  "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
+  "Settings, Python хранит команду: python3, лаунчер py в Windows или полный путь. Detect ищет его заново, а Check показывает версию."
+ ],
+ [
+  "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
+  "<li><b>Python находится сам.</b> Settings, Python использует python3 или лаунчер py в Windows без настройки; Check показывает версию.</li>"
+ ],
+ [
+  "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
+  "<td>Linux, Python 3: все примеры и тесты, оба потока управления, оба режима значений</td>"
+ ],
+ [
+  "<td>52 of 52</td>",
+  "<td>52 из 52</td>"
  ]
 ]
