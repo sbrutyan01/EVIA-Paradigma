@@ -1,0 +1,74 @@
+name: dns-check
+
+# Read-only: does a domain point at this network, and does anything answer on it.
+# Addresses are printed with the last part replaced by x, because the logs of a public repository
+# are public. It changes nothing and needs no secret.
+# Temporary: delete once the domain is sorted out.
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'The domain to check'
+        required: false
+        default: 'evia.am'
+
+jobs:
+  check:
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 10
+    steps:
+      - name: Does it resolve, and is that this connection
+        run: |
+          d="${{ inputs.domain }}"
+          mask() { sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+$/\1.x/'; }
+
+          echo "domain: $d"
+          echo "--- what it resolves to, from this machine:"
+          ips=$(getent ahostsv4 "$d" 2>/dev/null | awk '{print $1}' | sort -u)
+          if [ -z "$ips" ]; then
+            echo "  it does not resolve at all - no A record is visible from here"
+          else
+            for ip in $ips; do echo "  $ip" | mask; done
+          fi
+
+          echo "--- this connection's public address:"
+          pub=""
+          for svc in https://api.ipify.org https://icanhazip.com https://ifconfig.me/ip; do
+            pub=$(curl -fsS -m 8 "$svc" 2>/dev/null | tr -d '[:space:]')
+            [ -n "$pub" ] && break
+          done
+          if [ -z "$pub" ]; then
+            echo "  could not be determined"
+          else
+            echo "  $pub" | mask
+          fi
+
+          echo "--- do they match?"
+          if [ -n "$pub" ] && [ -n "$ips" ]; then
+            if echo "$ips" | grep -qx "$pub"; then
+              echo "  YES - $d points at this connection"
+            else
+              echo "  NO - the domain points somewhere other than this connection's current address."
+              echo "  Either the A record is stale (a dynamic address that has changed) or it was"
+              echo "  pointed at a different host. The record has to be updated, or a dynamic DNS"
+              echo "  name used instead of a fixed address."
+            fi
+          else
+            echo "  cannot say - see above"
+          fi
+
+      - name: Does anything answer
+        run: |
+          d="${{ inputs.domain }}"
+          echo "NOTE: this machine is inside the same network, so reaching the domain means going out"
+          echo "to the router and back in. Many routers do not do that (no NAT hairpin), so a failure"
+          echo "here does not prove it fails from outside - but a success does prove it works."
+          for u in "http://$d/" "https://$d/"; do
+            printf '%-24s ' "$u"
+            code=$(curl -fsS -o /dev/null -m 12 -w '%{http_code}' "$u" 2>/dev/null) \
+              && echo "answered, HTTP $code" \
+              || echo "no answer (refused, timed out, or no certificate)"
+          done
+          echo "--- what is listening on this machine itself:"
+          ss -ltn 2>/dev/null | awk 'NR==1 || $4 ~ /:(80|443)$/' || echo "cannot read ports"
