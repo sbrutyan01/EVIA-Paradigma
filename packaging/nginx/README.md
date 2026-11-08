@@ -42,16 +42,21 @@ sudo mkdir -p /var/www/acme /var/www/evia
 sudo chown -R "$USER":"$USER" /var/www/evia
 ```
 
-Put the site config in place **before** asking for a certificate, but comment out the three
-`ssl_certificate*` lines and the `listen 443` blocks for the first run — certbot needs the port 80
-server block to exist and will add the TLS parts itself:
+`evia.am.conf` names certificate files, and nginx refuses to start when they are not there yet, so
+the first config to install is `evia.am.bootstrap.conf` — port 80 only, serving the site in the
+clear and carrying the ACME path. Then certbot, then the real config:
 
 ```bash
-sudo cp packaging/nginx/evia.am.conf /etc/nginx/sites-available/evia.am
+sudo cp packaging/nginx/evia.am.bootstrap.conf /etc/nginx/sites-available/evia.am
 sudo ln -sf /etc/nginx/sites-available/evia.am /etc/nginx/sites-enabled/evia.am
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
+
+# port 80 has to be forwarded by now - certbot proves the domain over it
 sudo certbot --nginx -d evia.am -d www.evia.am
+
+sudo cp packaging/nginx/evia.am.conf /etc/nginx/sites-available/evia.am
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 Certbot renews by itself through `certbot.timer`; check with `systemctl list-timers | grep certbot`.
