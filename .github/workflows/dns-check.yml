@@ -78,6 +78,15 @@ jobs:
             [ -n "$t" ] && echo "       title: $t"
             rm -f /tmp/b
           done
+          echo "   --- is the certificate trusted? (no -k, so this validates it)"
+          for n in "$d" "www.$d"; do
+            printf '       https://%-16s ' "$n"
+            curl -sS -m 10 -o /dev/null -w 'VALID, HTTP %{http_code}\n' "https://$n/" 2>&1 | head -1
+          done
+          echo "   --- what the certificate presents (read over the wire, no root needed):"
+          echo | openssl s_client -connect "www.$d:443" -servername "www.$d" 2>/dev/null \
+            | openssl x509 -noout -issuer -dates -ext subjectAltName 2>/dev/null | sed 's/^/       /' \
+            || echo "       could not read it"
           echo "   --- what the live certificate covers:"
           for c in /etc/letsencrypt/live/*/fullchain.pem; do
             [ -f "$c" ] || continue
