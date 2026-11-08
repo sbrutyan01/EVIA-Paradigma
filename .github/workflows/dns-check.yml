@@ -1,7 +1,8 @@
 name: dns-check
 
-# Read-only: what this machine can tell us about serving a domain from it.
-# Addresses are masked; it changes nothing and needs no secret. Temporary.
+# Read-only: how this machine is attached to the network, whether a domain points at it, and what
+# of it is reachable. Addresses are masked in the last part; it changes nothing and needs no secret.
+# Temporary.
 
 on:
   workflow_dispatch:
@@ -16,34 +17,44 @@ jobs:
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     steps:
-      - name: Domain, address, and what answers
+      - name: How this machine is attached
+        run: |
+          mask() { sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'; }
+          echo "--- addresses on this machine:"
+          ip -4 -o addr show scope global 2>/dev/null | awk '{print "  " $2, $4}' | mask
+          echo "--- default route:"
+          ip -4 route show default 2>/dev/null | mask | sed 's/^/  /'
+          pub=$(curl -fsS -m 10 https://api.ipify.org 2>/dev/null || true)
+          echo "--- the address the internet sees: $(echo "${pub:-unknown}" | mask)"
+          if [ -n "$pub" ]; then
+            if ip -4 -o addr show scope global 2>/dev/null | grep -q "inet $pub/"; then
+              echo "  DIRECT: that address is on this machine itself - no router translates it,"
+              echo "  so everything listening on 0.0.0.0 here is reachable from the internet."
+            else
+              echo "  BEHIND A ROUTER: this machine has a private address and the router translates"
+              echo "  it, so only ports the router forwards are reachable from the internet."
+            fi
+          fi
+
+      - name: What is listening, and on which addresses
+        run: |
+          echo "--- every listening TCP port:"
+          ss -ltnH 2>/dev/null | awk '{print "  " $4}' | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g' | sort -u
+          echo "--- of those, the ones on ALL addresses (0.0.0.0 or [::]) are the exposed ones"
+          echo "    if this machine is directly on a public address:"
+          ss -ltnH 2>/dev/null | awk '$4 ~ /^(0\.0\.0\.0|\[::\]|\*):/ {print "  " $4}' | sort -u
+
+      - name: The domain
         run: |
           d="${{ inputs.domain }}"
-          mask() { sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+$/\1.x/'; }
+          mask() { sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'; }
           ips=$(getent ahostsv4 "$d" 2>/dev/null | awk '{print $1}' | sort -u)
           pub=$(curl -fsS -m 8 https://api.ipify.org 2>/dev/null || true)
-          echo "domain      : $d"
-          echo "resolves to : $(echo "${ips:-nothing}" | mask | tr '\n' ' ')"
-          echo "this network: $(echo "${pub:-unknown}" | mask)"
-          if [ -n "$pub" ] && echo "$ips" | grep -qx "$pub"; then echo "match       : yes"; else echo "match       : no"; fi
+          echo "$d resolves to : $(echo "${ips:-nothing}" | mask | tr '\n' ' ')"
+          echo "this connection : $(echo "${pub:-unknown}" | mask)"
+          if [ -n "$pub" ] && echo "$ips" | grep -qx "$pub"; then echo "match           : yes"
+          else echo "match           : no"; fi
           for u in "http://$d/" "https://$d/"; do
             printf '%-22s ' "$u"
             curl -sS -o /dev/null -m 10 -w 'HTTP %{http_code}\n' "$u" 2>&1 | head -1
           done
-          echo "--- listening here:"
-          ss -ltn 2>/dev/null | awk 'NR==1 || $4 ~ /:(80|443|8081)$/'
-
-      - name: Can this runner change the machine
-        run: |
-          echo "runner account: $(id -un)   groups: $(id -Gn)"
-          if sudo -n true 2> /dev/null; then
-            echo "PASSWORDLESS SUDO: YES - this runner can become root without a password"
-            sudo -n -l 2>/dev/null | tail -5
-          else
-            echo "passwordless sudo: no - this runner cannot install packages or edit /etc"
-          fi
-          echo "--- is what the web server needs already there:"
-          for p in /var/www/evia /var/www/acme /etc/nginx /etc/letsencrypt/live; do
-            [ -e "$p" ] && echo "  exists  $p" || echo "  absent  $p"
-          done
-          for c in nginx certbot; do printf '  %-8s %s\n' "$c" "$(command -v $c || echo '-')"; done
