@@ -392,7 +392,7 @@ if [ "$STAGE" = 2 ]; then
     install_conf "$HERE/evia.am.conf" /etc/nginx/sites-available/evia.am
     nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
     systemctl reload nginx || die "nginx would not reload"
-    ok "HTTPS, with an unknown Host getting nothing, and GitLab on this network only"
+    ok "HTTPS on $DOMAIN, www.$DOMAIN and by address; GitLab on localhost and the VPN only"
 
     if [ "$DEPLOY" = 1 ]; then
         say "the site"
@@ -400,7 +400,9 @@ if [ "$STAGE" = 2 ]; then
     fi
 
     say "stage 2 done"
-    echo "   https://$DOMAIN/"
+    for n in "$DOMAIN" "www.$DOMAIN"; do
+        getent ahostsv4 "$n" > /dev/null 2>&1 && echo "   https://$n/"
+    done
     echo "   Check it from outside your network too - a phone on mobile data is the easiest way."
     exit 0
 fi
