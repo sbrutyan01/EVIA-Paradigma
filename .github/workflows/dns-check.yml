@@ -21,6 +21,7 @@ jobs:
         continue-on-error: true
         run: |
           set +e
+          PATH="/usr/sbin:/sbin:$PATH"     # ufw and nginx live there, off a user's PATH
           if command -v ufw > /dev/null; then
             ufw status verbose 2>/dev/null | sed 's/^/   /' || echo "   ufw installed, status needs root"
           else
@@ -31,6 +32,7 @@ jobs:
         continue-on-error: true
         run: |
           set +e
+          PATH="/usr/sbin:/sbin:$PATH"
           echo "   nginx binary   : $(command -v nginx || echo 'not installed yet')"
           command -v nginx > /dev/null && nginx -v 2>&1 | sed 's/^/   version        : /'
           echo "   nginx running  : $(systemctl is-active nginx 2>/dev/null || echo unknown)"

@@ -87,9 +87,17 @@ allow_lines() {
 
 # Writes an nginx config with the addresses and the allow list filled in.
 install_conf() {   # source file, destination
-    local allow
+    local allow sub
     allow=$(allow_lines)
-    sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g" "$1" \
+    if private_address "$LAN_IP"; then
+        # A private address is safe as a name for the GitLab block: only this network can send it.
+        sub="s/192\.168\.10\.13/$LAN_IP/g"
+    else
+        # A public address must NOT name the GitLab block, or every request arriving by address
+        # matches it and is refused by its deny rule - including the site over http.
+        sub="s/ *192\.168\.10\.13//g"
+    fi
+    sed "$sub; s/evia\.am/$DOMAIN/g" "$1" \
         | awk -v a="$allow" '/#__ALLOW__/ { print a; next } { print }' > "$2"
 }
 
