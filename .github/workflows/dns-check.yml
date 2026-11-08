@@ -78,6 +78,13 @@ jobs:
             [ -n "$t" ] && echo "       title: $t"
             rm -f /tmp/b
           done
+          echo "   --- what the live certificate covers:"
+          for c in /etc/letsencrypt/live/*/fullchain.pem; do
+            [ -f "$c" ] || continue
+            echo "       $c"
+            openssl x509 -in "$c" -noout -issuer -dates 2>/dev/null | sed 's/^/         /'
+            openssl x509 -in "$c" -noout -ext subjectAltName 2>/dev/null | tail -1 | sed 's/^/         names:/'
+          done
           echo "   --- certificates:"
           ls /etc/letsencrypt/live/*/fullchain.pem 2>/dev/null | sed 's/^/       /' \
             || echo "       none from Let's Encrypt yet"
