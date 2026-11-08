@@ -128,6 +128,42 @@ jobs:
             rm -f /tmp/x
           done
 
+      - name: The camera, device and service
+        continue-on-error: true
+        run: |
+          set +e
+          echo "--- USB devices that look like a camera:"
+          if command -v lsusb > /dev/null; then
+            lsusb | grep -iE 'cam|video|uvc|imaging|logitech|microdia|realtek|sunplus' || echo "   nothing obvious in lsusb"
+          else
+            echo "   lsusb not installed"
+          fi
+          echo "--- video devices:"
+          ls -l /dev/video* 2>/dev/null | sed 's/^/   /' || echo "   no /dev/video* at all"
+          echo "--- can this account read them (it is in the video group)?"
+          for d in /dev/video*; do
+            [ -e "$d" ] || continue
+            [ -r "$d" ] && echo "   readable: $d" || echo "   NOT readable: $d"
+          done
+          echo "--- what the kernel says about a UVC camera:"
+          (dmesg 2>/dev/null || journalctl -k --no-pager 2>/dev/null) \
+            | grep -iE 'uvcvideo|video[0-9]|usb .*camera' | tail -5 | sed 's/^/   /' \
+            || echo "   kernel log not readable without root"
+          echo "--- the service on 8443, by path:"
+          for pth in / /stream /stream.mjpg /video /video_feed /mjpeg /api/stream /snapshot /index.html; do
+            printf '   https://127.0.0.1:8443%-14s ' "$pth"
+            curl -sSk -m 8 -o /tmp/c -w 'HTTP %{http_code}  %{content_type}\n' "https://127.0.0.1:8443$pth" 2>&1 | head -1
+            head -c 120 /tmp/c 2>/dev/null | tr -d '\n' | sed 's/^/        body: /' ; echo
+            rm -f /tmp/c
+          done
+          echo "--- and through the site's nginx, if --config has been run:"
+          for u in https://127.0.0.1/stream https://127.0.0.1/camera/ https://127.0.0.1/camera/stream; do
+            printf '   %-34s ' "$u"
+            curl -sSk -m 8 -o /tmp/c -w 'HTTP %{http_code}  %{content_type}\n' "$u" 2>&1 | head -1
+            head -c 120 /tmp/c 2>/dev/null | tr -d '\n' | sed 's/^/        body: /' ; echo
+            rm -f /tmp/c
+          done
+
   outside:
     # A GitHub-hosted runner: the public internet, public DNS, no cache of ours and nothing of this
     # machine's resolver. The nearest thing to a visitor's browser that can be measured from here.
