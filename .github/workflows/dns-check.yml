@@ -1,8 +1,7 @@
 name: dns-check
 
-# Read-only. Asks the machine itself what it serves, by address rather than by name, so a flaky
-# DNS record cannot hide the answer. Nothing here may abort the job: every probe swallows its own
-# failure, because "it did not answer" is a result worth printing, not an error.
+# Read-only status of the web server setup on this machine: the firewall, nginx, where GitLab
+# listens, whether the site is in place, and what each port answers. Nothing aborts the job.
 # Temporary.
 
 on:
@@ -18,58 +17,67 @@ jobs:
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     steps:
-      - name: Everything this machine is listening on
+      - name: Firewall
         continue-on-error: true
         run: |
           set +e
-          echo "--- every listening TCP socket, unfiltered:"
-          ss -ltnH 2>/dev/null | awk '{print "   " $4}' | sort -u \
-            | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'
-          echo "--- is 443 among them?"
-          if ss -ltnH 2>/dev/null | grep -qE ':443$|:443 '; then
-            echo "   YES - something here serves https"
+          if command -v ufw > /dev/null; then
+            ufw status verbose 2>/dev/null | sed 's/^/   /' || echo "   ufw installed, status needs root"
           else
-            echo "   NO - nothing on this machine listens on 443"
+            echo "   ufw not installed yet"
           fi
 
-      - name: What answers on this machine's own public address
+      - name: nginx and GitLab
+        continue-on-error: true
+        run: |
+          set +e
+          echo "   nginx binary   : $(command -v nginx || echo 'not installed yet')"
+          command -v nginx > /dev/null && nginx -v 2>&1 | sed 's/^/   version        : /'
+          echo "   nginx running  : $(systemctl is-active nginx 2>/dev/null || echo unknown)"
+          echo "   gitlab running : $(systemctl is-active gitlab-runsvdir 2>/dev/null || echo unknown)"
+          echo "   --- ports on all addresses:"
+          ss -ltnH 2>/dev/null | awk '$4 ~ /^(0\.0\.0\.0|\[::\]|\*):/ {print "       " $4}' \
+            | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g' | sort -u
+          echo "   --- is GitLab on localhost:8081 now?"
+          ss -ltnH 2>/dev/null | grep -q '127.0.0.1:8081' \
+            && echo "       yes - moved off port 80" || echo "       not yet"
+
+      - name: The site
+        continue-on-error: true
+        run: |
+          set +e
+          root=/var/www/evia
+          if [ -d "$root" ]; then
+            echo "   $root exists, $(find "$root" -type f 2>/dev/null | wc -l) files"
+            [ -f "$root/index.html" ] && echo "   index.html: $(wc -c < "$root/index.html") bytes"
+            grep -oE 'Download [0-9]+\.[0-9]+\.[0-9]+' "$root/index.html" 2>/dev/null | head -1 \
+              | sed 's/^/   version on the page: /'
+            ls "$root/downloads" 2>/dev/null | sed 's/^/   download: /' | head -5
+            for l in ru hy de ja zh-CN zh-TW; do
+              [ -f "$root/$l/index.html" ] || echo "   MISSING language: $l"
+            done
+          else
+            echo "   $root does not exist yet"
+          fi
+
+      - name: What answers
         continue-on-error: true
         run: |
           set +e
           mask() { sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'; }
           own=$(ip -4 -o addr show scope global 2>/dev/null \
                 | awk '$2 !~ /docker|tailscale/ {split($4,a,"/"); print a[1]; exit}')
-          echo "this machine's address: $(echo "$own" | mask)"
-          for u in "http://$own/" "https://$own/" "http://$own:8060/" "https://$own:8443/"; do
-            printf '\n--- %s\n' "$(echo "$u" | mask)"
-            curl -sSk -m 8 -o /tmp/body -w '    HTTP %{http_code}\n' "$u" 2>&1 | mask | head -2
-            grep -oiE '<title>[^<]*' /tmp/body 2>/dev/null | head -1 | cut -c8-80 | sed 's/^/    title: /'
-            grep -qiE 'id="devices"|data-devices|pic32' /tmp/body 2>/dev/null \
-              && echo "    >>> this one contains a devices/pic32 page"
-            rm -f /tmp/body
-          done
-
-      - name: And by name, if it resolves at the moment
-        continue-on-error: true
-        run: |
-          set +e
           d="${{ inputs.domain }}"
-          own=$(ip -4 -o addr show scope global 2>/dev/null \
-                | awk '$2 !~ /docker|tailscale/ {split($4,a,"/"); print a[1]; exit}')
-          for n in "$d" "www.$d"; do
-            a=$(getent ahostsv4 "$n" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')
-            # ::ffff:a.b.c.d is an IPv4 address in IPv6 clothing, not an AAAA record in the zone
-            q=$(getent ahostsv6 "$n" 2>/dev/null \
-                | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ {print $1}' | sort -u | tr '\n' ' ')
-            printf '\n%-14s A: %-40s AAAA: %s\n' "$n" "${a:-none}" "${q:-none}"
-            # more than one A, or any AAAA, means a browser may reach a different host than this one
-            c=$(echo "$a" | wc -w)
-            [ "$c" -gt 1 ] && echo "   !! $c A records - a browser may land on any of them"
-            [ -n "$q" ] && echo "   !! an AAAA record exists - browsers prefer IPv6 over the A record"
-            case " $a " in *" $own "*) echo "   -> includes this machine" ;;
-                           *) [ -n "$a" ] && echo "   -> does NOT include this machine ($own)" ;; esac
-            for u in "http://$n/" "https://$n/"; do
-              printf '   %-26s ' "$u"
-              curl -sSk -m 8 -o /dev/null -w 'HTTP %{http_code} from %{remote_ip}\n' "$u" 2>&1 | head -1
-            done
+          for u in "http://$own/" "https://$own/" "http://$d/" "https://$d/" \
+                   "http://www.$d/" "https://www.$d/"; do
+            printf '   %-28s ' "$(echo "$u" | mask)"
+            curl -sSk -m 8 -o /tmp/b -w 'HTTP %{http_code}\n' "$u" 2>&1 | mask | head -1
+            t=$(grep -oiE '<title>[^<]*' /tmp/b 2>/dev/null | head -1 | cut -c8-60)
+            [ -n "$t" ] && echo "       title: $t"
+            rm -f /tmp/b
           done
+          echo "   --- certificates:"
+          ls /etc/letsencrypt/live/*/fullchain.pem 2>/dev/null | sed 's/^/       /' \
+            || echo "       none from Let's Encrypt yet"
+          ls /etc/ssl/evia/fullchain.pem 2>/dev/null | sed 's/^/       /' \
+            || echo "       none of our own yet"
