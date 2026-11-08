@@ -28,6 +28,7 @@ SELF="/etc/ssl/evia"
 STAGE=""
 DEPLOY=0
 SELFSIGNED=0
+NO_FIREWALL=0
 for a in "$@"; do
     case "$a" in
         --stage1) STAGE=1 ;;
@@ -35,6 +36,8 @@ for a in "$@"; do
         --check) STAGE=check ;;
         --deploy) DEPLOY=1 ;;
         --selfsigned) SELFSIGNED=1 ;;
+        --firewall) STAGE=firewall ;;
+        --no-firewall) NO_FIREWALL=1 ;;
         -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
         *) echo "unknown argument: $a" >&2; exit 2 ;;
     esac
@@ -75,8 +78,58 @@ fi
 [ "$(id -u)" = 0 ] || die "run this with sudo"
 [ -n "$LAN_IP" ] || die "could not work out this machine's address; set LAN_IP"
 
+# ---------------------------------------------------------------- the firewall
+#
+# This machine may sit directly on a public address, with no router translating anything - in which
+# case every service listening on 0.0.0.0 is on the internet. A web server belongs there; SMB, a
+# message broker and a GitLab sign-in page over plain http do not.
+#
+# What this allows in: ssh, http, https, and anything over Tailscale. Everything else is refused
+# from the internet while staying available on this machine and over the VPN, so GitLab, MQTT and
+# file sharing keep working the way they are used - just not for strangers.
+firewall() {
+    say "the firewall"
+    if ! command -v ufw > /dev/null; then
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ufw || die "could not install ufw"
+    fi
+    # Order matters: the allow rules go in BEFORE the default deny is applied, so an ssh session
+    # cannot be cut off half way through.
+    ufw --force reset > /dev/null 2>&1
+    ufw default deny incoming > /dev/null
+    ufw default allow outgoing > /dev/null
+    ufw allow 22/tcp comment 'ssh' > /dev/null
+    ufw allow 80/tcp comment 'http' > /dev/null
+    ufw allow 443/tcp comment 'https' > /dev/null
+    if ip link show tailscale0 > /dev/null 2>&1; then
+        ufw allow in on tailscale0 comment 'tailscale' > /dev/null
+        ok "anything over Tailscale stays allowed, so GitLab and the rest work remotely"
+    else
+        warn "no tailscale0 here, so only ssh, http and https will be reachable"
+    fi
+    ufw --force enable > /dev/null || die "ufw would not enable"
+    ok "ssh, http and https in; everything else refused from the internet"
+    echo
+    ufw status verbose | sed 's/^/   /'
+    echo
+    warn "now closed to the internet but still working locally and over Tailscale:"
+    ss -ltnH 2>/dev/null | awk '$4 ~ /^(0\.0\.0\.0|\[::\]|\*):/ {split($4,a,":"); p=a[length(a)];
+        if (p != 22 && p != 80 && p != 443) print "     port " p}' | sort -u
+}
+
+if [ "$STAGE" = firewall ]; then
+    firewall
+    exit 0
+fi
+
 # ---------------------------------------------------------------- stage 1
 if [ "$STAGE" = 1 ]; then
+    # First, because this machine may already be on the internet with more open than it should be.
+    if [ "$NO_FIREWALL" = 0 ]; then
+        firewall
+    else
+        warn "--no-firewall given: whatever is listening on 0.0.0.0 stays reachable"
+    fi
+
     say "GitLab off port 80"
     if command -v gitlab-ctl > /dev/null; then
         RB=/etc/gitlab/gitlab.rb

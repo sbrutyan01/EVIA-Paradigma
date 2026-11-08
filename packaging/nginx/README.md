@@ -2,6 +2,25 @@
 
 The site is static files; nginx serves them over HTTPS and GitLab stays private.
 
+## If this machine is directly on a public address
+
+Check first, because it changes what matters:
+
+```bash
+ip -4 -o addr show scope global      # is the public address on an interface here?
+ss -ltn | grep '0.0.0.0'             # if so, every one of these is on the internet
+```
+
+With no router translating anything, there is nothing in front of this machine: SMB on 445, a
+message broker on 1883, a GitLab sign-in page on 80 are all open to everyone. `--firewall` (which
+`--stage1` runs by default) allows in ssh, http, https and anything over Tailscale, and refuses the
+rest from the internet while leaving it working locally and over the VPN. So GitLab, MQTT and file
+sharing keep working the way you use them — just not for strangers.
+
+```bash
+sudo packaging/nginx/setup.sh --firewall     # on its own, before anything else
+```
+
 **The short way** — `setup.sh` does everything below, is safe to run twice, and keeps a copy of
 `gitlab.rb` before touching it:
 
