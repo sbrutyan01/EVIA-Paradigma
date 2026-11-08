@@ -47,11 +47,23 @@ echo "   $TAG"
 
 # ---------------------------------------------------------------- build
 say "building the site"
+# The site embeds code samples produced by the generator, so it needs the jar. A fresh checkout
+# has none, which is why this builds one when it is missing rather than failing on a glob.
+JAR=$(ls -t target/evia-paradigma-*.jar 2> /dev/null | head -n 1)
+if [ -z "$JAR" ]; then
+    command -v mvn > /dev/null || die "no jar in target/ and no mvn to build one"
+    echo "   no jar yet, building one (a minute or two)"
+    mvn -B -q -DskipTests package > /tmp/evia-mvn.log 2>&1 \
+        || { tail -20 /tmp/evia-mvn.log; die "the build failed; see /tmp/evia-mvn.log"; }
+    JAR=$(ls -t target/evia-paradigma-*.jar 2> /dev/null | head -n 1)
+    [ -n "$JAR" ] || die "the build produced no jar"
+fi
+echo "   jar: $JAR"
 if [ "$WANT_DOWNLOADS" = 1 ]; then
     export DOWNLOAD_BASE="https://evia.am/downloads"
     echo "   download links -> $DOWNLOAD_BASE"
 fi
-SITE_VERSION="$TAG" python3 scripts/build-site.py || die "the site did not build"
+SITE_VERSION="$TAG" python3 scripts/build-site.py "$JAR" || die "the site did not build"
 [ -f build/site/index.html ] || die "build/site/index.html is missing"
 
 # ---------------------------------------------------------------- install
