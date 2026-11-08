@@ -29,6 +29,10 @@ STAGE=""
 DEPLOY=0
 SELFSIGNED=0
 NO_FIREWALL=0
+# Ports that stay open to the internet besides ssh, http and https. Services of your own that
+# other machines reach across the internet go here - a broker a board publishes to, a camera you
+# watch from elsewhere. Anything only you use is better left closed and reached over Tailscale.
+ALLOW_PORTS="${ALLOW_PORTS:-}"
 for a in "$@"; do
     case "$a" in
         --stage1) STAGE=1 ;;
@@ -38,6 +42,8 @@ for a in "$@"; do
         --selfsigned) SELFSIGNED=1 ;;
         --firewall) STAGE=firewall ;;
         --no-firewall) NO_FIREWALL=1 ;;
+        --allow=*) ALLOW_PORTS="${a#--allow=}" ;;
+        --allow) echo "write it as --allow=1883,8443" >&2; exit 2 ;;
         -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
         *) echo "unknown argument: $a" >&2; exit 2 ;;
     esac
@@ -52,6 +58,33 @@ die()  { printf '\n\033[31msetup: %s\033[0m\n' "$1" >&2; exit 1; }
 # The user who invoked sudo: the web root belongs to them, so deploys need no root.
 OWNER="${SUDO_USER:-$(id -un)}"
 LAN_IP="${LAN_IP:-$(ip -4 route get 1.1.1.1 2>/dev/null | sed -n 's/.* src \([0-9.]*\).*/\1/p')}"
+
+# Is this machine's own address private, or is it straight on a public one? It decides who may
+# reach GitLab: on a public address the surrounding /24 is strangers, not "the local network".
+private_address() {
+    case "$1" in
+        10.*|127.*|192.168.*) return 0 ;;
+        172.1[6-9].*|172.2[0-9].*|172.3[01].*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# The allow list that replaces #__ALLOW__ in the nginx configs.
+allow_lines() {
+    printf '    allow 127.0.0.1;\n'
+    printf '    allow 100.64.0.0/10;   # Tailscale\n'
+    if private_address "$LAN_IP"; then
+        printf '    allow %s;\n' "$(echo "$LAN_IP" | sed 's/\.[0-9]*$/.0\/24/')"
+    fi
+}
+
+# Writes an nginx config with the addresses and the allow list filled in.
+install_conf() {   # source file, destination
+    local allow
+    allow=$(allow_lines)
+    sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g" "$1" \
+        | awk -v a="$allow" '/#__ALLOW__/ { print a; next } { print }' > "$2"
+}
 
 # ---------------------------------------------------------------- --check
 if [ "$STAGE" = check ]; then
@@ -100,6 +133,16 @@ firewall() {
     ufw allow 22/tcp comment 'ssh' > /dev/null
     ufw allow 80/tcp comment 'http' > /dev/null
     ufw allow 443/tcp comment 'https' > /dev/null
+    # Services of yours that have to stay reachable from the internet.
+    if [ -n "$ALLOW_PORTS" ]; then
+        for p in ${ALLOW_PORTS//,/ }; do
+            case "$p" in
+                [0-9]*) ufw allow "$p/tcp" comment 'kept open on request' > /dev/null
+                        ok "port $p stays open to the internet, as asked" ;;
+                *) warn "ignoring \"$p\": not a port number" ;;
+            esac
+        done
+    fi
     if ip link show tailscale0 > /dev/null 2>&1; then
         ufw allow in on tailscale0 comment 'tailscale' > /dev/null
         ok "anything over Tailscale stays allowed, so GitLab and the rest work remotely"
@@ -175,8 +218,7 @@ EOF
     ok "/var/www/evia belongs to $OWNER, so deploys need no root"
 
     say "the first config, port 80 only"
-    sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g" \
-        "$HERE/evia.am.bootstrap.conf" > /etc/nginx/sites-available/evia.am
+    install_conf "$HERE/evia.am.bootstrap.conf" /etc/nginx/sites-available/evia.am
     ln -sf /etc/nginx/sites-available/evia.am /etc/nginx/sites-enabled/evia.am
     rm -f /etc/nginx/sites-enabled/default
     nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
@@ -205,9 +247,10 @@ EOF
             chmod 600 "$SELF/privkey.pem"
             ok "made one for $san, valid a year"
         fi
-        sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g; \
-             s#/etc/letsencrypt/live/$DOMAIN#$SELF#g" \
-            "$HERE/evia.am.conf" > /etc/nginx/sites-available/evia.am
+        install_conf "$HERE/evia.am.conf" /tmp/evia-conf.$$
+        sed "s#/etc/letsencrypt/live/$DOMAIN#$SELF#g" /tmp/evia-conf.$$ \
+            > /etc/nginx/sites-available/evia.am
+        rm -f /tmp/evia-conf.$$
         nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
         systemctl reload nginx || die "nginx would not reload"
         ok "HTTPS is up with our own certificate - browsers will warn until stage 2"
@@ -262,8 +305,7 @@ if [ "$STAGE" = 2 ]; then
         || warn "no certbot timer; check: systemctl enable --now certbot.timer"
 
     say "the real config"
-    sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g" \
-        "$HERE/evia.am.conf" > /etc/nginx/sites-available/evia.am
+    install_conf "$HERE/evia.am.conf" /etc/nginx/sites-available/evia.am
     nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
     systemctl reload nginx || die "nginx would not reload"
     ok "HTTPS, with an unknown Host getting nothing, and GitLab on this network only"
