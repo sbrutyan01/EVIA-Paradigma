@@ -170,3 +170,16 @@ Group into class	Խմբավորել դասի մեջ
 Generate code	Ստեղծել կոդը
 Open Example	Բացել օրինակ
 Examples	Օրինակներ
+Scan	Որոնել
+Look for the serial ports of the boards plugged in now	Գտնել հիմա միացված տախտակների սերիական պորտերը
+Espressif's board package index; arduino-cli installs the ESP32 core from it	Espressif-ի տախտակների փաթեթների ինդեքսը. arduino-cli-ն դրանից է տեղադրում ESP32 միջուկը
+Install	Տեղադրել
+Install or update the ESP32 core (esp32:esp32) with arduino-cli	Տեղադրել կամ թարմացնել ESP32 միջուկը (esp32:esp32) arduino-cli-ով
+ESP32 core:	ESP32 միջուկ՝
+Looking for serial ports...	Սերիական պորտերի որոնում...
+No serial ports found: is the board plugged in?	Սերիական պորտեր չեն գտնվել. տախտակը միացվա՞ծ է
+Found %d serial port(s).	Գտնված սերիական պորտեր՝ %d։
+%s is not connected now.	%s-ը հիմա միացված չէ։
+Install the ESP32 core	ESP32 միջուկի տեղադրում
+Cancel	Չեղարկել
+Close	Փակել

@@ -650,9 +650,10 @@ final class CodeViewer extends JFrame {
             return """
                     >> Arduino sketches build with arduino-cli (https://arduino.github.io/arduino-cli/):
                          arduino-cli core install arduino:avr
-                         arduino-cli core install esp32:esp32 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
-                       then set its path in Settings if it isn't on PATH.
-                    """;
+                         arduino-cli core install esp32:esp32 --additional-urls %s
+                       then set its path in Settings if it isn't on PATH. For the ESP32 boards, Settings > ESP32 core > Install
+                       runs the second line for you.
+                    """.formatted(Settings.esp32Index());
         }
         return """
                 >> Bare-metal AVR C builds with avr-gcc and avr-libc, uploads with avrdude:

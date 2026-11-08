@@ -170,3 +170,16 @@ Group into class	Сгруппировать в класс
 Generate code	Создать код
 Open Example	Открыть пример
 Examples	Примеры
+Scan	Поиск
+Look for the serial ports of the boards plugged in now	Найти последовательные порты подключённых сейчас плат
+Espressif's board package index; arduino-cli installs the ESP32 core from it	Индекс пакетов плат Espressif; из него arduino-cli устанавливает ядро ESP32
+Install	Установить
+Install or update the ESP32 core (esp32:esp32) with arduino-cli	Установить или обновить ядро ESP32 (esp32:esp32) через arduino-cli
+ESP32 core:	Ядро ESP32:
+Looking for serial ports...	Поиск последовательных портов...
+No serial ports found: is the board plugged in?	Последовательные порты не найдены: плата подключена?
+Found %d serial port(s).	Найдено последовательных портов: %d.
+%s is not connected now.	%s сейчас не подключён.
+Install the ESP32 core	Установка ядра ESP32
+Cancel	Отмена
+Close	Закрыть

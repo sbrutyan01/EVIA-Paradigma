@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.7-blue" alt="version 0.6.7"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.8-blue" alt="version 0.6.8"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -58,11 +58,24 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.7-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.6.7-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.6.7-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.7_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.7_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.7.jar` | `java -jar evia-paradigma-0.6.7.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.8-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.6.8-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.6.8-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.8_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.8_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.8.jar` | `java -jar evia-paradigma-0.6.8.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.6.8
+
+[EVIA Paradigma v0.6.8](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.8) ([release notes](docs/release-notes/v0.6.8.md)):
+choosing the board's serial port from a list, and installing the ESP32 core from Settings.
+
+- **Settings → Serial port** is a drop-down of the ports there are now, with what is on each one
+  (`/dev/ttyUSB0 - Silicon Labs CP2102`, `COM5 - USB-SERIAL CH340`). **Scan** looks again after a board is plugged in;
+  the list is also filled when Settings opens. A port can still be typed by hand, and a saved port that is not
+  connected stays chosen. No serial library is involved: Linux and macOS list `/dev`, Windows reads the registry.
+- **Settings → ESP32 core** holds Espressif's board package address, with **Install** next to it: it runs
+  `arduino-cli core update-index` and `core install esp32:esp32` from that address and shows arduino-cli's output as
+  it goes. Change the address to use a mirror or Espressif's development index.
 
 ### Release 0.6.7
 

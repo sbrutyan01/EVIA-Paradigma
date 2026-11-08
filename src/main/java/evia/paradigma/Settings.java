@@ -167,6 +167,11 @@ final class Settings {
         return PREFS.get("arduinoCli", "arduino-cli");
     }
 
+    /** The board package index that arduino-cli installs the ESP32 core from. */
+    static String esp32Index() {
+        return PREFS.get("esp32Index", Toolchains.ESP32_INDEX);
+    }
+
     static String avrGcc() {
         return PREFS.get("avrGcc", "avr-gcc");
     }
@@ -445,9 +450,19 @@ final class Settings {
         });
         JComboBox<Board> boardBox = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(b -> !b.isPic32() && !b.isFpga()).toArray(Board[]::new));
         boardBox.setSelectedItem(board());
-        JTextField port = new JTextField(serialPort(), 14);
-        port.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
+        JComboBox<String> port = portBox();
+        JLabel portStatus = small(" ");
+        JButton scan = new JButton(Text.t("Scan"));
+        scan.setToolTipText(Text.t("Look for the serial ports of the boards plugged in now"));
+        scan.addActionListener(e -> scanPorts(port, portStatus, scan));
         JTextField cli = new JTextField(arduinoCli(), 30);
+        JTextField esp32 = new JTextField(esp32Index(), 30);
+        esp32.setCaretPosition(0);
+        esp32.setToolTipText(Text.t("Espressif's board package index; arduino-cli installs the ESP32 core from it"));
+        JButton esp32Install = new JButton(Text.t("Install"));
+        esp32Install.setToolTipText(Text.t("Install or update the ESP32 core (esp32:esp32) with arduino-cli"));
+        esp32Install.addActionListener(e -> Toolchains.installEsp32Core(p(esp32Install),
+                cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim(), esp32.getText()));
         JTextField avrGcc = new JTextField(avrGcc(), 30);
         JTextField avrdude = new JTextField(avrdude(), 30);
         JTextField xc32 = new JTextField(xc32(), 30);
@@ -518,12 +533,21 @@ final class Settings {
         boardRow.add(boardBox);
         boardRow.add(new JLabel(Text.t("  Serial port:")));
         boardRow.add(port);
+        boardRow.add(scan);
         g.gridx = 1; g.gridwidth = 2; p.add(boardRow, g);
+        g.gridy++; g.gridx = 1;
+        p.add(portStatus, g);
         g.gridy++; g.gridx = 0; g.gridwidth = 1;
         p.add(new JLabel(Text.t("arduino-cli:")), g);
         g.gridx = 1; p.add(cli, g);
         g.gridx = 2; p.add(getButton(p, Toolchains.Tool.ARDUINO_CLI, cli), g);
         g.gridy++; g.gridx = 0;
+        p.add(new JLabel(Text.t("ESP32 core:")), g);
+        g.gridx = 1; p.add(esp32, g);
+        g.gridx = 2; p.add(esp32Install, g);
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small("The ESP32 boards need their core once: Install runs arduino-cli core install esp32:esp32 from this address."), g);
+        g.gridy++; g.gridx = 0; g.gridwidth = 1;
         p.add(new JLabel(Text.t("avr-gcc:")), g);
         g.gridx = 1; p.add(avrGcc, g);
         g.gridx = 2; p.add(getButton(p, Toolchains.Tool.AVR_GCC, avrGcc), g);
@@ -585,6 +609,7 @@ final class Settings {
         p.add(small("<html>FPGA: Artix-7 builds with Vivado (batch mode) or with the open-source openXC7 tools (yosys, nextpnr-xilinx, Project X-Ray);<br>"
                 + "the GateMate always uses yosys, nextpnr-himbaechel and gmpack. openFPGALoader loads the bitstream. VHDL needs yosys with its ghdl plugin.</html>"), g);
         checkCompiler(compiler.getText(), compilerStatus);
+        scanPorts(port, portStatus, scan);
 
         JScrollPane scroll = new JScrollPane(p);
         scroll.setBorder(null);
@@ -597,8 +622,9 @@ final class Settings {
         PREFS.put("compiler", compiler.getText().trim().isEmpty() ? DEFAULT_COMPILER : compiler.getText().trim());
         PREFS.putBoolean("vimKeys", vim.isSelected());
         PREFS.put("board", ((Board) boardBox.getSelectedItem()).key());
-        PREFS.put("serialPort", port.getText().trim());
+        PREFS.put("serialPort", portOf(port));
         PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
+        PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
         PREFS.put("avrGcc", avrGcc.getText().trim().isEmpty() ? "avr-gcc" : avrGcc.getText().trim());
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
         PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
@@ -624,6 +650,66 @@ final class Settings {
                     Text.t("The interface is in %s the next time EVIA Paradigma starts.", uiLanguage().display),
                     Text.t("Interface language"), JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    // ---------------------------------------------------------------- serial port list
+
+    /** An editable list of ports: pick a scanned one, or type one that a scan can't see. */
+    private static JComboBox<String> portBox() {
+        JComboBox<String> box = new JComboBox<>();
+        box.setEditable(true);
+        box.setPrototypeDisplayValue("/dev/cu.usbmodem14101XX");
+        box.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
+        // the list shows what is on each port; the box itself keeps only the port's name
+        box.setRenderer(new DefaultListCellRenderer() {
+            @Override public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean sel, boolean focus) {
+                Object text = value;
+                if (index >= 0 && box.getClientProperty("evia.ports") instanceof java.util.Map<?, ?> m && m.get(value) != null) {
+                    text = value + "  -  " + m.get(value);
+                }
+                return super.getListCellRendererComponent(list, text, index, sel, focus);
+            }
+        });
+        String saved = serialPort();
+        if (!saved.isEmpty()) box.addItem(saved);
+        box.setSelectedItem(saved);
+        return box;
+    }
+
+    /** The port in the box, typed or picked. */
+    private static String portOf(JComboBox<String> box) {
+        Object v = box.isEditable() ? box.getEditor().getItem() : box.getSelectedItem();
+        return v == null ? "" : v.toString().trim();
+    }
+
+    /** Fills the list with the ports there are now, keeping the one already chosen. */
+    private static void scanPorts(JComboBox<String> box, JLabel status, JButton scan) {
+        scan.setEnabled(false);
+        status.setText(Text.t("Looking for serial ports..."));
+        new Thread(() -> {
+            List<SerialPorts.Port> found = SerialPorts.scan();
+            SwingUtilities.invokeLater(() -> {
+                String current = portOf(box);
+                java.util.Map<String, String> about = new java.util.HashMap<>();
+                box.removeAllItems();
+                for (SerialPorts.Port pt : found) {
+                    box.addItem(pt.name());
+                    if (!pt.description().isEmpty()) about.put(pt.name(), pt.description());
+                }
+                box.putClientProperty("evia.ports", about);
+                boolean known = found.stream().anyMatch(pt -> pt.name().equals(current));
+                if (!current.isEmpty() && !known) box.insertItemAt(current, 0);
+                // an empty choice takes the first board found; a chosen port stays chosen
+                box.setSelectedItem(current.isEmpty() && !found.isEmpty() ? found.get(0).name() : current);
+                if (found.isEmpty()) {
+                    status.setText(Text.t("No serial ports found: is the board plugged in?"));
+                } else {
+                    status.setText(Text.t("Found %d serial port(s).", found.size())
+                            + (!current.isEmpty() && !known ? " " + Text.t("%s is not connected now.", current) : ""));
+                }
+                scan.setEnabled(true);
+            });
+        }, "evia-port-scan").start();
     }
 
     private static void putTool(String key, JTextField field, String fallback) {

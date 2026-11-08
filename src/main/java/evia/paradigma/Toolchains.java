@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -213,6 +214,106 @@ final class Toolchains {
         worker.execute();
         d.setVisible(true);
         return result[0];
+    }
+
+    // ---------------------------------------------------------------- the ESP32 core
+
+    /** Espressif's board package index, which arduino-cli needs to find the ESP32 core. */
+    static final String ESP32_INDEX = "https://espressif.github.io/arduino-esp32/package_esp32_index.json";
+
+    /**
+     * Installs (or updates) the ESP32 core with arduino-cli: its compilers, esptool and libraries, a few
+     * hundred MB. The output is shown as it comes. Returns true when arduino-cli finished without an error.
+     */
+    static boolean installEsp32Core(Component parent, String cli, String indexUrl) {
+        String url = indexUrl == null || indexUrl.isBlank() ? ESP32_INDEX : indexUrl.trim();
+        Window owner = parent == null ? null : parent instanceof Window w ? w : SwingUtilities.getWindowAncestor(parent);
+        String title = Text.t("Install the ESP32 core");
+        JDialog d = new JDialog(owner, title, Dialog.ModalityType.APPLICATION_MODAL);
+        AppIcon.apply(d);
+        JTextArea log = new JTextArea(16, 80);
+        log.setEditable(false);
+        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JProgressBar bar = new JProgressBar();
+        bar.setIndeterminate(true);
+        JButton close = new JButton(Text.t("Cancel"));
+        JPanel p = new JPanel(new BorderLayout(0, 8));
+        p.setBorder(BorderFactory.createEmptyBorder(12, 14, 10, 14));
+        p.add(new JLabel("<html><b>ESP32 (esp32:esp32)</b><br>" + wrap("The compilers, esptool and libraries for the"
+                + " ESP32 boards, a few hundred MB, downloaded by arduino-cli from " + url) + "</html>"), BorderLayout.NORTH);
+        p.add(new JScrollPane(log), BorderLayout.CENTER);
+        JPanel south = new JPanel(new BorderLayout(10, 0));
+        south.add(bar, BorderLayout.CENTER);
+        south.add(close, BorderLayout.EAST);
+        p.add(south, BorderLayout.SOUTH);
+        d.setContentPane(p);
+        d.pack();
+        d.setLocationRelativeTo(parent);
+
+        boolean[] ok = {false};
+        Process[] running = {null};
+        SwingWorker<Integer, String> worker = new SwingWorker<>() {
+            @Override protected Integer doInBackground() throws Exception {
+                List<List<String>> steps = List.of(
+                        List.of(cli, "core", "update-index", "--additional-urls", url),
+                        List.of(cli, "core", "install", "esp32:esp32", "--additional-urls", url));
+                for (List<String> cmd : steps) {
+                    publish("$ " + String.join(" ", cmd) + "\n");
+                    Process proc;
+                    try {
+                        proc = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+                    } catch (IOException e) {
+                        publish(">> arduino-cli could not be started (" + e.getMessage() + ").\n"
+                                + "   Click Get next to arduino-cli in Settings, or set its path, and try again.\n");
+                        return -1;
+                    }
+                    running[0] = proc;
+                    proc.getOutputStream().close();
+                    try (var r = new java.io.BufferedReader(new java.io.InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8))) {
+                        String line;
+                        while ((line = r.readLine()) != null) publish(line + "\n");
+                    }
+                    int rc = proc.waitFor();
+                    if (isCancelled()) return -1;
+                    if (rc != 0) {
+                        publish(">> failed (exit code " + rc + ")\n");
+                        return rc;
+                    }
+                }
+                return 0;
+            }
+
+            @Override protected void process(List<String> chunks) {
+                for (String s : chunks) log.append(s);
+                log.setCaretPosition(log.getDocument().getLength());
+            }
+
+            @Override protected void done() {
+                bar.setIndeterminate(false);
+                close.setText(Text.t("Close"));
+                if (isCancelled()) {
+                    d.dispose();
+                    return;
+                }
+                try {
+                    ok[0] = get() == 0;
+                } catch (Exception e) {
+                    log.append(">> " + e.getMessage() + "\n");
+                }
+                bar.setValue(ok[0] ? bar.getMaximum() : 0);
+                log.append(ok[0] ? ">> the ESP32 core is installed: the ESP32 boards build and upload now.\n" : "");
+            }
+        };
+        close.addActionListener(e -> {
+            if (!worker.isDone()) {
+                worker.cancel(true);
+                if (running[0] != null) running[0].destroyForcibly();
+            }
+            d.dispose();
+        });
+        worker.execute();
+        d.setVisible(true);
+        return ok[0];
     }
 
     // ---------------------------------------------------------------- the work
