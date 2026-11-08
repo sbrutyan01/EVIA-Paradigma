@@ -1,9 +1,7 @@
 name: dns-check
 
-# Read-only: does a domain point at this network, and does anything answer on it.
-# Addresses are printed with the last part replaced by x, because the logs of a public repository
-# are public. It changes nothing and needs no secret.
-# Temporary: delete once the domain is sorted out.
+# Read-only: what this machine can tell us about serving a domain from it.
+# Addresses are masked; it changes nothing and needs no secret. Temporary.
 
 on:
   workflow_dispatch:
@@ -18,59 +16,34 @@ jobs:
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     steps:
-      - name: Does it resolve, and is that this connection
+      - name: Domain, address, and what answers
         run: |
           d="${{ inputs.domain }}"
           mask() { sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+$/\1.x/'; }
-
-          echo "domain: $d"
-          echo "--- what it resolves to, from this machine:"
           ips=$(getent ahostsv4 "$d" 2>/dev/null | awk '{print $1}' | sort -u)
-          if [ -z "$ips" ]; then
-            echo "  it does not resolve at all - no A record is visible from here"
-          else
-            for ip in $ips; do echo "  $ip" | mask; done
-          fi
-
-          echo "--- this connection's public address:"
-          pub=""
-          for svc in https://api.ipify.org https://icanhazip.com https://ifconfig.me/ip; do
-            pub=$(curl -fsS -m 8 "$svc" 2>/dev/null | tr -d '[:space:]')
-            [ -n "$pub" ] && break
-          done
-          if [ -z "$pub" ]; then
-            echo "  could not be determined"
-          else
-            echo "  $pub" | mask
-          fi
-
-          echo "--- do they match?"
-          if [ -n "$pub" ] && [ -n "$ips" ]; then
-            if echo "$ips" | grep -qx "$pub"; then
-              echo "  YES - $d points at this connection"
-            else
-              echo "  NO - the domain points somewhere other than this connection's current address."
-              echo "  Either the A record is stale (a dynamic address that has changed) or it was"
-              echo "  pointed at a different host. The record has to be updated, or a dynamic DNS"
-              echo "  name used instead of a fixed address."
-            fi
-          else
-            echo "  cannot say - see above"
-          fi
-
-      - name: Does anything answer
-        run: |
-          d="${{ inputs.domain }}"
-          echo "NOTE: this machine is inside the same network, so reaching the domain means going out"
-          echo "to the router and back in. Many routers do not do that (no NAT hairpin), so a failure"
-          echo "here does not prove it fails from outside - but a success does prove it works."
+          pub=$(curl -fsS -m 8 https://api.ipify.org 2>/dev/null || true)
+          echo "domain      : $d"
+          echo "resolves to : $(echo "${ips:-nothing}" | mask | tr '\n' ' ')"
+          echo "this network: $(echo "${pub:-unknown}" | mask)"
+          if [ -n "$pub" ] && echo "$ips" | grep -qx "$pub"; then echo "match       : yes"; else echo "match       : no"; fi
           for u in "http://$d/" "https://$d/"; do
-            echo "=== $u"
-            curl -sSI -m 12 "$u" 2>&1 | grep -iE '^(HTTP/|location|server|x-gitlab|content-type)' \
-              | sed -E 's#(192\.168\.[0-9]+)\.[0-9]+#\1.x#g' || echo "  no answer"
+            printf '%-22s ' "$u"
+            curl -sS -o /dev/null -m 10 -w 'HTTP %{http_code}\n' "$u" 2>&1 | head -1
           done
-          echo "=== and the same request straight to this machine, for comparison:"
-          curl -sSI -m 12 http://127.0.0.1/ 2>&1 | grep -iE '^(HTTP/|location|server|x-gitlab|content-type)' \
-            | sed -E 's#(192\.168\.[0-9]+)\.[0-9]+#\1.x#g' || echo "  no answer"
-          echo "--- what is listening on this machine itself:"
-          ss -ltn 2>/dev/null | awk 'NR==1 || $4 ~ /:(80|443)$/' || echo "cannot read ports"
+          echo "--- listening here:"
+          ss -ltn 2>/dev/null | awk 'NR==1 || $4 ~ /:(80|443|8081)$/'
+
+      - name: Can this runner change the machine
+        run: |
+          echo "runner account: $(id -un)   groups: $(id -Gn)"
+          if sudo -n true 2> /dev/null; then
+            echo "PASSWORDLESS SUDO: YES - this runner can become root without a password"
+            sudo -n -l 2>/dev/null | tail -5
+          else
+            echo "passwordless sudo: no - this runner cannot install packages or edit /etc"
+          fi
+          echo "--- is what the web server needs already there:"
+          for p in /var/www/evia /var/www/acme /etc/nginx /etc/letsencrypt/live; do
+            [ -e "$p" ] && echo "  exists  $p" || echo "  absent  $p"
+          done
+          for c in nginx certbot; do printf '  %-8s %s\n' "$c" "$(command -v $c || echo '-')"; done
