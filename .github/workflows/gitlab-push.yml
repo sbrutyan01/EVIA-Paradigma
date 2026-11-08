@@ -42,7 +42,7 @@ jobs:
           GITLAB_URL: ${{ vars.GITLAB_URL }}
           GITLAB_PROJECT: ${{ vars.GITLAB_PROJECT }}
         run: |
-          url="${GITLAB_URL:-http://192.168.10.13}"
+          url="${GITLAB_URL:-https://git.evia.am}"
           project="${GITLAB_PROJECT:-evia/evia-paradigma}"
           echo "remote: $url/$project.git"
           echo "::group::its refs"
@@ -56,7 +56,7 @@ jobs:
           GITLAB_PROJECT: ${{ vars.GITLAB_PROJECT }}
         run: |
           set -o pipefail
-          url="${GITLAB_URL:-http://192.168.10.13}"
+          url="${GITLAB_URL:-https://git.evia.am}"
           project="${GITLAB_PROJECT:-evia/evia-paradigma}"
           remote="$url/$project.git"
           tag="${{ inputs.tag }}"

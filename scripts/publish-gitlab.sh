@@ -9,18 +9,17 @@
 # User settings > Access tokens with the api scope. Pass it on the command line as above, or
 # export it for the shell; do not put it in a file in this repository.
 #
-#   GITLAB_URL      the GitLab, default http://192.168.10.13
+#   GITLAB_URL      the GitLab, default https://git.evia.am
 #   GITLAB_PROJECT  the project path, default evia/evia-paradigma
 #   ASSET_DIR       a folder whose files are linked from the release (optional)
 #
-# Note on http://: a token sent over plain http crosses the network in the clear. On a home
-# network between two of your own machines that is a small risk, but putting this GitLab behind
-# https is worth doing, and then this script needs no change beyond GITLAB_URL.
+# The default is https, so the token is encrypted on the way. GITLAB_URL=http://dell works on the
+# GitLab machine itself, where the request never leaves it.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
 TAG="${1:-}"
-URL="${GITLAB_URL:-http://192.168.10.13}"
+URL="${GITLAB_URL:-https://git.evia.am}"
 PROJECT="${GITLAB_PROJECT:-evia/evia-paradigma}"
 
 die() { echo "publish-gitlab: $*" >&2; exit 1; }

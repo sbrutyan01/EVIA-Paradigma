@@ -155,3 +155,19 @@ No PHP, no database, no application code and no uploads: a static site has nothi
 that is the point of serving it this way rather than putting a web application on a machine that
 holds a CI runner. GitLab remains private. If that ever needs to be public, it needs its own
 certificate and its own hard look — not a line in this file.
+
+## GitLab on the internet: git.evia.am
+
+By default GitLab stays private (this machine and Tailscale only). To make it reachable from anywhere
+at `https://git.evia.am` instead:
+
+1. At the DNS provider, add an A record: name `git`, value this machine's public address.
+2. `sudo packaging/nginx/gitlab-public.sh`
+
+It stops if the name does not point here yet. Otherwise it takes `git.evia.am` out of the private
+block, installs [`git.evia.am.conf`](git.evia.am.conf), gets a Let's Encrypt certificate for the
+name (webroot, renewed by certbot's timer), and sets GitLab's `external_url` to
+`https://git.evia.am` so its links and clone URLs use it. `http://dell` keeps working on this machine.
+
+Once it is public, the sign-in page is what protects it: keep sign-ups off, keep the rate limits on
+(Admin > Settings > Network), and turn on two-factor sign-in for root.

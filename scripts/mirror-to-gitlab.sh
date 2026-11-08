@@ -11,14 +11,14 @@
 # only the GitLab needs a token: User settings > Access tokens, scope api. The token is read from
 # the environment, never written to a file or to .git/config, and masked out of the output.
 #
-#   GITLAB_URL      the GitLab, default http://192.168.10.13
+#   GITLAB_URL      the GitLab, default https://git.evia.am
 #   GITLAB_PROJECT  the project path, default evia/evia-paradigma
 #   GITHUB_REPO     where to copy from, default sbrutyan01/EVIA-Paradigma
 #   KEEP            a folder to leave the downloaded installers in (default: a temporary one)
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-URL="${GITLAB_URL:-http://192.168.10.13}"
+URL="${GITLAB_URL:-https://git.evia.am}"
 PROJECT="${GITLAB_PROJECT:-evia/evia-paradigma}"
 GH_REPO="${GITHUB_REPO:-sbrutyan01/EVIA-Paradigma}"
 PRUNE=0
