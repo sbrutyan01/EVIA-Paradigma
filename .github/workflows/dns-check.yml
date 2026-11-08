@@ -58,7 +58,9 @@ jobs:
                 | awk '$2 !~ /docker|tailscale/ {split($4,a,"/"); print a[1]; exit}')
           for n in "$d" "www.$d"; do
             a=$(getent ahostsv4 "$n" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')
-            q=$(getent ahostsv6 "$n" 2>/dev/null | awk '$1 ~ /:/ {print $1}' | sort -u | tr '\n' ' ')
+            # ::ffff:a.b.c.d is an IPv4 address in IPv6 clothing, not an AAAA record in the zone
+            q=$(getent ahostsv6 "$n" 2>/dev/null \
+                | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ {print $1}' | sort -u | tr '\n' ' ')
             printf '\n%-14s A: %-40s AAAA: %s\n' "$n" "${a:-none}" "${q:-none}"
             # more than one A, or any AAAA, means a browser may reach a different host than this one
             c=$(echo "$a" | wc -w)
