@@ -101,4 +101,15 @@ for lang in ["ru", "hy", "de", "zh-CN", "zh-TW", "ja"]:
         f.write(relink(current(page, lang)))
 shutil.rmtree(out + "/i18n")
 open(out + "/.nojekyll", "w").close()
+
+# A service worker from an application served on this domain before keeps answering from its own
+# cache, ahead of the network, so replacing the site does not replace what a browser shows. The
+# worker script itself is always revalidated against the server, so serving a self-destructing one
+# at the usual names removes it. This site registers no service worker, so these files do nothing
+# else. Harmless to keep; drop them once nobody is asking for them.
+killsw = out + "/killsw.js"
+if os.path.exists(killsw):
+    for name in ("sw.js", "service-worker.js", "serviceworker.js", "worker.js",
+                 "ngsw-worker.js", "firebase-messaging-sw.js", "pwabuilder-sw.js"):
+        shutil.copy(killsw, f"{out}/{name}")
 print(f"site for {version}: {len(samples)} code samples, English, Russian, Armenian, German, Chinese (simplified and traditional) and Japanese -> {out}")
