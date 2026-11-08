@@ -68,7 +68,6 @@ Report an Issue...	Հաղորդել խնդրի մասին...
 Check for Updates...	Ստուգել թարմացումները...
 About EVIA Paradigma	EVIA Paradigma-ի մասին
 Code Language and Mode	Կոդի լեզուն և ռեժիմը
-Arduino and ESP32 Boards	Arduino և ESP32 տախտակներ
 FPGA Boards (Artix-7, GateMate)	FPGA տախտակներ (Artix-7, GateMate)
 Open Class	Բացել դասը
 (no classes)	(դասեր չկան)
@@ -110,7 +109,6 @@ External editor (Vim):	Արտաքին խմբագրիչ (Vim)՝
 Compiler:	Կոմպիլյատոր՝
 Command (C++):	Հրաման (C++)՝
 Board:	Տախտակ՝
-  Serial port:	  Սերիական պորտ՝
 arduino-cli:	arduino-cli՝
 avr-gcc:	avr-gcc՝
 avrdude:	avrdude՝
@@ -186,3 +184,26 @@ Close	Փակել
 Checking Python...	Python-ի ստուգում...
 The command that runs generated Python, e.g. python3, py or a full path	Ստեղծված Python կոդը գործարկող հրամանը, օրինակ՝ python3, py կամ ամբողջական ուղի
 Python:	Python՝
+Settings	Կարգավորումներ
+General...	Ընդհանուր...
+C, C++ and Python...	C, C++ և Python...
+Arduino Boards...	Arduino տախտակներ...
+ESP32 Boards...	ESP32 տախտակներ...
+AVR C (bare metal)...	AVR C (առանց Arduino-ի)...
+PIC32...	PIC32...
+FPGA Boards...	FPGA տախտակներ...
+Arduino Boards (Uno, Nano, Mega ...)	Arduino տախտակներ (Uno, Nano, Mega ...)
+ESP32 Boards	ESP32 տախտակներ
+PIC32 Boards	PIC32 տախտակներ
+General	Ընդհանուր
+C, C++ and Python	C, C++ և Python
+Arduino	Arduino
+ESP32	ESP32
+AVR C (bare metal)	AVR C (առանց Arduino-ի)
+PIC32	PIC32
+FPGA	FPGA
+Serial port:	Սերիական պորտ՝
+Chip:	Չիպ՝
+Artix-7 flow:	Artix-7 հոսք՝
+Chip database folder:	Չիպերի տվյալների բազայի պանակ՝
+prjxray-db folder:	prjxray-db պանակ՝

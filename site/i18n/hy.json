@@ -550,5 +550,9 @@
  [
   "<td>52 of 52</td>",
   "<td>52 / 52</td>"
+ ],
+ [
+  "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
+  "<p>Նորություն 0.7.0-ում՝ կարգավորումները File ընտրացանկում են, յուրաքանչյուր սարքերի ընտանիքի համար առանձին էջով՝ ընդհանուր, C, C++ և Python, Arduino, ESP32, AVR C, PIC32 և FPGA, իսկ Open Example-ը ունի առանձին Arduino, ESP32 և PIC32 ենթացանկեր, որոնք միանգամից ընտրում են համապատասխան լեզուն և տախտակը։</p>"
  ]
 ]

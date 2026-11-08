@@ -136,5 +136,6 @@
  "Settings, Pythonにはコマンドを設定します：python3、Windowsのpyランチャー、またはフルパス。Detectで再検索し、Checkでバージョンを表示します。",
  "<li><b>Pythonを自動で検出。</b> Settings, Pythonは設定なしでpython3、Windowsではpyランチャーを使います。Checkでバージョンを確認できます。</li>",
  "<td>Linux、Python 3：全サンプルとテスト、両フロー、両値モード</td>",
- "<td>52件中52件</td>"
+ "<td>52件中52件</td>",
+ "<p>0.7.0の新機能：設定はFileメニューに移り、デバイスファミリーごとのページ（一般、C・C++・Python、Arduino、ESP32、AVR C、PIC32、FPGA）に分かれました。Open ExampleにもArduino、ESP32、PIC32のサブメニューがあり、開くと対応する言語とボードも選ばれます。</p>"
 ]

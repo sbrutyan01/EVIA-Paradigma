@@ -92,7 +92,7 @@ Wähle **Git → Connect to GitHub…** und gib `owner/repo` ein. *Create reposi
 
 ## 8. Arduino- oder ESP32-Board programmieren
 
-Öffne **File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. Die grünen **Board**-Blöcke in der Palettengruppe *Board* konfigurieren Pins, lesen Tasten und Sensoren aus und warten. **Run** (F5) simuliert ein Arduino Uno; die Ausgabe zeigt jede Pinänderung samt Zeitpunkt.
+Öffne **File → Open Example → Arduino Boards → Blink the built-in LED**. Die grünen **Board**-Blöcke in der Palettengruppe *Board* konfigurieren Pins, lesen Tasten und Sensoren aus und warten. **Run** (F5) simuliert ein Arduino Uno; die Ausgabe zeigt jede Pinänderung samt Zeitpunkt.
 
 <p align="center"><img src="../screenshots/27-board-simulated.png" alt="Blink-Beispiel mit simulierten Pinänderungen in der Ausgabe" width="900"></p>
 
@@ -102,7 +102,7 @@ Wähle **Language: Arduino** und ein **Board**, dann **Generate code** (F7): Ein
 
 ## 9. Mit anderen Chips kommunizieren: UART, SPI, I2C und PIC32
 
-Drei weitere Beispiele unter **File → Open Example → Arduino and ESP32 Boards** verwenden Busblöcke: *UART: send a byte, read it back*, *SPI: transfer a byte* und *I2C: write and read a device register*. Öffne einen Bus, bevor du ihn verwendest. **Run** simuliert UART als Loopback, verbindet den SPI-Eingang mit dem Ausgang und stellt ein I2C-Gerät mit 256 Registern an Adresse 80 bereit (80 ist 0x50; Zahlen sind dezimal).
+Drei weitere Beispiele unter **File → Open Example → Arduino Boards** verwenden Busblöcke: *UART: send a byte, read it back*, *SPI: transfer a byte* und *I2C: write and read a device register*. Öffne einen Bus, bevor du ihn verwendest. **Run** simuliert UART als Loopback, verbindet den SPI-Eingang mit dem Ausgang und stellt ein I2C-Gerät mit 256 Registern an Adresse 80 bereit (80 ist 0x50; Zahlen sind dezimal).
 
 | Block | Code | Funktion |
 |---|---|---|
@@ -133,7 +133,7 @@ Jeder Block wird zu einem Zustand einer Zustandsmaschine und benötigt einen Tak
 
 ## 11. Zahlen per MQTT weiterschicken
 
-Öffne **Datei → Beispiel öffnen → Arduino and ESP32 Boards → MQTT sensor**. Das Programm veröffentlicht eine
+Öffne **Datei → Beispiel öffnen → ESP32 Boards → MQTT sensor**. Das Programm veröffentlicht eine
 Temperatur bei einem Broker, schickt sich selbst einen Befehl und liest ihn zurück.
 
 Die fünf **MQTT**-Blöcke stehen in der Gruppe *Board*: *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*,

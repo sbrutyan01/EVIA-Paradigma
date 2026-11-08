@@ -68,7 +68,6 @@ Report an Issue...	Сообщить о проблеме...
 Check for Updates...	Проверить обновления...
 About EVIA Paradigma	О программе EVIA Paradigma
 Code Language and Mode	Язык и режим кода
-Arduino and ESP32 Boards	Платы Arduino и ESP32
 FPGA Boards (Artix-7, GateMate)	Платы FPGA (Artix-7, GateMate)
 Open Class	Открыть класс
 (no classes)	(классов нет)
@@ -110,7 +109,6 @@ External editor (Vim):	Внешний редактор (Vim):
 Compiler:	Компилятор:
 Command (C++):	Команда (C++):
 Board:	Плата:
-  Serial port:	  Последовательный порт:
 arduino-cli:	arduino-cli:
 avr-gcc:	avr-gcc:
 avrdude:	avrdude:
@@ -186,3 +184,26 @@ Close	Закрыть
 Checking Python...	Проверка Python...
 The command that runs generated Python, e.g. python3, py or a full path	Команда, которая запускает созданный код на Python, например python3, py или полный путь
 Python:	Python:
+Settings	Настройки
+General...	Общие...
+C, C++ and Python...	C, C++ и Python...
+Arduino Boards...	Платы Arduino...
+ESP32 Boards...	Платы ESP32...
+AVR C (bare metal)...	AVR C (без Arduino)...
+PIC32...	PIC32...
+FPGA Boards...	Платы FPGA...
+Arduino Boards (Uno, Nano, Mega ...)	Платы Arduino (Uno, Nano, Mega ...)
+ESP32 Boards	Платы ESP32
+PIC32 Boards	Платы PIC32
+General	Общие
+C, C++ and Python	C, C++ и Python
+Arduino	Arduino
+ESP32	ESP32
+AVR C (bare metal)	AVR C (без Arduino)
+PIC32	PIC32
+FPGA	FPGA
+Serial port:	Последовательный порт:
+Chip:	Микросхема:
+Artix-7 flow:	Маршрут Artix-7:
+Chip database folder:	Папка базы данных микросхем:
+prjxray-db folder:	Папка prjxray-db:

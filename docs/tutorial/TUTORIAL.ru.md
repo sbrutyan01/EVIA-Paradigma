@@ -124,7 +124,7 @@ Visual Studio не нужна. Выбор компилятора — в **Settin
 
 ## 8. Запрограммируйте плату Arduino или ESP32
 
-**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. Блоки **Board** (зелёные, в разделе
+**File → Open Example → Arduino Boards → Blink the built-in LED**. Блоки **Board** (зелёные, в разделе
 *Board* палитры) настраивают пины, читают кнопки и датчики и делают паузы:
 
 | Блок | Код | Что делает |
@@ -151,7 +151,7 @@ Visual Studio не нужна. Выбор компилятора — в **Settin
 
 ## 9. Общайтесь с другими микросхемами: UART, SPI и I2C, и PIC32
 
-Ещё три программы в **File → Open Example → Arduino and ESP32 Boards** используют блоки шин: *UART: send a byte,
+Ещё три программы в **File → Open Example → Arduino Boards** используют блоки шин: *UART: send a byte,
 read it back*, *SPI: transfer a byte* и *I2C: write and read a device register*. Блоки находятся в разделе *Board*:
 
 | Блок | Код | Что делает |
@@ -191,7 +191,7 @@ read it back*, *SPI: transfer a byte* и *I2C: write and read a device register*
 
 ## 11. Отправьте числа дальше по MQTT
 
-Откройте **Файл → Открыть пример → Arduino and ESP32 Boards → MQTT sensor**. Программа публикует температуру брокеру,
+Откройте **Файл → Открыть пример → ESP32 Boards → MQTT sensor**. Программа публикует температуру брокеру,
 отправляет себе команду и читает её обратно.
 
 Пять блоков **MQTT** находятся в группе *Board*: *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*, *MQTT Has Message*

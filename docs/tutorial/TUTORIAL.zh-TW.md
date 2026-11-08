@@ -92,7 +92,7 @@
 
 ## 8. 為 Arduino 或 ESP32 開發板編寫程式
 
-選擇 **File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**。面板 *Board* 群組中的綠色 **Board** 積木可設定接腳、讀取按鈕與感測器，並加入等待。按 **Run**（F5）可模擬 Arduino Uno；輸出會顯示每次接腳變更及其時間。
+選擇 **File → Open Example → Arduino Boards → Blink the built-in LED**。面板 *Board* 群組中的綠色 **Board** 積木可設定接腳、讀取按鈕與感測器，並加入等待。按 **Run**（F5）可模擬 Arduino Uno；輸出會顯示每次接腳變更及其時間。
 
 <p align="center"><img src="../screenshots/27-board-simulated.png" alt="Blink 範例：輸出中的模擬開發板接腳變化" width="900"></p>
 
@@ -102,7 +102,7 @@
 
 ## 9. 與其他晶片通訊：UART、SPI、I2C 與 PIC32
 
-**File → Open Example → Arduino and ESP32 Boards** 中還有三個使用匯流排積木的範例：*UART: send a byte, read it back*、*SPI: transfer a byte*、*I2C: write and read a device register*。使用前先開啟匯流排。**Run** 會模擬它們：UART 寫入的位元組會由 UART 讀回，SPI 輸入連到輸出，I2C 位址 80 有一個含 256 個暫存器的裝置回應（80 即 0x50；數值為十進位）。
+**File → Open Example → Arduino Boards** 中還有三個使用匯流排積木的範例：*UART: send a byte, read it back*、*SPI: transfer a byte*、*I2C: write and read a device register*。使用前先開啟匯流排。**Run** 會模擬它們：UART 寫入的位元組會由 UART 讀回，SPI 輸入連到輸出，I2C 位址 80 有一個含 256 個暫存器的裝置回應（80 即 0x50；數值為十進位）。
 
 | 積木 | 程式碼 | 功能 |
 |---|---|---|
@@ -133,7 +133,7 @@
 
 ## 11. 用 MQTT 把數字送出去
 
-開啟 **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**。這個程式向代理伺服器發布溫度，再給自己
+開啟 **File → Open Example → ESP32 Boards → MQTT sensor**。這個程式向代理伺服器發布溫度，再給自己
 送一條命令並讀回來。
 
 **MQTT** 的五個積木在 *Board* 群組裡：*MQTT Connect*、*MQTT Publish*、*MQTT Subscribe*、*MQTT Has Message* 與

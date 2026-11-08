@@ -92,7 +92,7 @@
 
 ## 8. Arduino または ESP32 ボードをプログラムする
 
-**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED** を開きます。パレットの *Board* グループにある緑色の **Board** ブロックで、ピンの設定、ボタンやセンサーの読み取り、待機を行います。**Run**（F5）は Arduino Uno をシミュレートし、出力に各ピンの変化と時刻を表示します。
+**File → Open Example → Arduino Boards → Blink the built-in LED** を開きます。パレットの *Board* グループにある緑色の **Board** ブロックで、ピンの設定、ボタンやセンサーの読み取り、待機を行います。**Run**（F5）は Arduino Uno をシミュレートし、出力に各ピンの変化と時刻を表示します。
 
 <p align="center"><img src="../screenshots/27-board-simulated.png" alt="Blink の例：シミュレートしたボードのピン変化を出力に表示" width="900"></p>
 
@@ -102,7 +102,7 @@
 
 ## 9. UART、SPI、I2C、PIC32 で他のチップと通信する
 
-**File → Open Example → Arduino and ESP32 Boards** にある3つの例では、バスブロックを使います。*UART: send a byte, read it back*、*SPI: transfer a byte*、*I2C: write and read a device register* です。使用前にバスを開きます。**Run** では、UART の送信バイトは読み取り側に戻り、SPI は入力と出力が接続され、I2C はアドレス80に256レジスターのデバイスがあるものとして動作します（80は0x50、数値は10進数）。
+**File → Open Example → Arduino Boards** にある3つの例では、バスブロックを使います。*UART: send a byte, read it back*、*SPI: transfer a byte*、*I2C: write and read a device register* です。使用前にバスを開きます。**Run** では、UART の送信バイトは読み取り側に戻り、SPI は入力と出力が接続され、I2C はアドレス80に256レジスターのデバイスがあるものとして動作します（80は0x50、数値は10進数）。
 
 | ブロック | コード | 動作 |
 |---|---|---|
@@ -133,7 +133,7 @@ Microchip PIC32MX チップでは、**Language: PIC32 C** と **Board** リス�
 
 ## 11. MQTT で数値を送り出す
 
-**File → Open Example → Arduino and ESP32 Boards → MQTT sensor** を開きます。温度をブローカーに公開し、自分宛てに
+**File → Open Example → ESP32 Boards → MQTT sensor** を開きます。温度をブローカーに公開し、自分宛てに
 コマンドを送って読み戻すプログラムです。
 
 **MQTT** のブロックは *Board* グループに5つあります。*MQTT Connect*、*MQTT Publish*、*MQTT Subscribe*、

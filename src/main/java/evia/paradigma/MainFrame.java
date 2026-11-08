@@ -50,6 +50,17 @@ final class MainFrame extends JFrame {
             {"boards/mqtt_sensor.evia", "MQTT: publish a value, read a command back"},
             {"boards/mqtt_esk2.evia", "MQTT on the PIC32 Ethernet Starter Kit II"},
     };
+    /** The board families of File > Open Example, and the examples each one can build (MQTT needs a network). */
+    enum ExampleFamily { ARDUINO, ESP32, PIC32 }
+
+    static boolean exampleFits(String file, ExampleFamily f) {
+        boolean mqtt = file.contains("mqtt");
+        return switch (f) {
+            case ARDUINO -> !mqtt;
+            case ESP32 -> !file.contains("esk2");
+            case PIC32 -> true;
+        };
+    }
     /** Programs for FPGA boards (LED0, SW0, BTN0 ... are the pins of Digilent boards; Run simulates them like an Uno). */
     static final String[][] FPGA_EXAMPLES = {
             {"fpga/blink.evia", "Blink LED0"},
@@ -197,6 +208,8 @@ final class MainFrame extends JFrame {
         file.add(item("Export Classes as Module...", null, e -> exportModule()));
         file.addSeparator();
         file.add(item("Close Project", null, e -> closeProject()));
+        file.addSeparator();
+        file.add(settingsMenu());
         if (!ExternalEditor.MAC) {
             file.addSeparator();
             file.add(item("Exit", KeyStroke.getKeyStroke(KeyEvent.VK_Q, MENU), e -> exit()));
@@ -210,10 +223,6 @@ final class MainFrame extends JFrame {
         edit.add(item("New Class...", null, e -> newClass()));
         edit.add(item("Group Selection into Class", KeyStroke.getKeyStroke(KeyEvent.VK_G, MENU), e -> canvas.groupSelection()));
         edit.add(classesMenu());
-        if (!ExternalEditor.MAC) {
-            edit.addSeparator();
-            edit.add(item("Settings...", null, e -> Settings.showDialog(this)));
-        }
         bar.add(edit);
         // the canvas has the same keys; with the menu present let the menu own them
         for (KeyStroke ks : new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
@@ -374,16 +383,40 @@ final class MainFrame extends JFrame {
         return a;
     }
 
+    /** File > Settings: one entry per page, each opening the Settings window at that page. */
+    private JMenu settingsMenu() {
+        JMenu m = new JMenu(Text.t("Settings"));
+        m.add(item("General...", ExternalEditor.MAC ? null : KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, MENU), e -> Settings.showDialog(this, Settings.Page.GENERAL)));
+        m.addSeparator();
+        m.add(item("C, C++ and Python...", null, e -> Settings.showDialog(this, Settings.Page.DESKTOP)));
+        m.addSeparator();
+        m.add(item("Arduino Boards...", null, e -> Settings.showDialog(this, Settings.Page.ARDUINO)));
+        m.add(item("ESP32 Boards...", null, e -> Settings.showDialog(this, Settings.Page.ESP32)));
+        m.add(item("AVR C (bare metal)...", null, e -> Settings.showDialog(this, Settings.Page.AVR)));
+        m.add(item("PIC32...", null, e -> Settings.showDialog(this, Settings.Page.PIC32)));
+        m.add(item("FPGA Boards...", null, e -> Settings.showDialog(this, Settings.Page.FPGA)));
+        return m;
+    }
+
     private JMenu examplesMenu(String title) {
         title = Text.t(title);
         JMenu m = new JMenu(title);
         for (String[] ex : EXAMPLES) m.add(item(ex[1], null, e -> openExample(ex[0])));
-        JMenu boards = new JMenu(Text.t("Arduino and ESP32 Boards"));
-        for (String[] ex : BOARD_EXAMPLES) boards.add(item(ex[1], null, e -> openExample(ex[0])));
+        JMenu arduino = new JMenu(Text.t("Arduino Boards (Uno, Nano, Mega ...)"));
+        JMenu esp32 = new JMenu(Text.t("ESP32 Boards"));
+        JMenu pic32 = new JMenu(Text.t("PIC32 Boards"));
+        for (ExampleFamily f : ExampleFamily.values()) {
+            JMenu sub = f == ExampleFamily.ARDUINO ? arduino : f == ExampleFamily.ESP32 ? esp32 : pic32;
+            for (String[] ex : BOARD_EXAMPLES) {
+                if (exampleFits(ex[0], f)) sub.add(item(ex[1], null, e -> openExample(ex[0], f)));
+            }
+        }
         JMenu fpga = new JMenu(Text.t("FPGA Boards (Artix-7, GateMate)"));
         for (String[] ex : FPGA_EXAMPLES) fpga.add(item(ex[1], null, e -> openExample(ex[0])));
         m.addSeparator();
-        m.add(boards);
+        m.add(arduino);
+        m.add(esp32);
+        m.add(pic32);
         m.add(fpga);
         return m;
     }
@@ -881,6 +914,11 @@ final class MainFrame extends JFrame {
     }
 
     private void openExample(String name) {
+        openExample(name, null);
+    }
+
+    /** Opens an example; a board family also sets the language and a board of that family. */
+    private void openExample(String name, ExampleFamily family) {
         if (!confirmDiscard()) return;
         try {
             ProgramIO.load(lib, extractExample(name));
@@ -888,8 +926,21 @@ final class MainFrame extends JFrame {
             lib.changed();
             resetTo(null, null);
             setTitle(APP + " - example " + name);
-            if (name.startsWith("boards/") && !Settings.target().embedded()) {
-                Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // its code is for a board
+            if (family == ExampleFamily.PIC32) {
+                Settings.setTarget(Settings.target().withLang(Target.Lang.PIC32));
+                if (name.contains("esk2")) Settings.setBoard(Board.PIC32_ESK2);
+            } else if (family != null) {
+                if (Settings.target().lang() != Target.Lang.ARDUINO && Settings.target().lang() != Target.Lang.AVR) {
+                    Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // its code is for a board
+                }
+                Board b = Settings.board();
+                if (family == ExampleFamily.ESP32 && !b.isEsp32()) Settings.setBoard(Board.ESP32);
+                if (family == ExampleFamily.ARDUINO && !b.isArduinoAvr()) Settings.setBoard(Board.UNO);
+                if (family == ExampleFamily.ESP32 && Settings.target().lang() == Target.Lang.AVR) {
+                    Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // an ESP32 has no AVR C
+                }
+            } else if (name.startsWith("boards/") && !Settings.target().embedded()) {
+                Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));
             }
             if (name.startsWith("fpga/") && !Settings.target().lang().fpga()) {
                 Settings.setTarget(Settings.target().withLang(Target.Lang.SYSTEMVERILOG));   // its code is for an FPGA
@@ -897,7 +948,8 @@ final class MainFrame extends JFrame {
             status.setText(name.startsWith("fpga/")
                     ? "Example " + name + ". Run (F5) simulates it; Generate Code (F7) makes the hardware design for your FPGA board."
                     : name.startsWith("boards/")
-                    ? "Example " + name + ". Run (F5) simulates an Arduino Uno; Generate Code (F7) makes the sketch for your board."
+                    ? "Example " + name + ". Run (F5) simulates the board's pins; Generate Code (F7) makes the code for "
+                            + Settings.board(Settings.target().lang()).display + "."
                     : "Example " + name + ". Press Run (F5). Save it to keep your changes.");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Example", JOptionPane.ERROR_MESSAGE);

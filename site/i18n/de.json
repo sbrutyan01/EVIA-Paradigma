@@ -136,5 +136,6 @@
  "Settings, Python enthält den Befehl: python3, den py-Launcher unter Windows oder einen vollständigen Pfad. Detect sucht erneut danach, Check zeigt die Version.",
  "<li><b>Python wird selbst gefunden.</b> Settings, Python nutzt ohne Einrichtung python3 oder unter Windows den py-Launcher; Check zeigt die Version.</li>",
  "<td>Linux, Python 3: alle Beispiele und Tests, beide Abläufe, beide Wertemodi</td>",
- "<td>52 von 52</td>"
+ "<td>52 von 52</td>",
+ "<p>Neu in 0.7.0: Die Einstellungen liegen im Menü File, mit einer Seite pro Gerätefamilie – Allgemein, C, C++ und Python, Arduino, ESP32, AVR C, PIC32 und FPGA –, und Open Example hat eigene Untermenüs für Arduino, ESP32 und PIC32, die auch die passende Sprache und das passende Board wählen.</p>"
 ]

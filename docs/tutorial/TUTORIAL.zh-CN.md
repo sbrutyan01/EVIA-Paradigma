@@ -92,7 +92,7 @@
 
 ## 8. 为 Arduino 或 ESP32 开发板编程
 
-选择 **File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**。面板 *Board* 分组中的绿色 **Board** 积木用于配置引脚、读取按钮和传感器及等待。按 **Run**（F5）可模拟 Arduino Uno；输出会显示每次引脚变化及其时间。
+选择 **File → Open Example → Arduino Boards → Blink the built-in LED**。面板 *Board* 分组中的绿色 **Board** 积木用于配置引脚、读取按钮和传感器及等待。按 **Run**（F5）可模拟 Arduino Uno；输出会显示每次引脚变化及其时间。
 
 <p align="center"><img src="../screenshots/27-board-simulated.png" alt="Blink 示例：输出中显示模拟开发板的引脚变化" width="900"></p>
 
@@ -102,7 +102,7 @@
 
 ## 9. 与其他芯片通信：UART、SPI、I2C 和 PIC32
 
-**File → Open Example → Arduino and ESP32 Boards** 下的另外三个示例使用总线积木：*UART: send a byte, read it back*、*SPI: transfer a byte* 和 *I2C: write and read a device register*。使用前先打开总线。**Run** 会模拟这些总线：UART 写入的数据可由 UART 读取，SPI 输入连接到输出，I2C 地址 80 处有一个包含 256 个寄存器的设备（80 即 0x50；数值为十进制）。
+**File → Open Example → Arduino Boards** 下的另外三个示例使用总线积木：*UART: send a byte, read it back*、*SPI: transfer a byte* 和 *I2C: write and read a device register*。使用前先打开总线。**Run** 会模拟这些总线：UART 写入的数据可由 UART 读取，SPI 输入连接到输出，I2C 地址 80 处有一个包含 256 个寄存器的设备（80 即 0x50；数值为十进制）。
 
 | 积木 | 代码 | 功能 |
 |---|---|---|
@@ -133,7 +133,7 @@
 
 ## 11. 用 MQTT 把数字发出去
 
-打开 **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**。这个程序向代理服务器发布温度，再给自己
+打开 **File → Open Example → ESP32 Boards → MQTT sensor**。这个程序向代理服务器发布温度，再给自己
 发一条命令并读回来。
 
 **MQTT** 的五个积木在 *Board* 组里：*MQTT Connect*、*MQTT Publish*、*MQTT Subscribe*、*MQTT Has Message* 和

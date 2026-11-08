@@ -112,7 +112,7 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 ## 8. Program an Arduino or ESP32 board
 
-**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. The **Board** blocks (green, under
+**File → Open Example → Arduino Boards → Blink the built-in LED**. The **Board** blocks (green, under
 *Board* in the palette) set pins, read buttons and sensors, and wait. **Run** (F5) simulates an Arduino Uno: the
 output shows every pin change with its time.
 
@@ -127,7 +127,7 @@ See [Arduino and ESP32 boards](../../README.md#arduino-and-esp32-boards).
 
 ## 9. Talk to other chips: UART, SPI and I2C, and PIC32
 
-Three more programs under **File → Open Example → Arduino and ESP32 Boards** use the bus blocks: *UART: send a byte,
+Three more programs under **File → Open Example → Arduino Boards** use the bus blocks: *UART: send a byte,
 read it back*, *SPI: transfer a byte* and *I2C: write and read a device register*. The blocks are in the *Board* group:
 
 | Block | Code | What it does |
@@ -167,7 +167,7 @@ Every block becomes one state of a state machine and takes one clock cycle. Pins
 
 ## 11. Send the numbers on with MQTT
 
-Open **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**. It publishes a temperature to a broker,
+Open **File → Open Example → ESP32 Boards → MQTT sensor**. It publishes a temperature to a broker,
 sends itself a command and reads it back.
 
 The five **MQTT** blocks are in the *Board* group: *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*,

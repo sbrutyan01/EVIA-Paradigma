@@ -136,5 +136,6 @@
  "Settings, Python 中保存运行命令：python3、Windows 上的 py 启动器或完整路径。Detect 会重新查找，Check 会显示版本。",
  "<li><b>自动找到 Python。</b> Settings, Python 无需设置即可使用 python3 或 Windows 上的 py 启动器；Check 会显示版本。</li>",
  "<td>Linux，Python 3：所有示例和测试，两种流程，两种数值模式</td>",
- "<td>52 项中的 52 项</td>"
+ "<td>52 项中的 52 项</td>",
+ "<p>0.7.0 新增：设置移到了 File 菜单中，每个设备系列各有一页——常规、C、C++ 和 Python、Arduino、ESP32、AVR C、PIC32 和 FPGA；Open Example 也分成了 Arduino、ESP32 和 PIC32 子菜单，打开示例时会同时选好对应的语言和开发板。</p>"
 ]

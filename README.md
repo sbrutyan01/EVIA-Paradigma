@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.9-blue" alt="version 0.6.9"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.7.0-blue" alt="version 0.7.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -58,11 +58,26 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.9-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.6.9-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.6.9-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.9_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.9_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.9.jar` | `java -jar evia-paradigma-0.6.9.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.7.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.7.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.7.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.7.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.7.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.7.0.jar` | `java -jar evia-paradigma-0.7.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.7.0
+
+[EVIA Paradigma v0.7.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.7.0) ([release notes](docs/release-notes/v0.7.0.md)):
+Settings in the File menu, one page per device family.
+
+- **File → Settings ▸** General, C/C++/Python, Arduino Boards, ESP32 Boards, AVR C, PIC32, FPGA Boards: each entry
+  opens the Settings window at its own tab. Arduino and ESP32 have separate pages and board lists; the PIC32 chip and
+  the FPGA board can be chosen there too; one serial port list with **Scan** is shared by every board page.
+- **File → Open Example** has **Arduino Boards**, **ESP32 Boards** and **PIC32 Boards** (and **FPGA Boards**); each
+  shows the examples its boards can build and sets the language and board when one is opened.
+- **Settings…** in the code window opens the page for the language shown; Settings has left the Edit menu.
+
+<p align="center"><img src="docs/screenshots/36-menu-settings.png" alt="File → Settings submenu: General, C, C++ and Python, Arduino Boards, ESP32 Boards, AVR C, PIC32, FPGA Boards" width="460">
+<img src="docs/screenshots/38-settings-esp32.png" alt="The Settings window at the ESP32 tab: board, serial port with Scan, arduino-cli and the ESP32 core with Install" width="520"></p>
 
 ### Release 0.6.9
 
@@ -297,7 +312,7 @@ Arduino and ESP32 boards, bare-metal AVR C, board blocks with a simulated Uno, a
 - **Build and Upload** in the code window (arduino-cli, or avr-gcc + avrdude); **Board** list next to the language.
 - **Run simulates an Uno**: pin changes in the output, a button and an analog signal, repeatable virtual time.
 - **GCC**: Settings → Compiler: Clang or GCC; on Windows **Install GCC…** sets up WinLibs MinGW-w64 GCC (no Visual Studio).
-- Examples: **File → Open Example → Arduino and ESP32 Boards** (blink, button, fade, analog meter, Led class, UART, SPI, I2C, and the two MQTT programs).
+- Examples: **File → Open Example → Arduino Boards** (or **ESP32 Boards**, **PIC32 Boards**) (blink, button, fade, analog meter, Led class, UART, SPI, I2C, and the two MQTT programs).
 - [Website](https://sbrutyan01.github.io/EVIA-Paradigma/): light and dark themes (follows the system; **Light / Dark**
   buttons in the header), a bigger logo and name, the board features and this release's test results.
 
@@ -507,7 +522,7 @@ on your computer (Git Credential Manager, an SSH key or `gh auth login`).
 
 ### 8. Program an Arduino or ESP32 board
 
-**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**. The **Board** blocks (green, under
+**File → Open Example → Arduino Boards → Blink the built-in LED**. The **Board** blocks (green, under
 *Board* in the palette) set pins, read buttons and sensors, and wait. **Run** (F5) simulates an Arduino Uno: the
 output shows every pin change with its time.
 
@@ -522,7 +537,7 @@ See [Arduino and ESP32 boards](#arduino-and-esp32-boards).
 
 ### 9. Talk to other chips: UART, SPI and I2C, and PIC32
 
-Three more programs under **File → Open Example → Arduino and ESP32 Boards** use the bus blocks: *UART: send a byte,
+Three more programs under **File → Open Example → Arduino Boards** (or **ESP32 Boards**, **PIC32 Boards**) use the bus blocks: *UART: send a byte,
 read it back*, *SPI: transfer a byte* and *I2C: write and read a device register*. The blocks are in the *Board* group:
 
 | Block | Code | What it does |
@@ -605,7 +620,7 @@ Choose SystemVerilog, Verilog-2001 or VHDL and an Artix-7 or GateMate board; see
 
 ### 11. Send the numbers on with MQTT
 
-Open **File → Open Example → Arduino and ESP32 Boards → MQTT: publish a value, read a command back** (or the
+Open **File → Open Example → ESP32 Boards → MQTT: publish a value, read a command back** (or the
 starter-kit one below it); see [MQTT](#mqtt-send-the-numbers-somewhere)
 above. Run answers from a broker on your computer, a PIC32 uses a WiFi module on UART2, an ESP32 uses its own WiFi.
 
@@ -737,8 +752,8 @@ Ctrl+wheel zooms.
 
 | Menu | Items |
 |---|---|
-| **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, Exit |
-| **Edit** | Select All, Delete, New Class…, Group Selection into Class (Ctrl+G), Open Class, Settings… |
+| **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, **Settings ▸** (General, C/C++/Python, Arduino, ESP32, AVR C, PIC32, FPGA), Exit |
+| **Edit** | Select All, Delete, New Class…, Group Selection into Class (Ctrl+G), Open Class |
 | **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |

@@ -81,6 +81,23 @@ public class Tour {
         ui(() -> MenuSelectionManager.defaultManager().clearSelectedPath());
     }
 
+    /** A menu with one of its submenus open (the first item whose text starts with {@code prefix}). */
+    static void subMenuShot(JFrame f, int index, String prefix, String name) throws Exception {
+        JMenu top = f.getJMenuBar().getMenu(index);
+        JMenu sub = null;
+        for (Component c : top.getMenuComponents()) if (c instanceof JMenu m && m.getText().startsWith(prefix)) sub = m;
+        JMenu open = sub;
+        ui(() -> MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{
+                f.getJMenuBar(), top, top.getPopupMenu(), open, open.getPopupMenu()}));
+        settle(700);
+        JPopupMenu sp = open.getPopupMenu();
+        Point sl = sp.getLocationOnScreen();
+        JPopupMenu tp = top.getPopupMenu();
+        int bottom = Math.max(sl.y + sp.getHeight(), tp.getLocationOnScreen().y + tp.getHeight()) + 20;
+        capture(new Rectangle(f.getX(), f.getY(), sl.x + sp.getWidth() + 20 - f.getX(), bottom - f.getY()), name);
+        ui(() -> MenuSelectionManager.defaultManager().clearSelectedPath());
+    }
+
     public static void main(String[] a) throws Exception {
         new File(OUT).mkdirs();
         robot = new Robot();
@@ -257,6 +274,8 @@ public class Tour {
         // ---- 6. save, menus
         ui(() -> { try { call(f, "save"); } catch (Exception e) { throw new RuntimeException(e); } });
         menuShot(f, 0, "12-menu-file");
+        subMenuShot(f, 0, "Settings", "36-menu-settings");
+        subMenuShot(f, 0, "Open Example", "37-menu-examples");
         menuShot(f, 1, "13-menu-edit");
         menuShot(f, 3, "14-menu-run");
         // Run > Code Language and Mode (the same choices as the drop-down lists)
@@ -341,7 +360,7 @@ public class Tour {
         capture(bv, "29-avr-build");
         ui(() -> bv.setVisible(false));
 
-        SwingUtilities.invokeLater(() -> Settings.showDialog(f));
+        SwingUtilities.invokeLater(() -> Settings.showDialog(f, Settings.Page.DESKTOP));
         JDialog sd = dialog("Settings");
         ui(() -> {
             for (JComboBox<?> c : find(sd, JComboBox.class)) if (c.getItemCount() == 2) c.setSelectedIndex(1);   // GCC
@@ -349,6 +368,12 @@ public class Tour {
         settle(1500);
         capture(sd, "30-settings-gcc-boards");
         click(sd, "Cancel");
+        settle(300);
+        SwingUtilities.invokeLater(() -> Settings.showDialog(f, Settings.Page.ESP32));
+        JDialog se = dialog("Settings");
+        settle(1500);
+        capture(se, "38-settings-esp32");
+        click(se, "Cancel");
         settle(300);
 
         ui(() -> Settings.setTarget(new Target(Target.Lang.ARDUINO, Target.Flow.STRUCTURED, Target.Values.FAST)));

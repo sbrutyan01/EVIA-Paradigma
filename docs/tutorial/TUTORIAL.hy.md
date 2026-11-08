@@ -126,7 +126,7 @@ Visual Studio պետք չէ։ Կոմպիլյատորն ընտրվում է **Set
 
 ## 8. Ծրագրավորեք Arduino կամ ESP32 տախտակ
 
-**File → Open Example → Arduino and ESP32 Boards → Blink the built-in LED**։ **Board** բլոկները (կանաչ, գունապնակի
+**File → Open Example → Arduino Boards → Blink the built-in LED**։ **Board** բլոկները (կանաչ, գունապնակի
 *Board* բաժնում) կարգավորում են պինները, կարդում են կոճակներն ու սենսորները և սպասում։
 
 | Բլոկ | Կոդ | Ինչ է անում |
@@ -153,7 +153,7 @@ Visual Studio պետք չէ։ Կոմպիլյատորն ընտրվում է **Set
 
 ## 9. Շփվեք այլ չիպերի հետ՝ UART, SPI և I2C, և PIC32
 
-**File → Open Example → Arduino and ESP32 Boards**-ում ևս երեք ծրագիր օգտագործում են գծերի (bus) բլոկները՝ *UART: send a byte,
+**File → Open Example → Arduino Boards**-ում ևս երեք ծրագիր օգտագործում են գծերի (bus) բլոկները՝ *UART: send a byte,
 read it back*, *SPI: transfer a byte* և *I2C: write and read a device register*։ Բլոկները *Board* խմբում են.
 
 | Բլոկ | Կոդ | Ինչ է անում |
@@ -193,7 +193,7 @@ MX5xx/6xx/7xx ընտանիքներից), ապա **Generate code** (F7)։ Արդ�
 
 ## 11. Ուղարկեք թվերը MQTT-ով
 
-Բացեք **File → Open Example → Arduino and ESP32 Boards → MQTT sensor**։ Ծրագիրը ջերմաստիճան է հրապարակում բրոքերին,
+Բացեք **File → Open Example → ESP32 Boards → MQTT sensor**։ Ծրագիրը ջերմաստիճան է հրապարակում բրոքերին,
 ինքն իրեն հրաման է ուղարկում և կարդում այն։
 
 **MQTT**-ի հինգ բլոկները *Board* խմբում են՝ *MQTT Connect*, *MQTT Publish*, *MQTT Subscribe*, *MQTT Has Message* և

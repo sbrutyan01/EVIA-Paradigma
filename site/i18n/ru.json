@@ -550,5 +550,9 @@
  [
   "<td>52 of 52</td>",
   "<td>52 из 52</td>"
+ ],
+ [
+  "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
+  "<p>Новое в 0.7.0: настройки находятся в меню File, по странице на каждое семейство устройств — общие, C, C++ и Python, Arduino, ESP32, AVR C, PIC32 и FPGA, — а в Open Example есть отдельные подменю Arduino, ESP32 и PIC32, которые сразу выбирают нужный язык и плату.</p>"
  ]
 ]

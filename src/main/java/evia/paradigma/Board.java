@@ -96,6 +96,16 @@ enum Board {
         return mcu != null;
     }
 
+    /** An ESP32 board (built with the esp32:esp32 core of arduino-cli). */
+    boolean isEsp32() {
+        return fqbn != null && fqbn.startsWith("esp32:");
+    }
+
+    /** An Arduino board with an AVR chip (Uno, Nano, Mega, Leonardo, Micro, Pro Mini). */
+    boolean isArduinoAvr() {
+        return !isEsp32() && !isPic32() && !isFpga();
+    }
+
     boolean isPic32() {
         return pic != null;
     }

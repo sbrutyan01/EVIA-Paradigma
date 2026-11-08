@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -479,26 +480,113 @@ final class Settings {
 
     // ================================================================ dialog
 
+    /** The tabs of the Settings window, one per kind of target; File > Settings opens each directly. */
+    enum Page {
+        GENERAL, DESKTOP, ARDUINO, ESP32, AVR, PIC32, FPGA;
+
+        String title() {
+            return switch (this) {
+                case GENERAL -> Text.t("General");
+                case DESKTOP -> Text.t("C, C++ and Python");
+                case ARDUINO -> Text.t("Arduino");
+                case ESP32 -> Text.t("ESP32");
+                case AVR -> Text.t("AVR C (bare metal)");
+                case PIC32 -> Text.t("PIC32");
+                case FPGA -> Text.t("FPGA");
+            };
+        }
+
+        /** The page for what the toolbar is set to: the code window's Settings button opens it. */
+        static Page of(Target t) {
+            Target.Lang l = t.lang();
+            if (l.fpga()) return FPGA;
+            if (l == Target.Lang.PIC32) return PIC32;
+            if (l == Target.Lang.AVR) return AVR;
+            if (l == Target.Lang.ARDUINO) return board().isEsp32() ? ESP32 : ARDUINO;
+            return DESKTOP;
+        }
+    }
+
+    /** Settings at the page for the current language. */
     static void showDialog(Component parent) {
+        showDialog(parent, Page.of(target()));
+    }
+
+    /** A page of settings: label, field and buttons in three columns, notes under the field. */
+    private static final class Form extends JPanel {
+        private final GridBagConstraints g = new GridBagConstraints();
+
+        Form() {
+            super(new GridBagLayout());
+            setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+            g.anchor = GridBagConstraints.WEST;
+            g.insets = new Insets(4, 4, 4, 4);
+            g.gridy = -1;
+        }
+
+        Form row(String label, Component field, Component... buttons) {
+            g.gridy++; g.gridwidth = 1; g.fill = GridBagConstraints.NONE;
+            g.gridx = 0; add(new JLabel(label), g);
+            g.gridx = 1; add(field, g);
+            if (buttons.length > 0) {
+                JPanel b = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+                for (Component c : buttons) b.add(c);
+                g.gridx = 2; add(b, g);
+            }
+            return this;
+        }
+
+        /** A field and its buttons given together, e.g. the serial port list and Scan. */
+        Form row(String label, Component[] fieldAndButtons) {
+            return row(label, fieldAndButtons[0], java.util.Arrays.copyOfRange(fieldAndButtons, 1, fieldAndButtons.length));
+        }
+
+        /** Under the field: a hint or a status line. */
+        Form note(Component c) {
+            g.gridy++; g.gridx = 1; g.gridwidth = 2; g.fill = GridBagConstraints.NONE;
+            add(c, g);
+            return this;
+        }
+
+        /** Across the whole width, e.g. a check box. */
+        Form full(Component c) {
+            g.gridy++; g.gridx = 0; g.gridwidth = 3; g.fill = GridBagConstraints.NONE;
+            add(c, g);
+            return this;
+        }
+
+        Form gap() {
+            g.gridy++; g.gridx = 0; g.gridwidth = 3; g.fill = GridBagConstraints.HORIZONTAL;
+            add(new JSeparator(), g);
+            return this;
+        }
+
+        /** Scrolls when the page is taller than the window; its rows stay at the top. */
+        JComponent done() {
+            g.gridy++; g.gridx = 0; g.gridwidth = 3; g.weighty = 1; g.weightx = 1; g.fill = GridBagConstraints.BOTH;
+            add(Box.createGlue(), g);
+            JScrollPane sp = new JScrollPane(this);
+            sp.setBorder(null);
+            sp.getVerticalScrollBar().setUnitIncrement(16);
+            return sp;
+        }
+    }
+
+    static void showDialog(Component parent, Page page) {
+        // ---- General
+        JComboBox<Text.Lang> uiLang = new JComboBox<>(Text.Lang.values());
+        uiLang.setSelectedItem(uiLanguage());
         JCheckBox vim = new JCheckBox(Text.t("Vim keys in code editors (NORMAL / INSERT / VISUAL modes)"), vimKeys());
         JCheckBox wheel = new JCheckBox("<html>Mouse wheel zooms block diagrams<br><font size='-2' color='#777777'>"
                 + "Shift+wheel scrolls sideways, Ctrl+wheel up and down. Off: the wheel scrolls and Ctrl+wheel zooms.</font></html>",
                 wheelZooms());
         JTextField editor = new JTextField(editorCommand(), 42);
-        JTextField compiler = new JTextField(compilerCommand(), 42);
-        JLabel compilerStatus = new JLabel(" ");
-        JTextField python = new JTextField(pythonCommand(), 42);
-        python.setToolTipText(Text.t("The command that runs generated Python, e.g. python3, py or a full path"));
-        JLabel pythonStatus = new JLabel(" ");
-        JButton detectPython = new JButton(Text.t("Detect"));
-        detectPython.addActionListener(e -> {
-            python.setText(detectPython());
-            checkPython(python.getText(), pythonStatus);
-        });
-        JButton checkPythonBtn = new JButton(Text.t("Check"));
-        checkPythonBtn.addActionListener(e -> checkPython(python.getText(), pythonStatus));
         JButton detectEditor = new JButton(Text.t("Detect"));
         detectEditor.addActionListener(e -> editor.setText(ExternalEditor.defaultCommand()));
+
+        // ---- C, C++ and Python
+        JTextField compiler = new JTextField(compilerCommand(), 42);
+        JLabel compilerStatus = new JLabel(" ");
         JComboBox<String> familyBox = new JComboBox<>(new String[]{"Clang (LLVM)", "GCC (GNU)"});
         familyBox.setToolTipText(Text.t("Which compiler builds generated C and C++ (the C compiler follows: clang / gcc)"));
         familyBox.setSelectedIndex(family(compiler.getText()) == ToolchainInstaller.Kind.GCC ? 1 : 0);
@@ -533,14 +621,48 @@ final class Settings {
                 checkCompiler(compiler.getText(), compilerStatus);
             }
         });
-        JComboBox<Board> boardBox = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(b -> !b.isPic32() && !b.isFpga()).toArray(Board[]::new));
-        boardBox.setSelectedItem(board());
-        JComboBox<String> port = portBox();
+        JButton check = new JButton(Text.t("Check"));
+        check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
+        JTextField python = new JTextField(pythonCommand(), 42);
+        python.setToolTipText(Text.t("The command that runs generated Python, e.g. python3, py or a full path"));
+        JLabel pythonStatus = new JLabel(" ");
+        JButton detectPython = new JButton(Text.t("Detect"));
+        detectPython.addActionListener(e -> {
+            python.setText(detectPython());
+            checkPython(python.getText(), pythonStatus);
+        });
+        JButton checkPythonBtn = new JButton(Text.t("Check"));
+        checkPythonBtn.addActionListener(e -> checkPython(python.getText(), pythonStatus));
+
+        // ---- boards: one serial port, shared by every board page
+        DefaultComboBoxModel<String> ports = new DefaultComboBoxModel<>();
+        java.util.Map<String, String> portInfo = new java.util.HashMap<>();
+        if (!serialPort().isEmpty()) ports.addElement(serialPort());
+        ports.setSelectedItem(serialPort());
         JLabel portStatus = small(" ");
-        JButton scan = new JButton(Text.t("Scan"));
-        scan.setToolTipText(Text.t("Look for the serial ports of the boards plugged in now"));
-        scan.addActionListener(e -> scanPorts(port, portStatus, scan));
+        List<JComboBox<String>> portBoxes = new ArrayList<>();
+        List<JButton> scanButtons = new ArrayList<>();
+        Runnable scanAll = () -> scanPorts(ports, portInfo, portStatus, scanButtons);
+        java.util.function.Supplier<Component[]> portRow = () -> {
+            JComboBox<String> box = portBox(ports, portInfo);
+            JButton scan = new JButton(Text.t("Scan"));
+            scan.setToolTipText(Text.t("Look for the serial ports of the boards plugged in now"));
+            scan.addActionListener(e -> scanAll.run());
+            portBoxes.add(box);
+            scanButtons.add(scan);
+            return new Component[]{box, scan};
+        };
+
         JTextField cli = new JTextField(arduinoCli(), 30);
+        // Arduino and ESP32 each have a list; the one changed last is the board the Arduino language builds for
+        Board current = board();
+        JComboBox<Board> arduinoBoard = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(Board::isArduinoAvr).toArray(Board[]::new));
+        arduinoBoard.setSelectedItem(current.isArduinoAvr() ? current : Board.UNO);
+        JComboBox<Board> espBoard = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(Board::isEsp32).toArray(Board[]::new));
+        espBoard.setSelectedItem(current.isEsp32() ? current : Board.ESP32);
+        Board[] chosen = {current};
+        arduinoBoard.addActionListener(e -> chosen[0] = (Board) arduinoBoard.getSelectedItem());
+        espBoard.addActionListener(e -> chosen[0] = (Board) espBoard.getSelectedItem());
         JTextField esp32 = new JTextField(esp32Index(), 30);
         esp32.setCaretPosition(0);
         esp32.setToolTipText(Text.t("Espressif's board package index; arduino-cli installs the ESP32 core from it"));
@@ -548,15 +670,23 @@ final class Settings {
         esp32Install.setToolTipText(Text.t("Install or update the ESP32 core (esp32:esp32) with arduino-cli"));
         esp32Install.addActionListener(e -> Toolchains.installEsp32Core(p(esp32Install),
                 cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim(), esp32.getText()));
+        // the ESP32 page has its own arduino-cli field, kept in step with the Arduino page's
+        JTextField cli2 = new JTextField(30);
+        cli2.setDocument(cli.getDocument());
+
         JTextField avrGcc = new JTextField(avrGcc(), 30);
         JTextField avrdude = new JTextField(avrdude(), 30);
+
+        JComboBox<Board> picChip = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).toArray(Board[]::new));
+        picChip.setSelectedItem(board(Target.Lang.PIC32));
         JTextField xc32 = new JTextField(xc32(), 30);
         JTextField pic32Up = new JTextField(pic32Upload(), 30);
-        JButton check = new JButton(Text.t("Check"));
-        check.addActionListener(e -> checkCompiler(compiler.getText(), compilerStatus));
         JComboBox<String> pic32Net = new JComboBox<>(new String[] {
                 "WiFi module on UART2 (every chip)", "Ethernet, Harmony TCP/IP (MX695/795)"});
         pic32Net.setSelectedIndex(pic32Ethernet() ? 1 : 0);
+
+        JComboBox<Board> fpgaBoard = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(Board::isFpga).toArray(Board[]::new));
+        fpgaBoard.setSelectedItem(board(Target.Lang.VHDL));
         JComboBox<String> artixFlow = new JComboBox<>(new String[] {"Vivado", "Open source (openXC7)"});
         artixFlow.setSelectedIndex(artixOpenSource() ? 1 : 0);
         Fpga.Tools ft = fpgaTools();
@@ -565,121 +695,10 @@ final class Settings {
                 loader = new JTextField(ft.loader(), 30), nextpnrXilinx = new JTextField(ft.nextpnrXilinx(), 30),
                 chipdb = new JTextField(ft.chipdbDir(), 30), prjxray = new JTextField(ft.prjxrayDb(), 30),
                 fasm2frames = new JTextField(ft.fasm2frames(), 30), frames2bit = new JTextField(ft.frames2bit(), 30);
-
-        JComboBox<Text.Lang> uiLang = new JComboBox<>(Text.Lang.values());
-        uiLang.setSelectedItem(uiLanguage());
-
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints g = new GridBagConstraints();
-        g.anchor = GridBagConstraints.WEST;
-        g.insets = new Insets(4, 4, 4, 4);
-        g.gridx = 0; g.gridy = 0; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("Interface language:")), g);
-        g.gridx = 1; p.add(uiLang, g);
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small(Text.t("The menus, buttons and block names. Messages from the compilers and the generated code stay in English.")), g);
-        g.gridy++; g.gridx = 0; g.gridwidth = 3;
-        p.add(vim, g);
-        g.gridy++;
-        p.add(wheel, g);
-        g.gridy++;
-        g.gridwidth = 1;
-        p.add(new JLabel(Text.t("External editor (Vim):")), g);
-        g.gridx = 1; p.add(editor, g);
-        g.gridx = 2; p.add(detectEditor, g);
-        // rows follow one another: fixed row numbers here once put two rows on top of each other
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
-        g.gridy++; g.gridx = 0; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("Compiler:")), g);
-        g.gridx = 1; p.add(familyBox, g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("Command (C++):")), g);
-        g.gridx = 1; p.add(compiler, g);
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        btns.add(defCompiler);
-        btns.add(check);
-        if (ToolchainInstaller.supported()) btns.add(install);
-        g.gridx = 2; p.add(btns, g);
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."), g);
-        g.gridy++;
-        p.add(small("Clang " + LATEST_CLANG + " is the latest stable; GCC " + MIN_GCC + " or newer works too"
-                + (ToolchainInstaller.supported() ? ". Windows: Install sets up llvm-mingw or WinLibs GCC, no Visual Studio needed." : ".")), g);
-        g.gridy++;
-        p.add(compilerStatus, g);
-
-        g.gridy++; g.gridx = 0; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("Python:")), g);
-        g.gridx = 1; p.add(python, g);
-        JPanel pyBtns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        pyBtns.add(detectPython);
-        pyBtns.add(checkPythonBtn);
-        pyBtns.add(getButton(p, Toolchains.Tool.PYTHON, python));
-        g.gridx = 2; p.add(pyBtns, g);
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("Language Python 3 runs the generated file with this command (Python " + MIN_PYTHON[0] + "." + MIN_PYTHON[1]
-                + " or newer, standard library only)."), g);
-        g.gridy++;
-        p.add(pythonStatus, g);
-
-        g.gridy++; g.gridx = 0; g.gridwidth = 3;
-        p.add(new JSeparator(), withFill(g));
-        g.fill = GridBagConstraints.NONE;
-        g.gridy++; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("Board:")), g);
-        JPanel boardRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        boardRow.add(boardBox);
-        boardRow.add(new JLabel(Text.t("  Serial port:")));
-        boardRow.add(port);
-        boardRow.add(scan);
-        g.gridx = 1; g.gridwidth = 2; p.add(boardRow, g);
-        g.gridy++; g.gridx = 1;
-        p.add(portStatus, g);
-        g.gridy++; g.gridx = 0; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("arduino-cli:")), g);
-        g.gridx = 1; p.add(cli, g);
-        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.ARDUINO_CLI, cli), g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("ESP32 core:")), g);
-        g.gridx = 1; p.add(esp32, g);
-        g.gridx = 2; p.add(esp32Install, g);
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("The ESP32 boards need their core once: Install runs arduino-cli core install esp32:esp32 from this address."), g);
-        g.gridy++; g.gridx = 0; g.gridwidth = 1;
-        p.add(new JLabel(Text.t("avr-gcc:")), g);
-        g.gridx = 1; p.add(avrGcc, g);
-        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.AVR_GCC, avrGcc), g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("avrdude:")), g);
-        g.gridx = 1; p.add(avrdude, g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("xc32-gcc:")), g);
-        g.gridx = 1; p.add(xc32, g);
-        g.gridx = 2; p.add(getButton(p, Toolchains.Tool.XC32, xc32), g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("PIC32 upload:")), g);
-        g.gridx = 1; p.add(pic32Up, g);
-        g.gridy++; g.gridx = 0;
-        p.add(new JLabel(Text.t("PIC32 MQTT over:")), g);
-        g.gridx = 1; p.add(pic32Net, g);
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."), g);
-        g.gridy++;
-        p.add(small("<html>The MQTT blocks reach the network through a WiFi module with AT firmware on UART2, which every PIC32MX can do,<br>"
-                + "or through the chip's own Ethernet port on the MX695/MX795, which needs Harmony's TCP/IP stack: the generated file is then<br>"
-                + "an application for an MPLAB X Harmony project instead of a self-contained program. See the guide.</html>"), g);
-        g.gridy++;
-        p.add(small("<html>Arduino sketches build with arduino-cli (cores: arduino:avr, esp32:esp32); bare-metal AVR C with avr-gcc,<br>"
-                + "uploaded with avrdude. Leonardo / Micro: press reset just before uploading bare-metal code.</html>"), g);
-        g.gridy++; g.gridx = 0; g.gridwidth = 3;
-        p.add(new JSeparator(), withFill(g));
-        g.fill = GridBagConstraints.NONE;
-        g.gridwidth = 1;
         JButton getOss = new JButton(Text.t("Get FPGA tools"));
         getOss.setToolTipText(Text.t("Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below"));
         getOss.addActionListener(e -> {
-            java.nio.file.Path exe = Toolchains.install(p, Toolchains.Tool.OSS_CAD);
+            java.nio.file.Path exe = Toolchains.install(p(getOss), Toolchains.Tool.OSS_CAD);
             if (exe == null) return;
             java.nio.file.Path bin = exe.getParent();
             yosys.setText(bin.resolve(tool("yosys")).toString());
@@ -688,41 +707,106 @@ final class Settings {
             loader.setText(bin.resolve(tool("openFPGALoader")).toString());
             nextpnrXilinx.setText(bin.resolve(tool("nextpnr-xilinx")).toString());
         });
-        g.gridy++; g.gridx = 2;
-        p.add(getOss, g);
-        g.gridx = 0;
-        String[][] fpgaRows = {{"Artix-7 flow:", null}, {"Vivado:", "v"}, {"yosys:", "y"}, {"nextpnr-xilinx:", "nx"}, {"Chip database folder:", "cd"},
-                {"prjxray-db folder:", "px"}, {"fasm2frames:", "f2f"}, {"xc7frames2bit:", "f2b"}, {"nextpnr-himbaechel:", "gm"}, {"gmpack:", "gp"},
-                {"openFPGALoader:", "ol"}};
-        for (String[] row : fpgaRows) {
-            g.gridy++; g.gridx = 0;
-            p.add(new JLabel(row[0]), g);
-            g.gridx = 1;
-            p.add(switch (row[1] == null ? "" : row[1]) {
-                case "v" -> vivado; case "y" -> yosys; case "nx" -> nextpnrXilinx; case "cd" -> chipdb; case "px" -> prjxray;
-                case "f2f" -> fasm2frames; case "f2b" -> frames2bit; case "gm" -> gatemate; case "gp" -> gmpack; case "ol" -> loader;
-                default -> artixFlow;
-            }, g);
-        }
-        g.gridy++; g.gridx = 1; g.gridwidth = 2;
-        p.add(small("<html>FPGA: Artix-7 builds with Vivado (batch mode) or with the open-source openXC7 tools (yosys, nextpnr-xilinx, Project X-Ray);<br>"
-                + "the GateMate always uses yosys, nextpnr-himbaechel and gmpack. openFPGALoader loads the bitstream. VHDL needs yosys with its ghdl plugin.</html>"), g);
+
+        // ---- the pages
+        JTabbedPane tabs = new JTabbedPane();
+        Form general = new Form()
+                .row(Text.t("Interface language:"), uiLang)
+                .note(small(Text.t("The menus, buttons and block names. Messages from the compilers and the generated code stay in English.")))
+                .full(vim)
+                .full(wheel)
+                .row(Text.t("External editor (Vim):"), editor, detectEditor)
+                .note(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"));
+
+        Form desktop = new Form();
+        desktop.row(Text.t("Compiler:"), familyBox)
+                .row(Text.t("Command (C++):"), compiler, ToolchainInstaller.supported()
+                        ? new Component[]{defCompiler, check, install} : new Component[]{defCompiler, check})
+                .note(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."))
+                .note(small("Clang " + LATEST_CLANG + " is the latest stable; GCC " + MIN_GCC + " or newer works too"
+                        + (ToolchainInstaller.supported() ? ". Windows: Install sets up llvm-mingw or WinLibs GCC, no Visual Studio needed." : ".")))
+                .note(compilerStatus)
+                .gap()
+                .row(Text.t("Python:"), python, detectPython, checkPythonBtn, getButton(desktop, Toolchains.Tool.PYTHON, python))
+                .note(small("Language Python 3 runs the generated file with this command (Python " + MIN_PYTHON[0] + "." + MIN_PYTHON[1]
+                        + " or newer, standard library only)."))
+                .note(pythonStatus);
+
+        Form arduino = new Form();
+        arduino.row(Text.t("Board:"), arduinoBoard)
+                .note(small("Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini: Language Arduino builds a sketch with arduino-cli (core arduino:avr)."))
+                .row(Text.t("Serial port:"), portRow.get())
+                .note(portStatus)
+                .row(Text.t("arduino-cli:"), cli, getButton(arduino, Toolchains.Tool.ARDUINO_CLI, cli))
+                .note(small("The arduino:avr core is downloaded by arduino-cli the first time a sketch is built."));
+
+        Form esp = new Form();
+        esp.row(Text.t("Board:"), espBoard)
+                .note(small("ESP32, -S2, -S3, -C3, -C6 and -H2: Language Arduino with core esp32:esp32. MQTT uses the chip's own WiFi (not on the H2)."))
+                .row(Text.t("Serial port:"), portRow.get())
+                .row(Text.t("arduino-cli:"), cli2, getButton(esp, Toolchains.Tool.ARDUINO_CLI, cli2))
+                .row(Text.t("ESP32 core:"), esp32, esp32Install)
+                .note(small("The ESP32 boards need their core once: Install runs arduino-cli core install esp32:esp32 from this address."));
+
+        Form avr = new Form();
+        avr.note(small("<html>Language AVR C writes bare-metal C for the chip of the board chosen on the Arduino page,<br>"
+                        + "built with avr-gcc and uploaded with avrdude. Leonardo / Micro: press reset just before uploading.</html>"))
+                .row(Text.t("Serial port:"), portRow.get())
+                .row(Text.t("avr-gcc:"), avrGcc, getButton(avr, Toolchains.Tool.AVR_GCC, avrGcc))
+                .row(Text.t("avrdude:"), avrdude);
+
+        Form pic = new Form();
+        pic.row(Text.t("Chip:"), picChip)
+                .row(Text.t("Serial port:"), portRow.get())
+                .row(Text.t("xc32-gcc:"), xc32, getButton(pic, Toolchains.Tool.XC32, xc32))
+                .row(Text.t("PIC32 upload:"), pic32Up)
+                .note(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."))
+                .row(Text.t("PIC32 MQTT over:"), pic32Net)
+                .note(small("<html>The MQTT blocks reach the network through a WiFi module with AT firmware on UART2, which every PIC32MX can do,<br>"
+                        + "or through the chip's own Ethernet port on the MX695/MX795, which needs Harmony's TCP/IP stack: the generated file is then<br>"
+                        + "an application for an MPLAB X Harmony project instead of a self-contained program. See the guide.</html>"));
+
+        Form fpga = new Form();
+        fpga.row(Text.t("Board:"), fpgaBoard, getOss)
+                .row(Text.t("Artix-7 flow:"), artixFlow)
+                .row("Vivado:", vivado).row("yosys:", yosys).row("nextpnr-xilinx:", nextpnrXilinx)
+                .row(Text.t("Chip database folder:"), chipdb).row(Text.t("prjxray-db folder:"), prjxray)
+                .row("fasm2frames:", fasm2frames).row("xc7frames2bit:", frames2bit)
+                .row("nextpnr-himbaechel:", gatemate).row("gmpack:", gmpack).row("openFPGALoader:", loader)
+                .note(small("<html>Artix-7 builds with Vivado (batch mode) or with the open-source openXC7 tools (yosys, nextpnr-xilinx, Project X-Ray);<br>"
+                        + "the GateMate always uses yosys, nextpnr-himbaechel and gmpack. openFPGALoader loads the bitstream. VHDL needs yosys with its ghdl plugin.</html>"));
+
+        Map<Page, JComponent> pages = new java.util.EnumMap<>(Page.class);
+        pages.put(Page.GENERAL, general.done());
+        pages.put(Page.DESKTOP, desktop.done());
+        pages.put(Page.ARDUINO, arduino.done());
+        pages.put(Page.ESP32, esp.done());
+        pages.put(Page.AVR, avr.done());
+        pages.put(Page.PIC32, pic.done());
+        pages.put(Page.FPGA, fpga.done());
+        for (Page pg : Page.values()) tabs.addTab(pg.title(), pages.get(pg));
+        tabs.setSelectedIndex(page.ordinal());
+        tabs.setPreferredSize(new Dimension(900, 520));
+
         checkCompiler(compiler.getText(), compilerStatus);
         checkPython(python.getText(), pythonStatus);
-        scanPorts(port, portStatus, scan);
+        scanAll.run();
 
-        JScrollPane scroll = new JScrollPane(p);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-        scroll.setPreferredSize(new Dimension(Math.min(p.getPreferredSize().width + 24, 900), Math.min(p.getPreferredSize().height + 8, 640)));
-        int r = JOptionPane.showConfirmDialog(parent, scroll, "Settings - EVIA Paradigma",
+        int r = JOptionPane.showConfirmDialog(parent, tabs, Text.t("Settings") + " - EVIA Paradigma",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (r != JOptionPane.OK_OPTION) return;
         PREFS.put("editor", editor.getText().trim());
         PREFS.put("compiler", compiler.getText().trim().isEmpty() ? DEFAULT_COMPILER : compiler.getText().trim());
         PREFS.putBoolean("vimKeys", vim.isSelected());
-        PREFS.put("board", ((Board) boardBox.getSelectedItem()).key());
-        PREFS.put("serialPort", portOf(port));
+        PREFS.put("board", chosen[0].key());
+        PREFS.put("board.pic32", ((Board) picChip.getSelectedItem()).key());
+        PREFS.put("board.fpga", ((Board) fpgaBoard.getSelectedItem()).key());
+        // the port typed or picked on the page in front, else the one all the lists share
+        String port = ports.getSelectedItem() == null ? "" : ports.getSelectedItem().toString().trim();
+        for (JComboBox<String> box : portBoxes) {
+            if (SwingUtilities.isDescendingFrom(box, tabs.getSelectedComponent())) port = portOf(box);
+        }
+        PREFS.put("serialPort", port);
         PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
         if (!python.getText().trim().equals(pythonCommand())) PREFS.put("python", python.getText().trim());
         PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
@@ -755,25 +839,19 @@ final class Settings {
 
     // ---------------------------------------------------------------- serial port list
 
-    /** An editable list of ports: pick a scanned one, or type one that a scan can't see. */
-    private static JComboBox<String> portBox() {
-        JComboBox<String> box = new JComboBox<>();
+    /** An editable list of ports: pick a scanned one, or type one that a scan can't see. Every board page shares one list. */
+    private static JComboBox<String> portBox(DefaultComboBoxModel<String> model, java.util.Map<String, String> info) {
+        JComboBox<String> box = new JComboBox<>(model);
         box.setEditable(true);
         box.setPrototypeDisplayValue("/dev/cu.usbmodem14101XX");
         box.setToolTipText(ExternalEditor.WINDOWS ? "e.g. COM3 (Device Manager, Ports)" : "e.g. /dev/ttyACM0, /dev/ttyUSB0 or /dev/cu.usbmodem1101");
         // the list shows what is on each port; the box itself keeps only the port's name
         box.setRenderer(new DefaultListCellRenderer() {
             @Override public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean sel, boolean focus) {
-                Object text = value;
-                if (index >= 0 && box.getClientProperty("evia.ports") instanceof java.util.Map<?, ?> m && m.get(value) != null) {
-                    text = value + "  -  " + m.get(value);
-                }
+                Object text = index >= 0 && info.get(value) != null ? value + "  -  " + info.get(value) : value;
                 return super.getListCellRendererComponent(list, text, index, sel, focus);
             }
         });
-        String saved = serialPort();
-        if (!saved.isEmpty()) box.addItem(saved);
-        box.setSelectedItem(saved);
         return box;
     }
 
@@ -783,32 +861,32 @@ final class Settings {
         return v == null ? "" : v.toString().trim();
     }
 
-    /** Fills the list with the ports there are now, keeping the one already chosen. */
-    private static void scanPorts(JComboBox<String> box, JLabel status, JButton scan) {
-        scan.setEnabled(false);
+    /** Fills the shared list with the ports there are now, keeping the one already chosen. */
+    private static void scanPorts(DefaultComboBoxModel<String> model, java.util.Map<String, String> info, JLabel status,
+                                  List<JButton> scans) {
+        for (JButton b : scans) b.setEnabled(false);
         status.setText(Text.t("Looking for serial ports..."));
         new Thread(() -> {
             List<SerialPorts.Port> found = SerialPorts.scan();
             SwingUtilities.invokeLater(() -> {
-                String current = portOf(box);
-                java.util.Map<String, String> about = new java.util.HashMap<>();
-                box.removeAllItems();
+                String current = model.getSelectedItem() == null ? "" : model.getSelectedItem().toString().trim();
+                info.clear();
+                model.removeAllElements();
                 for (SerialPorts.Port pt : found) {
-                    box.addItem(pt.name());
-                    if (!pt.description().isEmpty()) about.put(pt.name(), pt.description());
+                    model.addElement(pt.name());
+                    if (!pt.description().isEmpty()) info.put(pt.name(), pt.description());
                 }
-                box.putClientProperty("evia.ports", about);
                 boolean known = found.stream().anyMatch(pt -> pt.name().equals(current));
-                if (!current.isEmpty() && !known) box.insertItemAt(current, 0);
+                if (!current.isEmpty() && !known) model.insertElementAt(current, 0);
                 // an empty choice takes the first board found; a chosen port stays chosen
-                box.setSelectedItem(current.isEmpty() && !found.isEmpty() ? found.get(0).name() : current);
+                model.setSelectedItem(current.isEmpty() && !found.isEmpty() ? found.get(0).name() : current);
                 if (found.isEmpty()) {
                     status.setText(Text.t("No serial ports found: is the board plugged in?"));
                 } else {
                     status.setText(Text.t("Found %d serial port(s).", found.size())
                             + (!current.isEmpty() && !known ? " " + Text.t("%s is not connected now.", current) : ""));
                 }
-                scan.setEnabled(true);
+                for (JButton b : scans) b.setEnabled(true);
             });
         }, "evia-port-scan").start();
     }
@@ -890,12 +968,12 @@ final class Settings {
         }
     }
 
-    private static GridBagConstraints withFill(GridBagConstraints g) {
-        g.fill = GridBagConstraints.HORIZONTAL;
-        return g;
-    }
-
     private static JLabel small(String s) {
+        // long hints wrap inside the page instead of running past its right edge
+        if (s.startsWith("<html>")) s = s.replace("<br>", " ").replace("<html>", "").replace("</html>", "");
+        if (s.length() > 90) {
+            s = "<html><body style='width:560px'>" + s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</body></html>";
+        }
         JLabel l = new JLabel(s);
         l.setFont(l.getFont().deriveFont(11f));
         l.setForeground(Theme.muted());
