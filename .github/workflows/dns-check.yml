@@ -65,10 +65,12 @@ jobs:
           echo "to the router and back in. Many routers do not do that (no NAT hairpin), so a failure"
           echo "here does not prove it fails from outside - but a success does prove it works."
           for u in "http://$d/" "https://$d/"; do
-            printf '%-24s ' "$u"
-            code=$(curl -fsS -o /dev/null -m 12 -w '%{http_code}' "$u" 2>/dev/null) \
-              && echo "answered, HTTP $code" \
-              || echo "no answer (refused, timed out, or no certificate)"
+            echo "=== $u"
+            curl -sSI -m 12 "$u" 2>&1 | grep -iE '^(HTTP/|location|server|x-gitlab|content-type)' \
+              | sed -E 's#(192\.168\.[0-9]+)\.[0-9]+#\1.x#g' || echo "  no answer"
           done
+          echo "=== and the same request straight to this machine, for comparison:"
+          curl -sSI -m 12 http://127.0.0.1/ 2>&1 | grep -iE '^(HTTP/|location|server|x-gitlab|content-type)' \
+            | sed -E 's#(192\.168\.[0-9]+)\.[0-9]+#\1.x#g' || echo "  no answer"
           echo "--- what is listening on this machine itself:"
           ss -ltn 2>/dev/null | awk 'NR==1 || $4 ~ /:(80|443)$/' || echo "cannot read ports"
