@@ -329,8 +329,18 @@ EOF
     fi
 
     say "stage 1 done"
+    if private_address "$LAN_IP"; then
+        cat <<EOF
+   This machine has a private address, so something in front of it decides what reaches it.
+   Forward TCP 80 and TCP 443 to $LAN_IP there, and nothing else - not 8081, not 22.
+EOF
+    else
+        cat <<EOF
+   This machine is on a public address ($LAN_IP), so nothing has to be forwarded anywhere:
+   what it serves is already reachable. Which is also why the firewall above matters.
+EOF
+    fi
     cat <<EOF
-   Next, on the router: forward TCP 80 and TCP 443 to $LAN_IP. Nothing else - not 8081, not 22.
 
    Then, once "$0 --check" says the domain points here:
        sudo EMAIL=$EMAIL $0 --stage2 --deploy

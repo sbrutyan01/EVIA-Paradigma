@@ -27,7 +27,6 @@ sudo packaging/nginx/setup.sh --firewall     # on its own, before anything else
 ```bash
 packaging/nginx/setup.sh --check             # what is done and what is not; needs no sudo
 sudo packaging/nginx/setup.sh --stage1       # GitLab off port 80, nginx, the web root
-#   ... then forward TCP 80 and TCP 443 to this machine on the router ...
 sudo packaging/nginx/setup.sh --stage2 --deploy
 ```
 
@@ -44,7 +43,7 @@ Two different things, and only one belongs on a public site.
 
 So `--stage2` uses Let's Encrypt. `--stage1 --selfsigned` additionally makes an `openssl`
 certificate in `/etc/ssl/evia/` and turns HTTPS on with it right away, which is useful before DNS
-has settled or the router forwards anything — you can open `https://<this machine>` on the network
+has settled — you can open `https://<this machine>` on the network
 and see the real configuration working, warning and all. Stage 2 then replaces it with a trusted
 one, and nothing about the site changes.
 
@@ -52,7 +51,7 @@ Renewal problems are reported to the address in `EMAIL`, which defaults to this 
 address. It is the only notice you get if a renewal has been failing, so it is worth having.
 
 Two stages because certbot proves the domain by answering on port 80 from the internet, so the
-router has to forward it first; everything that does not depend on the router happens in stage 1.
+domain has to resolve here first; everything that does not depend on DNS happens in stage 1.
 `--check` before stage 2 will tell you whether the domain actually points here yet — asking for a
 certificate before it does wastes one of a limited number of attempts.
 
@@ -116,17 +115,29 @@ sudo nginx -t && sudo systemctl reload nginx
 
 Certbot renews by itself through `certbot.timer`; check with `systemctl list-timers | grep certbot`.
 
-## 3. The router
+## 3. Reaching it from outside
 
-Forward **only** these, to `192.168.10.13`:
+Check how this machine is attached, because it decides whether anything else has to be configured:
 
-| Protocol | Port | Why |
-|---|---|---|
-| TCP | 443 | the site |
-| TCP | 80 | the ACME challenge for renewals, and the redirect to HTTPS |
+```bash
+ip -4 -o addr show scope global      # is the address here a public one?
+curl -s https://api.ipify.org        # what the internet sees
+```
 
-Do **not** forward 8081, 22, or anything else. GitLab is on localhost and the LAN-only server
-block, so nothing forwarded here reaches it.
+**If they are the same**, this machine is on the internet directly: nothing needs forwarding, what
+it serves is already reachable, and the firewall in step 0 is the only thing standing between its
+services and the world. That is the case this file was written for.
+
+**If the address here is private** (10.x, 172.16–31.x, 192.168.x), something in front translates
+it. Forward TCP 80 and TCP 443 to this machine there, and nothing else — not 8081, not 22. GitLab
+is on localhost and in a server block limited to the local network, so nothing forwarded reaches
+it.
+
+A thing worth knowing either way: a device between your browser and this machine can intercept
+those ports and answer in their place. If a page you do not recognise appears, check the
+certificate the browser was given — the name on it identifies whatever answered, which is faster
+than guessing.
+
 
 ## 4. The site itself
 
