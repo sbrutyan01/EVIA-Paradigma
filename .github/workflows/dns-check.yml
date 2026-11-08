@@ -99,3 +99,31 @@ jobs:
             || echo "       none from Let's Encrypt yet"
           ls /etc/ssl/evia/fullchain.pem 2>/dev/null | sed 's/^/       /' \
             || echo "       none of our own yet"
+
+  outside:
+    # A GitHub-hosted runner: the public internet, public DNS, no cache of ours and nothing of this
+    # machine's resolver. The nearest thing to a visitor's browser that can be measured from here.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: What the outside world sees
+        continue-on-error: true
+        run: |
+          set +e
+          d="${{ inputs.domain }}"
+          for n in "$d" "www.$d"; do
+            echo "=== $n"
+            echo "   A    : $(getent ahostsv4 "$n" | awk '{print $1}' | sort -u | tr '\n' ' ')"
+            echo "   AAAA : $(getent ahostsv6 "$n" | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ {print $1}' | sort -u | tr '\n' ' ')"
+            for scheme in http https; do
+              printf '   %-6s ' "$scheme"
+              curl -sS -m 15 -o /tmp/b -w 'HTTP %{http_code} from %{remote_ip}\n' "$scheme://$n/" 2>&1 | head -1
+              t=$(grep -oiE '<title>[^<]*' /tmp/b 2>/dev/null | head -1 | cut -c8-70)
+              [ -n "$t" ] && echo "          title: $t"
+              grep -qiE 'id="devices"|mqtt' /tmp/b 2>/dev/null && echo "          >>> THIS IS THE MQTT PAGE"
+              grep -qi 'EVIA Paradigma' /tmp/b 2>/dev/null && echo "          >>> this is the Paradigma site"
+              rm -f /tmp/b
+            done
+          done
+          echo "=== the certificate the outside world is given:"
+          echo | openssl s_client -connect "$d:443" -servername "$d" 2>/dev/null \
+            | openssl x509 -noout -issuer -ext subjectAltName 2>/dev/null | sed 's/^/   /'
