@@ -183,3 +183,6 @@ Found %d serial port(s).	Գտնված սերիական պորտեր՝ %d։
 Install the ESP32 core	ESP32 միջուկի տեղադրում
 Cancel	Չեղարկել
 Close	Փակել
+Checking Python...	Python-ի ստուգում...
+The command that runs generated Python, e.g. python3, py or a full path	Ստեղծված Python կոդը գործարկող հրամանը, օրինակ՝ python3, py կամ ամբողջական ուղի
+Python:	Python՝

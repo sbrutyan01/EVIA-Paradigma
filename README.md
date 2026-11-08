@@ -8,10 +8,10 @@
 <h1 align="center">EVIA Paradigma</h1>
 
 <p align="center">
-  Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ code generation for Clang.
+  Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.8-blue" alt="version 0.6.8"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.6.9-blue" alt="version 0.6.9"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -58,11 +58,26 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.8-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.6.8-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.6.8-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.8_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.8_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any OS with Java 25 | `evia-paradigma-0.6.8.jar` | `java -jar evia-paradigma-0.6.8.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.9-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.6.9-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.6.9-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.9_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.9_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any OS with Java 25 | `evia-paradigma-0.6.9.jar` | `java -jar evia-paradigma-0.6.9.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.6.9
+
+[EVIA Paradigma v0.6.9](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.6.9) ([release notes](docs/release-notes/v0.6.9.md)):
+**Python 3** joins the languages.
+
+- **Language → Python 3** (`--lang python`) turns a block program into one `.py` file that runs on Python 3.8 or
+  newer with nothing to install. Classes become Python classes, program variables become module globals, and every
+  Print, Input and error message is the interpreter's own, so a program behaves the same in the editor and in Python.
+- **Run** in the code window starts it with the Python from **Settings → Python** (found by itself: `py` on Windows,
+  `python3` elsewhere; **Detect** and **Check** next to it).
+- Python has no `goto`, so *Structured* flow writes `if`/`else` and `while` loops, and *Goto* flow (or wiring that
+  isn't block-structured) becomes a small state machine with one branch per block. *Safe* and *Fast* values both work.
+- Tested like the C and C++ targets: every example and test program, both flows, both value modes, identical to the
+  interpreter in output, errors and exit code; number text checked against Java on 200,000 values.
 
 ### Release 0.6.8
 
@@ -801,6 +816,7 @@ window you can edit the code, **Save** it, or **Compile & Run** it; text typed i
 | **C++98** | ISO C++ 1998 | `struct` with member functions; not copyable | classic `Value` class | raw pointers, deleted by the owner |
 | **C++11**, **C++14** | ISO C++ 2011 / 2014 | `struct` with member initializers | classic `Value` class | `std::unique_ptr` (`make_unique` in C++14) |
 | **C++17**, **C++20** | ISO C++ 2017 / 2020 | `struct` with member initializers | `std::variant`, `std::to_chars` | `std::unique_ptr` |
+| **Python 3** | Python 3.8 or newer | `class Name` with methods `m_method(self, ...)` | `float` or `str`, checked by small `rt_` helpers | attributes, created on first use |
 
 | Flow | Generated control flow |
 |---|---|
@@ -817,12 +833,29 @@ window you can edit the code, **Save** it, or **Compile & Run** it; text typed i
 - The C runtime contains only the helpers the program uses, so the code compiles cleanly with
   `-Wall -Wextra -Wpedantic -Werror`. C needs `-lm`; EVIA Paradigma adds it, the matching C compiler (`clang`, `gcc`)
   and `-std=` to the compile command automatically.
-- Every combination is tested in CI (see below): 8 languages × 2 flows × 2 value modes, with Clang and GCC.
+- Every combination is tested in CI (see below): 9 languages (the 8 C and C++ standards and Python) × 2 flows × 2 value
+  modes, with Clang and GCC.
 
 ```
 clang   -std=c11   -O2 -o program program.c -lm
 clang++ -std=c++98 -O2 -o program program.cpp
+python3 program.py
 ```
+
+### Python
+
+**Language → Python 3** writes one `.py` file that needs only Python 3.8 or newer: no packages, nothing to compile.
+**Run** in the code window starts it with the Python set in **Settings → Python**; by default EVIA Paradigma finds it
+(`py` on Windows, `python3` on Linux and macOS).
+
+- Python has no `goto`. *Structured* flow writes nested `if`/`else` and `while` loops (a *for* block becomes a `while`
+  with its step at the end, a *do-while* a `while True` that tests at the end); where the wiring isn't
+  block-structured, and always in *Goto* flow, the graph becomes a state machine: `while True:` with one `if`/`elif`
+  branch per block and every wire written as `rt_s = "L7"`.
+- *Safe* values are `float` or `str` with the interpreter's checks and messages; *Fast* values are plain floats
+  (dividing by zero gives `Infinity` or `NaN`, as in C).
+- Errors end the program with `>> error: ...` on stderr and exit code 1, exactly like the interpreter and the C and
+  C++ programs.
 
 ## Arduino and ESP32 boards
 
@@ -967,6 +1000,7 @@ clang++ -std=c++20 -O2 -o prog prog.cpp && ./prog
 java -jar evia-paradigma.jar --gen program.evia --lang c11 -o prog.c
 java -jar evia-paradigma.jar --gen program.evia --lang c++98 --flow goto --values fast -o prog.cpp
 clang -std=c11 -O2 -o prog prog.c -lm && ./prog
+java -jar evia-paradigma.jar --gen program.evia --lang python -o prog.py && python3 prog.py
 ```
 
 Boards:

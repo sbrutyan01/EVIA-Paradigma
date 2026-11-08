@@ -1,6 +1,6 @@
 [
- "<title>EVIA Paradigma：C、C++、ファームウェア、HDLに変換できるビジュアルプログラミング</title>",
- "content=\"キャンバス上でブロックをつないで実行し、14種類の言語のいずれかで読みやすいソースファイルを生成できます。ClangまたはGCCでビルドするC99からC++20、Arduinoスケッチ、ベアメタルAVRおよびPIC32 C、Artix-7やGateMate FPGA向けのSystemVerilog、Verilog、VHDLに対応。クラス、モジュール、プロジェクト、Git、Vimも利用できます。無料のオープンソース（MIT）。",
+ "<title>EVIA Paradigma：C、C++、Python、ファームウェア、HDLに変換できるビジュアルプログラミング</title>",
+ "content=\"キャンバス上でブロックをつないで実行し、15種類の言語のいずれかで読みやすいソースファイルを生成できます。ClangまたはGCCでビルドするC99からC++20、Python 3、Arduinoスケッチ、ベアメタルAVRおよびPIC32 C、Artix-7やGateMate FPGA向けのSystemVerilog、Verilog、VHDLに対応。クラス、モジュール、プロジェクト、Git、Vimも利用できます。無料のオープンソース（MIT）。",
  "content=\"ブロックでプログラムを描き、生成する言語を選びましょう。\"",
  ">本文へ移動</a>",
  "aria-label=\"EVIA Paradigma ホーム\"",
@@ -27,7 +27,7 @@
  "aria-label=\"プログラムの出力\"",
  "data-note=\"左の図を{lang}で生成：{fn}、{lines}行のファイル。\"",
  ">左の図をジェネレーターが出力したコードで表示しています。</span>",
- "32通りすべての出力は、内蔵インタープリターと同じです。",
+ "36通りすべての出力は、内蔵インタープリターと同じです。",
  "<h2 id=\"features-h\">できること</h2>",
  "<h3>プログラムはブロックと接続線で構成</h3>",
  "Start、Set、Input、Print、If/Else、For、While、Do-Whileはブロックです。ブロック間の接続線が制御フローを表します。Runを押すと、実行中のブロックが強調表示されます。数値やテキストを使った式に対応し、<code>&amp;&amp; || !</code>、比較演算、一般的な算術演算も利用できます。",
@@ -111,12 +111,13 @@
  "ビルドして書き込む",
  "SettingsでVivadoまたはオープンソースツールを選択します。Uploadでボードに書き込みます。",
  "シミュレーションでインタープリターと照合し、オープンソースツールで合成済みです。Vivadoでの実行や実機への書き込みはまだ行っていません。",
- "<h3>1つの図から14種類の言語へ</h3>",
- "図が表すのはプログラムの動作であり、記述言語ではありません。同じキャンバスから8種類のC/C++標準、Arduinoスケッチ、ベアメタルAVRまたはPIC32 C、FPGA向けのSystemVerilog、Verilog-2001、VHDLを生成できます。Runは図そのものを実行するため、出力を各生成版と比較できます。出力先が対応できないブロックがある場合、意味を黙って変えるのではなく、そのブロックをエラーで示します。",
+ "<h3>1つの図から15種類の言語へ</h3>",
+ "図が表すのはプログラムの動作であり、記述言語ではありません。同じキャンバスから8種類のC/C++標準、Python 3、Arduinoスケッチ、ベアメタルAVRまたはPIC32 C、FPGA向けのSystemVerilog、Verilog-2001、VHDLを生成できます。Runは図そのものを実行するため、出力を各生成版と比較できます。出力先が対応できないブロックがある場合、意味を黙って変えるのではなく、そのブロックをエラーで示します。",
  "展開した Code Language and Mode メニュー：C99からC++20、Arduino、AVR C、PIC32 C、SystemVerilog、Verilog-2001、VHDL、その下にフローと値。",
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGAサンプルプログラム</a>。File、Open Example、FPGA Boardsからも開けます</li>",
  "<tr><td>シミュレーションでのFPGA設計（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27件中27件</td></tr>",
  "<li><b>PDF版チュートリアル。</b> Help, Tutorial で全体の手引きを7言語のいずれかで開けます。</li>",
  "0.6.5 の新機能：MQTT。5つのブロックがプログラムの数値をブローカーへ公開し、コマンドを読み戻します。UART2 に WiFi モジュールをつないだ PIC32MX、自前の WiFi を持つ ESP32、そして自分のパソコン上のブローカーに対する Run で動きます。生成されたクライアントは実際のブローカーで検査していますが、WiFi モジュールやチップは含まれていません。2つの例が付属し、そのうち1つは PIC32 Ethernet Starter Kit II 用です。0.6.7 の新機能：MX695、MX795、スターターキットでは、MQTT はチップ自身の Ethernet ポートから出ることもでき、MPLAB X Harmony プロジェクト用のアプリケーションになります。これは実験的で、実際の Harmony でのビルドはまだ行っていません。画面そのものも英語・ロシア語・アルメニア語から設定で選べます。",
- "<li><b>設定が道具を取ってきます。</b> arduino-cli、avr-gcc、FPGA 一式はアプリ専用のフォルダーへダウンロードされ、XC32 は Microchip のページを開きます。</li>"
+ "<li><b>設定が道具を取ってきます。</b> arduino-cli、avr-gcc、FPGA 一式はアプリ専用のフォルダーへダウンロードされ、XC32 は Microchip のページを開きます。</li>",
+ "<p>0.6.9の新機能：Python 3。同じ図から、Python 3.8以降で追加のインストールなしに動く .py ファイルを1つ生成します。コードウィンドウのRunで実行できます。出力、エラー、終了コードは、各C/C++標準と同様にインタープリターと一致します。</p>"
 ]

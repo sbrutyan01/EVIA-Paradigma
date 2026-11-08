@@ -183,3 +183,6 @@ Found %d serial port(s).	Найдено последовательных пор�
 Install the ESP32 core	Установка ядра ESP32
 Cancel	Отмена
 Close	Закрыть
+Checking Python...	Проверка Python...
+The command that runs generated Python, e.g. python3, py or a full path	Команда, которая запускает созданный код на Python, например python3, py или полный путь
+Python:	Python:

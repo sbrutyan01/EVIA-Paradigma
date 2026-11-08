@@ -6,7 +6,7 @@ import java.util.Locale;
  * What code generation produces: the language standard, how control flow is written and how
  * values are represented.
  *
- * @param lang   C99 ... C++20 for the desktop; ARDUINO (a sketch for Arduino AVR and ESP32 boards),
+ * @param lang   C99 ... C++20 and Python 3 for the desktop; ARDUINO (a sketch for Arduino AVR and ESP32 boards),
  *               AVR (bare-metal C for avr-gcc) and PIC32 (bare-metal C for xc32-gcc) for microcontrollers,
  *               which always use fast values
  * @param flow   STRUCTURED: if/else, for, while, do-while and switch where the wiring allows it
@@ -28,6 +28,7 @@ record Target(Lang lang, Flow flow, Values values) {
         CPP98("C++98", "c++98", 98, "ISO C++ 1998"), CPP11("C++11", "c++11", 11, "ISO C++ 2011"),
         CPP14("C++14", "c++14", 14, "ISO C++ 2014"), CPP17("C++17", "c++17", 17, "ISO C++ 2017"),
         CPP20("C++20", "c++20", 20, "ISO C++ 2020"),
+        PYTHON("Python 3", "python3", 0, "Python 3.8 or newer, nothing to compile"),
         ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR and ESP32 boards"),
         AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core"),
         PIC32("PIC32 C", "gnu99", 0, "bare-metal xc32-gcc for PIC32MX, no Harmony"),
@@ -46,7 +47,12 @@ record Target(Lang lang, Flow flow, Values values) {
         }
 
         boolean isC() {
-            return this != ARDUINO && !fpga() && !std.startsWith("c++") && !std.startsWith("gnu++");
+            return this != ARDUINO && this != PYTHON && !fpga() && !std.startsWith("c++") && !std.startsWith("gnu++");
+        }
+
+        /** Python 3: run by the interpreter, no compiler. */
+        boolean python() {
+            return this == PYTHON;
         }
 
         /** Runs on a board: a microcontroller (Arduino sketch, bare-metal AVR or PIC32) or an FPGA. */
@@ -77,22 +83,24 @@ record Target(Lang lang, Flow flow, Values values) {
                 case SYSTEMVERILOG -> "sv";
                 case VERILOG -> "verilog";
                 case VHDL -> "vhdl";
+                case PYTHON -> "python";
                 default -> std;
             };
         }
 
         /** "(2011)", or what it runs on for microcontroller targets. */
         String tag() {
+            if (this == PYTHON) return "3.8+";
             return fpga() ? "Artix-7, GateMate" : embedded() ? (this == ARDUINO ? "AVR, ESP32" : this == PIC32 ? "PIC32MX" : "registers") : note.substring(note.length() - 4);
         }
 
         /** 98, 11, 14, 17, 20 for C++ (0 for C); compares chronologically. */
         int cpp() {
-            return isC() ? 0 : year == 98 ? 3 : year;
+            return isC() || this == PYTHON ? 0 : year == 98 ? 3 : year;
         }
 
         String ext() {
-            return this == ARDUINO ? ".ino" : this == SYSTEMVERILOG ? ".sv" : this == VERILOG ? ".v" : this == VHDL ? ".vhd" : isC() ? ".c" : ".cpp";
+            return this == PYTHON ? ".py" : this == ARDUINO ? ".ino" : this == SYSTEMVERILOG ? ".sv" : this == VERILOG ? ".v" : this == VHDL ? ".vhd" : isC() ? ".c" : ".cpp";
         }
 
         @Override public String toString() {
@@ -128,11 +136,11 @@ record Target(Lang lang, Flow flow, Values values) {
 
     /** True for C++ before C++17, where the object of a call and its arguments are evaluated in unspecified order. */
     boolean cppBefore17() {
-        return !isC() && !embedded() && lang.cpp() < 17;
+        return !isC() && !embedded() && !lang.python() && lang.cpp() < 17;
     }
 
     String languageName() {
-        return lang.fpga() ? lang.display : lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
+        return lang.fpga() ? lang.display : lang.python() ? "Python" : lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
     }
 
     String ext() {
@@ -158,9 +166,10 @@ record Target(Lang lang, Flow flow, Values values) {
         return new Target(lang == null ? DEFAULT.lang : lang, flow, values);
     }
 
-    /** Accepts "c11", "C11", "c++14", "cpp14", "cxx14", "arduino", "avr". */
+    /** Accepts "c11", "C11", "c++14", "cpp14", "cxx14", "arduino", "avr", "python", "py", "python3". */
     static Lang langOf(String s) {
         String k = s.trim().toLowerCase(Locale.ROOT).replace("cpp", "c++").replace("cxx", "c++");
+        if (k.equals("py") || k.equals("python3")) k = "python";
         for (Lang l : Lang.values()) if (l.key().equals(k)) return l;
         return null;
     }

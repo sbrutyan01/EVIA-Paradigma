@@ -55,6 +55,10 @@ final class Toolchains {
                 "https://github.com/YosysHQ/oss-cad-suite-build/releases",
                 "The open-source FPGA tools: yosys, nextpnr, gmpack and openFPGALoader, for Artix-7 and"
                         + " GateMate (about 1 GB unpacked)."),
+        PYTHON("Python 3", null, null, "python3", null, null, null, null,
+                "https://www.python.org/downloads/",
+                "Runs generated Python programs: Python 3.8 or newer, nothing else to install. On Windows, the"
+                        + " python.org installer also sets up the py launcher, which EVIA Paradigma finds by itself."),
         XC32("Microchip XC32", null, null, "xc32-gcc", null, null, null, null,
                 "https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers",
                 "Compiles PIC32 C. Microchip's licence does not allow passing the compiler on, so it is"

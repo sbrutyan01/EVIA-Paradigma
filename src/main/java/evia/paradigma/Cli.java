@@ -10,7 +10,7 @@ import java.nio.file.Path;
  * <pre>
  * java -jar evia-paradigma.jar --run program.evia            run with the interpreter (stdin/stdout)
  * java -jar evia-paradigma.jar --gen program.evia [-o x.cpp] [--lang c++20] [--flow structured] [--values safe]
- *                                                             write C or C++ (stdout if no -o)
+ *                                                             write C, C++ or Python (stdout if no -o)
  * java -jar evia-paradigma.jar --example out.evia             save the built-in example program
  * </pre>
  * Output and errors are identical to the generated program, so the two can be compared.
@@ -40,7 +40,7 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, arduino, avr, pic32, sv, verilog, vhdl)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, python, arduino, avr, pic32, sv, verilog, vhdl)");
                                 t = t.withLang(l);
                             }
                             case "--board" -> {
@@ -94,16 +94,17 @@ final class Cli {
                 }
                 default -> {
                     out.println("""
-                            EVIA Paradigma - visual block programming with C and C++ generation
+                            EVIA Paradigma - visual block programming with C, C++ and Python generation
 
                             Usage:
                               java -jar evia-paradigma.jar                           start the editor
                               java -jar evia-paradigma.jar --run  program.evia       run a program
                                                           (or a project folder / .eviaproj)
                               java -jar evia-paradigma.jar --gen  program.evia [options]
-                                                                                     generate C or C++
+                                                                                     generate C, C++ or Python
                                   -o FILE              write to FILE (default: standard output)
                                   --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default),
+                                                       python (Python 3.8 or newer: run it with python3 program.py),
                                                        arduino (a sketch for Arduino AVR and ESP32 boards),
                                                        avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4),
                                                        pic32 (bare-metal C for xc32-gcc: PIC32MX1xx/2xx, 3xx/4xx, 5xx/6xx/7xx)
@@ -119,6 +120,7 @@ final class Cli {
                                                        MPLAB X Harmony project, MX695/MX795 only)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
+                                                       (Python has no goto: a state machine, one branch per block)
                                   --values MODE        safe (default): numbers and text, the interpreter's checks
                                                        fast: plain double numbers, text only in Print, no checks
                               java -jar evia-paradigma.jar --example out.evia        save the example

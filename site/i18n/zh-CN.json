@@ -1,6 +1,6 @@
 [
- "<title>EVIA Paradigma：可编译为 C、C++、固件和 HDL 的可视化编程</title>",
- "content=\"在画布上连接程序块并运行，将其转换为十四种语言之一的整洁源文件：使用 Clang 或 GCC 编译的 C99 至 C++20、Arduino 草图、裸机 AVR 和 PIC32 C，以及适用于 Artix-7 和 GateMate FPGA 的 SystemVerilog、Verilog 或 VHDL。支持类、模块、项目、Git 和 Vim。免费开源（MIT）。",
+ "<title>EVIA Paradigma：可编译为 C、C++、Python、固件和 HDL 的可视化编程</title>",
+ "content=\"在画布上连接程序块并运行，将其转换为十五种语言之一的整洁源文件：使用 Clang 或 GCC 编译的 C99 至 C++20、Python 3、Arduino 草图、裸机 AVR 和 PIC32 C，以及适用于 Artix-7 和 GateMate FPGA 的 SystemVerilog、Verilog 或 VHDL。支持类、模块、项目、Git 和 Vim。免费开源（MIT）。",
  "content=\"用程序块绘制程序。选择它要转换成的语言。\"",
  ">跳到正文</a>",
  "aria-label=\"EVIA Paradigma 首页\"",
@@ -27,7 +27,7 @@
  "aria-label=\"程序输出\"",
  "data-note=\"左侧图表生成的 {lang} 代码：{fn}，共 {lines} 行。\"",
  ">左侧图表对应生成器实际写出的代码。</span>",
- "全部 32 种版本的输出都与内置解释器相同。",
+ "全部 36 种版本的输出都与内置解释器相同。",
  "<h2 id=\"features-h\">功能介绍</h2>",
  "<h3>程序由程序块和连线组成</h3>",
  "Start、Set、Input、Print、If/Else、For、While 和 Do-While 都是程序块；它们之间的连线表示控制流。按下 Run，正在执行的程序块会高亮显示。表达式支持数字和文本、<code>&amp;&amp; || !</code>、比较运算及常见算术运算。",
@@ -111,12 +111,13 @@
  "构建并上传",
  "在 Settings 中选择 Vivado 或开源工具。Upload 会对开发板进行编程。",
  "已在仿真中与解释器比对，并使用开源工具综合。尚未通过 Vivado 运行或加载到真实开发板。",
- "<h3>一个图表，十四种语言</h3>",
- "图表描述程序的功能，而不是它使用的语言。同一画布可生成八种 C 和 C++ 标准、Arduino 草图、裸机 AVR 或 PIC32 C，或用于 FPGA 的 SystemVerilog、Verilog-2001 和 VHDL。Run 会直接执行图表本身，因此你可以将输出与任何生成版本进行比较。如果目标不支持某个程序块，错误会指出该程序块，而不会悄悄改变程序含义。",
+ "<h3>一个图表，十五种语言</h3>",
+ "图表描述程序的功能，而不是它使用的语言。同一画布可生成八种 C 和 C++ 标准、Python 3、Arduino 草图、裸机 AVR 或 PIC32 C，或用于 FPGA 的 SystemVerilog、Verilog-2001 和 VHDL。Run 会直接执行图表本身，因此你可以将输出与任何生成版本进行比较。如果目标不支持某个程序块，错误会指出该程序块，而不会悄悄改变程序含义。",
  "已展开的 Code Language and Mode 菜单：C99 至 C++20、Arduino、AVR C、PIC32 C、SystemVerilog、Verilog-2001 和 VHDL，下方是流程与数值。",
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA 示例程序</a>，也可在 File、Open Example、FPGA Boards 中找到</li>",
  "<tr><td>仿真中的 FPGA 设计（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27 项中的 27 项</td></tr>",
  "<li><b>PDF 教程。</b> Help, Tutorial 可用七种语言中的任意一种打开完整教程。</li>",
  "0.6.5 新增：MQTT。五个积木把程序的数字发布给代理服务器并读回命令：UART2 接 WiFi 模块的 PIC32MX、自带 WiFi 的 ESP32，以及对着你电脑上代理服务器运行的 Run。生成的客户端对着真实代理服务器检查过，但没有 WiFi 模块或芯片参与。随附两个示例，其中一个用于 PIC32 Ethernet Starter Kit II。0.6.7 新增：在 MX695、MX795 和入门套件上，MQTT 还可以从芯片自带的以太网口出去，生成的文件成为 MPLAB X Harmony 项目的应用程序；这是实验性的，尚未用真正的 Harmony 构建过。界面本身也可在设置中选择英语、俄语或亚美尼亚语。",
- "<li><b>设置会下载工具。</b> arduino-cli、avr-gcc 和 FPGA 套件会下载到应用自己的文件夹；XC32 会打开 Microchip 的页面。</li>"
+ "<li><b>设置会下载工具。</b> arduino-cli、avr-gcc 和 FPGA 套件会下载到应用自己的文件夹；XC32 会打开 Microchip 的页面。</li>",
+ "<p>0.6.9 新增：Python 3。同一图表会生成一个 .py 文件，可在 Python 3.8 或更高版本上运行，无需安装其他内容；代码窗口中的 Run 会直接启动它。其输出、错误和退出码都与解释器一致，和每种 C 与 C++ 标准一样。</p>"
 ]

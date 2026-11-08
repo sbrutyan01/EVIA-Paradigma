@@ -149,7 +149,7 @@ final class CodeViewer extends JFrame {
 
     /** Desktop languages compile and run; microcontroller languages build and upload. */
     private void updateButtons() {
-        runBtn.setText(target.embedded() ? "Build" : "Compile & Run");
+        runBtn.setText(target.embedded() ? "Build" : target.lang().python() ? Text.t("Run") : Text.t("Compile & Run"));
         runBtn.setToolTipText(target.embedded() ? "Build for the board chosen in the Board list" : null);
         uploadBtn.setVisible(target.embedded());
     }
@@ -324,8 +324,17 @@ final class CodeViewer extends JFrame {
             "(//[^\\n]*)|(\"(?:\\\\.|[^\"\\\\\\n])*\")|('(?:\\\\.|[^'\\\\\\n])*')|(^\\s*#\\w+)|\\b([A-Za-z_]\\w*)\\b|(^L\\d+:)",
             Pattern.MULTILINE);
 
+    private static final Set<String> PY_KEYWORDS = Set.of("False", "None", "True", "and", "as", "break", "class",
+            "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import",
+            "in", "is", "lambda", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield", "self");
+    private static final Pattern PY_TOKENS = Pattern.compile(
+            "(#[^\\n]*)|(\"\"\"[\\s\\S]*?\"\"\"|\"(?:\\\\.|[^\"\\\\\\n])*\")|(r?'(?:\\\\.|[^'\\\\\\n])*')|(^\\s*@\\w+)|\\b([A-Za-z_]\\w*)\\b|(\"L\\d+(?:_next|_test)?\")",
+            Pattern.MULTILINE);
+
     private void highlight() {
         String code = codePane.getText();
+        boolean py = target.lang().python();
+        Set<String> keywords = py ? PY_KEYWORDS : KEYWORDS;
         StyledDocument doc = codePane.getStyledDocument();
         SimpleAttributeSet plain = style(Theme.plain(), false, false);
         SimpleAttributeSet comment = style(Theme.comment(), false, true);
@@ -335,12 +344,12 @@ final class CodeViewer extends JFrame {
         SimpleAttributeSet label = style(Theme.label(), true, false);
         vim.withoutUndo(() -> {
             doc.setCharacterAttributes(0, doc.getLength(), plain, true);
-            Matcher m = TOKENS.matcher(code);
+            Matcher m = (py ? PY_TOKENS : TOKENS).matcher(code);
             while (m.find()) {
                 if (m.group(1) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), comment, false);
                 else if (m.group(2) != null || m.group(3) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), string, false);
                 else if (m.group(4) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), pre, false);
-                else if (m.group(5) != null && KEYWORDS.contains(m.group(5))) doc.setCharacterAttributes(m.start(5), m.group(5).length(), keyword, false);
+                else if (m.group(5) != null && keywords.contains(m.group(5))) doc.setCharacterAttributes(m.start(5), m.group(5).length(), keyword, false);
                 else if (m.group(6) != null) doc.setCharacterAttributes(m.start(), m.end() - m.start(), label, false);
             }
         });
@@ -385,6 +394,7 @@ final class CodeViewer extends JFrame {
 
     private void checkCompiler() {
         if (target.embedded()) checkBoardTools();
+        else if (target.lang().python()) Settings.checkPython(Settings.pythonCommand(), compilerLabel);
         else Settings.checkCompiler(Settings.commandFor(target), compilerLabel, target.isC());
     }
 
@@ -670,6 +680,10 @@ final class CodeViewer extends JFrame {
             buildForBoard(false);
             return;
         }
+        if (target.lang().python()) {
+            runPython();
+            return;
+        }
         String code = codePane.getText();
         String command = Settings.commandFor(target);
         output.setText("");
@@ -715,6 +729,47 @@ final class CodeViewer extends JFrame {
                 });
             }
         }, "evia-compile-run");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    /** Python: nothing to compile, the interpreter runs the file (-u: output appears as it is printed). */
+    private void runPython() {
+        String code = codePane.getText();
+        String command = Settings.pythonCommand();
+        output.setText("");
+        runBtn.setEnabled(false);
+        stopBtn.setEnabled(true);
+        Thread t = new Thread(() -> {
+            try {
+                Path dir = Files.createTempDirectory("evia-py");
+                Path src = dir.resolve(baseName.replaceAll("[^A-Za-z0-9_-]", "_") + ".py");
+                Files.writeString(src, code, StandardCharsets.UTF_8);
+                List<String> cmd = new ArrayList<>(Settings.split(command));
+                cmd.add("-u");
+                cmd.add(src.toString());
+                append("$ " + String.join(" ", cmd) + "\n\n");
+                ProcessBuilder pb = new ProcessBuilder(cmd).directory(dir.toFile());
+                pb.environment().put("PYTHONIOENCODING", "utf-8");
+                pb.environment().put("PYTHONUTF8", "1");
+                int rc = runProcess(pb, true);
+                append("\n>> program exited with code " + rc + "\n");
+            } catch (IOException e) {
+                append(">> " + e.getMessage() + "\n"
+                        + ">> Python 3 was not found as '" + command + "'. Install it from https://www.python.org/downloads/\n"
+                        + "   (on Windows the installer's py launcher is found by itself), or set its command in Settings.\n");
+            } catch (InterruptedException e) {
+                append(">> stopped\n");
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    process = null;
+                    stdin = null;
+                    inputField.setEnabled(false);
+                    runBtn.setEnabled(true);
+                    stopBtn.setEnabled(false);
+                });
+            }
+        }, "evia-python-run");
         t.setDaemon(true);
         t.start();
     }

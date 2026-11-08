@@ -1,11 +1,11 @@
 [
  [
-  "<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>",
-  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, прошивки и HDL</title>"
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
+  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, Python, прошивки и HDL</title>"
  ],
  [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
-  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из четырнадцати языков: от C99 до C++20 со сборкой Clang или GCC, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из пятнадцати языков: от C99 до C++20 со сборкой Clang или GCC, Python 3, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
  ],
  [
   "content=\"Draw a program as blocks. Pick the language it becomes.\"",
@@ -112,8 +112,8 @@
   ">Схема слева в том виде, в каком её пишет генератор.</span>"
  ],
  [
-  "All 32 versions print the same output as the built-in interpreter.",
-  "Все 32 варианта выводят то же, что и встроенный интерпретатор."
+  "All 36 versions print the same output as the built-in interpreter.",
+  "Все 36 вариантов выводят то же, что и встроенный интерпретатор."
  ],
  [
   "<h2 id=\"features-h\">What it does</h2>",
@@ -448,12 +448,12 @@
   "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
  ],
  [
-  "<h3>One diagram, fourteen languages</h3>",
-  "<h3>Одна схема — четырнадцать языков</h3>"
+  "<h3>One diagram, fifteen languages</h3>",
+  "<h3>Одна схема — пятнадцать языков</h3>"
  ],
  [
-  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
-  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
  ],
  [
   "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
@@ -478,5 +478,9 @@
  [
   "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
   "<li><b>Настройки скачивают инструменты.</b> arduino-cli, avr-gcc и набор для FPGA загружаются в собственную папку приложения; XC32 открывает страницу Microchip.</li>"
+ ],
+ [
+  "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
+  "<p>Новое в 0.6.9: Python 3. Та же схема превращается в один файл .py, который работает в Python 3.8 и новее без установки чего-либо ещё, а кнопка Run в окне кода запускает его. Вывод, ошибки и код завершения совпадают с интерпретатором, как у каждого стандарта C и C++.</p>"
  ]
 ]

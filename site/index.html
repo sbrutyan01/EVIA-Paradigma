@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>
-<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).>
+<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>
+<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).>
 <meta property="og:title" content="EVIA Paradigma">
 <meta property="og:description" content="Draw a program as blocks. Pick the language it becomes.">
 <meta property="og:image" content="img/hero-diagram.png">
@@ -102,6 +102,7 @@
           <button role="tab" data-lang="c++14">C++14</button>
           <button role="tab" data-lang="c++17">C++17</button>
           <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
+          <button role="tab" data-lang="python">Python</button>
         </div>
         <div class="modes">
           <span class="mode" role="radiogroup" aria-label="Flow">
@@ -120,7 +121,7 @@
       </div>
     </div>
     <figcaption id="bench-caption"><span id="sample-note" data-note="The diagram on the left as {lang}: {fn} from the generated {lines}-line file.">The diagram on the left, as the generator writes it.</span>
-      All 32 versions print the same output as the built-in interpreter.</figcaption>
+      All 36 versions print the same output as the built-in interpreter.</figcaption>
   </figure>
 </section>
 
@@ -150,9 +151,9 @@
 
   <article class="feature">
     <div class="feature-text">
-      <h3>One diagram, fourteen languages</h3>
+      <h3>One diagram, fifteen languages</h3>
       <p>A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++
-        standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an
+        standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an
         FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target
         cannot keep a block, the error names that block instead of quietly changing what the program means.</p>
     </div>
@@ -202,6 +203,7 @@
         headers, but has not yet been built with XC32 or run on a chip.</p>
       <p>New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.</p>
       <p>New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.</p>
+      <p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>
     </div>
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>

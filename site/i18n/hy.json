@@ -1,11 +1,11 @@
 [
  [
-  "<title>EVIA Paradigma: visual programming that compiles to C, C++, firmware and HDL</title>",
-  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, որոնվածքի և HDL կոմպիլյացիայով</title>"
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
+  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, Python-ի, որոնվածքի և HDL կոմպիլյացիայով</title>"
  ],
  [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fourteen languages: C99 to C++20 built with Clang or GCC, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
-  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնչորս լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։"
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնհինգ լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3, Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։"
  ],
  [
   "content=\"Draw a program as blocks. Pick the language it becomes.\"",
@@ -112,8 +112,8 @@
   ">Ձախ կողմի սխեման՝ այնպես, ինչպես այն գրում է գեներատորը։</span>"
  ],
  [
-  "All 32 versions print the same output as the built-in interpreter.",
-  "Բոլոր 32 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։"
+  "All 36 versions print the same output as the built-in interpreter.",
+  "Բոլոր 36 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։"
  ],
  [
   "<h2 id=\"features-h\">What it does</h2>",
@@ -448,12 +448,12 @@
   "Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։"
  ],
  [
-  "<h3>One diagram, fourteen languages</h3>",
-  "<h3>Մեկ սխեմա՝ տասնչորս լեզու</h3>"
+  "<h3>One diagram, fifteen languages</h3>",
+  "<h3>Մեկ սխեմա՝ տասնհինգ լեզու</h3>"
  ],
  [
-  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
-  "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Python 3, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
  ],
  [
   "The Code Language and Mode menu, open: C99 to C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
@@ -478,5 +478,9 @@
  [
   "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
   "<li><b>Կարգավորումները բերում են գործիքները։</b> arduino-cli-ն, avr-gcc-ն և FPGA-ի հավաքածուն ներբեռնվում են հավելվածի սեփական պանակը, իսկ XC32-ը բացում է Microchip-ի էջը։</li>"
+ ],
+ [
+  "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
+  "<p>Նորություն 0.6.9-ում՝ Python 3։ Նույն սխեման դառնում է մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց որևէ այլ բան տեղադրելու, իսկ կոդի պատուհանի Run կոճակը գործարկում է այն։ Արդյունքը, սխալները և ավարտի կոդը համընկնում են ինտերպրետատորի հետ, ինչպես C-ի և C++-ի յուրաքանչյուր ստանդարտում։</p>"
  ]
 ]

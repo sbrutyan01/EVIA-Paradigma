@@ -7,13 +7,24 @@
 # (the generator explains why); programs named err_* are only checked with safe values, because
 # fast values skip the runtime checks on purpose.
 #
-# Usage: [CC=clang] [CXX=clang++] [LANGS="c11 c++20"] scripts/check-targets.sh [jar]
+# Python is checked the same way, run by $PYTHON instead of compiled; it is left out (with a note)
+# when no Python 3 is installed.
+#
+# Usage: [CC=clang] [CXX=clang++] [PYTHON=python3] [LANGS="c11 c++20 python"] scripts/check-targets.sh [jar]
 set -uo pipefail
 
 JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
 CC="${CC:-clang}"
 CXX="${CXX:-clang++}"
-LANGS="${LANGS:-c99 c11 c17 c++98 c++11 c++14 c++17 c++20}"
+PYTHON="${PYTHON:-python3}"
+if [ -z "${LANGS:-}" ]; then
+  LANGS="c99 c11 c17 c++98 c++11 c++14 c++17 c++20"
+  if "$PYTHON" -c 'import sys; sys.exit(sys.version_info < (3, 8))' 2> /dev/null; then
+    LANGS="$LANGS python"
+  else
+    echo "note  no Python 3.8+ as '$PYTHON', so Python is not checked"
+  fi
+fi
 OUT=build/targets
 rm -rf "$OUT" && mkdir -p "$OUT"
 EXTRA="${CXXFLAGS:-}"
@@ -22,6 +33,7 @@ case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) EXE=".exe" ;; esac   # names with do
 
 "$CC" --version | head -n 1
 "$CXX" --version | head -n 1
+case " $LANGS " in *" python "*) "$PYTHON" --version ;; esac
 ok=0; refused=0; failed=0
 
 for src in examples/*.evia tests/programs/*.evia; do
@@ -39,6 +51,7 @@ for src in examples/*.evia tests/programs/*.evia; do
         [[ "$name" == err_* && "$values" == fast ]] && continue
         id="$name.$lang.$flow.$values"
         case "$lang" in
+          python) ext=py ;;
           c++*) ext=cpp; cmd=("$CXX" "-std=$lang") ;;
           *)    ext=c;   cmd=("$CC" "-std=$lang") ;;
         esac
@@ -50,13 +63,22 @@ for src in examples/*.evia tests/programs/*.evia; do
           fi
           echo "FAIL  $id: generation failed"; cat "$OUT/$id.gen.err"; failed=$((failed + 1)); continue
         fi
-        libs=(); [ "$ext" = c ] && libs=(-lm)
-        # shellcheck disable=SC2086
-        if ! "${cmd[@]}" -O1 -Wall -Wextra -Wpedantic -Werror $EXTRA -o "$OUT/$id$EXE" "$OUT/$id.$ext" "${libs[@]}" 2> "$OUT/$id.cc.err"; then
-          echo "FAIL  $id: does not compile"; head -n 20 "$OUT/$id.cc.err"; failed=$((failed + 1)); continue
+        if [ "$ext" = py ]; then
+          # the file must at least be valid Python before it runs
+          if ! "$PYTHON" -m py_compile "$OUT/$id.py" 2> "$OUT/$id.cc.err"; then
+            echo "FAIL  $id: not valid Python"; head -n 20 "$OUT/$id.cc.err"; failed=$((failed + 1)); continue
+          fi
+          PYTHONIOENCODING=utf-8 "$PYTHON" "$OUT/$id.py" < "$input" > "$OUT/$id.out" 2> "$OUT/$id.err"
+          echo $? > "$OUT/$id.rc"
+        else
+          libs=(); [ "$ext" = c ] && libs=(-lm)
+          # shellcheck disable=SC2086
+          if ! "${cmd[@]}" -O1 -Wall -Wextra -Wpedantic -Werror $EXTRA -o "$OUT/$id$EXE" "$OUT/$id.$ext" "${libs[@]}" 2> "$OUT/$id.cc.err"; then
+            echo "FAIL  $id: does not compile"; head -n 20 "$OUT/$id.cc.err"; failed=$((failed + 1)); continue
+          fi
+          "./$OUT/$id$EXE" < "$input" > "$OUT/$id.out" 2> "$OUT/$id.err"
+          echo $? > "$OUT/$id.rc"
         fi
-        "./$OUT/$id$EXE" < "$input" > "$OUT/$id.out" 2> "$OUT/$id.err"
-        echo $? > "$OUT/$id.rc"
         # Windows: line endings may be \r\n on one side (sed in Git Bash drops \r), so ignore them
         if diff -q --strip-trailing-cr "$OUT/$name.expected.out" "$OUT/$id.out" > /dev/null \
            && diff -q --strip-trailing-cr "$OUT/$name.expected.err" "$OUT/$id.err" > /dev/null \

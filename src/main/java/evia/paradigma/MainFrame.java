@@ -328,7 +328,7 @@ final class MainFrame extends JFrame {
                 Target cur = Settings.target();
                 ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
                 for (Target.Lang l : Target.Lang.values()) {
-                    if (l == Target.Lang.CPP98 || l == Target.Lang.ARDUINO || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON || l == Target.Lang.ARDUINO || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + Text.t(l.note) + ")", l == cur.lang());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
                     g1.add(i);

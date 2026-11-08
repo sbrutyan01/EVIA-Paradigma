@@ -91,6 +91,7 @@ final class CodeGenerator {
             HdlGenerator.Result r = HdlGenerator.generate(lib, t.lang().hdl(), b.fpga(), b.display, "evia_top");
             return new Result(r.hdl(), new HashMap<>());
         }
+        if (t.lang().python()) return PythonGenerator.generate(lib, t);
         Interpreter.prepare(lib);
         CodeGenerator g = new CodeGenerator(lib, t);
         String code = g.build();

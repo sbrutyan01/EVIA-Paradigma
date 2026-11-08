@@ -1,6 +1,6 @@
 [
- "<title>EVIA Paradigma: visuelle Programmierung, die in C, C++, Firmware und HDL kompiliert</title>",
- "content=\"Verbinde Blöcke auf einer Arbeitsfläche, führe sie aus und erstelle daraus eine übersichtliche Quelldatei in einer von vierzehn Sprachen: C99 bis C++20 mit Clang oder GCC, Arduino-Sketches, Bare-Metal-AVR- und PIC32-C sowie SystemVerilog, Verilog oder VHDL für Artix-7- und GateMate-FPGAs. Klassen, Module, Projekte, Git, Vim. Kostenlos und Open Source (MIT).",
+ "<title>EVIA Paradigma: visuelle Programmierung, die in C, C++, Python, Firmware und HDL kompiliert</title>",
+ "content=\"Verbinde Blöcke auf einer Arbeitsfläche, führe sie aus und erstelle daraus eine übersichtliche Quelldatei in einer von fünfzehn Sprachen: C99 bis C++20 mit Clang oder GCC, Python 3, Arduino-Sketches, Bare-Metal-AVR- und PIC32-C sowie SystemVerilog, Verilog oder VHDL für Artix-7- und GateMate-FPGAs. Klassen, Module, Projekte, Git, Vim. Kostenlos und Open Source (MIT).",
  "content=\"Zeichne ein Programm aus Blöcken. Wähle die Sprache, in die es übersetzt wird.\"",
  ">Zum Inhalt springen</a>",
  "aria-label=\"EVIA Paradigma Startseite\"",
@@ -27,7 +27,7 @@
  "aria-label=\"Programmausgabe\"",
  "data-note=\"Das Diagramm links als {lang}: {fn} aus der generierten Datei mit {lines} Zeilen.\"",
  ">Das Diagramm links, so wie der Generator es schreibt.</span>",
- "Alle 32 Varianten geben dieselbe Ausgabe wie der integrierte Interpreter aus.",
+ "Alle 36 Varianten geben dieselbe Ausgabe wie der integrierte Interpreter aus.",
  "<h2 id=\"features-h\">Was das Programm kann</h2>",
  "<h3>Programme bestehen aus Blöcken und Verbindungen</h3>",
  "Start, Set, Input, Print, If/Else, For, While und Do-While sind Blöcke; die Verbindungen dazwischen bestimmen den Ablauf. Drücke Run, und der gerade ausgeführte Block wird hervorgehoben. Ausdrücke verarbeiten Zahlen und Text mit <code>&amp;&amp; || !</code>, Vergleichen und den üblichen Rechenoperationen.",
@@ -111,12 +111,13 @@
  "Kompilieren und hochladen",
  "Vivado oder die Open-Source-Werkzeuge werden in Settings ausgewählt. Upload programmiert das Board.",
  "In der Simulation mit dem Interpreter verglichen und mit Open-Source-Werkzeugen synthetisiert. Noch nicht mit Vivado ausgeführt oder auf ein echtes Board geladen.",
- "<h3>Ein Diagramm, vierzehn Sprachen</h3>",
- "Ein Diagramm beschreibt, was ein Programm tut, nicht in welcher Sprache es geschrieben ist. Dieselbe Arbeitsfläche wird zu acht C- und C++-Standards, einem Arduino-Sketch, Bare-Metal-AVR- oder PIC32-C oder SystemVerilog, Verilog-2001 und VHDL für ein FPGA. Run führt das Diagramm selbst aus, damit du seine Ausgabe mit jeder Variante vergleichen kannst. Wenn ein Ziel einen Block nicht unterstützt, nennt der Fehler diesen Block, statt die Bedeutung des Programms unbemerkt zu ändern.",
+ "<h3>Ein Diagramm, fünfzehn Sprachen</h3>",
+ "Ein Diagramm beschreibt, was ein Programm tut, nicht in welcher Sprache es geschrieben ist. Dieselbe Arbeitsfläche wird zu acht C- und C++-Standards, Python 3, einem Arduino-Sketch, Bare-Metal-AVR- oder PIC32-C oder SystemVerilog, Verilog-2001 und VHDL für ein FPGA. Run führt das Diagramm selbst aus, damit du seine Ausgabe mit jeder Variante vergleichen kannst. Wenn ein Ziel einen Block nicht unterstützt, nennt der Fehler diesen Block, statt die Bedeutung des Programms unbemerkt zu ändern.",
  "Das geöffnete Menü „Code Language and Mode“: C99 bis C++20, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 und VHDL, darunter Ablauf und Werte.",
  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA-Beispielprogramme</a>, auch unter File, Open Example, FPGA Boards</li>",
  "<tr><td>FPGA-Designs in Simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 von 27</td></tr>",
  "<li><b>Tutorial als PDF.</b> Hilfe, Tutorial öffnet die ganze Anleitung in einer von sieben Sprachen.</li>",
  "Neu in 0.6.5: MQTT. Fünf Blöcke veröffentlichen die Zahlen eines Programms bei einem Broker und lesen Befehle zurück: auf einem PIC32MX mit WLAN-Modul an UART2, auf einem ESP32 mit dessen eigenem WLAN und in Run gegen einen Broker auf deinem Rechner. Der erzeugte Client wird gegen einen echten Broker geprüft; ein WLAN-Modul oder ein Chip war dabei nicht im Spiel. Dazu kommen zwei Beispiele, eines davon für das PIC32 Ethernet Starter Kit II. 0.6.7 — neu: MQTT kann beim MX695, beim MX795 und beim Starter Kit auch über den eigenen Ethernet-Anschluss des Chips hinausgehen, als Anwendung für ein MPLAB X Harmony-Projekt; das ist experimentell und wurde noch nicht gegen echtes Harmony gebaut. Auch die Oberfläche selbst ist jetzt auf Englisch, Russisch oder Armenisch, wählbar in den Einstellungen.",
- "<li><b>Einstellungen holen die Werkzeuge.</b> arduino-cli, avr-gcc und die FPGA-Sammlung landen im eigenen Ordner der App; XC32 öffnet die Seite von Microchip.</li>"
+ "<li><b>Einstellungen holen die Werkzeuge.</b> arduino-cli, avr-gcc und die FPGA-Sammlung landen im eigenen Ordner der App; XC32 öffnet die Seite von Microchip.</li>",
+ "<p>Neu in 0.6.9: Python 3. Dasselbe Diagramm wird zu einer einzigen .py-Datei, die ab Python 3.8 ohne weitere Installation läuft; Run im Codefenster startet sie. Ausgabe, Fehler und Exit-Code stimmen mit dem Interpreter überein, wie bei jedem C- und C++-Standard.</p>"
 ]

@@ -41,15 +41,21 @@ for f in glob.glob("docs/screenshots/*.png") + ["docs/logo.png", "docs/logo-dark
     shutil.copy(f, out + "/img/")
 
 def excerpt(code, lang):
-    """The main program's function: run_program() in C, Program::run() in C++."""
-    start = "static void run_program(void) {" if not lang.startswith("c++") else "void Program::run() {"
+    """The main program's function: run_program() in C, Program::run() in C++, Program.run() in Python."""
     lines = code.split("\n")
+    if lang == "python":
+        i = next(k for k, l in enumerate(lines) if l == "    def run(self):")
+        j = next(k for k in range(i + 1, len(lines)) if lines[k] and not lines[k].startswith("        "))
+        while not lines[j - 1].strip():
+            j -= 1
+        return "\n".join(l[4:] for l in lines[i:j])
+    start = "static void run_program(void) {" if not lang.startswith("c++") else "void Program::run() {"
     i = next(k for k, l in enumerate(lines) if l.startswith(start))
     j = next(k for k in range(i, len(lines)) if lines[k] == "}")
     return "\n".join(lines[i:j + 1])
 
 samples = {}
-for lang in ["c99", "c11", "c17", "c++98", "c++11", "c++14", "c++17", "c++20"]:
+for lang in ["c99", "c11", "c17", "c++98", "c++11", "c++14", "c++17", "c++20", "python"]:
     for flow in ["structured", "goto"]:
         for values in ["safe", "fast"]:
             code = subprocess.run(["java", "-jar", jar, "--gen", "examples/tutorial.evia", "--lang", lang,

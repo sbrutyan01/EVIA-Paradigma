@@ -167,6 +167,81 @@ final class Settings {
         return PREFS.get("arduinoCli", "arduino-cli");
     }
 
+    // ---- Python
+
+    /** The minimum Python the generated programs need (str.reconfigure, the walrus-free syntax used). */
+    static final int[] MIN_PYTHON = {3, 8};
+
+    private static String detectedPython;
+
+    /** The command that runs a generated Python file, e.g. python3, py or a full path; may carry options ("py -3"). */
+    static String pythonCommand() {
+        String saved = PREFS.get("python", null);
+        if (saved != null && !saved.isBlank()) return saved;
+        if (detectedPython == null) detectedPython = detectPython();
+        return detectedPython;
+    }
+
+    /** The first of py, python3, python that is Python 3.8 or newer; the usual name when none is. */
+    static String detectPython() {
+        String[] candidates = ExternalEditor.WINDOWS ? new String[]{"py", "python", "python3"} : new String[]{"python3", "python"};
+        for (String c : candidates) {
+            int[] v = pythonVersion(c);
+            if (v != null && atLeast(v, MIN_PYTHON)) return c;
+        }
+        return candidates[0];
+    }
+
+    /** {major, minor, patch} of the Python a command starts, or null when it does not start. */
+    static int[] pythonVersion(String command) {
+        List<String> cmd = new ArrayList<>(split(command));
+        if (cmd.isEmpty()) return null;
+        cmd.add("--version");
+        try {
+            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            p.getOutputStream().close();
+            String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            if (!p.waitFor(10, TimeUnit.SECONDS)) {
+                p.destroyForcibly();
+                return null;
+            }
+            Matcher m = Pattern.compile("Python (\\d+)\\.(\\d+)(?:\\.(\\d+))?").matcher(out);
+            if (!m.find()) return null;
+            return new int[]{Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                    m.group(3) == null ? 0 : Integer.parseInt(m.group(3))};
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    static boolean atLeast(int[] v, int[] min) {
+        return v[0] != min[0] ? v[0] > min[0] : v[1] >= min[1];
+    }
+
+    /** Shows which Python a command runs: green when it is new enough, red when it is missing or too old. */
+    static void checkPython(String command, JLabel label) {
+        label.setText(Text.t("Checking Python..."));
+        label.setForeground(Theme.muted());
+        Object token = newCheck(label);
+        new Thread(() -> {
+            int[] v = pythonVersion(command);
+            SwingUtilities.invokeLater(() -> {
+                if (!isLatestCheck(label, token)) return;
+                if (v == null) {
+                    label.setText("Python not found - install Python 3 (python.org) or set its command in Settings");
+                    label.setForeground(Theme.error());
+                } else if (!atLeast(v, MIN_PYTHON)) {
+                    label.setText("Python " + v[0] + "." + v[1] + "." + v[2] + " - Python " + MIN_PYTHON[0] + "." + MIN_PYTHON[1]
+                            + " or newer is needed");
+                    label.setForeground(Theme.error());
+                } else {
+                    label.setText("Python " + v[0] + "." + v[1] + "." + v[2]);
+                    label.setForeground(Theme.ok());
+                }
+            });
+        }, "evia-python-check").start();
+    }
+
     /** The board package index that arduino-cli installs the ESP32 core from. */
     static String esp32Index() {
         return PREFS.get("esp32Index", Toolchains.ESP32_INDEX);
@@ -412,6 +487,16 @@ final class Settings {
         JTextField editor = new JTextField(editorCommand(), 42);
         JTextField compiler = new JTextField(compilerCommand(), 42);
         JLabel compilerStatus = new JLabel(" ");
+        JTextField python = new JTextField(pythonCommand(), 42);
+        python.setToolTipText(Text.t("The command that runs generated Python, e.g. python3, py or a full path"));
+        JLabel pythonStatus = new JLabel(" ");
+        JButton detectPython = new JButton(Text.t("Detect"));
+        detectPython.addActionListener(e -> {
+            python.setText(detectPython());
+            checkPython(python.getText(), pythonStatus);
+        });
+        JButton checkPythonBtn = new JButton(Text.t("Check"));
+        checkPythonBtn.addActionListener(e -> checkPython(python.getText(), pythonStatus));
         JButton detectEditor = new JButton(Text.t("Detect"));
         detectEditor.addActionListener(e -> editor.setText(ExternalEditor.defaultCommand()));
         JComboBox<String> familyBox = new JComboBox<>(new String[]{"Clang (LLVM)", "GCC (GNU)"});
@@ -502,27 +587,41 @@ final class Settings {
         p.add(new JLabel(Text.t("External editor (Vim):")), g);
         g.gridx = 1; p.add(editor, g);
         g.gridx = 2; p.add(detectEditor, g);
-        g.gridx = 1; g.gridy = 3; g.gridwidth = 2;
+        // rows follow one another: fixed row numbers here once put two rows on top of each other
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
         p.add(small("{file} = file to edit. gVim: gvim -f {file}   Terminal Vim on Windows: cmd /c start \"Vim\" /wait vim {file}"), g);
-        g.gridx = 0; g.gridy = 4; g.gridwidth = 1;
+        g.gridy++; g.gridx = 0; g.gridwidth = 1;
         p.add(new JLabel(Text.t("Compiler:")), g);
         g.gridx = 1; p.add(familyBox, g);
-        g.gridx = 0; g.gridy = 5;
+        g.gridy++; g.gridx = 0;
         p.add(new JLabel(Text.t("Command (C++):")), g);
         g.gridx = 1; p.add(compiler, g);
-        g.gridy = 4;
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         btns.add(defCompiler);
         btns.add(check);
         if (ToolchainInstaller.supported()) btns.add(install);
-        g.gridx = 2; g.gridy = 5; p.add(btns, g);
-        g.gridx = 1; g.gridy = 6; g.gridwidth = 2;
+        g.gridx = 2; p.add(btns, g);
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
         p.add(small("{src} = generated file, {exe} = program. For C, the matching C compiler (clang, gcc) and -std= are used."), g);
         g.gridy++;
         p.add(small("Clang " + LATEST_CLANG + " is the latest stable; GCC " + MIN_GCC + " or newer works too"
                 + (ToolchainInstaller.supported() ? ". Windows: Install sets up llvm-mingw or WinLibs GCC, no Visual Studio needed." : ".")), g);
         g.gridy++;
         p.add(compilerStatus, g);
+
+        g.gridy++; g.gridx = 0; g.gridwidth = 1;
+        p.add(new JLabel(Text.t("Python:")), g);
+        g.gridx = 1; p.add(python, g);
+        JPanel pyBtns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        pyBtns.add(detectPython);
+        pyBtns.add(checkPythonBtn);
+        pyBtns.add(getButton(p, Toolchains.Tool.PYTHON, python));
+        g.gridx = 2; p.add(pyBtns, g);
+        g.gridy++; g.gridx = 1; g.gridwidth = 2;
+        p.add(small("Language Python 3 runs the generated file with this command (Python " + MIN_PYTHON[0] + "." + MIN_PYTHON[1]
+                + " or newer, standard library only)."), g);
+        g.gridy++;
+        p.add(pythonStatus, g);
 
         g.gridy++; g.gridx = 0; g.gridwidth = 3;
         p.add(new JSeparator(), withFill(g));
@@ -609,6 +708,7 @@ final class Settings {
         p.add(small("<html>FPGA: Artix-7 builds with Vivado (batch mode) or with the open-source openXC7 tools (yosys, nextpnr-xilinx, Project X-Ray);<br>"
                 + "the GateMate always uses yosys, nextpnr-himbaechel and gmpack. openFPGALoader loads the bitstream. VHDL needs yosys with its ghdl plugin.</html>"), g);
         checkCompiler(compiler.getText(), compilerStatus);
+        checkPython(python.getText(), pythonStatus);
         scanPorts(port, portStatus, scan);
 
         JScrollPane scroll = new JScrollPane(p);
@@ -624,6 +724,7 @@ final class Settings {
         PREFS.put("board", ((Board) boardBox.getSelectedItem()).key());
         PREFS.put("serialPort", portOf(port));
         PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
+        if (!python.getText().trim().equals(pythonCommand())) PREFS.put("python", python.getText().trim());
         PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
         PREFS.put("avrGcc", avrGcc.getText().trim().isEmpty() ? "avr-gcc" : avrGcc.getText().trim());
         PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());

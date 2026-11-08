@@ -7,6 +7,7 @@
   var outEl = document.getElementById("output");
   var noteEl = document.getElementById("sample-note");
 
+  var PY_KEYWORDS = /\b(def|class|return|if|elif|else|while|for|in|not|and|or|break|pass|global|raise|try|except|True|False|None|self)\b/g;
   var KEYWORDS = /\b(void|int|double|static|return|if|else|for|while|do|switch|case|break|default|struct|const|goto|throw|try|catch|namespace|using|typedef|char|unsigned|sizeof|auto|new|delete|nullptr)\b/g;
 
   function esc(s) {
@@ -14,9 +15,10 @@
   }
 
   // Comments, strings and keywords; labels of goto flow ("L3:") stand out too.
-  function highlight(src) {
+  function highlight(src, py) {
+    var keywords = py ? PY_KEYWORDS : KEYWORDS;
     return src.split("\n").map(function (line) {
-      var m = line.match(/^(.*?)(\/\/.*)$/);
+      var m = py ? line.match(/^(.*?)(#.*)$/) : line.match(/^(.*?)(\/\/.*)$/);
       var code = m ? m[1] : line, comment = m ? m[2] : "";
       if (code.indexOf('"') >= 0 && comment) {   // a // inside a string literal is not a comment
         var quotes = (code.match(/"/g) || []).length;
@@ -25,7 +27,7 @@
       var parts = code.split(/("(?:[^"\\]|\\.)*")/);
       var html = parts.map(function (p, i) {
         if (i % 2 === 1) return '<span class="tok-s">' + esc(p) + "</span>";
-        var e = esc(p).replace(KEYWORDS, '<span class="tok-k">$1</span>');
+        var e = esc(p).replace(keywords, '<span class="tok-k">$1</span>');
         return e.replace(/^(L\d+(?:_\w+)?):$/, '<span class="tok-l">$1</span>:');
       }).join("");
       return html + (comment ? '<span class="tok-c">' + esc(comment) + "</span>" : "");
@@ -36,8 +38,9 @@
     var key = state.lang + "/" + state.flow + "/" + state.values;
     var s = samples[key];
     if (!s) return;
-    codeEl.innerHTML = highlight(s.code);
-    var fn = state.lang.indexOf("c++") === 0 ? "Program::run()" : "run_program()";
+    var py = state.lang === "python";
+    codeEl.innerHTML = highlight(s.code, py);
+    var fn = py ? "Program.run()" : state.lang.indexOf("c++") === 0 ? "Program::run()" : "run_program()";
     var label = document.querySelector('[data-lang="' + state.lang + '"]').textContent;
     noteEl.textContent = (noteEl.dataset.note || "{lang}: {fn}, {lines}")   // the page's language
       .replace("{lang}", label).replace("{fn}", fn).replace("{lines}", s.lines);
