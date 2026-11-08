@@ -1,8 +1,24 @@
 # Serving evia.am from the workstation
 
-The site is static files; nginx serves them over HTTPS and GitLab stays private. Everything below
-is done once, on the machine itself, with `sudo` — which is why it is written down rather than
-automated: these steps change how that computer is reachable from the internet.
+The site is static files; nginx serves them over HTTPS and GitLab stays private.
+
+**The short way** — `setup.sh` does everything below, is safe to run twice, and keeps a copy of
+`gitlab.rb` before touching it:
+
+```bash
+packaging/nginx/setup.sh --check             # what is done and what is not; needs no sudo
+sudo packaging/nginx/setup.sh --stage1       # GitLab off port 80, nginx, the web root
+#   ... then forward TCP 80 and TCP 443 to this machine on the router ...
+sudo EMAIL=you@example.com packaging/nginx/setup.sh --stage2 --deploy
+```
+
+Two stages because certbot proves the domain by answering on port 80 from the internet, so the
+router has to forward it first; everything that does not depend on the router happens in stage 1.
+`--check` before stage 2 will tell you whether the domain actually points here yet — asking for a
+certificate before it does wastes one of a limited number of attempts.
+
+The rest of this file is what those stages do, for when something needs doing by hand. Each step
+needs `sudo`, because they change how that computer is reachable from the internet.
 
 The shape it ends in:
 
