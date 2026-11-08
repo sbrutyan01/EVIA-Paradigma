@@ -2,20 +2,26 @@
 # Sets this machine up to serve the site at a domain over HTTPS, with GitLab kept private.
 # Run it with sudo, on the machine itself. It is idempotent: running it again is safe.
 #
-#   sudo packaging/nginx/setup.sh --stage1          # everything that does not need the router
-#   ... forward TCP 80 and TCP 443 to this machine ...
-#   sudo packaging/nginx/setup.sh --stage2          # the certificate and the real config
-#   packaging/nginx/setup.sh --check               # what is done and what is not (no sudo needed)
+#   sudo packaging/nginx/setup.sh --all --allow=1883,8443      # the whole thing
+#   packaging/nginx/setup.sh --check                           # the state of it, without sudo
 #
-#   DOMAIN=evia.am   the domain (default evia.am)
-#   LAN_IP           this machine's address on the network, for the GitLab block
+# or one piece at a time:
 #
-# Why two stages: certbot proves the domain by answering on port 80 from the internet, so the
-# router has to forward it first. Everything that does not depend on the router happens in stage 1,
-# so the window where this machine is reachable is as short as possible.
+#   sudo packaging/nginx/setup.sh --firewall --allow=1883,8443 # close what should not be open
+#   sudo packaging/nginx/setup.sh --stage1 --selfsigned        # nginx, the web root, GitLab moved
+#   sudo packaging/nginx/setup.sh --stage2                     # the trusted certificate
 #
-# What it deliberately does NOT do: touch the router, open any firewall, or expose GitLab. Those
-# are yours to decide, and the first two cannot be done from here anyway.
+#   DOMAIN=evia.am      the domain (default evia.am)
+#   EMAIL=...           where a failing renewal is reported (default: this repository's git address)
+#   ALLOW_PORTS=...     same as --allow=
+#   LAN_IP              this machine's own address, if it cannot be worked out
+#
+# Why --all can stop short: everything except the certificate is under this machine's control. A
+# certificate needs the domain to point here first, which is DNS and nobody's to rush, so --all
+# does the rest, leaves the site served over http and its own certificate, and says what to add.
+#
+# What it deliberately does NOT do: expose GitLab, which stays on localhost and the VPN; open any
+# port beyond ssh, http, https and whatever --allow names; or touch DNS.
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 HERE="packaging/nginx"
@@ -40,6 +46,7 @@ for a in "$@"; do
         --check) STAGE=check ;;
         --deploy) DEPLOY=1 ;;
         --selfsigned) SELFSIGNED=1 ;;
+        --all) STAGE=all ;;
         --firewall) STAGE=firewall ;;
         --no-firewall) NO_FIREWALL=1 ;;
         --allow=*) ALLOW_PORTS="${a#--allow=}" ;;
@@ -48,7 +55,7 @@ for a in "$@"; do
         *) echo "unknown argument: $a" >&2; exit 2 ;;
     esac
 done
-[ -n "$STAGE" ] || { sed -n '2,18p' "$0"; exit 2; }
+[ -n "$STAGE" ] || { sed -n "2,22p" "$0"; exit 2; }
 
 say()  { printf '\n\033[1m== %s\033[0m\n' "$1"; }
 ok()   { printf '   \033[32mok\033[0m    %s\n' "$1"; }
@@ -161,6 +168,35 @@ firewall() {
 
 if [ "$STAGE" = firewall ]; then
     firewall
+    exit 0
+fi
+
+# ---------------------------------------------------------------- --all: the whole thing, once
+#
+# Runs stage 1, deploys the site, and then stage 2 if the domain is ready - and says so rather than
+# failing if it is not, because DNS is the one part nobody here controls.
+if [ "$STAGE" = all ]; then
+    SELFSIGNED=1
+    "$0" --stage1 --selfsigned ${ALLOW_PORTS:+--allow="$ALLOW_PORTS"} || exit 1
+    say "the site"
+    sudo -u "$OWNER" scripts/deploy-site.sh --downloads || warn "the deploy did not finish"
+    ips=$(getent ahostsv4 "$DOMAIN" 2>/dev/null | awk '{print $1}' | sort -u)
+    pub=$(curl -fsS -m 10 https://api.ipify.org 2>/dev/null || true)
+    if [ -n "$ips" ] && [ -n "$pub" ] && echo "$ips" | grep -qx "$pub"; then
+        "$0" --stage2 ${ALLOW_PORTS:+--allow="$ALLOW_PORTS"} || exit 1
+    else
+        say "the certificate is the one thing left"
+        cat <<EOF
+   $DOMAIN does not point here yet: it resolves to ${ips:-nothing}, this connection is ${pub:-unknown}.
+   The site is already being served - check it now, by address, which needs no DNS:
+
+       http://$(echo "$pub" | sed 's/.*/&/')/
+
+   Add an A record for the bare domain (name "@") pointing at that address, wait for it, then:
+
+       sudo $0 --stage2
+EOF
+    fi
     exit 0
 fi
 
