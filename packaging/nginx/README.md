@@ -9,8 +9,28 @@ The site is static files; nginx serves them over HTTPS and GitLab stays private.
 packaging/nginx/setup.sh --check             # what is done and what is not; needs no sudo
 sudo packaging/nginx/setup.sh --stage1       # GitLab off port 80, nginx, the web root
 #   ... then forward TCP 80 and TCP 443 to this machine on the router ...
-sudo EMAIL=you@example.com packaging/nginx/setup.sh --stage2 --deploy
+sudo packaging/nginx/setup.sh --stage2 --deploy
 ```
+
+## Which certificate
+
+Two different things, and only one belongs on a public site.
+
+| | `openssl`, made here | Let's Encrypt, by certbot |
+|---|---|---|
+| Trusted by browsers | no — a full-page warning for every visitor | yes |
+| Costs | nothing | nothing |
+| Renews | no, expires in a year, by hand | by itself, every 90 days |
+| Good for | testing, and a server only this network reaches | anything the public visits |
+
+So `--stage2` uses Let's Encrypt. `--stage1 --selfsigned` additionally makes an `openssl`
+certificate in `/etc/ssl/evia/` and turns HTTPS on with it right away, which is useful before DNS
+has settled or the router forwards anything — you can open `https://<this machine>` on the network
+and see the real configuration working, warning and all. Stage 2 then replaces it with a trusted
+one, and nothing about the site changes.
+
+Renewal problems are reported to the address in `EMAIL`, which defaults to this repository's git
+address. It is the only notice you get if a renewal has been failing, so it is worth having.
 
 Two stages because certbot proves the domain by answering on port 80 from the internet, so the
 router has to forward it first; everything that does not depend on the router happens in stage 1.

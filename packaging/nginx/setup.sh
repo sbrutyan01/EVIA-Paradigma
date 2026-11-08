@@ -21,14 +21,20 @@ cd "$(dirname "$0")/../.."
 HERE="packaging/nginx"
 
 DOMAIN="${DOMAIN:-evia.am}"
+# Where a failing renewal is reported to. Overridden with EMAIL=...
+EMAIL="${EMAIL:-$(git config user.email 2> /dev/null || true)}"
+EMAIL="${EMAIL:-sbrutyan01@gmail.com}"
+SELF="/etc/ssl/evia"
 STAGE=""
 DEPLOY=0
+SELFSIGNED=0
 for a in "$@"; do
     case "$a" in
         --stage1) STAGE=1 ;;
         --stage2) STAGE=2 ;;
         --check) STAGE=check ;;
         --deploy) DEPLOY=1 ;;
+        --selfsigned) SELFSIGNED=1 ;;
         -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
         *) echo "unknown argument: $a" >&2; exit 2 ;;
     esac
@@ -125,12 +131,39 @@ EOF
     systemctl reload nginx || systemctl restart nginx || die "nginx would not reload"
     ok "nginx serves $DOMAIN on port 80, and GitLab for $LAN_IP only"
 
+    # A certificate made here, so HTTPS works at once and nginx can load the full config before
+    # Let's Encrypt has run. No browser trusts it - it warns every visitor - so it is a stand-in
+    # until stage 2, and certbot overwrites these paths with a real certificate.
+    if [ "$SELFSIGNED" = 1 ]; then
+        say "a certificate of our own (openssl)"
+        mkdir -p "$SELF"
+        if [ -f "$SELF/fullchain.pem" ]; then
+            ok "already there: $SELF/fullchain.pem"
+        else
+            openssl req -x509 -newkey rsa:2048 -nodes -days 365 -sha256 \
+                -keyout "$SELF/privkey.pem" -out "$SELF/fullchain.pem" \
+                -subj "/CN=$DOMAIN" \
+                -addext "subjectAltName=DNS:$DOMAIN,DNS:www.$DOMAIN,IP:$LAN_IP" \
+                2> /dev/null || die "openssl could not make a certificate"
+            chmod 600 "$SELF/privkey.pem"
+            ok "made one for $DOMAIN, www.$DOMAIN and $LAN_IP, valid a year"
+        fi
+        sed "s/192\.168\.10\.13/$LAN_IP/g; s/evia\.am/$DOMAIN/g; \
+             s#/etc/letsencrypt/live/$DOMAIN#$SELF#g" \
+            "$HERE/evia.am.conf" > /etc/nginx/sites-available/evia.am
+        nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
+        systemctl reload nginx || die "nginx would not reload"
+        ok "HTTPS is up with our own certificate - browsers will warn until stage 2"
+        warn "this certificate is NOT trusted by anyone: fine for testing and on this network,"
+        warn "not for visitors. Stage 2 replaces it with a real one."
+    fi
+
     say "stage 1 done"
     cat <<EOF
    Next, on the router: forward TCP 80 and TCP 443 to $LAN_IP. Nothing else - not 8081, not 22.
 
    Then, once "$0 --check" says the domain points here:
-       sudo $0 --stage2
+       sudo EMAIL=$EMAIL $0 --stage2 --deploy
 EOF
     exit 0
 fi
@@ -154,13 +187,13 @@ if [ "$STAGE" = 2 ]; then
         ok "already have one; certbot renews it by itself"
     else
         # An address gets you the warning when a renewal has been failing, which is the one
-        # notification worth having. Without EMAIL set, certbot registers without one.
-        if [ -n "${EMAIL:-}" ]; then
+        # notification worth having.
+        if [ -n "$EMAIL" ]; then
             reg=(-m "$EMAIL")
+            ok "renewal problems will be reported to $EMAIL"
         else
             reg=(--register-unsafely-without-email)
-            warn "no EMAIL set, so nothing will warn you if a renewal starts failing;"
-            warn "re-run as  sudo EMAIL=you@example.com $0 --stage2  to add one"
+            warn "no address, so nothing will warn you if a renewal starts failing"
         fi
         certbot --nginx --non-interactive --agree-tos --no-eff-email "${reg[@]}" \
                 -d "$DOMAIN" -d "www.$DOMAIN" \
