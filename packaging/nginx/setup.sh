@@ -47,6 +47,7 @@ for a in "$@"; do
         --deploy) DEPLOY=1 ;;
         --selfsigned) SELFSIGNED=1 ;;
         --all) STAGE=all ;;
+        --config) STAGE=config ;;
         --firewall) STAGE=firewall ;;
         --no-firewall) NO_FIREWALL=1 ;;
         --allow=*) ALLOW_PORTS="${a#--allow=}" ;;
@@ -176,6 +177,31 @@ firewall() {
 
 if [ "$STAGE" = firewall ]; then
     firewall
+    exit 0
+fi
+
+# ---------------------------------------------------------------- --config: just reinstall it
+#
+# Reinstalls the nginx config with whichever certificate is already there. Needed because a change
+# to the config should never wait on a certificate, and a certificate waits on DNS.
+if [ "$STAGE" = config ]; then
+    say "the nginx config"
+    [ -f /etc/nginx/sites-enabled/evia.am ] || die "nginx is not set up yet; run --stage1 first"
+    if [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
+        install_conf "$HERE/evia.am.conf" /etc/nginx/sites-available/evia.am
+        ok "using the Let's Encrypt certificate"
+    elif [ -f "$SELF/fullchain.pem" ]; then
+        install_conf "$HERE/evia.am.conf" /tmp/evia-conf.$$
+        sed "s#/etc/letsencrypt/live/$DOMAIN#$SELF#g" /tmp/evia-conf.$$ > /etc/nginx/sites-available/evia.am
+        rm -f /tmp/evia-conf.$$
+        ok "using our own certificate; --stage2 replaces it once DNS is ready"
+    else
+        install_conf "$HERE/evia.am.bootstrap.conf" /etc/nginx/sites-available/evia.am
+        ok "no certificate yet, so the http-only config"
+    fi
+    nginx -t 2> /tmp/evia-nginx-t.log || { cat /tmp/evia-nginx-t.log; die "nginx rejected the config"; }
+    systemctl reload nginx || die "nginx would not reload"
+    ok "reloaded"
     exit 0
 fi
 
@@ -317,14 +343,28 @@ if [ "$STAGE" = 2 ]; then
     say "before asking for a certificate"
     command -v certbot > /dev/null || die "certbot is not installed; run --stage1 first"
     [ -f /etc/nginx/sites-enabled/evia.am ] || die "the nginx config is not in place; run --stage1 first"
-    ips=$(getent ahostsv4 "$DOMAIN" 2>/dev/null | awk '{print $1}' | sort -u)
-    pub=$(curl -fsS -m 10 https://api.ipify.org 2>/dev/null)
-    [ -n "$ips" ] || die "$DOMAIN does not resolve. Wait for DNS; certbot would fail and
-    Let's Encrypt limits how often you may fail."
-    [ -n "$pub" ] && echo "$ips" | grep -qw "$pub" \
-        || die "$DOMAIN resolves to ${ips//$'\n'/ } but this connection is ${pub:-unknown}.
-    Fix the record, or wait for it to propagate, before asking for a certificate."
-    ok "$DOMAIN points at this connection"
+    pub=$(curl -fsS -m 10 https://api.ipify.org 2> /dev/null)
+    [ -n "$pub" ] || die "cannot work out this connection's public address"
+
+    # Ask only for the names that actually point here. A certificate request fails as a whole if
+    # any one name cannot be proved, so including a record that does not exist yet would waste an
+    # attempt - and Let's Encrypt limits those.
+    names=()
+    for n in "$DOMAIN" "www.$DOMAIN"; do
+        if getent ahostsv4 "$n" 2> /dev/null | awk '{print $1}' | grep -qx "$pub"; then
+            names+=(-d "$n"); ok "$n points here"
+        else
+            warn "$n does not point here, so it is left out of the request"
+        fi
+    done
+    if [ "${#names[@]}" = 0 ]; then
+        die "neither $DOMAIN nor www.$DOMAIN resolves to this connection ($pub).
+    Add an A record for the bare domain (name \"@\") pointing at it, wait, and run this again.
+    The site is already being served - http://$pub/ works now and needs no DNS."
+    fi
+    # --cert-name keeps the files under /etc/letsencrypt/live/$DOMAIN whichever names are included,
+    # so the config does not have to change when the apex record is added later.
+    cert_args=(--cert-name "$DOMAIN" "${names[@]}")
 
     say "the certificate"
     if [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
@@ -340,7 +380,7 @@ if [ "$STAGE" = 2 ]; then
             warn "no address, so nothing will warn you if a renewal starts failing"
         fi
         certbot --nginx --non-interactive --agree-tos --no-eff-email "${reg[@]}" \
-                -d "$DOMAIN" -d "www.$DOMAIN" \
+                "${cert_args[@]}" \
             || die "certbot failed. Almost always port 80 is not reaching this machine from the
     internet: check the forwarding rule. Its log is in /var/log/letsencrypt/."
         ok "certificate obtained"
