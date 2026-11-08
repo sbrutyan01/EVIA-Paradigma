@@ -59,6 +59,8 @@ Each installer includes its own Java runtime, so Java doesn't need to be install
 | System | File | Notes |
 |---|---|---|
 | Windows 10 / 11 (x64) | `EVIA-Paradigma-0.6.7-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.6.7-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.6.7-macos-x64.dmg` | Same as above |
 | Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.6.7_amd64.deb` | `sudo apt install ./evia-paradigma_0.6.7_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
 | Any OS with Java 25 | `evia-paradigma-0.6.7.jar` | `java -jar evia-paradigma-0.6.7.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
 

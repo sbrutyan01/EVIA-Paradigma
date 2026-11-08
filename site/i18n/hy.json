@@ -76,8 +76,8 @@
   ">Կոդը GitHub-ում</a>"
  ],
  [
-  "Windows and Linux; macOS builds will return later. Free and open source, MIT license.",
-  "Windows և Linux. macOS-ի տարբերակները կվերադառնան ավելի ուշ։ Անվճար, բաց կոդ, MIT լիցենզիա։"
+  "Windows, macOS and Linux. Free and open source, MIT license.",
+  "Windows, macOS և Linux։ Անվճար, բաց կոդ, MIT լիցենզիա։"
  ],
  [
   "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
@@ -306,6 +306,18 @@
  [
   "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
   "Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։"
+ ],
+ [
+  "<td>macOS, Apple Silicon</td>",
+  "<td>macOS, Apple Silicon</td>"
+ ],
+ [
+  "<td>macOS, Intel</td>",
+  "<td>macOS, Intel</td>"
+ ],
+ [
+  "Not notarized by Apple yet: if macOS won't open it, choose Open Anyway in System Settings, Privacy &amp; Security.",
+  "Դեռ վավերացված չէ Apple-ի կողմից. եթե macOS-ը չի բացում ծրագիրը, System Settings-ի Privacy &amp; Security բաժնում ընտրեք Open Anyway։"
  ],
  [
   "<td>Any system with Java 25</td>",
