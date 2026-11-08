@@ -1,14 +1,15 @@
 name: dns-check
 
-# Read-only: every record a browser might follow for a domain, and what each of them answers.
-# A browser prefers IPv6 when there is an AAAA record, so a v4-only check can miss the host that
-# visitors actually reach. Addresses masked; prints status, server and title only. Temporary.
+# Read-only. Asks the machine itself what it serves, by address rather than by name, so a flaky
+# DNS record cannot hide the answer. Nothing here may abort the job: every probe swallows its own
+# failure, because "it did not answer" is a result worth printing, not an error.
+# Temporary.
 
 on:
   workflow_dispatch:
     inputs:
       domain:
-        description: 'The domain to check'
+        description: 'The domain to check as well'
         required: false
         default: 'evia.am'
 
@@ -17,37 +18,45 @@ jobs:
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     steps:
-      - name: Every record, and what each answers
+      - name: Everything this machine is listening on
+        continue-on-error: true
         run: |
+          set +e
+          echo "--- every listening TCP socket, unfiltered:"
+          ss -ltnH 2>/dev/null | awk '{print "   " $4}' | sort -u \
+            | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'
+          echo "--- is 443 among them?"
+          if ss -ltnH 2>/dev/null | grep -qE ':443$|:443 '; then
+            echo "   YES - something here serves https"
+          else
+            echo "   NO - nothing on this machine listens on 443"
+          fi
+
+      - name: What answers on this machine's own public address
+        continue-on-error: true
+        run: |
+          set +e
+          mask() { sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g'; }
+          own=$(ip -4 -o addr show scope global 2>/dev/null \
+                | awk '$2 !~ /docker|tailscale/ {split($4,a,"/"); print a[1]; exit}')
+          echo "this machine's address: $(echo "$own" | mask)"
+          for u in "http://$own/" "https://$own/" "http://$own:8060/" "https://$own:8443/"; do
+            printf '\n--- %s\n' "$(echo "$u" | mask)"
+            curl -sSk -m 8 -o /tmp/body -w '    HTTP %{http_code}\n' "$u" 2>&1 | mask | head -2
+            grep -oiE '<title>[^<]*' /tmp/body 2>/dev/null | head -1 | cut -c8-80 | sed 's/^/    title: /'
+            grep -qiE 'id="devices"|data-devices|pic32' /tmp/body 2>/dev/null \
+              && echo "    >>> this one contains a devices/pic32 page"
+            rm -f /tmp/body
+          done
+
+      - name: And by name, if it resolves at the moment
+        continue-on-error: true
+        run: |
+          set +e
           d="${{ inputs.domain }}"
-          mask() { sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g; s/(([0-9a-f]{1,4}:){3})[0-9a-f:]+/\1x/gi'; }
-
-          echo "=== A records (IPv4):"
-          getent ahostsv4 "$d" 2>/dev/null | awk '{print "   " $1}' | sort -u | mask || echo "   none"
-          echo "=== AAAA records (IPv6) - a browser prefers these:"
-          getent ahostsv6 "$d" 2>/dev/null | awk '$1 ~ /:/ {print "   " $1}' | sort -u | mask || echo "   none"
-
-          echo "=== this machine's own addresses, for comparison:"
-          ip -o addr show scope global 2>/dev/null | awk '{print "   " $2, $4}' | mask
-
-          probe() {
-            printf '\n--- %s\n' "$2"
-            curl -sSk -m 10 -o /dev/null -w '    HTTP %{http_code}  via %{remote_ip}\n' $1 "$2" 2>&1 \
-              | mask | head -2
-            t=$(curl -sSk -m 10 $1 "$2" 2>/dev/null | tr -d '\n' | grep -oiE '<title>[^<]*' | head -1 | cut -c8-80)
-            [ -n "$t" ] && echo "    title: $t"
-            curl -sSk -m 10 $1 "$2" 2>/dev/null | grep -qiE 'id="devices"|mqtt|pic32' \
-              && echo "    mentions devices/mqtt/pic32"
-          }
-
-          probe "-4" "http://$d/"
-          probe "-4" "https://$d/"
-          probe "-6" "http://$d/"
-          probe "-6" "https://$d/"
-
-      - name: Is anything here on 443 at all
-        run: |
-          echo "--- ports 80 and 443, every address family:"
-          ss -ltnH 2>/dev/null | awk '$4 ~ /:(80|443)$/ {print "   " $4}' | sort -u \
-            | sed -E 's/([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+/\1.x/g' || echo "   nothing"
-          echo "--- if 443 is absent above, nothing on this machine serves https."
+          echo "A    : $(getent ahostsv4 "$d" 2>/dev/null | awk '{print $1}' | sort -u | tr '\n' ' ')"
+          echo "AAAA : $(getent ahostsv6 "$d" 2>/dev/null | awk '$1 ~ /:/ {print $1}' | sort -u | tr '\n' ' ')"
+          for u in "http://$d/" "https://$d/"; do
+            printf '%-24s ' "$u"
+            curl -sSk -m 8 -o /dev/null -w 'HTTP %{http_code}\n' "$u" 2>&1 | head -1
+          done
