@@ -77,7 +77,8 @@ jobs:
           fi
 
       - name: Rebuild the package server
-        if: steps.root.outputs.ready == 'true' && inputs.packages != false
+        # after a release there are no inputs: rebuild then too (a missing input compares equal to false)
+        if: steps.root.outputs.ready == 'true' && (github.event_name != 'workflow_dispatch' || inputs.packages)
         run: |
           # the jar of the newest release, exactly as published, is the application package
           tag=$(curl -fsS https://api.github.com/repos/${{ github.repository }}/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
