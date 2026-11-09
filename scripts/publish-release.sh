@@ -40,7 +40,7 @@ remote_for() {    # a pattern, e.g. github.com
     git remote -v | awk -v p="$1" '$2 ~ p && $3 == "(push)" {print $1; exit}'
 }
 GH=$(remote_for 'github\.com')
-GL=$(remote_for '192\.168\.|gitlab')
+GL=$(remote_for '192\.168\.|gitlab|git\.evia\.am')
 [ -n "$GH" ] || die "no remote points at github.com - add one, or push by URL"
 echo "github : $GH  ($(git remote get-url "$GH"))"
 [ "$GITLAB" = 1 ] && { [ -n "$GL" ] || die "--gitlab asked for, but no remote points at a GitLab"; \
