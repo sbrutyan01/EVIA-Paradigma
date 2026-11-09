@@ -84,6 +84,8 @@ public class Tour {
     /** A menu with one of its submenus open (the first item whose text starts with {@code prefix}). */
     static void subMenuShot(JFrame f, int index, String prefix, String name) throws Exception {
         JMenu top = f.getJMenuBar().getMenu(index);
+        ui(() -> top.doClick(0));   // a menu that fills itself when opened (Devices) has its entries only now
+        settle(400);
         JMenu sub = null;
         for (Component c : top.getMenuComponents()) if (c instanceof JMenu m && m.getText().startsWith(prefix)) sub = m;
         JMenu open = sub;
@@ -274,7 +276,6 @@ public class Tour {
         // ---- 6. save, menus
         ui(() -> { try { call(f, "save"); } catch (Exception e) { throw new RuntimeException(e); } });
         menuShot(f, 0, "12-menu-file");
-        subMenuShot(f, 0, "Settings", "36-menu-settings");
         subMenuShot(f, 0, "Open Example", "37-menu-examples");
         menuShot(f, 1, "13-menu-edit");
         menuShot(f, 3, "14-menu-run");
@@ -291,7 +292,9 @@ public class Tour {
         capture(new Rectangle(f.getX(), f.getY(), sl.x + sp.getWidth() + 20 - f.getX(), sl.y + sp.getHeight() + 20 - f.getY()), "24-menu-code-language");
         ui(() -> MenuSelectionManager.defaultManager().clearSelectedPath());
         menuShot(f, 4, "15-menu-git");
-        menuShot(f, 5, "16-menu-help");
+        menuShot(f, 5, "36-menu-settings");
+        subMenuShot(f, 6, "ESP32", "39-menu-devices");
+        menuShot(f, 7, "16-menu-help");
 
         // ---- 7. git commit and connect
         later(f, "gitCommit");

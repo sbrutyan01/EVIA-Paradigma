@@ -248,13 +248,26 @@ final class Settings {
         return PREFS.get("esp32Index", Toolchains.ESP32_INDEX);
     }
 
-    static String avrGcc() {
-        return PREFS.get("avrGcc", "avr-gcc");
+    /**
+     * A tool's command: what Settings holds, unless that is only the tool's plain name (or nothing),
+     * in which case the copy bundled with the application is used when there is one.
+     */
+    private static String tool(String key, String plain, String toolchain) {
+        String saved = PREFS.get(key, null);
+        if (saved != null && !saved.isBlank() && !saved.equals(plain)) return saved;
+        return Bundled.or(toolchain, plain);
     }
 
-    /** xc32-gcc, Microchip's free XC32 compiler. */
+    static String avrGcc() {
+        return tool("avrGcc", "avr-gcc", "avr-gcc");
+    }
+
+    /** xc32-gcc, Microchip's free XC32 compiler: as set, else where Microchip's installer put it, else from PATH. */
     static String xc32() {
-        return PREFS.get("xc32", "xc32-gcc");
+        String saved = PREFS.get("xc32", null);
+        if (saved != null && !saved.isBlank() && !saved.equals("xc32-gcc")) return saved;
+        java.nio.file.Path found = Xc32Installer.find();
+        return found != null ? found.toString() : "xc32-gcc";
     }
 
     /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
@@ -292,15 +305,15 @@ final class Settings {
     }
 
     static Fpga.Tools fpgaTools() {
-        return new Fpga.Tools(artixOpenSource(), PREFS.get("vivado", "vivado"), PREFS.get("yosys", "yosys"),
-                PREFS.get("nextpnrGateMate", "nextpnr-himbaechel"), PREFS.get("gmpack", "gmpack"),
-                PREFS.get("openFpgaLoader", "openFPGALoader"), PREFS.get("nextpnrXilinx", "nextpnr-xilinx"),
+        return new Fpga.Tools(artixOpenSource(), PREFS.get("vivado", "vivado"), tool("yosys", "yosys", "oss-cad-suite"),
+                tool("nextpnrGateMate", "nextpnr-himbaechel", "oss-cad-suite"), tool("gmpack", "gmpack", "oss-cad-suite"),
+                tool("openFpgaLoader", "openFPGALoader", "oss-cad-suite"), tool("nextpnrXilinx", "nextpnr-xilinx", "oss-cad-suite"),
                 PREFS.get("xilinxChipdb", "chipdb"), PREFS.get("prjxrayDb", "prjxray-db"),
                 PREFS.get("fasm2frames", "fasm2frames"), PREFS.get("frames2bit", "xc7frames2bit"));
     }
 
     static String avrdude() {
-        return PREFS.get("avrdude", "avrdude");
+        return tool("avrdude", "avrdude", "avr-gcc");
     }
 
     /** The board's serial port for Upload, e.g. COM3 or /dev/ttyACM0 (empty: ask). */
@@ -681,6 +694,12 @@ final class Settings {
         picChip.setSelectedItem(board(Target.Lang.PIC32));
         JTextField xc32 = new JTextField(xc32(), 30);
         JTextField pic32Up = new JTextField(pic32Upload(), 30);
+        JButton getXc32 = new JButton(Text.t("Get XC32..."));
+        getXc32.setToolTipText(Text.t("Download Microchip's free XC32 from microchip.com and install it"));
+        getXc32.addActionListener(e -> {
+            java.nio.file.Path gcc = Xc32Installer.install(p(getXc32));
+            if (gcc != null) xc32.setText(gcc.toString());
+        });
         JComboBox<String> pic32Net = new JComboBox<>(new String[] {
                 "WiFi module on UART2 (every chip)", "Ethernet, Harmony TCP/IP (MX695/795)"});
         pic32Net.setSelectedIndex(pic32Ethernet() ? 1 : 0);
@@ -758,7 +777,9 @@ final class Settings {
         Form pic = new Form();
         pic.row(Text.t("Chip:"), picChip)
                 .row(Text.t("Serial port:"), portRow.get())
-                .row(Text.t("xc32-gcc:"), xc32, getButton(pic, Toolchains.Tool.XC32, xc32))
+                .row(Text.t("xc32-gcc:"), xc32, getXc32)
+                .note(small("Get XC32 downloads Microchip's free XC32 " + Xc32Installer.VERSION
+                        + " from microchip.com and runs Microchip's installer (it asks for an administrator password)."))
                 .row(Text.t("PIC32 upload:"), pic32Up)
                 .note(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."))
                 .row(Text.t("PIC32 MQTT over:"), pic32Net)
@@ -810,24 +831,26 @@ final class Settings {
         PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
         if (!python.getText().trim().equals(pythonCommand())) PREFS.put("python", python.getText().trim());
         PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
-        PREFS.put("avrGcc", avrGcc.getText().trim().isEmpty() ? "avr-gcc" : avrGcc.getText().trim());
-        PREFS.put("avrdude", avrdude.getText().trim().isEmpty() ? "avrdude" : avrdude.getText().trim());
-        PREFS.put("xc32", xc32.getText().trim().isEmpty() ? "xc32-gcc" : xc32.getText().trim());
+        putTool("avrGcc", avrGcc, "avr-gcc", "avr-gcc");
+        putTool("avrdude", avrdude, "avrdude", "avr-gcc");
+        java.nio.file.Path foundXc32 = Xc32Installer.find();
+        String xc = xc32.getText().trim();
+        PREFS.put("xc32", xc.isEmpty() || (foundXc32 != null && xc.equals(foundXc32.toString())) ? "xc32-gcc" : xc);
         PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
         Text.Lang beforeLang = uiLanguage();
         useUiLanguage((Text.Lang) uiLang.getSelectedItem());
         PREFS.put("pic32Net", pic32Net.getSelectedIndex() == 1 ? "ethernet" : "uart");
         PREFS.put("artixFlow", artixFlow.getSelectedIndex() == 1 ? "open" : "vivado");
         putTool("vivado", vivado, "vivado");
-        putTool("yosys", yosys, "yosys");
-        putTool("nextpnrXilinx", nextpnrXilinx, "nextpnr-xilinx");
+        putTool("yosys", yosys, "yosys", "oss-cad-suite");
+        putTool("nextpnrXilinx", nextpnrXilinx, "nextpnr-xilinx", "oss-cad-suite");
         putTool("xilinxChipdb", chipdb, "chipdb");
         putTool("prjxrayDb", prjxray, "prjxray-db");
         putTool("fasm2frames", fasm2frames, "fasm2frames");
         putTool("frames2bit", frames2bit, "xc7frames2bit");
-        putTool("nextpnrGateMate", gatemate, "nextpnr-himbaechel");
-        putTool("gmpack", gmpack, "gmpack");
-        putTool("openFpgaLoader", loader, "openFPGALoader");
+        putTool("nextpnrGateMate", gatemate, "nextpnr-himbaechel", "oss-cad-suite");
+        putTool("gmpack", gmpack, "gmpack", "oss-cad-suite");
+        putTool("openFpgaLoader", loader, "openFPGALoader", "oss-cad-suite");
         PREFS.putBoolean("wheelZooms", wheel.isSelected());
         fire();
         if (uiLanguage() != beforeLang) {
@@ -893,6 +916,12 @@ final class Settings {
 
     private static void putTool(String key, JTextField field, String fallback) {
         PREFS.put(key, field.getText().trim().isEmpty() ? fallback : field.getText().trim());
+    }
+
+    /** Saves a tool's field; left at the bundled copy (or empty) it is stored as the plain name, so it follows updates. */
+    private static void putTool(String key, JTextField field, String plain, String toolchain) {
+        String v = field.getText().trim();
+        PREFS.put(key, v.isEmpty() || v.equals(Bundled.or(toolchain, plain)) ? plain : v);
     }
 
     static void checkCompiler(String command, JLabel label) {

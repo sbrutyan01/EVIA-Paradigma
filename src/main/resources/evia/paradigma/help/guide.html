@@ -6,7 +6,7 @@
 <p>EVIA Paradigma is visual programming: drag blocks from the palette onto the canvas, wire them
 together and press <b>Run</b>. The same program can be turned into C (C99, C11, C17) or C++ (C++98 to C++20)
 and compiled with Clang or GCC, or into code for Arduino and ESP32 boards.</p>
-<p><b>The interface itself</b> is in English, Russian or Armenian too: <i>File</i> &gt; <i>Settings</i> &gt; <i>General</i> &gt; <i>Interface language</i>. Menus, buttons, the palette and the names on the blocks follow; the generated code and the compilers' messages stay in English. The change takes effect when EVIA Paradigma starts again.</p>
+<p><b>The interface itself</b> is in English, Russian or Armenian too: <i>Settings</i> &gt; <i>General</i> &gt; <i>Interface language</i>. Menus, buttons, the palette and the names on the blocks follow; the generated code and the compilers' messages stay in English. The change takes effect when EVIA Paradigma starts again.</p>
 <ol>
   <li>Drag <b>Start</b>, a few blocks and <b>End</b> onto the canvas.</li>
   <li>Drag from the small circle at the bottom of a block (its output port) to another block to wire them.</li>
@@ -133,7 +133,7 @@ runtime checks. A program that keeps text in a variable can't use Fast values; G
 Right-click a block, a method or a class and choose <b>View source code</b> to see the code it became, highlighted,
 in the language you chose.</p>
 <p>The code window can save the file, compile it and run it. For C it uses the matching C compiler (clang, gcc), the
-right <code>-std=</code> and <code>-lm</code>. <b>File &gt; Settings &gt; C, C++ and Python</b> chooses the compiler: <b>Clang</b> (clang++ / clang) or
+right <code>-std=</code> and <code>-lm</code>. <b>Settings &gt; C, C++ and Python</b> chooses the compiler: <b>Clang</b> (clang++ / clang) or
 <b>GCC</b> (g++ / gcc, version 13 or newer). On Windows EVIA Paradigma can install either one for you: llvm-mingw
 (Clang) or WinLibs (GCC, MinGW-w64). Visual Studio is not needed.</p>
 
@@ -188,7 +188,7 @@ Ethernet port on the MX695F512L, the MX795F512L and the Ethernet Starter Kit II:
 <b>Ethernet</b> in Settings and the generated file becomes an application for an MPLAB X Harmony project, which
 brings the TCP/IP stack. That route is experimental: it compiles against stub headers here, but has never been built
 against real Harmony or run on a board, so the WiFi module is still the tested one.</p>
-<p><b>MQTT over Ethernet (experimental).</b> For the MX695F512L, the MX795F512L and the PIC32 Ethernet Starter Kit II, <i>File</i> &gt; <i>Settings</i> &gt; <i>PIC32</i> &gt; <i>PIC32 MQTT over</i> &gt; <i>Ethernet</i> makes the generated file an application for an MPLAB X Harmony project: Harmony brings the TCP/IP stack, the project keeps its own configuration, clock and main(), and you call <code>app_run()</code> from it. Enable TCP, the DHCP and DNS clients, the Ethernet MAC driver and the board's PHY (LAN8740 on the starter kit). The address comes from DHCP, so the network name and password are not used. This path compiles against stub headers in the checks, but has not been built against real Harmony or run on a board: the WiFi module is the tested one.</p>
+<p><b>MQTT over Ethernet (experimental).</b> For the MX695F512L, the MX795F512L and the PIC32 Ethernet Starter Kit II, <i>Settings</i> &gt; <i>PIC32</i> &gt; <i>PIC32 MQTT over</i> &gt; <i>Ethernet</i> makes the generated file an application for an MPLAB X Harmony project: Harmony brings the TCP/IP stack, the project keeps its own configuration, clock and main(), and you call <code>app_run()</code> from it. Enable TCP, the DHCP and DNS clients, the Ethernet MAC driver and the board's PHY (LAN8740 on the starter kit). The address comes from DHCP, so the network name and password are not used. This path compiles against stub headers in the checks, but has not been built against real Harmony or run on a board: the WiFi module is the tested one.</p>
 <p>Pins can be numbers, expressions or the board's names <code>LED_BUILTIN</code>, <code>A0</code> ... <code>A15</code>;
 <code>HIGH</code> and <code>LOW</code> work in any expression. These names can't be used as variables.</p>
 <p>The bus blocks work in Run and in all three board languages. Open a bus before using it; addresses are 7-bit and the
@@ -216,7 +216,7 @@ a button on every input pin is pressed during the second half of each 2 seconds,
 </table>
 <p>Pins are fixed when the design is built, so a pin must be a number or a name: <code>LED0</code>, <code>SW3</code>, <code>BTNC</code>, <code>BTN0</code>, <code>JA1</code>. A pin the board does not have is an error that lists the pins it has. A pin cannot be both read and written.</p>
 <p><b>Whole numbers.</b> Arithmetic wraps at 32 bits; <code>/</code> and <code>%</code> truncate toward zero, and dividing by 0 gives 0. <b>Run</b> uses double numbers, so <code>5 / 2</code> is 2.5 in Run and 2 on the FPGA. Not supported yet: classes, Input, Analog Read, SPI, I2C and text in variables (text works in Print).</p>
-<p><b>Build and Upload.</b> Artix-7: Vivado in batch mode, or the open-source flow (yosys, nextpnr-xilinx, Project X-Ray), chosen in File &gt; Settings &gt; FPGA. GateMate: yosys, nextpnr-himbaechel, gmpack. Upload uses Vivado or openFPGALoader. The pin constraints are in the first comment of the file, and <code>-o</code> on the command line also writes a <code>.xdc</code> or <code>.ccf</code> file.</p>
+<p><b>Build and Upload.</b> Artix-7: Vivado in batch mode, or the open-source flow (yosys, nextpnr-xilinx, Project X-Ray), chosen in Settings &gt; FPGA. GateMate: yosys, nextpnr-himbaechel, gmpack. Upload uses Vivado or openFPGALoader. The pin constraints are in the first comment of the file, and <code>-o</code> on the command line also writes a <code>.xdc</code> or <code>.ccf</code> file.</p>
 <p><b>Tested:</b> simulation against Run, and synthesis with open-source tools. <b>Not tested:</b> Vivado, openXC7 and real boards.</p>
 <p>Examples are in File &gt; Open Example &gt; FPGA Boards.</p>
 <a name="keys"></a>

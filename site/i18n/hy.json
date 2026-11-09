@@ -1,570 +1,574 @@
 [
-  [
-    "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
-    "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, Python-ի, որոնվածքի և HDL կոմպիլյացիայով</title>"
-  ],
-  [
-    "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
-    "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնհինգ լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3, Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։"
-  ],
-  [
-    "content=\"Draw a program as blocks. Pick the language it becomes.\"",
-    "content=\"Նկարեք ծրագիրը բլոկներով։ Ընտրեք լեզուն, որով այն կդարձվի։\""
-  ],
-  [
-    ">Skip to content</a>",
-    ">Անցնել բովանդակությանը</a>"
-  ],
-  [
-    "aria-label=\"EVIA Paradigma home\"",
-    "aria-label=\"EVIA Paradigma՝ գլխավոր էջ\""
-  ],
-  [
-    "aria-label=\"Main\"",
-    "aria-label=\"Գլխավոր ընտրացանկ\""
-  ],
-  [
-    "<a href=\"#features\">Features</a>",
-    "<a href=\"#features\">Հնարավորություններ</a>"
-  ],
-  [
-    "<a href=\"#tutorial\">Tutorial</a>",
-    "<a href=\"#tutorial\">Ուսուցում</a>"
-  ],
-  [
-    "<a href=\"#download\">Download</a>",
-    "<a href=\"#download\">Ներբեռնել</a>"
-  ],
-  [
-    "<a href=\"#docs\">Docs</a>",
-    "<a href=\"#docs\">Փաստաթղթեր</a>"
-  ],
-  [
-    "aria-label=\"Site language\"",
-    "aria-label=\"Կայքի լեզուն\""
-  ],
-  [
-    "<span class=\"site-language-label\">Language</span>",
-    "<span class=\"site-language-label\">Կայքի լեզուն</span>"
-  ],
-  [
-    "aria-label=\"Color theme\"",
-    "aria-label=\"Գունային թեմա\""
-  ],
-  [
-    "</svg>Light</button>",
-    "</svg>Լուսավոր</button>"
-  ],
-  [
-    "</svg>Dark</button>",
-    "</svg>Մութ</button>"
-  ],
-  [
-    "<h1>Draw a program.<br>Pick its language.</h1>",
-    "<h1>Նկարեք ծրագիրը։<br>Ընտրեք նրա լեզուն։</h1>"
-  ],
-  [
-    "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
-    "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3 ծրագիր, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։"
-  ],
-  [
-    "href=\"#download\">Download {{VERSION}}</a>",
-    "href=\"#download\">Ներբեռնել {{VERSION}}</a>"
-  ],
-  [
-    ">Source on GitHub</a>",
-    ">Կոդը GitHub-ում</a>"
-  ],
-  [
-    "Windows, macOS and Linux. Free and open source, MIT license.",
-    "Windows, macOS և Linux։ Անվճար, բաց կոդ, MIT լիցենզիա։"
-  ],
-  [
-    "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
-    "alt=\"Բլոկ-սխեմա՝ Start, Set n = 3, For ցիկլ 1-ից n, որը տպում է քայլը և կանչում c.add(i)-ը Counter օբյեկտի վրա, հետո c.show() և End։\""
-  ],
-  [
-    "aria-label=\"Generated code options\"",
-    "aria-label=\"Գեներացվող կոդի ընտրանքներ\""
-  ],
-  [
-    "aria-label=\"Language\"",
-    "aria-label=\"Լեզու\""
-  ],
-  [
-    "aria-label=\"Flow\"",
-    "aria-label=\"Կառավարման հոսք\""
-  ],
-  [
-    "aria-label=\"Values\"",
-    "aria-label=\"Արժեքներ\""
-  ],
-  [
-    "aria-label=\"Program output\"",
-    "aria-label=\"Ծրագրի ելքը\""
-  ],
-  [
-    "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
-    "data-note=\"Ձախ կողմի սխեման {lang} լեզվով՝ {fn}, գեներացված {lines} տողանոց ֆայլից։\""
-  ],
-  [
-    ">The diagram on the left, as the generator writes it.</span>",
-    ">Ձախ կողմի սխեման՝ այնպես, ինչպես այն գրում է գեներատորը։</span>"
-  ],
-  [
-    "All 36 versions print the same output as the built-in interpreter.",
-    "Բոլոր 36 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։"
-  ],
-  [
-    "<h2 id=\"features-h\">What it does</h2>",
-    "<h2 id=\"features-h\">Ինչ է անում ծրագիրը</h2>"
-  ],
-  [
-    "<h3>Programs are blocks and wires</h3>",
-    "<h3>Ծրագիրը բլոկներ և կապեր է</h3>"
-  ],
-  [
-    "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
-    "Start, Set, Input, Print, If/Else, For, While և Do-While բլոկներ են, իսկ դրանց միջև կապերը որոշում են կատարման հերթականությունը։ Սեղմեք Run, և կատարվող բլոկը լուսավորվում է։ Արտահայտություններն աշխատում են թվերի և տեքստի հետ՝ <code>&amp;&amp; || !</code>, համեմատություններ և սովորական թվաբանություն։"
-  ],
-  [
-    "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
-    "alt=\"Բլոկներից հավաքված For ցիկլը և դրա ելքը՝ step 1, step 2, step 3։\""
-  ],
-  [
-    "<h3>Classes, objects and modules</h3>",
-    "<h3>Դասեր, օբյեկտներ և մոդուլներ</h3>"
-  ],
-  [
-    "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
-    "Դասն ունի սկզբնական արժեքներով դաշտեր, կոնստրուկտոր և մեթոդներ, և յուրաքանչյուր մեթոդ առանձին բլոկ-սխեմա է՝ Enter-ից մինչև Exit։ Յուրաքանչյուր Exit դառնում է կանչող բլոկի ելք։ Նույն օբյեկտի անունով բլոկներն աշխատում են մեկ օբյեկտի հետ։ Դասերը կարելի է պահել որպես մոդուլներ (<code>.eviam</code>) և ներմուծել այլ ծրագրերում։"
-  ],
-  [
-    "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
-    "alt=\"Counter դասի պատուհանը՝ դաշտերի, կոնստրուկտորի և մեթոդների ներդիրներով, add(x) մեթոդը x-ը գումարում է this.total-ին։\""
-  ],
-  [
-    "<h3>Eight C and C++ standards, two ways to write them</h3>",
-    "<h3>C-ի և C++-ի ութ ստանդարտ, գրելու երկու եղանակ</h3>"
-  ],
-  [
-    "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
-    "Գործիքագոտուց ընտրեք C99, C11, C17, C++98, C++11, C++14, C++17 կամ C++20։ <b>Structured</b>-ը գրում է if/else, ցիկլեր և switch, իսկ <b>Goto</b>-ն յուրաքանչյուր բլոկ դարձնում է նշիչ, յուրաքանչյուր կապ՝ անցում։ <b>Safe</b> արժեքները պահում են տեքստը և ինտերպրետատորի բոլոր ստուգումները, իսկ <b>Fast</b> արժեքները պարզ <code>double</code>-ներ են՝ առանց կատարման ժամանակի ստուգումների։ C-ի runtime-ը պարունակում է միայն այն, ինչ օգտագործում է ծրագիրը, ուստի կոդը կոմպիլյացվում է առանց նախազգուշացումների <code>-Wall -Wextra -Wpedantic -Werror</code>-ով։"
-  ],
-  [
-    "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
-    "alt=\"Կոդի պատուհանը՝ ծրագիրը C11-ով, կոմպիլյացված Clang-ով և գործարկված։\""
-  ],
-  [
-    "<h3>See the code of any block</h3>",
-    "<h3>Ցանկացած բլոկի կոդը</h3>"
-  ],
-  [
-    "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
-    "Սեղմեք բլոկի վրա մկնիկի աջ կոճակով և ընտրեք View source code։ Կբացվի գեներացված ֆայլը, որտեղ ընդգծված են հենց այն տողերը, որոնց վերածվել է բլոկը։ Նույնն աշխատում է ամբողջ մեթոդի կամ դասի համար՝ ձեր ընտրած ցանկացած լեզվով։ Compile &amp; Run-ը անմիջապես կառուցում է կոդը Clang-ով կամ GCC-ով, իսկ Windows-ում ծրագիրն ինքն է տեղադրում llvm-mingw կամ WinLibs GCC, Visual Studio պետք չէ։"
-  ],
-  [
-    "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
-    "alt=\"Գեներացված C++՝ c.add(i) բլոկի ընդգծված տողերով, կոմպիլյացված Clang-ով և գործարկված։\""
-  ],
-  [
-    "<h3>Arduino and ESP32 boards</h3>",
-    "<h3>Arduino և ESP32 տախտակներ</h3>"
-  ],
-  [
-    "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
-    "Pin Mode, Digital Write և Read, Analog Read և Write, Delay և Millis նույնպես բլոկներ են։ Մեկ Arduino սքեթչ կառուցվում է Uno, Nano, Mega 2560, Leonardo, Micro և Pro Mini, ինչպես նաև ESP32, ESP32-S2, -S3, -C3, -C6 և -H2 տախտակների համար։ Run-ը համակարգչի վրա նմանակում է Uno-ն և ցույց է տալիս պինների յուրաքանչյուր փոփոխություն, այնպես որ ծրագիրը կարող եք փորձել դեռ մինչև տախտակը ձեռքի տակ ունենալը։ UART-ը, SPI-ը, I2C-ն և MQTT-ն նույնպես բլոկներ են։"
-  ],
-  [
-    "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
-    "alt=\"blink օրինակը՝ Board բլոկները գունապնակում, ելքում երևում է, թե ինչպես է նմանակված 13-րդ պինը փոխարկվում 500 մվ-ն մեկ։\""
-  ],
-  [
-    "<h3>Bare metal, down to the registers</h3>",
-    "<h3>Առանց Arduino-ի՝ ուղիղ ռեգիստրներով</h3>"
-  ],
-  [
-    "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
-    "AVR C-ն ծրագիրը գրում է ATmega328P, ATmega2560 կամ ATmega32U4-ի համար՝ առանց Arduino միջուկի. պորտերը, թայմերները, PWM-ը, ԱԹՓ-ն և UART-ը կարգավորվում են ընթեռնելի C-ով։ avr-gcc-ն այն կառուցում է մոտ 4 ԿԲ-ով, իսկ Upload-ը avrdude-ով բեռնում է այն տախտակի վրա։ Յուրաքանչյուր օրինակ գործարկվում է simavr սիմուլյատորում և համեմատվում ինտերպրետատորի հետ։"
-  ],
-  [
-    "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
-    "Նորություն 0.5-ում. PIC32 C-ն նույնն անում է ինը PIC32MX չիպի համար Microchip-ի XC32-ով, իսկ UART-ը, SPI-ն և I2C-ն դարձել են բլոկներ՝ Run-ում և տախտակների բոլոր երեք լեզուներում։ PIC32-ի կոդը ստուգվել է Microchip-ի վերնագրային ֆայլերով, բայց դեռ չի կառուցվել XC32-ով և չի աշխատել չիպի վրա։"
-  ],
-  [
-    "New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.",
-    "Նորություն 0.6-ում՝ FPGA աջակցություն։ SystemVerilog, Verilog-2001 և VHDL նույն սխեման դարձնում են սարքակազմ Artix-7 (Nexys A7, Arty A7, Basys 3) և Cologne Chip GateMate տախտակների համար։ Արդյունքը սիմուլացվել է Run-ի համեմատ և սինթեզվել բաց գործիքներով, բայց չի անցել Vivado-ով և չի բեռնվել տախտակի մեջ։"
-  ],
-  [
-    "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
-    "alt=\"blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։\""
-  ],
-  [
-    "<h3>Modules a board program can use</h3>",
-    "<h3>Մոդուլներ, որոնք հասանելի են տախտակի ծրագրին</h3>"
-  ],
-  [
-    "<b>UART</b> sends and receives bytes or lines on a chosen port, and is what Print writes to on a board. <b>SPI</b> transfers a byte or a buffer as master, with the mode and clock you pick, and a chip-select pin per device. <b>I2C</b> reads and writes registers by device address, which is how most sensors are driven. <b>MQTT</b> is five blocks — Connect, Publish, Subscribe, Has Message, Read — that put a program's numbers on a broker and take commands back, over a WiFi module on UART2, an ESP32's own WiFi, or a PIC32's Ethernet port as a Harmony application. Each module is a block in the palette rather than a library to install, works the same in Run as on the chip, and is refused by name on a target that cannot do it instead of compiling into something that silently will not work.",
-    "<b>UART</b>-ն ուղարկում և ստանում է բայթեր կամ տողեր նշված պորտով, և հենց այնտեղ է գրում Print-ը տախտակի վրա։ <b>SPI</b>-ն որպես master փոխանցում է բայթ կամ բուֆեր՝ ընտրված ռեժիմով և հաճախությամբ, և ամեն սարքի համար առանձին ընտրության ոտքով։ <b>I2C</b>-ն կարդում և գրում է ռեգիստրներ սարքի հասցեով՝ այդպես են աշխատում սենսորների մեծ մասը։ <b>MQTT</b>-ն հինգ բլոկ է՝ Connect, Publish, Subscribe, Has Message և Read, որոնք ծրագրի թվերը ուղարկում են բրոքերին և հրահանգներ ստանում հետ՝ UART2-ի WiFi մոդուլով, ESP32-ի սեփական WiFi-ով կամ PIC32-ի Ethernet պորտով՝ որպես Harmony հավելված։ Յուրաքանչյուր մոդուլ բլոկ է գունապնակում, ոչ թե տեղադրելու գրադարան. Run-ում այն աշխատում է այնպես, ինչպես չիպի վրա, իսկ այն թիրախի վրա, որը չի աջակցում, մերժումը անվանում է բլոկը, փոխանակ հավաքի կոդ, որը լուռ չի աշխատի։"
-  ],
-  [
-    "alt=\"A board program as an Arduino sketch, with its UART output beside it.\"",
-    "alt=\"Տախտակի ծրագիրը որպես Arduino-ի սկետչ, կողքին՝ UART-ի ելքը։\""
-  ],
-  [
-    "<h3>Projects, Git and GitHub</h3>",
-    "<h3>Նախագծեր, Git և GitHub</h3>"
-  ],
-  [
-    "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
-    "File, New Project-ը ստեղծում է թղթապանակ՝ ծրագրով, մոդուլների թղթապանակով, README-ով և Git պահոցով։ Commit, push և pull՝ Git ընտրացանկից։ Connect to GitHub-ը հրապարակում է նախագիծն այն հաշվով, որն արդեն օգտագործում է ձեր git-ը։ Ծրագիրը երբեք գաղտնաբառ չի խնդրում և չի պահում։"
-  ],
-  [
-    "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
-    "alt=\"Connect to GitHub պատուհանը՝ sbrutyan01/CounterDemo պահոցի անունով։\""
-  ],
-  [
-    "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
-    "<b>Vim ամենուր։</b> Կոդի դաշտերում, կոդի պատուհանում և commit-ների հաղորդագրություններում աշխատում են Vim ստեղները, իսկ Edit in Vim-ը բացում է իսկական Vim-ը։"
-  ],
-  [
-    "<b>Command line.</b>",
-    "<b>Հրամանային տող։</b>"
-  ],
-  [
-    "</code> and <code>evia --gen",
-    "</code> և <code>evia --gen"
-  ],
-  [
-    "</code> for scripts and Makefiles.",
-    "</code>՝ սկրիպտների և Makefile-երի համար։"
-  ],
-  [
-    "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
-    "<b>Clang կամ GCC։</b> Դրանք փոխվում են Settings-ում, իսկ Windows-ում ցանկացածն ինքն է տեղադրվում, Visual Studio պետք չէ։"
-  ],
-  [
-    "<b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.",
-    "<b>Մուգ թեմա.</b> Ծրագիրը նման է IntelliJ IDEA-ին՝ Inter և JetBrains Mono տառատեսակներով։ View, Theme-ը ընտրում է բաց, մուգ կամ համակարգի թեմա։"
-  ],
-  [
-    "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.",
-    "<b>Ներկառուցված ուղեցույց.</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները՝ անգլերեն, ռուսերեն և հայերեն։"
-  ],
-  [
-    "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
-    "<h2 id=\"tutorial-h\">Առաջին ծրագիրը ութ քայլով</h2>"
-  ],
-  [
-    "The full walk-through, with every screenshot, is a PDF in seven languages: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. It is also under Help, Tutorial in the app, and in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
-    "Բոլոր սքրինշոթներով ամբողջական քայլ առ քայլ ուսուցումը հասանելի է PDF-ով յոթ լեզվով՝ <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>։ Այն հասանելի է նաև ծրագրի Help, Tutorial ընտրացանկում և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>-ում։"
-  ],
-  [
-    "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
-    "<h3>Ստեղծեք նախագիծ</h3><p>File, New Project։ Թողեք Create a Git repository-ն նշված։</p>"
-  ],
-  [
-    "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
-    "<h3>Կառուցեք ցիկլ</h3><p>Քաշեք Set, For և Print բլոկները կտավի վրա, միացրեք դրանք և սեղմեք Run։</p>"
-  ],
-  [
-    "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
-    "<h3>Ստեղծեք դաս</h3><p>Edit, New Class։ Counter դասին տվեք total և calls դաշտերը։</p>"
-  ],
-  [
-    "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
-    "<h3>Օգտագործեք դասը</h3><p>Քաշեք Counter.add(x)-ը ցիկլի մեջ և օբյեկտն անվանեք c։</p>"
-  ],
-  [
-    "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
-    "<h3>Տեսեք կոդը</h3><p>Աջ սեղմում բլոկի վրա, View source code։</p>"
-  ],
-  [
-    "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
-    "<h3>Ընտրեք լեզուն</h3><p>Անցեք C11-ի կամ C++-ի ցանկացած ստանդարտի, և կոդը նորից կգեներացվի։</p>"
-  ],
-  [
-    "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
-    "<h3>Commit և հրապարակում</h3><p>Git, Commit, ապա Connect to GitHub։</p>"
-  ],
-  [
-    "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
-    "<h3>Շարունակեք</h3><p>Մոդուլներ, օրինակներ և ուղեցույց (F1)։</p>"
-  ],
-  [
-    "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
-    "<h2 id=\"download-h\">Ներբեռնել EVIA Paradigma {{VERSION}}</h2>"
-  ],
-  [
-    "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
-    "Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը), իսկ գեներացված Python-ի համար պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ։"
-  ],
-  [
-    "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
-    "<th scope=\"col\">Համակարգ</th><th scope=\"col\">Ֆայլ</th><th scope=\"col\">Նշումներ</th>"
-  ],
-  [
-    "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
-    "Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։"
-  ],
-  [
-    "<td>macOS, Apple Silicon</td>",
-    "<td>macOS, Apple Silicon</td>"
-  ],
-  [
-    "<td>macOS, Intel</td>",
-    "<td>macOS, Intel</td>"
-  ],
-  [
-    "Not notarized by Apple yet: if macOS won't open it, choose Open Anyway in System Settings, Privacy &amp; Security.",
-    "Դեռ վավերացված չէ Apple-ի կողմից. եթե macOS-ը չի բացում ծրագիրը, System Settings-ի Privacy &amp; Security բաժնում ընտրեք Open Anyway։"
-  ],
-  [
-    "<td>Any Linux, x86-64</td>",
-    "<td>Ցանկացած Linux, x86-64</td>"
-  ],
-  [
-    "Nothing to install: make it executable and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system.",
-    "Տեղադրելու կարիք չկա. դարձրեք ֆայլը գործարկելի և բացեք։ Առանց root-ի և առանց փաթեթների կառավարչի՝ հարմար է Fedora-ի, Arch-ի, openSUSE-ի կամ live համակարգի համար։"
-  ],
-  [
-    "<td>Any system with Java 25</td>",
-    "<td>Ցանկացած համակարգ Java 25-ով</td>"
-  ],
-  [
-    ">All releases and release notes</a>",
-    ">Բոլոր թողարկումները և դրանց նշումները</a>"
-  ],
-  [
-    "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
-    "<h2 id=\"tested-h\">Ստուգված սեփական ինտերպրետատորով</h2>"
-  ],
-  [
-    "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
-    "Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 36 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ (Python-ը՝ ստուգում է), գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։"
-  ],
-  [
-    "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
-    "<th scope=\"col\">Որտեղ</th><th scope=\"col\">Կոմպիլյատոր</th><th scope=\"col\">Համընկնում է ինտերպրետատորի հետ</th>"
-  ],
-  [
-    "<td>Linux, all 8 C and C++ standards</td>",
-    "<td>Linux, C-ի և C++-ի բոլոր 8 ստանդարտները</td>"
-  ],
-  [
-    "<td>416 of 416</td>",
-    "<td>416 / 416</td>"
-  ],
-  [
-    "<td>260 of 260</td>",
-    "<td>260 / 260</td>"
-  ],
-  [
-    "<td>30 of 30</td>",
-    "<td>30 / 30</td>"
-  ],
-  [
-    "<td>15 of 15</td>",
-    "<td>15 / 15</td>"
-  ],
-  [
-    ", static</td>",
-    ", ստատիկ</td>"
-  ],
-  [
-    "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
-    "<td>Տախտակների օրինակներ, AVR C առանց Arduino-ի simavr-ում (ATmega328P, 2560, 32U4)</td>"
-  ],
-  [
-    "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
-    "<td>Arduino Uno և Mega 2560 սքեթչներ simavr-ում</td>"
-  ],
-  [
-    "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. The MQTT client is compiled on the build machine and run against a real broker. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-    "Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ PIC32-ի օրինակները կոմպիլացվում են (միայն շարահյուսություն) Microchip-ի վերնագրերով (144-ից 144)։ FPGA-ի յուրաքանչյուր օրինակ և թեստ սինթեզվում է yosys-ով Artix-7-ի համար, իսկ GateMate նախագծերը տեղակայվում, երթուղավորվում և փաթեթավորվում են բիթսթրիմների մեջ. Vivado-ն, openXC7-ը և իրական տախտակները CI-ում չեն։ MQTT հաճախորդը կառուցվում է կառուցման մեքենայի վրա և ստուգվում իրական բրոքերով։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի, մասշտաբավորման և կտավի տեղափոխման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>-ում։"
-  ],
-  [
-    "<h2 id=\"docs-h\">Documentation</h2>",
-    "<h2 id=\"docs-h\">Փաստաթղթեր</h2>"
-  ],
-  [
-    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
-    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md\">Ուսուցում հայերենով</a> և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (անգլերեն)՝ հնարավորություններ, ընտրացանկեր, լեզուներ, հրամանային տող</li>"
-  ],
-  [
-    ">Release notes</a> for every version; what's new in",
-    ">Թողարկումների նշումներ</a> յուրաքանչյուր տարբերակի համար, նորությունները՝"
-  ],
-  [
-    ">Example programs</a>, also under File, Open Example (board programs in",
-    ">Ծրագրերի օրինակներ</a>, նաև File, Open Example-ում (տախտակների ծրագրերը՝"
-  ],
-  [
-    ">Report a problem or ask for a feature</a>",
-    ">Հաղորդել խնդրի մասին կամ առաջարկել գաղափար</a>"
-  ],
-  [
-    "Copyright 2026 Sergey Brutyan. Released under the",
-    "© 2026 Սերգեյ Բրուտյան։ Տարածվում է"
-  ],
-  [
-    ">MIT license</a>.",
-    ">MIT լիցենզիայով</a>։"
-  ],
-  [
-    "Your first FPGA program in four steps",
-    "Ձեր առաջին FPGA ծրագիրը չորս քայլով"
-  ],
-  [
-    "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
-    "Նույն թարթման սխեման դառնում է սարքակազմ Artix-7 և GateMate տախտակների համար։ Ամբողջական ձեռնարկը՝ քայլ 10, վերևի PDF-ում է, իսկ ուղեցույցում կա FPGA թեմա (F1)։"
-  ],
-  [
-    "Pick a language and a board",
-    "Ընտրեք լեզու և տախտակ"
-  ],
-  [
-    "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
-    "Լեզու՝ SystemVerilog, Verilog-2001 կամ VHDL։ Տախտակ՝ Nexys A7, Arty A7, Basys 3 կամ GateMate տախտակ։"
-  ],
-  [
-    "Open the Blink example",
-    "Բացեք Blink օրինակը"
-  ],
-  [
-    "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
-    "File, Open Example, FPGA Boards, Blink։ Կոնտակտները անուններ են՝ LED0, SW3, BTNC, JA1։"
-  ],
-  [
-    "Generate code",
-    "Ստեղծեք կոդը"
-  ],
-  [
-    "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
-    "Սեղմեք F7։ Կոնտակտների սահմանափակումները առաջին մեկնաբանության մեջ են, իսկ հրամանի տողը դրանք գրում է առանձին ֆայլում։"
-  ],
-  [
-    "Build and upload",
-    "Կառուցում և բեռնում"
-  ],
-  [
-    "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
-    "Vivado կամ բաց գործիքներ՝ ընտրվում է Կարգավորումներում։ Upload-ը ծրագրավորում է տախտակը։"
-  ],
-  [
-    "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
-    "Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։"
-  ],
-  [
-    "<h3>One diagram, fifteen languages</h3>",
-    "<h3>Մեկ սխեմա՝ տասնհինգ լեզու</h3>"
-  ],
-  [
-    "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
-    "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Python 3, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
-  ],
-  [
-    "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
-    "Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։"
-  ],
-  [
-    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
-    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA ծրագրերի օրինակներ</a>, նաև File, Open Example, FPGA Boards-ում</li>"
-  ],
-  [
-    "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
-    "<tr><td>FPGA նախագծերը սիմուլյացիայում (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27-ից 27</td></tr>"
-  ],
-  [
-    "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in any of seven languages.</li>",
-    "<li><b>Ուսուցումը PDF-ով։</b> Help, Tutorial-ը բացում է ամբողջ ուղեցույցը յոթ լեզուներից ցանկացածով։</li>"
-  ],
-  [
-    "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.",
-    "Նորություն 0.6.5-ում՝ MQTT։ Հինգ բլոկ ծրագրի թվերը հրապարակում են բրոքերին և կարդում հրամաններ՝ PIC32MX-ի վրա UART2-ի WiFi մոդուլով, ESP32-ի վրա սեփական WiFi-ով, իսկ Run-ում՝ ձեր համակարգչի բրոքերով։ Ստեղծված հաճախորդը ստուգվում է իրական բրոքերով. ոչ WiFi մոդուլ, ոչ չիպ այդ ստուգման մաս չեն եղել։ Դրան ուղեկցում են երկու օրինակ, որոնցից մեկը՝ PIC32 Ethernet Starter Kit II-ի համար։ Նորություն 0.6.7-ում՝ միջերեսն ինքը անգլերեն, ռուսերեն կամ հայերեն է՝ ընտրվում է Կարգավորումներում։"
-  ],
-  [
-    "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
-    "<li><b>Կարգավորումները բերում են գործիքները։</b> arduino-cli-ն, avr-gcc-ն և FPGA-ի հավաքածուն ներբեռնվում են հավելվածի սեփական պանակը, իսկ XC32-ը բացում է Microchip-ի էջը։</li>"
-  ],
-  [
-    "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
-    "<p>Նորություն 0.6.9-ում՝ Python 3։ Նույն սխեման դառնում է մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց որևէ այլ բան տեղադրելու, իսկ կոդի պատուհանի Run կոճակը գործարկում է այն։ Արդյունքը, սխալները և ավարտի կոդը համընկնում են ինտերպրետատորի հետ, ինչպես C-ի և C++-ի յուրաքանչյուր ստանդարտում։</p>"
-  ],
-  [
-    "<h3>Python 3, nothing to compile</h3>",
-    "<h3>Python 3՝ առանց կոմպիլյացիայի</h3>"
-  ],
-  [
-    "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
-    "Ընտրեք Python 3, և նույն սխեման կդառնա մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց փաթեթների և կոմպիլյատորի։ Դասերը դառնում են Python-ի դասեր, իսկ ծրագրի փոփոխականները՝ մոդուլի գլոբալ փոփոխականներ։ Կոդի պատուհանի Run-ը գործարկում է ծրագիրը, իսկ Input-ում մուտքագրված տեքստը փոխանցվում է նրան։ Python-ում goto չկա, ուստի <b>Structured</b>-ը գրում է if/else և while ցիկլեր, իսկ <b>Goto</b>-ն դառնում է փոքր վիճակների մեքենա՝ յուրաքանչյուր բլոկի համար մեկ ճյուղով։ Print-ը, Input-ը, թվերի գրառումը և բոլոր սխալների հաղորդագրությունները նույնն են, ինչ ինտերպրետատորինը։"
-  ],
-  [
-    "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
-    "alt=\"Ուսուցողական ծրագիրը Python 3-ով կոդի պատուհանում՝ գործարկված Python 3.13-ով. c.add(i) բլոկի տողերը ընդգծված են։\""
-  ],
-  [
-    "Your first Python program in four steps",
-    "Ձեր առաջին Python ծրագիրը չորս քայլով"
-  ],
-  [
-    "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
-    "Ցանկացած սխեմա աշխատում է որպես Python ծրագիր։ Պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ python.org-ից, որը EVIA Paradigma-ն ինքն է գտնում։"
-  ],
-  [
-    "Choose Python 3",
-    "Ընտրեք Python 3"
-  ],
-  [
-    "Pick Python 3 in the Language list, in the toolbar or in the code window.",
-    "Ընտրեք Python 3-ը Language ցանկում՝ գործիքագոտում կամ կոդի պատուհանում։"
-  ],
-  [
-    "Generate the Python code",
-    "Գեներացրեք Python կոդը"
-  ],
-  [
-    "Press F7. Right-click a block and choose View source code to see the lines it became.",
-    "Սեղմեք F7։ Աջ սեղմեք բլոկի վրա և ընտրեք View source code՝ տեսնելու, թե ինչ տողերի է այն վերածվել։"
-  ],
-  [
-    "Run it in the code window",
-    "Գործարկեք կոդի պատուհանում"
-  ],
-  [
-    "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
-    "Սեղմեք Run։ Input-ում մուտքագրված տեքստը փոխանցվում է ծրագրին, իսկ սխալը կանգնեցնում է այն նույն հաղորդագրությամբ, ինչ խմբագրիչում։"
-  ],
-  [
-    "Keep the .py file",
-    "Պահպանեք .py ֆայլը"
-  ],
-  [
-    "Save writes the file, and it runs anywhere with python3 program.py.",
-    "Save-ը գրում է ֆայլը, և այն աշխատում է ցանկացած տեղում՝ python3 program.py հրամանով։"
-  ],
-  [
-    "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
-    "Settings, Python-ը պահում է հրամանը՝ python3, Windows-ում py գործարկիչը կամ ամբողջական ուղի։ Detect-ը նորից է փնտրում այն, իսկ Check-ը ցույց է տալիս տարբերակը։"
-  ],
-  [
-    "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
-    "<li><b>Python-ը գտնվում է ինքնուրույն։</b> Settings, Python-ն օգտագործում է python3-ը կամ Windows-ում py գործարկիչը՝ առանց կարգավորման. Check-ը ցույց է տալիս տարբերակը։</li>"
-  ],
-  [
-    "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
-    "<td>Linux, Python 3՝ բոլոր օրինակներն ու թեստերը, երկու հոսքերը, արժեքների երկու ռեժիմները</td>"
-  ],
-  [
-    "<td>52 of 52</td>",
-    "<td>52 / 52</td>"
-  ],
-  [
-    "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
-    "<p>Նորություն 0.7.0-ում՝ կարգավորումները File ընտրացանկում են, յուրաքանչյուր սարքերի ընտանիքի համար առանձին էջով՝ ընդհանուր, C, C++ և Python, Arduino, ESP32, AVR C, PIC32 և FPGA, իսկ Open Example-ը ունի առանձին Arduino, ESP32 և PIC32 ենթացանկեր, որոնք միանգամից ընտրում են համապատասխան լեզուն և տախտակը։</p>"
-  ],
-  [
-    "<p>New in 0.7.1: an AppImage for any Linux on x86-64, next to the .deb — one executable file with the Java runtime inside it, nothing to install and no root needed. The modules a board program can use are described above: UART, SPI, I2C and MQTT.</p>",
-    "<p>Նորություն 0.7.1-ում՝ AppImage ցանկացած Linux-ի համար x86-64-ի վրա, .deb-ի կողքին՝ մեկ գործարկելի ֆայլ Java-ի հետ ներսում, ոչինչ տեղադրելու կարիք չկա և root չի պահանջվում։ Տախտակի ծրագրին հասանելի մոդուլները նկարագրված են վերևում՝ UART, SPI, I2C և MQTT։</p>"
-  ]
+ [
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
+  "<title>EVIA Paradigma. տեսողական ծրագրավորում՝ C, C++, Python-ի, որոնվածքի և HDL կոմպիլյացիայով</title>"
+ ],
+ [
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Միացրեք բլոկները կտավի վրա, գործարկեք դրանք և վերածեք մեկ մաքուր աղբյուր ֆայլի տասնհինգ լեզուներից ցանկացածով՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3, Arduino սքեթչեր, bare-metal C՝ AVR և PIC32 համար, ինչպես նաև SystemVerilog, Verilog կամ VHDL՝ Artix-7 և GateMate FPGA-ների համար։ Դասեր, մոդուլներ, նախագծեր, Git, Vim։ Անվճար, բաց կոդ (MIT)։"
+ ],
+ [
+  "content=\"Draw a program as blocks. Pick the language it becomes.\"",
+  "content=\"Նկարեք ծրագիրը բլոկներով։ Ընտրեք լեզուն, որով այն կդարձվի։\""
+ ],
+ [
+  ">Skip to content</a>",
+  ">Անցնել բովանդակությանը</a>"
+ ],
+ [
+  "aria-label=\"EVIA Paradigma home\"",
+  "aria-label=\"EVIA Paradigma՝ գլխավոր էջ\""
+ ],
+ [
+  "aria-label=\"Main\"",
+  "aria-label=\"Գլխավոր ընտրացանկ\""
+ ],
+ [
+  "<a href=\"#features\">Features</a>",
+  "<a href=\"#features\">Հնարավորություններ</a>"
+ ],
+ [
+  "<a href=\"#tutorial\">Tutorial</a>",
+  "<a href=\"#tutorial\">Ուսուցում</a>"
+ ],
+ [
+  "<a href=\"#download\">Download</a>",
+  "<a href=\"#download\">Ներբեռնել</a>"
+ ],
+ [
+  "<a href=\"#docs\">Docs</a>",
+  "<a href=\"#docs\">Փաստաթղթեր</a>"
+ ],
+ [
+  "aria-label=\"Site language\"",
+  "aria-label=\"Կայքի լեզուն\""
+ ],
+ [
+  "<span class=\"site-language-label\">Language</span>",
+  "<span class=\"site-language-label\">Կայքի լեզուն</span>"
+ ],
+ [
+  "aria-label=\"Color theme\"",
+  "aria-label=\"Գունային թեմա\""
+ ],
+ [
+  "</svg>Light</button>",
+  "</svg>Լուսավոր</button>"
+ ],
+ [
+  "</svg>Dark</button>",
+  "</svg>Մութ</button>"
+ ],
+ [
+  "<h1>Draw a program.<br>Pick its language.</h1>",
+  "<h1>Նկարեք ծրագիրը։<br>Ընտրեք նրա լեզուն։</h1>"
+ ],
+ [
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma-ն տեսողական ծրագրավորում է նրանց համար, ովքեր ուզում են տեսնել, թե ինչ է ստանում մեքենան։ Սխեման ինքն է ծրագիրը, իսկ լեզուն ընդամենը կարգավորում է։ Միացրեք բլոկները կտավի վրա, գործարկեք դրանք, ապա ընտրեք, թե ինչ դառնան՝ C99-ից մինչև C++20 (Clang կամ GCC), Python 3 ծրագիր, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 չիպի համար, կամ SystemVerilog, Verilog կամ VHDL՝ FPGA-ի համար։"
+ ],
+ [
+  "href=\"#download\">Download {{VERSION}}</a>",
+  "href=\"#download\">Ներբեռնել {{VERSION}}</a>"
+ ],
+ [
+  ">Source on GitHub</a>",
+  ">Կոդը GitHub-ում</a>"
+ ],
+ [
+  "Windows, macOS and Linux. Free and open source, MIT license.",
+  "Windows, macOS և Linux։ Անվճար, բաց կոդ, MIT լիցենզիա։"
+ ],
+ [
+  "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
+  "alt=\"Բլոկ-սխեմա՝ Start, Set n = 3, For ցիկլ 1-ից n, որը տպում է քայլը և կանչում c.add(i)-ը Counter օբյեկտի վրա, հետո c.show() և End։\""
+ ],
+ [
+  "aria-label=\"Generated code options\"",
+  "aria-label=\"Գեներացվող կոդի ընտրանքներ\""
+ ],
+ [
+  "aria-label=\"Language\"",
+  "aria-label=\"Լեզու\""
+ ],
+ [
+  "aria-label=\"Flow\"",
+  "aria-label=\"Կառավարման հոսք\""
+ ],
+ [
+  "aria-label=\"Values\"",
+  "aria-label=\"Արժեքներ\""
+ ],
+ [
+  "aria-label=\"Program output\"",
+  "aria-label=\"Ծրագրի ելքը\""
+ ],
+ [
+  "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
+  "data-note=\"Ձախ կողմի սխեման {lang} լեզվով՝ {fn}, գեներացված {lines} տողանոց ֆայլից։\""
+ ],
+ [
+  ">The diagram on the left, as the generator writes it.</span>",
+  ">Ձախ կողմի սխեման՝ այնպես, ինչպես այն գրում է գեներատորը։</span>"
+ ],
+ [
+  "All 36 versions print the same output as the built-in interpreter.",
+  "Բոլոր 36 տարբերակները տպում են նույնը, ինչ ներկառուցված ինտերպրետատորը։"
+ ],
+ [
+  "<h2 id=\"features-h\">What it does</h2>",
+  "<h2 id=\"features-h\">Ինչ է անում ծրագիրը</h2>"
+ ],
+ [
+  "<h3>Programs are blocks and wires</h3>",
+  "<h3>Ծրագիրը բլոկներ և կապեր է</h3>"
+ ],
+ [
+  "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
+  "Start, Set, Input, Print, If/Else, For, While և Do-While բլոկներ են, իսկ դրանց միջև կապերը որոշում են կատարման հերթականությունը։ Սեղմեք Run, և կատարվող բլոկը լուսավորվում է։ Արտահայտություններն աշխատում են թվերի և տեքստի հետ՝ <code>&amp;&amp; || !</code>, համեմատություններ և սովորական թվաբանություն։"
+ ],
+ [
+  "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
+  "alt=\"Բլոկներից հավաքված For ցիկլը և դրա ելքը՝ step 1, step 2, step 3։\""
+ ],
+ [
+  "<h3>Classes, objects and modules</h3>",
+  "<h3>Դասեր, օբյեկտներ և մոդուլներ</h3>"
+ ],
+ [
+  "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
+  "Դասն ունի սկզբնական արժեքներով դաշտեր, կոնստրուկտոր և մեթոդներ, և յուրաքանչյուր մեթոդ առանձին բլոկ-սխեմա է՝ Enter-ից մինչև Exit։ Յուրաքանչյուր Exit դառնում է կանչող բլոկի ելք։ Նույն օբյեկտի անունով բլոկներն աշխատում են մեկ օբյեկտի հետ։ Դասերը կարելի է պահել որպես մոդուլներ (<code>.eviam</code>) և ներմուծել այլ ծրագրերում։"
+ ],
+ [
+  "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
+  "alt=\"Counter դասի պատուհանը՝ դաշտերի, կոնստրուկտորի և մեթոդների ներդիրներով, add(x) մեթոդը x-ը գումարում է this.total-ին։\""
+ ],
+ [
+  "<h3>Eight C and C++ standards, two ways to write them</h3>",
+  "<h3>C-ի և C++-ի ութ ստանդարտ, գրելու երկու եղանակ</h3>"
+ ],
+ [
+  "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
+  "Գործիքագոտուց ընտրեք C99, C11, C17, C++98, C++11, C++14, C++17 կամ C++20։ <b>Structured</b>-ը գրում է if/else, ցիկլեր և switch, իսկ <b>Goto</b>-ն յուրաքանչյուր բլոկ դարձնում է նշիչ, յուրաքանչյուր կապ՝ անցում։ <b>Safe</b> արժեքները պահում են տեքստը և ինտերպրետատորի բոլոր ստուգումները, իսկ <b>Fast</b> արժեքները պարզ <code>double</code>-ներ են՝ առանց կատարման ժամանակի ստուգումների։ C-ի runtime-ը պարունակում է միայն այն, ինչ օգտագործում է ծրագիրը, ուստի կոդը կոմպիլյացվում է առանց նախազգուշացումների <code>-Wall -Wextra -Wpedantic -Werror</code>-ով։"
+ ],
+ [
+  "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
+  "alt=\"Կոդի պատուհանը՝ ծրագիրը C11-ով, կոմպիլյացված Clang-ով և գործարկված։\""
+ ],
+ [
+  "<h3>See the code of any block</h3>",
+  "<h3>Ցանկացած բլոկի կոդը</h3>"
+ ],
+ [
+  "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
+  "Սեղմեք բլոկի վրա մկնիկի աջ կոճակով և ընտրեք View source code։ Կբացվի գեներացված ֆայլը, որտեղ ընդգծված են հենց այն տողերը, որոնց վերածվել է բլոկը։ Նույնն աշխատում է ամբողջ մեթոդի կամ դասի համար՝ ձեր ընտրած ցանկացած լեզվով։ Compile &amp; Run-ը անմիջապես կառուցում է կոդը Clang-ով կամ GCC-ով, իսկ Windows-ում ծրագիրն ինքն է տեղադրում llvm-mingw կամ WinLibs GCC, Visual Studio պետք չէ։"
+ ],
+ [
+  "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
+  "alt=\"Գեներացված C++՝ c.add(i) բլոկի ընդգծված տողերով, կոմպիլյացված Clang-ով և գործարկված։\""
+ ],
+ [
+  "<h3>Arduino and ESP32 boards</h3>",
+  "<h3>Arduino և ESP32 տախտակներ</h3>"
+ ],
+ [
+  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
+  "Pin Mode, Digital Write և Read, Analog Read և Write, Delay և Millis նույնպես բլոկներ են։ Մեկ Arduino սքեթչ կառուցվում է Uno, Nano, Mega 2560, Leonardo, Micro և Pro Mini, ինչպես նաև ESP32, ESP32-S2, -S3, -C3, -C6 և -H2 տախտակների համար։ Run-ը համակարգչի վրա նմանակում է Uno-ն և ցույց է տալիս պինների յուրաքանչյուր փոփոխություն, այնպես որ ծրագիրը կարող եք փորձել դեռ մինչև տախտակը ձեռքի տակ ունենալը։ UART-ը, SPI-ը, I2C-ն և MQTT-ն նույնպես բլոկներ են։"
+ ],
+ [
+  "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
+  "alt=\"blink օրինակը՝ Board բլոկները գունապնակում, ելքում երևում է, թե ինչպես է նմանակված 13-րդ պինը փոխարկվում 500 մվ-ն մեկ։\""
+ ],
+ [
+  "<h3>Bare metal, down to the registers</h3>",
+  "<h3>Առանց Arduino-ի՝ ուղիղ ռեգիստրներով</h3>"
+ ],
+ [
+  "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
+  "AVR C-ն ծրագիրը գրում է ATmega328P, ATmega2560 կամ ATmega32U4-ի համար՝ առանց Arduino միջուկի. պորտերը, թայմերները, PWM-ը, ԱԹՓ-ն և UART-ը կարգավորվում են ընթեռնելի C-ով։ avr-gcc-ն այն կառուցում է մոտ 4 ԿԲ-ով, իսկ Upload-ը avrdude-ով բեռնում է այն տախտակի վրա։ Յուրաքանչյուր օրինակ գործարկվում է simavr սիմուլյատորում և համեմատվում ինտերպրետատորի հետ։"
+ ],
+ [
+  "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
+  "Նորություն 0.5-ում. PIC32 C-ն նույնն անում է ինը PIC32MX չիպի համար Microchip-ի XC32-ով, իսկ UART-ը, SPI-ն և I2C-ն դարձել են բլոկներ՝ Run-ում և տախտակների բոլոր երեք լեզուներում։ PIC32-ի կոդը ստուգվել է Microchip-ի վերնագրային ֆայլերով, բայց դեռ չի կառուցվել XC32-ով և չի աշխատել չիպի վրա։"
+ ],
+ [
+  "New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.",
+  "Նորություն 0.6-ում՝ FPGA աջակցություն։ SystemVerilog, Verilog-2001 և VHDL նույն սխեման դարձնում են սարքակազմ Artix-7 (Nexys A7, Arty A7, Basys 3) և Cologne Chip GateMate տախտակների համար։ Արդյունքը սիմուլացվել է Run-ի համեմատ և սինթեզվել բաց գործիքներով, բայց չի անցել Vivado-ով և չի բեռնվել տախտակի մեջ։"
+ ],
+ [
+  "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
+  "alt=\"blink ծրագիրը AVR C-ով՝ առանց Arduino-ի, կառուցված avr-gcc 14-ով Arduino Uno-ի համար՝ 4032 բայթ կոդ։\""
+ ],
+ [
+  "<h3>Modules a board program can use</h3>",
+  "<h3>Մոդուլներ, որոնք հասանելի են տախտակի ծրագրին</h3>"
+ ],
+ [
+  "<b>UART</b> sends and receives bytes or lines on a chosen port, and is what Print writes to on a board. <b>SPI</b> transfers a byte or a buffer as master, with the mode and clock you pick, and a chip-select pin per device. <b>I2C</b> reads and writes registers by device address, which is how most sensors are driven. <b>MQTT</b> is five blocks — Connect, Publish, Subscribe, Has Message, Read — that put a program's numbers on a broker and take commands back, over a WiFi module on UART2, an ESP32's own WiFi, or a PIC32's Ethernet port as a Harmony application. Each module is a block in the palette rather than a library to install, works the same in Run as on the chip, and is refused by name on a target that cannot do it instead of compiling into something that silently will not work.",
+  "<b>UART</b>-ն ուղարկում և ստանում է բայթեր կամ տողեր նշված պորտով, և հենց այնտեղ է գրում Print-ը տախտակի վրա։ <b>SPI</b>-ն որպես master փոխանցում է բայթ կամ բուֆեր՝ ընտրված ռեժիմով և հաճախությամբ, և ամեն սարքի համար առանձին ընտրության ոտքով։ <b>I2C</b>-ն կարդում և գրում է ռեգիստրներ սարքի հասցեով՝ այդպես են աշխատում սենսորների մեծ մասը։ <b>MQTT</b>-ն հինգ բլոկ է՝ Connect, Publish, Subscribe, Has Message և Read, որոնք ծրագրի թվերը ուղարկում են բրոքերին և հրահանգներ ստանում հետ՝ UART2-ի WiFi մոդուլով, ESP32-ի սեփական WiFi-ով կամ PIC32-ի Ethernet պորտով՝ որպես Harmony հավելված։ Յուրաքանչյուր մոդուլ բլոկ է գունապնակում, ոչ թե տեղադրելու գրադարան. Run-ում այն աշխատում է այնպես, ինչպես չիպի վրա, իսկ այն թիրախի վրա, որը չի աջակցում, մերժումը անվանում է բլոկը, փոխանակ հավաքի կոդ, որը լուռ չի աշխատի։"
+ ],
+ [
+  "alt=\"A board program as an Arduino sketch, with its UART output beside it.\"",
+  "alt=\"Տախտակի ծրագիրը որպես Arduino-ի սկետչ, կողքին՝ UART-ի ելքը։\""
+ ],
+ [
+  "<h3>Projects, Git and GitHub</h3>",
+  "<h3>Նախագծեր, Git և GitHub</h3>"
+ ],
+ [
+  "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
+  "File, New Project-ը ստեղծում է թղթապանակ՝ ծրագրով, մոդուլների թղթապանակով, README-ով և Git պահոցով։ Commit, push և pull՝ Git ընտրացանկից։ Connect to GitHub-ը հրապարակում է նախագիծն այն հաշվով, որն արդեն օգտագործում է ձեր git-ը։ Ծրագիրը երբեք գաղտնաբառ չի խնդրում և չի պահում։"
+ ],
+ [
+  "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
+  "alt=\"Connect to GitHub պատուհանը՝ sbrutyan01/CounterDemo պահոցի անունով։\""
+ ],
+ [
+  "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
+  "<b>Vim ամենուր։</b> Կոդի դաշտերում, կոդի պատուհանում և commit-ների հաղորդագրություններում աշխատում են Vim ստեղները, իսկ Edit in Vim-ը բացում է իսկական Vim-ը։"
+ ],
+ [
+  "<b>Command line.</b>",
+  "<b>Հրամանային տող։</b>"
+ ],
+ [
+  "</code> and <code>evia --gen",
+  "</code> և <code>evia --gen"
+ ],
+ [
+  "</code> for scripts and Makefiles.",
+  "</code>՝ սկրիպտների և Makefile-երի համար։"
+ ],
+ [
+  "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
+  "<b>Clang կամ GCC։</b> Դրանք փոխվում են Settings-ում, իսկ Windows-ում ցանկացածն ինքն է տեղադրվում, Visual Studio պետք չէ։"
+ ],
+ [
+  "<b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.",
+  "<b>Մուգ թեմա.</b> Ծրագիրը նման է IntelliJ IDEA-ին՝ Inter և JetBrains Mono տառատեսակներով։ View, Theme-ը ընտրում է բաց, մուգ կամ համակարգի թեմա։"
+ ],
+ [
+  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.",
+  "<b>Ներկառուցված ուղեցույց.</b> Help, Guide (F1)-ը բացատրում է յուրաքանչյուր բլոկ, արտահայտությունները, դասերի հնարավորությունները, ստեղնային համակցությունները և Vim ստեղները՝ անգլերեն, ռուսերեն և հայերեն։"
+ ],
+ [
+  "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
+  "<h2 id=\"tutorial-h\">Առաջին ծրագիրը ութ քայլով</h2>"
+ ],
+ [
+  "The full walk-through, with every screenshot, is a PDF in seven languages: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. It is also under Help, Tutorial in the app, and in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
+  "Բոլոր սքրինշոթներով ամբողջական քայլ առ քայլ ուսուցումը հասանելի է PDF-ով յոթ լեզվով՝ <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>։ Այն հասանելի է նաև ծրագրի Help, Tutorial ընտրացանկում և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>-ում։"
+ ],
+ [
+  "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
+  "<h3>Ստեղծեք նախագիծ</h3><p>File, New Project։ Թողեք Create a Git repository-ն նշված։</p>"
+ ],
+ [
+  "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
+  "<h3>Կառուցեք ցիկլ</h3><p>Քաշեք Set, For և Print բլոկները կտավի վրա, միացրեք դրանք և սեղմեք Run։</p>"
+ ],
+ [
+  "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
+  "<h3>Ստեղծեք դաս</h3><p>Edit, New Class։ Counter դասին տվեք total և calls դաշտերը։</p>"
+ ],
+ [
+  "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
+  "<h3>Օգտագործեք դասը</h3><p>Քաշեք Counter.add(x)-ը ցիկլի մեջ և օբյեկտն անվանեք c։</p>"
+ ],
+ [
+  "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
+  "<h3>Տեսեք կոդը</h3><p>Աջ սեղմում բլոկի վրա, View source code։</p>"
+ ],
+ [
+  "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
+  "<h3>Ընտրեք լեզուն</h3><p>Անցեք C11-ի կամ C++-ի ցանկացած ստանդարտի, և կոդը նորից կգեներացվի։</p>"
+ ],
+ [
+  "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
+  "<h3>Commit և հրապարակում</h3><p>Git, Commit, ապա Connect to GitHub։</p>"
+ ],
+ [
+  "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
+  "<h3>Շարունակեք</h3><p>Մոդուլներ, օրինակներ և ուղեցույց (F1)։</p>"
+ ],
+ [
+  "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
+  "<h2 id=\"download-h\">Ներբեռնել EVIA Paradigma {{VERSION}}</h2>"
+ ],
+ [
+  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
+  "Յուրաքանչյուր տեղադրիչ ունի իր Java միջավայրը, ուստի ուրիշ ոչինչ տեղադրել պետք չէ։ Գեներացված կոդը կոմպիլյացնելու համար անհրաժեշտ է Clang կամ GCC (Windows-ում ծրագիրն ինքն է տեղադրում դրանցից ցանկացածը), իսկ գեներացված Python-ի համար պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ։"
+ ],
+ [
+  "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
+  "<th scope=\"col\">Համակարգ</th><th scope=\"col\">Ֆայլ</th><th scope=\"col\">Նշումներ</th>"
+ ],
+ [
+  "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
+  "Դեռ թվային ստորագրություն չունի. SmartScreen-ի զգուշացման մեջ ընտրեք More info, ապա Run anyway։"
+ ],
+ [
+  "<td>macOS, Apple Silicon</td>",
+  "<td>macOS, Apple Silicon</td>"
+ ],
+ [
+  "<td>macOS, Intel</td>",
+  "<td>macOS, Intel</td>"
+ ],
+ [
+  "Not notarized by Apple yet: if macOS won't open it, choose Open Anyway in System Settings, Privacy &amp; Security.",
+  "Դեռ վավերացված չէ Apple-ի կողմից. եթե macOS-ը չի բացում ծրագիրը, System Settings-ի Privacy &amp; Security բաժնում ընտրեք Open Anyway։"
+ ],
+ [
+  "<td>Any Linux, x86-64</td>",
+  "<td>Ցանկացած Linux, x86-64</td>"
+ ],
+ [
+  "Nothing to install: make it executable and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system.",
+  "Տեղադրելու կարիք չկա. դարձրեք ֆայլը գործարկելի և բացեք։ Առանց root-ի և առանց փաթեթների կառավարչի՝ հարմար է Fedora-ի, Arch-ի, openSUSE-ի կամ live համակարգի համար։"
+ ],
+ [
+  "<td>Any system with Java 25</td>",
+  "<td>Ցանկացած համակարգ Java 25-ով</td>"
+ ],
+ [
+  ">All releases and release notes</a>",
+  ">Բոլոր թողարկումները և դրանց նշումները</a>"
+ ],
+ [
+  "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
+  "<h2 id=\"tested-h\">Ստուգված սեփական ինտերպրետատորով</h2>"
+ ],
+ [
+  "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "Յուրաքանչյուր փոփոխության ժամանակ CI-ն գեներացնում է բոլոր օրինակներն ու թեստային ծրագրերը լեզվի, հոսքի և արժեքների բոլոր 36 համակցություններով, կոմպիլյացնում է՝ նախազգուշացումները համարելով սխալներ (Python-ը՝ ստուգում է), գործարկում և համեմատում stdout-ը, stderr-ը և ելքի կոդը ինտերպրետատորի հետ։"
+ ],
+ [
+  "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
+  "<th scope=\"col\">Որտեղ</th><th scope=\"col\">Կոմպիլյատոր</th><th scope=\"col\">Համընկնում է ինտերպրետատորի հետ</th>"
+ ],
+ [
+  "<td>Linux, all 8 C and C++ standards</td>",
+  "<td>Linux, C-ի և C++-ի բոլոր 8 ստանդարտները</td>"
+ ],
+ [
+  "<td>416 of 416</td>",
+  "<td>416 / 416</td>"
+ ],
+ [
+  "<td>260 of 260</td>",
+  "<td>260 / 260</td>"
+ ],
+ [
+  "<td>30 of 30</td>",
+  "<td>30 / 30</td>"
+ ],
+ [
+  "<td>15 of 15</td>",
+  "<td>15 / 15</td>"
+ ],
+ [
+  ", static</td>",
+  ", ստատիկ</td>"
+ ],
+ [
+  "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
+  "<td>Տախտակների օրինակներ, AVR C առանց Arduino-ի simavr-ում (ATmega328P, 2560, 32U4)</td>"
+ ],
+ [
+  "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
+  "<td>Arduino Uno և Mega 2560 սքեթչներ simavr-ում</td>"
+ ],
+ [
+  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. The MQTT client is compiled on the build machine and run against a real broker. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+  "Arduino սքեթչները կառուցվում են նաև բոլոր 12 տախտակների համար, այդ թվում՝ ESP32 (70 կառուցում՝ առանց նախազգուշացումների)։ PIC32-ի օրինակները կոմպիլացվում են (միայն շարահյուսություն) Microchip-ի վերնագրերով (144-ից 144)։ FPGA-ի յուրաքանչյուր օրինակ և թեստ սինթեզվում է yosys-ով Artix-7-ի համար, իսկ GateMate նախագծերը տեղակայվում, երթուղավորվում և փաթեթավորվում են բիթսթրիմների մեջ. Vivado-ն, openXC7-ը և իրական տախտակները CI-ում չեն։ MQTT հաճախորդը կառուցվում է կառուցման մեքենայի վրա և ստուգվում իրական բրոքերով։ Ինչպես նաև հավելվածի, մոդուլների, նախագծերի, Git-ի, մասշտաբավորման և կտավի տեղափոխման ստուգումներ իրական պատուհանում։ Մանրամասները՝ <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>-ում։"
+ ],
+ [
+  "<h2 id=\"docs-h\">Documentation</h2>",
+  "<h2 id=\"docs-h\">Փաստաթղթեր</h2>"
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.hy.md\">Ուսուցում հայերենով</a> և <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (անգլերեն)՝ հնարավորություններ, ընտրացանկեր, լեզուներ, հրամանային տող</li>"
+ ],
+ [
+  ">Release notes</a> for every version; what's new in",
+  ">Թողարկումների նշումներ</a> յուրաքանչյուր տարբերակի համար, նորությունները՝"
+ ],
+ [
+  ">Example programs</a>, also under File, Open Example (board programs in",
+  ">Ծրագրերի օրինակներ</a>, նաև File, Open Example-ում (տախտակների ծրագրերը՝"
+ ],
+ [
+  ">Report a problem or ask for a feature</a>",
+  ">Հաղորդել խնդրի մասին կամ առաջարկել գաղափար</a>"
+ ],
+ [
+  "Copyright 2026 Sergey Brutyan. Released under the",
+  "© 2026 Սերգեյ Բրուտյան։ Տարածվում է"
+ ],
+ [
+  ">MIT license</a>.",
+  ">MIT լիցենզիայով</a>։"
+ ],
+ [
+  "Your first FPGA program in four steps",
+  "Ձեր առաջին FPGA ծրագիրը չորս քայլով"
+ ],
+ [
+  "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
+  "Նույն թարթման սխեման դառնում է սարքակազմ Artix-7 և GateMate տախտակների համար։ Ամբողջական ձեռնարկը՝ քայլ 10, վերևի PDF-ում է, իսկ ուղեցույցում կա FPGA թեմա (F1)։"
+ ],
+ [
+  "Pick a language and a board",
+  "Ընտրեք լեզու և տախտակ"
+ ],
+ [
+  "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
+  "Լեզու՝ SystemVerilog, Verilog-2001 կամ VHDL։ Տախտակ՝ Nexys A7, Arty A7, Basys 3 կամ GateMate տախտակ։"
+ ],
+ [
+  "Open the Blink example",
+  "Բացեք Blink օրինակը"
+ ],
+ [
+  "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
+  "File, Open Example, FPGA Boards, Blink։ Կոնտակտները անուններ են՝ LED0, SW3, BTNC, JA1։"
+ ],
+ [
+  "Generate code",
+  "Ստեղծեք կոդը"
+ ],
+ [
+  "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
+  "Սեղմեք F7։ Կոնտակտների սահմանափակումները առաջին մեկնաբանության մեջ են, իսկ հրամանի տողը դրանք գրում է առանձին ֆայլում։"
+ ],
+ [
+  "Build and upload",
+  "Կառուցում և բեռնում"
+ ],
+ [
+  "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
+  "Vivado կամ բաց գործիքներ՝ ընտրվում է Կարգավորումներում։ Upload-ը ծրագրավորում է տախտակը։"
+ ],
+ [
+  "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
+  "Ստուգված է սիմուլյացիայով՝ ինտերպրետատորի հետ համեմատած, և սինթեզով բաց գործիքներով։ Դեռ չի անցել Vivado-ով և չի փորձարկվել իրական տախտակի վրա։"
+ ],
+ [
+  "<h3>One diagram, fifteen languages</h3>",
+  "<h3>Մեկ սխեմա՝ տասնհինգ լեզու</h3>"
+ ],
+ [
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Սխեման ասում է, թե ծրագիրը ինչ է անում, ոչ թե ինչով է գրված։ Նույն կտավը դառնում է C-ի և C++-ի ութ ստանդարտ, Python 3, Arduino սքեթչ, bare-metal C՝ AVR կամ PIC32 համար, կամ SystemVerilog, Verilog-2001 և VHDL՝ FPGA-ի համար, իսկ Run-ը կատարում է հենց սխեման, որպեսզի դրա արդյունքը կարողանաք համեմատել դրանցից ցանկացածի հետ։ Եթե նպատակը չի կարող պահել բլոկը, սխալը նշում է այդ բլոկը՝ փոխանակ լուռ փոխի ծրագրի իմաստը։"
+ ],
+ [
+  "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+  "Բացված Code Language and Mode ընտրացանկը՝ C99-ից մինչև C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 և VHDL, իսկ դրանց տակ՝ հոսքը և արժեքները։"
+ ],
+ [
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
+  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA ծրագրերի օրինակներ</a>, նաև File, Open Example, FPGA Boards-ում</li>"
+ ],
+ [
+  "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
+  "<tr><td>FPGA նախագծերը սիմուլյացիայում (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27-ից 27</td></tr>"
+ ],
+ [
+  "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in any of seven languages.</li>",
+  "<li><b>Ուսուցումը PDF-ով։</b> Help, Tutorial-ը բացում է ամբողջ ուղեցույցը յոթ լեզուներից ցանկացածով։</li>"
+ ],
+ [
+  "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.",
+  "Նորություն 0.6.5-ում՝ MQTT։ Հինգ բլոկ ծրագրի թվերը հրապարակում են բրոքերին և կարդում հրամաններ՝ PIC32MX-ի վրա UART2-ի WiFi մոդուլով, ESP32-ի վրա սեփական WiFi-ով, իսկ Run-ում՝ ձեր համակարգչի բրոքերով։ Ստեղծված հաճախորդը ստուգվում է իրական բրոքերով. ոչ WiFi մոդուլ, ոչ չիպ այդ ստուգման մաս չեն եղել։ Դրան ուղեկցում են երկու օրինակ, որոնցից մեկը՝ PIC32 Ethernet Starter Kit II-ի համար։ Նորություն 0.6.7-ում՝ միջերեսն ինքը անգլերեն, ռուսերեն կամ հայերեն է՝ ընտրվում է Կարգավորումներում։"
+ ],
+ [
+  "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
+  "<li><b>Կարգավորումները բերում են գործիքները։</b> arduino-cli-ն, avr-gcc-ն և FPGA-ի հավաքածուն ներբեռնվում են հավելվածի սեփական պանակը, իսկ XC32-ը բացում է Microchip-ի էջը։</li>"
+ ],
+ [
+  "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
+  "<p>Նորություն 0.6.9-ում՝ Python 3։ Նույն սխեման դառնում է մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց որևէ այլ բան տեղադրելու, իսկ կոդի պատուհանի Run կոճակը գործարկում է այն։ Արդյունքը, սխալները և ավարտի կոդը համընկնում են ինտերպրետատորի հետ, ինչպես C-ի և C++-ի յուրաքանչյուր ստանդարտում։</p>"
+ ],
+ [
+  "<h3>Python 3, nothing to compile</h3>",
+  "<h3>Python 3՝ առանց կոմպիլյացիայի</h3>"
+ ],
+ [
+  "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
+  "Ընտրեք Python 3, և նույն սխեման կդառնա մեկ .py ֆայլ, որն աշխատում է Python 3.8 և ավելի նոր տարբերակներում՝ առանց փաթեթների և կոմպիլյատորի։ Դասերը դառնում են Python-ի դասեր, իսկ ծրագրի փոփոխականները՝ մոդուլի գլոբալ փոփոխականներ։ Կոդի պատուհանի Run-ը գործարկում է ծրագիրը, իսկ Input-ում մուտքագրված տեքստը փոխանցվում է նրան։ Python-ում goto չկա, ուստի <b>Structured</b>-ը գրում է if/else և while ցիկլեր, իսկ <b>Goto</b>-ն դառնում է փոքր վիճակների մեքենա՝ յուրաքանչյուր բլոկի համար մեկ ճյուղով։ Print-ը, Input-ը, թվերի գրառումը և բոլոր սխալների հաղորդագրությունները նույնն են, ինչ ինտերպրետատորինը։"
+ ],
+ [
+  "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
+  "alt=\"Ուսուցողական ծրագիրը Python 3-ով կոդի պատուհանում՝ գործարկված Python 3.13-ով. c.add(i) բլոկի տողերը ընդգծված են։\""
+ ],
+ [
+  "Your first Python program in four steps",
+  "Ձեր առաջին Python ծրագիրը չորս քայլով"
+ ],
+ [
+  "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
+  "Ցանկացած սխեմա աշխատում է որպես Python ծրագիր։ Պետք է միայն Python 3.8 կամ ավելի նոր տարբերակ python.org-ից, որը EVIA Paradigma-ն ինքն է գտնում։"
+ ],
+ [
+  "Choose Python 3",
+  "Ընտրեք Python 3"
+ ],
+ [
+  "Pick Python 3 in the Language list, in the toolbar or in the code window.",
+  "Ընտրեք Python 3-ը Language ցանկում՝ գործիքագոտում կամ կոդի պատուհանում։"
+ ],
+ [
+  "Generate the Python code",
+  "Գեներացրեք Python կոդը"
+ ],
+ [
+  "Press F7. Right-click a block and choose View source code to see the lines it became.",
+  "Սեղմեք F7։ Աջ սեղմեք բլոկի վրա և ընտրեք View source code՝ տեսնելու, թե ինչ տողերի է այն վերածվել։"
+ ],
+ [
+  "Run it in the code window",
+  "Գործարկեք կոդի պատուհանում"
+ ],
+ [
+  "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
+  "Սեղմեք Run։ Input-ում մուտքագրված տեքստը փոխանցվում է ծրագրին, իսկ սխալը կանգնեցնում է այն նույն հաղորդագրությամբ, ինչ խմբագրիչում։"
+ ],
+ [
+  "Keep the .py file",
+  "Պահպանեք .py ֆայլը"
+ ],
+ [
+  "Save writes the file, and it runs anywhere with python3 program.py.",
+  "Save-ը գրում է ֆայլը, և այն աշխատում է ցանկացած տեղում՝ python3 program.py հրամանով։"
+ ],
+ [
+  "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
+  "Settings, Python-ը պահում է հրամանը՝ python3, Windows-ում py գործարկիչը կամ ամբողջական ուղի։ Detect-ը նորից է փնտրում այն, իսկ Check-ը ցույց է տալիս տարբերակը։"
+ ],
+ [
+  "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
+  "<li><b>Python-ը գտնվում է ինքնուրույն։</b> Settings, Python-ն օգտագործում է python3-ը կամ Windows-ում py գործարկիչը՝ առանց կարգավորման. Check-ը ցույց է տալիս տարբերակը։</li>"
+ ],
+ [
+  "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
+  "<td>Linux, Python 3՝ բոլոր օրինակներն ու թեստերը, երկու հոսքերը, արժեքների երկու ռեժիմները</td>"
+ ],
+ [
+  "<td>52 of 52</td>",
+  "<td>52 / 52</td>"
+ ],
+ [
+  "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
+  "<p>Նորություն 0.7.0-ում՝ կարգավորումները File ընտրացանկում են, յուրաքանչյուր սարքերի ընտանիքի համար առանձին էջով՝ ընդհանուր, C, C++ և Python, Arduino, ESP32, AVR C, PIC32 և FPGA, իսկ Open Example-ը ունի առանձին Arduino, ESP32 և PIC32 ենթացանկեր, որոնք միանգամից ընտրում են համապատասխան լեզուն և տախտակը։</p>"
+ ],
+ [
+  "<p>New in 0.7.1: an AppImage for any Linux on x86-64, next to the .deb — one executable file with the Java runtime inside it, nothing to install and no root needed. The modules a board program can use are described above: UART, SPI, I2C and MQTT.</p>",
+  "<p>Նորություն 0.7.1-ում՝ AppImage ցանկացած Linux-ի համար x86-64-ի վրա, .deb-ի կողքին՝ մեկ գործարկելի ֆայլ Java-ի հետ ներսում, ոչինչ տեղադրելու կարիք չկա և root չի պահանջվում։ Տախտակի ծրագրին հասանելի մոդուլները նկարագրված են վերևում՝ UART, SPI, I2C և MQTT։</p>"
+ ],
+ [
+  "<p>New in 0.8.0: the installers bring their toolchains — avr-gcc with avrdude, and the OSS CAD Suite for FPGAs — so bare-metal AVR C and the FPGA flows work with nothing to set up. Microchip's free XC32 installs from inside the application (Settings, PIC32, Get XC32), straight from microchip.com. Settings and Devices are now menus of their own.</p>",
+  "<p>Նորություն 0.8.0-ում՝ տեղադրիչներն իրենց հետ բերում են գործիքները՝ avr-gcc-ն avrdude-ով և OSS CAD Suite-ը FPGA-ի համար, ուստի AVR-ի bare-metal C-ն և FPGA-ի հոսքերն աշխատում են առանց որևէ կարգավորման։ Microchip-ի անվճար XC32-ը տեղադրվում է հենց հավելվածից (Settings, PIC32, Get XC32)՝ անմիջապես microchip.com-ից։ Settings-ը և Devices-ը այժմ առանձին ընտրացանկեր են։</p>"
+ ]
 ]

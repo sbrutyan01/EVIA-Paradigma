@@ -34,6 +34,20 @@ image_opts=(
   --dest "$WORK/image"
 )
 
+# ---- the toolchains that ride along (packaging/fetch-toolchains.sh puts them in build/toolchains):
+# avr-gcc with avrdude, and the OSS CAD Suite. Left out when that folder is not there (a quick local
+# build), so the installer is then the small one without them.
+TOOLCHAINS="${TOOLCHAINS:-build/toolchains}"
+add_toolchains() {   # destination folder inside the application image
+  if [ ! -d "$TOOLCHAINS/avr-gcc" ] || [ ! -d "$TOOLCHAINS/oss-cad-suite" ]; then
+    echo "No toolchains in $TOOLCHAINS: building without them (run packaging/fetch-toolchains.sh $KIND first)"
+    return
+  fi
+  echo "Adding the toolchains: $(cat "$TOOLCHAINS"/*/EVIA-VERSION | tr '\n' ';')"
+  mkdir -p "$1"
+  cp -R "$TOOLCHAINS/avr-gcc" "$TOOLCHAINS/oss-cad-suite" "$1/"
+}
+
 smoke_test() {   # run the bundled app in command-line mode on an example program
   echo "Smoke test: $*"
   "$@" --run examples/example.evia | tee "$WORK/smoke.out"
@@ -43,6 +57,7 @@ smoke_test() {   # run the bundled app in command-line mode on an example progra
 case "$KIND" in
   linux)
     jpackage --type app-image "${image_opts[@]}" --app-version "$VERSION" --icon packaging/icons/evia.png
+    add_toolchains "$WORK/image/$NAME/lib/toolchains"   # the .deb keeps bin/, lib/ and share/ only
     smoke_test "$WORK/image/$NAME/bin/$NAME"
     jpackage --type deb --app-image "$WORK/image/$NAME" --name "$NAME" --app-version "$VERSION" \
       --vendor "Sergey Brutyan (sbrutyan01)" \
@@ -71,6 +86,7 @@ case "$KIND" in
     # second launcher "evia.exe" is a console program for the command line: evia --run x.evia
     jpackage --type app-image "${image_opts[@]}" --app-version "$VERSION" --icon packaging/icons/evia.ico \
       --add-launcher evia=packaging/evia-cli.properties
+    add_toolchains "$WORK/image/$NAME/app/toolchains"   # app/ is the folder jpackage's installer is sure to keep
     smoke_test "$WORK/image/$NAME/evia.exe"
     jpackage --type exe --app-image "$WORK/image/$NAME" --name "$NAME" --app-version "$VERSION" \
       --vendor "Sergey Brutyan (sbrutyan01)" \
@@ -96,6 +112,7 @@ case "$KIND" in
       --mac-package-name "$NAME" \
       --file-associations packaging/evia-files.properties --file-associations packaging/evia-project.properties
     APP="$WORK/image/$NAME.app"
+    add_toolchains "$APP/Contents/Resources/toolchains"   # code signing allows extra files in Resources only
     /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
     codesign --force --deep --sign - "$APP"          # ad-hoc signature after editing Info.plist
     smoke_test "$APP/Contents/MacOS/$NAME"

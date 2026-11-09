@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.7.1-blue" alt="version 0.7.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.8.0-blue" alt="version 0.8.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -54,16 +54,34 @@ and Cologne Chip **GateMate** boards, built with Vivado or the open-source tools
 ## Download
 
 Get the installer for your system from the [latest release](https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest).
-Each installer includes its own Java runtime, so Java doesn't need to be installed.
+Each installer includes its own Java runtime, so Java doesn't need to be installed, and from 0.8.0 also the board
+toolchains: avr-gcc with avrdude and the OSS CAD Suite (about 0.5–1 GB to download, 3 GB installed). The jar has none of them.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.7.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.7.1-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.7.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.7.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.7.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.7.1-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.7.1-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.7.1.jar` | `java -jar evia-paradigma-0.7.1.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.8.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.8.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.8.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.8.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.8.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.8.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.8.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.8.0.jar` | `java -jar evia-paradigma-0.8.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.8.0
+
+[EVIA Paradigma v0.8.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.8.0) ([release notes](docs/release-notes/v0.8.0.md)):
+the toolchains come with the installers, XC32 installs from inside the application, and Settings and Devices are menus.
+
+- **Toolchains in the installers**: avr-gcc with avr-libc and avrdude, and the OSS CAD Suite (yosys, nextpnr, gmpack,
+  openFPGALoader), in `toolchains/` inside the application. Bare-metal AVR C and the FPGA flows work with nothing to
+  set up; a path set in Settings still wins. `evia-paradigma --version` says which tools are used.
+- **Get XC32**: Microchip's licence does not allow passing XC32 on, so **Settings → PIC32… → Get XC32…** downloads
+  Microchip's free XC32 4.35 installer from microchip.com, checks it against Microchip's file, asks you to accept
+  Microchip's licence and runs Microchip's installer (with your administrator password). An XC32 already installed
+  in Microchip's usual folder is found by itself.
+- **Settings** and **Devices** menus between Git and Help. Devices lists every family with its boards: choosing one
+  sets the language and board together.
+
+<p align="center"><img src="docs/screenshots/39-menu-devices.png" alt="The Devices menu with ESP32 Boards open: ESP32, ESP32-S2, -S3, -C3, -C6, -H2 and ESP32 Settings" width="560"></p>
 
 ### Release 0.7.1
 
@@ -764,11 +782,13 @@ Ctrl+wheel zooms.
 
 | Menu | Items |
 |---|---|
-| **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, **Settings ▸** (General, C/C++/Python, Arduino, ESP32, AVR C, PIC32, FPGA), Exit |
+| **File** | New Program (Ctrl+N), New Project… (Ctrl+Shift+N), Open… (Ctrl+O, program, project file or folder), Open Project…, Open Example, Save (Ctrl+S), Save As…, Import Module…, Export Classes as Module…, Close Project, Exit |
 | **Edit** | Select All, Delete, New Class…, Group Selection into Class (Ctrl+G), Open Class |
 | **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
+| **Settings** | General… (Ctrl+,), C, C++ and Python…, Arduino Boards…, ESP32 Boards…, AVR C (bare metal)…, PIC32…, FPGA Boards…: each opens its tab of the Settings window |
+| **Devices** | This Computer (C, C++, Python), Arduino Boards, ESP32 Boards, AVR C (bare metal), PIC32 Chips, FPGA Boards: each lists its boards (or languages); picking one sets the language and board, and each ends with its Settings page |
 | **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Tutorial (PDF; seven languages), Online Documentation, Report an Issue, Check for Updates, About |
 
 <table>

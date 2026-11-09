@@ -90,6 +90,13 @@ final class Cli {
                 }
                 case "--version" -> {
                     out.println("EVIA Paradigma " + App.VERSION + " (Java " + System.getProperty("java.version") + ")");
+                    // which tools Build and Upload use: bundled with the installer, set in Settings, or from PATH
+                    String bundled = Bundled.describe();
+                    out.println("Bundled:   " + (bundled.isEmpty() ? "none (tools come from Settings or PATH)" : bundled.replace("\n", "; ")));
+                    out.println("avr-gcc:   " + Settings.avrGcc());
+                    out.println("avrdude:   " + Settings.avrdude());
+                    out.println("yosys:     " + Settings.fpgaTools().yosys());
+                    out.println("xc32-gcc:  " + Settings.xc32());
                     return 0;
                 }
                 default -> {

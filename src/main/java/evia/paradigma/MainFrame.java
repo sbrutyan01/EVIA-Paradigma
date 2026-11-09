@@ -208,8 +208,6 @@ final class MainFrame extends JFrame {
         file.add(item("Export Classes as Module...", null, e -> exportModule()));
         file.addSeparator();
         file.add(item("Close Project", null, e -> closeProject()));
-        file.addSeparator();
-        file.add(settingsMenu());
         if (!ExternalEditor.MAC) {
             file.addSeparator();
             file.add(item("Exit", KeyStroke.getKeyStroke(KeyEvent.VK_Q, MENU), e -> exit()));
@@ -291,6 +289,9 @@ final class MainFrame extends JFrame {
             @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
         });
         bar.add(git);
+
+        bar.add(settingsMenu());
+        bar.add(devicesMenu());
 
         JMenu help = menu("Help", KeyEvent.VK_H);
         help.add(item("Guide", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), e -> HelpWindow.showTopic(this, "start")));
@@ -383,9 +384,9 @@ final class MainFrame extends JFrame {
         return a;
     }
 
-    /** File > Settings: one entry per page, each opening the Settings window at that page. */
+    /** Settings: one entry per page, each opening the Settings window at that page. */
     private JMenu settingsMenu() {
-        JMenu m = new JMenu(Text.t("Settings"));
+        JMenu m = menu("Settings", KeyEvent.VK_S);
         m.add(item("General...", ExternalEditor.MAC ? null : KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, MENU), e -> Settings.showDialog(this, Settings.Page.GENERAL)));
         m.addSeparator();
         m.add(item("C, C++ and Python...", null, e -> Settings.showDialog(this, Settings.Page.DESKTOP)));
@@ -396,6 +397,71 @@ final class MainFrame extends JFrame {
         m.add(item("PIC32...", null, e -> Settings.showDialog(this, Settings.Page.PIC32)));
         m.add(item("FPGA Boards...", null, e -> Settings.showDialog(this, Settings.Page.FPGA)));
         return m;
+    }
+
+    /**
+     * Devices: one submenu per family with its boards (or chips, or languages for this computer).
+     * Picking one makes it the target: the language of that family and that board, as the toolbar
+     * lists would. The current choice has its dot; each family ends with its page of Settings.
+     */
+    private JMenu devicesMenu() {
+        JMenu m = menu("Devices", KeyEvent.VK_D);
+        m.addMenuListener(new javax.swing.event.MenuListener() {
+            @Override public void menuSelected(javax.swing.event.MenuEvent e) {
+                m.removeAll();
+                Target cur = Settings.target();
+                Target.Lang lang = cur.lang();
+                Board board = Settings.board(lang);
+
+                JMenu pc = new JMenu(Text.t("This Computer (C, C++, Python)"));
+                for (Target.Lang l : Target.Lang.values()) {
+                    if (l.embedded()) continue;
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON) pc.addSeparator();
+                    pc.add(choice(l.display + "   (" + l.tag() + ")", l == lang, () -> Settings.setTarget(cur.withLang(l))));
+                }
+                pc.addSeparator();
+                pc.add(item("C, C++ and Python Settings...", null, ev -> Settings.showDialog(MainFrame.this, Settings.Page.DESKTOP)));
+                m.add(pc);
+                m.addSeparator();
+
+                m.add(family(Text.t("Arduino Boards"), Board::isArduinoAvr, Target.Lang.ARDUINO, lang, board, Settings.Page.ARDUINO,
+                        Text.t("Arduino Settings...")));
+                m.add(family(Text.t("ESP32 Boards"), Board::isEsp32, Target.Lang.ARDUINO, lang, board, Settings.Page.ESP32,
+                        Text.t("ESP32 Settings...")));
+                m.add(family(Text.t("AVR C (bare metal)"), Board::isArduinoAvr, Target.Lang.AVR, lang, board, Settings.Page.AVR,
+                        Text.t("AVR C Settings...")));
+                m.add(family(Text.t("PIC32 Chips"), Board::isPic32, Target.Lang.PIC32, lang, board, Settings.Page.PIC32,
+                        Text.t("PIC32 Settings...")));
+                m.add(family(Text.t("FPGA Boards"), Board::isFpga, lang.fpga() ? lang : Target.Lang.SYSTEMVERILOG, lang, board,
+                        Settings.Page.FPGA, Text.t("FPGA Settings...")));
+            }
+            @Override public void menuDeselected(javax.swing.event.MenuEvent e) { }
+            @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
+        });
+        return m;
+    }
+
+    /** A device family: its boards as choices, then its Settings page. */
+    private JMenu family(String title, java.util.function.Predicate<Board> member, Target.Lang famLang, Target.Lang lang,
+                         Board board, Settings.Page page, String settingsText) {
+        JMenu f = new JMenu(title);
+        for (Board b : Board.values()) {
+            if (!member.test(b)) continue;
+            boolean on = lang == famLang && board == b;
+            f.add(choice(b.display, on, () -> {
+                Settings.setTarget(Settings.target().withLang(famLang));
+                Settings.setBoard(b);
+            }));
+        }
+        f.addSeparator();
+        f.add(item(settingsText, null, ev -> Settings.showDialog(this, page)));
+        return f;
+    }
+
+    private static JRadioButtonMenuItem choice(String text, boolean selected, Runnable pick) {
+        JRadioButtonMenuItem i = new JRadioButtonMenuItem(text, selected);
+        i.addActionListener(e -> pick.run());
+        return i;
     }
 
     private JMenu examplesMenu(String title) {
