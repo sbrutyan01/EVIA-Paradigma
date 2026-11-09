@@ -27,8 +27,10 @@ ARDUINO=https://downloads.arduino.cc/tools
 case "$KIND" in
   linux)
     OSS=("oss-cad-suite-linux-x64-$OSS_DATE.tgz" 256b113c88b8da8b363e739dd97babe89eefbfdbb84373ccae0666ae19ac304d)
-    AVR=("$GH/ZakKemble/avr-gcc-build/releases/download/$AVR_TAG/avr-gcc-16.1.0-x64-linux.tar.bz2"
-         8621ecc6514df50202b58b23b0f8f72f0e535ec35ee40426194e9a15c57692f6 "avr-gcc 16.1.0 (ZakKemble/avr-gcc-build $AVR_TAG)")
+    # Arduino's build, not avr-gcc-build's 16.1.0: that one needs glibc 2.36, which Ubuntu 22.04 (2.35) does
+    # not have. This one needs glibc 2.11, so it runs on every Linux the .deb and the AppImage are for.
+    AVR=("$ARDUINO/avr-gcc-7.3.0-atmel3.6.1-arduino7-x86_64-pc-linux-gnu.tar.bz2"
+         bd8c37f6952a2130ac9ee32c53f6a660feb79bee8353c8e289eb60fdcefed91e "avr-gcc 7.3.0 (Arduino's build, 7.3.0-atmel3.6.1-arduino7)")
     DUDE=("$ARDUINO/avrdude_8.0-arduino.1_Linux_64bit.tar.gz" 1d2edadb07e070fcd016e8c802e961e30bfa606c2db63625c930526e7044aaa6) ;;
   windows)
     OSS=("oss-cad-suite-windows-x64-$OSS_DATE.tgz" e7fcbfbea8bb1aafe350ab454dc98330dcad03c1f788f8d2d77c778f3a6a9c42)
@@ -107,8 +109,8 @@ ${AVR[2]}
   GCC and binutils: GNU GPL v3 (with the GCC runtime library exception); avr-libc: modified BSD licence.
   Downloaded from: ${AVR[0]}
   Source: https://gcc.gnu.org, https://www.gnu.org/software/binutils, https://github.com/avrdudes/avr-libc
-          and the build scripts at https://github.com/ZakKemble/avr-gcc-build (Linux, Windows)
-          or https://github.com/arduino/toolchain-avr (macOS).
+          and the build scripts at https://github.com/ZakKemble/avr-gcc-build (Windows)
+          or https://github.com/arduino/toolchain-avr (Linux, macOS).
 
 avrdude 8.0 (Arduino's build)
   GNU GPL v2 or later.
