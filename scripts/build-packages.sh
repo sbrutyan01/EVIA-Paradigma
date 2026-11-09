@@ -174,10 +174,32 @@ if [ -n "$PUBLISH" ]; then
     say "publishing into $PUBLISH/packages"
     [ -d "$PUBLISH" ] && [ -w "$PUBLISH" ] || die "$PUBLISH is not a writable folder"
     mkdir -p "$PUBLISH/packages"
-    # everything but the index first, then the index; then what is no longer named
-    rsync -a --exclude index.json "$REPO/" "$PUBLISH/packages/" || die "copying the files failed"
-    cp "$REPO/index.json" "$PUBLISH/packages/index.json.tmp" && mv "$PUBLISH/packages/index.json.tmp" "$PUBLISH/packages/index.json"
-    rsync -a --delete "$REPO/" "$PUBLISH/packages/" || die "tidying the folder failed"
+    # everything but the index first (only what changed), then the index in one step, then what is no longer named
+    python3 - "$REPO" "$PUBLISH/packages" <<'PY' || die "publishing failed"
+import os, shutil, sys
+src, dst = sys.argv[1], sys.argv[2]
+files = set()
+for root, _, names in os.walk(src):
+    for n in names:
+        rel = os.path.relpath(os.path.join(root, n), src)
+        files.add(rel)
+        if rel == "index.json":
+            continue
+        a, b = os.path.join(src, rel), os.path.join(dst, rel)
+        if os.path.exists(b) and os.path.getsize(a) == os.path.getsize(b) and os.path.getmtime(a) <= os.path.getmtime(b):
+            continue
+        os.makedirs(os.path.dirname(b), exist_ok=True)
+        shutil.copy2(a, b + ".part")
+        os.replace(b + ".part", b)
+shutil.copy2(os.path.join(src, "index.json"), os.path.join(dst, "index.json.tmp"))
+os.replace(os.path.join(dst, "index.json.tmp"), os.path.join(dst, "index.json"))
+for root, _, names in os.walk(dst):
+    for n in names:
+        rel = os.path.relpath(os.path.join(root, n), dst)
+        if rel not in files:
+            os.remove(os.path.join(dst, rel))
+            print("   - " + rel)
+PY
     echo "   https://evia.am/packages/index.json"
 fi
 du -sh "$REPO" | awk '{print "   " $1 " in " $2}'
