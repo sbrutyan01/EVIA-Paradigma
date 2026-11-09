@@ -152,6 +152,11 @@ avr-gcc and avr-libc build it, avrdude uploads it.</td></tr>
 <tr><td>PIC32 C</td><td>nine PIC32MX chips: MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) and the PIC32 Ethernet Starter Kit II (LED1 on RD0)</td>
 <td>Bare-metal C for Microchip's XC32: clock, pins, PWM, ADC, UART, SPI and I2C are driven through the registers; no Harmony or plib.
 xc32-gcc builds it, xc32-bin2hex makes the <code>.hex</code>, and an upload command of your choice (pic32prog by default) loads it.</td></tr>
+<tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
+<td>Bare-metal C for arm-none-eabi-gcc: clock, pins (PA0 ... PI15), PWM, the ADC, USART, SPI1 and I2C1 are driven through the
+registers, with the vector table, start-up code and linker script in the file; no HAL. OpenOCD uploads it through an ST-Link
+(built into the Nucleo and Discovery boards; a separate ST-Link V2 for the Pills). The same boards also take Arduino sketches
+with STMicroelectronics' core: Settings &gt; STM32 &gt; Install installs it once.</td></tr>
 </table>
 <p>Choose the board in the <b>Board</b> list next to the language (also in Settings). <b>Build</b> in the code window
 compiles for it; <b>Upload</b> builds and sends the program to the board on the serial port set in Settings.</p>
@@ -200,8 +205,19 @@ I2C device with 256 registers answers at address 80.</p>
 time only moves forward in Delay (the main window also really waits, unless the speed slider is at full speed),
 a button on every input pin is pressed during the second half of each 2 seconds, and analog pins read a slow wave
 0..1023..0. The program runs once, as if from <code>setup()</code>; afterwards the pins keep their state.
-<b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b> and <b>PIC32 Boards</b> have blink, button, fade, an analog meter, a Led class, and UART, SPI and I2C examples.</p>
+<b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b>, <b>PIC32 Boards</b> and <b>STM32 Boards</b> have blink, button, fade, an analog meter, a Led class, and UART, SPI and I2C examples.</p>
 <p>Desktop languages (C, C++) can't use the Board blocks; Generate code says which block to change.</p>
+
+<a name="packages"></a>
+<h2>Packages and updates</h2>
+<p>The toolchains are packages of the EVIA server (evia.am): arduino-cli, avr-gcc with avrdude, the Arm GNU Toolchain,
+OpenOCD and the OSS CAD Suite. The first start of an installed copy asks which ones to fetch; <b>Settings &gt; Packages and
+Updates</b> (or <b>Help &gt; Check for Updates</b>) shows what is installed and what is available, and installs, updates
+or removes them. The <b>Get</b> buttons in Settings fetch one tool the same way. Every download is checked before it is
+used, and nothing needs administrator rights: the packages live in your own data folder.</p>
+<p>A newer EVIA Paradigma is a package too: it installs next to the one you have and starts the next time (or at once
+with <b>Restart Now</b>). Nothing is uninstalled. On the command line: <code>--packages</code>, <code>--install ID</code>
+(or <code>--install updates</code>) and <code>--remove ID</code>.</p>
 
 <a name="fpga"></a>
 <h2>FPGA: Artix-7 and GateMate</h2>

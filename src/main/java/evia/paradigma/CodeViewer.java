@@ -406,7 +406,8 @@ final class CodeViewer extends JFrame {
         }
         boolean arduino = target.lang() == Target.Lang.ARDUINO;
         boolean pic = target.lang() == Target.Lang.PIC32;
-        String tool = arduino ? Settings.arduinoCli() : pic ? Settings.xc32() : Settings.avrGcc();
+        boolean stm = target.lang() == Target.Lang.STM32;
+        String tool = arduino ? Settings.arduinoCli() : pic ? Settings.xc32() : stm ? Settings.armGcc() : Settings.avrGcc();
         compilerLabel.setText("Checking " + tool + "...");
         compilerLabel.setForeground(Theme.muted());
         Object token = Settings.newCheck(compilerLabel);
@@ -425,7 +426,7 @@ final class CodeViewer extends JFrame {
             String v = version;
             SwingUtilities.invokeLater(() -> {
                 if (!Settings.isLatestCheck(compilerLabel, token)) return;
-                String name = arduino ? "arduino-cli" : pic ? "xc32-gcc" : "avr-gcc";
+                String name = arduino ? "arduino-cli" : pic ? "xc32-gcc" : stm ? "arm-none-eabi-gcc" : "avr-gcc";
                 if (v == null) {
                     compilerLabel.setText(name + " not found - see Build for how to install it");
                     compilerLabel.setForeground(Theme.error());
@@ -552,7 +553,10 @@ final class CodeViewer extends JFrame {
         Target tg = target;
         Board board = Settings.board(tg.lang());
         String port = Settings.serialPort();
-        if (upload && port.isBlank() && (tg.lang() != Target.Lang.PIC32 || Settings.pic32Upload().contains("{device}"))) {
+        boolean viaOpenocd = board.isStm32();      /* both STM32 languages upload with the STM32 upload command */
+        boolean needsPort = viaOpenocd ? Settings.stm32Upload().contains("{device}")
+                : tg.lang() != Target.Lang.PIC32 || Settings.pic32Upload().contains("{device}");
+        if (upload && port.isBlank() && needsPort) {
             port = JOptionPane.showInputDialog(this, "Serial port of the " + board.display + " (e.g. "
                     + (ExternalEditor.WINDOWS ? "COM3" : "/dev/ttyACM0") + "):", "Upload", JOptionPane.QUESTION_MESSAGE);
             if (port == null || port.isBlank()) return;
@@ -575,7 +579,10 @@ final class CodeViewer extends JFrame {
                     String cli = Settings.arduinoCli();
                     tool = cli;
                     steps.add(List.of(cli, "compile", "--fqbn", board.fqbn, "--output-dir", dir.resolve("build").toString(), sketch.toString()));
-                    if (upload) {
+                    if (upload && viaOpenocd) {
+                        Path b = dir.resolve("build");
+                        steps.add(stm32Upload(board, b.resolve("program.ino.elf"), b.resolve("program.ino.hex"), b.resolve("program.ino.bin"), thePort));
+                    } else if (upload) {
                         steps.add(List.of(cli, "upload", "--fqbn", board.fqbn, "-p", thePort, "--input-dir",
                                 dir.resolve("build").toString(), sketch.toString()));
                     }
@@ -594,6 +601,18 @@ final class CodeViewer extends JFrame {
                         }
                         steps.add(u);
                     }
+                } else if (tg.lang() == Target.Lang.STM32) {
+                    Path src = dir.resolve("program.c"), elf = dir.resolve("program.elf"), hex = dir.resolve("program.hex"),
+                            bin = dir.resolve("program.bin"), ld = dir.resolve("stm32.ld");
+                    Files.writeString(src, code, StandardCharsets.UTF_8);
+                    Files.writeString(ld, Stm32Runtime.linkerScript(board.stm32), StandardCharsets.UTF_8);
+                    String gcc = Settings.armGcc();
+                    tool = gcc;
+                    steps.add(Stm32Runtime.gcc(board.stm32, gcc, src.toString(), elf.toString(), ld.toString()));
+                    steps.add(List.of(sibling(gcc, "objcopy"), "-O", "ihex", elf.toString(), hex.toString()));
+                    steps.add(List.of(sibling(gcc, "objcopy"), "-O", "binary", elf.toString(), bin.toString()));
+                    steps.add(List.of(sibling(gcc, "size"), elf.toString()));
+                    if (upload) steps.add(stm32Upload(board, elf, hex, bin, thePort));
                 } else {
                     Path src = dir.resolve("program.c"), elf = dir.resolve("program.elf"), hex = dir.resolve("program.hex");
                     Files.writeString(src, code, StandardCharsets.UTF_8);
@@ -612,6 +631,7 @@ final class CodeViewer extends JFrame {
                 }
                 for (List<String> cmd : steps) {
                     if (cmd.get(0).equals(Settings.avrdude())) tool = Settings.avrdude();
+                    if (cmd.get(0).equals(Settings.openocd())) tool = Settings.openocd();
                     append("$ " + String.join(" ", cmd) + "\n");
                     int rc = runProcess(new ProcessBuilder(cmd).directory(dir.toFile()), false);
                     if (rc != 0) {
@@ -625,7 +645,8 @@ final class CodeViewer extends JFrame {
                         + ". Open a serial monitor at 115200 baud to see Print and answer Input.\n"
                         : ">> built for the " + board.display + ". Upload sends it to the board.\n");
             } catch (IOException e) {
-                append(">> " + e.getMessage() + "\n" + (tg.lang() == Target.Lang.PIC32 ? PIC32_HELP
+                append(">> " + e.getMessage() + "\n" + (board.isStm32() && (tg.lang() == Target.Lang.STM32 || Settings.openocd().equals(tool))
+                        ? STM32_HELP : tg.lang() == Target.Lang.PIC32 ? PIC32_HELP
                         : installHelp(tg.lang() == Target.Lang.ARDUINO && !Settings.avrdude().equals(tool))));
             } catch (InterruptedException e) {
                 append(">> stopped\n");
@@ -648,6 +669,32 @@ final class CodeViewer extends JFrame {
         String name = gcc.substring(slash + 1).replace("gcc", tool);
         return gcc.substring(0, slash + 1) + name;
     }
+
+    /** The STM32 upload command with its placeholders filled in. */
+    private static List<String> stm32Upload(Board board, Path elf, Path hex, Path bin, String port) {
+        List<String> u = new ArrayList<>();
+        for (String part : Settings.split(Settings.stm32Upload())) {
+            // inside a longer argument (an OpenOCD command such as "program {elf} verify") a path is a Tcl word:
+            // forward slashes, and braces around it when it has a space
+            boolean inTcl = !part.matches("\\{(elf|hex|bin)\\}");
+            u.add(part.replace("{openocd}", Settings.openocd()).replace("{target}", board.stm32.openocdTarget())
+                    .replace("{elf}", tclPath(elf, inTcl)).replace("{hex}", tclPath(hex, inTcl))
+                    .replace("{bin}", tclPath(bin, inTcl)).replace("{device}", port));
+        }
+        return u;
+    }
+
+    private static String tclPath(Path p, boolean inTcl) {
+        String s = p.toString().replace('\\', '/');
+        return inTcl && s.contains(" ") ? "{" + s + "}" : s;
+    }
+
+    private static final String STM32_HELP = """
+            >> STM32 C builds with arm-none-eabi-gcc and uploads with OpenOCD through an ST-Link
+               (Settings > STM32 > Get fetches both; Tools > Packages keeps them up to date).
+               Arduino sketches for STM32 boards also need the STM32 core: Settings > STM32 > Install.
+               Linux: if OpenOCD can't open the ST-Link, install its udev rules (see the guide) and plug it in again.
+            """;
 
     private static final String PIC32_HELP = """
             >> PIC32 C builds with Microchip's free XC32 compiler (https://www.microchip.com/xc32) and loads the .hex

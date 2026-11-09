@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.8.0-blue" alt="version 0.8.0"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.0-blue" alt="version 0.9.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -53,18 +53,42 @@ and Cologne Chip **GateMate** boards, built with Vivado or the open-source tools
 
 ## Download
 
-Get the installer for your system from the [latest release](https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest).
-Each installer includes its own Java runtime, so Java doesn't need to be installed, and from 0.8.0 also the board
-toolchains: avr-gcc with avrdude and the OSS CAD Suite (about 0.5–1 GB to download, 3 GB installed). The jar has none of them.
+Get the installer for your system from **[evia.am](https://evia.am/)** or the
+[latest release](https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest). From 0.9.0 they are **online installers**:
+small (the application and its own Java runtime, so Java doesn't need to be installed), and on the first start the
+application asks which toolchains to fetch for your boards. They come from the EVIA package server
+([evia.am/packages](https://evia.am/packages/index.json)) and stay up to date from inside the application,
+**Settings → Packages and Updates…**, without uninstalling or installing anything again; the application updates
+itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.8.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.8.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.8.0-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.8.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.8.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.8.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.8.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.8.0.jar` | `java -jar evia-paradigma-0.8.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.9.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.9.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.9.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.9.0.jar` | `java -jar evia-paradigma-0.9.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.9.0
+
+[EVIA Paradigma v0.9.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.9.0) ([release notes](docs/release-notes/v0.9.0.md)):
+STM32 boards, OpenOCD, online installers and packages from the EVIA server.
+
+- **STM32**: Blue Pill (F103C8), Black Pill (F411CE), Nucleo-F401RE, Nucleo-F411RE and the F4DISCOVERY (F407VG), in two
+  ways: **Language → STM32 C** writes bare-metal C for the chip (registers only, no HAL; its own start-up code and
+  linker script, built with arm-none-eabi-gcc), and **Language → Arduino** builds a sketch with STMicroelectronics'
+  core. **Devices** has both families; **Settings → STM32…** has the board, the tools and the upload command.
+- **OpenOCD**: Upload sends either kind of program to the board through an ST-Link (built into the Nucleo and
+  Discovery, a separate ST-Link V2 for the Pills). The command is a template in Settings, so st-flash, STM32CubeProgrammer
+  or a serial bootloader can take its place.
+- **Online installers and packages**: the installers are small; the toolchains (arduino-cli, avr-gcc with avrdude,
+  the Arm GNU Toolchain, OpenOCD, the OSS CAD Suite) are packages of the EVIA server, picked on the first start and
+  updated in place from **Settings → Packages and Updates…**. Every file is checked against its SHA-256 before it is used.
+- **The application updates itself**: a newer version is a package too. It installs next to the one you have and
+  starts the next time (or at once with **Restart Now**); nothing is uninstalled. A version that would not start is
+  skipped and the one you had runs.
+- On the command line: `--packages`, `--install ID… | updates`, `--remove ID`, and `--lang stm32 --board nucleo-f401re`.
 
 ### Release 0.8.0
 
@@ -906,14 +930,15 @@ python3 program.py
 
 ## Arduino and ESP32 boards
 
-Three more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
+Four more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
 only in Print). Print and Input go over the serial port at 115200 baud.
 
 | Language | Boards | Output | Build and upload |
 |---|---|---|---|
-| **Arduino** | Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini (5 V, 16 MHz); ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2 | one sketch, `program/program.ino`, with `setup()` and `loop()`; text in flash (`F()`) on AVR boards | `arduino-cli compile` / `upload` with the `arduino:avr` and `esp32:esp32` cores |
+| **Arduino** | Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini (5 V, 16 MHz); ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2; the five STM32 boards | one sketch, `program/program.ino`, with `setup()` and `loop()`; text in flash (`F()`) on AVR boards | `arduino-cli compile` / `upload` with the `arduino:avr`, `esp32:esp32` and `STMicroelectronics:stm32` cores (STM32: uploaded with OpenOCD) |
 | **AVR C** | the six AVR boards: ATmega328P (Uno, Nano, Pro Mini), ATmega2560 (Mega 2560), ATmega32U4 (Leonardo, Micro) | bare-metal C: no Arduino core. `pinMode`, `digitalWrite`, `analogRead`, `analogWrite`, `millis` and `delay` written against the chip's registers, with Arduino's pin numbers, timer setup and a 115200-baud UART (USART1 on pins 0/1 for the ATmega32U4) | `avr-gcc -mmcu=… -Os`, `avr-objcopy`, `avrdude` |
 | **PIC32 C** | nine PIC32MX chips: MX1xx/2xx (150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L), plus the PIC32 Ethernet Starter Kit II as a ready-made board (MX795F512L, LED1 on RD0) | bare-metal C for XC32, no Harmony or plib: the same Arduino-style functions written against the registers. 30 MHz from the internal oscillator, UART1 at 115200 baud, 10-bit ADC, PWM on the output compare modules | `xc32-gcc -mprocessor=32MX… -Os`, `xc32-bin2hex`, then an upload command (default `pic32prog {hex}`) |
+| **STM32 C** | Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG) | bare-metal C for arm-none-eabi-gcc, no HAL or CMSIS: the same Arduino-style functions written against the registers, with the vector table, start-up code and linker script in the file. 64 MHz (F1), 84 MHz (F401/F411) or 168 MHz (F407) from the internal oscillator, Print on USART1 (PA9/PA10) or USART2 (PA2/PA3, the Nucleo's ST-Link serial port), PWM on TIM2–TIM4, 12-bit ADC (A0–A15), SPI1, I2C1 | `arm-none-eabi-gcc -mcpu=cortex-m3/m4 -T stm32.ld …`, then OpenOCD through an ST-Link (`openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program program.elf verify reset exit"`) |
 
 The generated code is the same for every board of a language. Pins are written as `LED_BUILTIN`, `A0` and so on, and
 each board's headers say where they are. The **Board** list next to the language (and in Settings, with the serial port

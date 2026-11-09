@@ -40,13 +40,13 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, python, arduino, avr, pic32, sv, verilog, vhdl)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, python, arduino, avr, pic32, stm32, sv, verilog, vhdl)");
                                 t = t.withLang(l);
                             }
                             case "--board" -> {
                                 Board b = Board.parse(v);
                                 if (!b.key().equals(v.trim().toLowerCase().replace('_', '-')) && !b.fqbn.equalsIgnoreCase(v.trim())) {
-                                    throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b, nexys-a7-100t, arty-a7-35, basys3, olimex-gatemate, ccgm1a1-evb)");
+                                    throw new IllegalArgumentException("unknown board " + v + " (e.g. uno, mega, esp32, pic32mx250f128b, bluepill-f103c8, nucleo-f401re, nexys-a7-100t, arty-a7-35, basys3, olimex-gatemate, ccgm1a1-evb)");
                                 }
                                 Settings.useBoard(b);
                             }
@@ -77,6 +77,11 @@ final class Cli {
                         String base = output.contains(".") ? output.substring(0, output.lastIndexOf('.')) : output;
                         Files.writeString(Path.of(base + Fpga.constraintExt(b.fpga())), r.constraints(), StandardCharsets.UTF_8);
                     }
+                    if (t.lang() == Target.Lang.STM32 && output != null) {
+                        // the linker script goes next to the C file
+                        Path ld = Path.of(output).toAbsolutePath().resolveSibling("stm32.ld");
+                        Files.writeString(ld, Stm32Runtime.linkerScript(Settings.board(Target.Lang.STM32).stm32), StandardCharsets.UTF_8);
+                    }
                     if (output != null) Files.writeString(Path.of(output), code, StandardCharsets.UTF_8);
                     else out.print(code);
                     return 0;
@@ -88,8 +93,67 @@ final class Cli {
                     ProgramIO.save(lib, Path.of(args[1]));
                     return 0;
                 }
+                case "--packages" -> {
+                    // what the package server has for this computer, and what is installed
+                    java.util.Map<String, String> have = Packages.installed();
+                    out.println("Packages from " + Packages.repo() + " for " + Packages.platform() + ", installed in " + Packages.home());
+                    for (Packages.Pkg p : Packages.fetchIndex()) {
+                        String inst = p.app() ? Packages.runningVersion() + " (running)" : have.getOrDefault(p.id(), "-");
+                        out.printf("  %-20s %-14s installed %-20s available %-16s %s%s%n", p.id(), p.group(), inst,
+                                p.available() ? p.version() : "-", p.available() ? Packages.mb(p.size()) : "not for this computer",
+                                Packages.hasUpdate(p) ? "  UPDATE" : "");
+                    }
+                    return 0;
+                }
+                case "--install", "--remove" -> {
+                    need(args, 2);
+                    java.util.List<Packages.Pkg> idx = args[0].equals("--install") ? Packages.fetchIndex() : java.util.List.of();
+                    java.util.List<String> ids = new java.util.ArrayList<>(java.util.Arrays.asList(args).subList(1, args.length));
+                    if (ids.equals(java.util.List.of("updates"))) {
+                        ids.clear();
+                        for (Packages.Pkg p : idx) if (Packages.hasUpdate(p)) ids.add(p.id());
+                        if (ids.isEmpty()) out.println("everything installed is up to date");
+                    }
+                    int rc = 0;
+                    for (String id : ids) {
+                        if (args[0].equals("--remove")) {
+                            Packages.remove(id);
+                            out.println("removed " + id);
+                            continue;
+                        }
+                        Packages.Pkg pkg = idx.stream().filter(p -> p.id().equals(id)).findFirst().orElse(null);
+                        if (pkg == null || !pkg.available()) {
+                            err.println("evia-paradigma: no package " + id + " for " + Packages.platform() + " (see --packages)");
+                            rc = 2;
+                            continue;
+                        }
+                        String[] lastLine = {""};
+                        try {
+                            Path where = Packages.install(pkg, new Packages.Progress() {
+                                @Override public void report(String text, long done, long total) {
+                                    String line = total > 0 ? text.replaceAll("\\.\\.\\. .*", "... " + done * 100 / total + " %") : text;
+                                    if (!line.equals(lastLine[0])) err.println(line);
+                                    lastLine[0] = line;
+                                }
+
+                                @Override public boolean cancelled() {
+                                    return false;
+                                }
+                            });
+                            out.println("installed " + pkg.id() + " " + pkg.version() + " in " + where);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return 1;
+                        }
+                    }
+                    return rc;
+                }
                 case "--version" -> {
                     out.println("EVIA Paradigma " + App.VERSION + " (Java " + System.getProperty("java.version") + ")");
+                    if (System.getProperty("evia.handedOver") != null) {
+                        out.println("Updated:   started by the installed " + System.getProperty("evia.handedOver")
+                                + " from " + Packages.dir(Packages.APP));
+                    }
                     // which tools Build and Upload use: bundled with the installer, set in Settings, or from PATH
                     String bundled = Bundled.describe();
                     out.println("Bundled:   " + (bundled.isEmpty() ? "none (tools come from Settings or PATH)" : bundled.replace("\n", "; ")));
@@ -97,6 +161,8 @@ final class Cli {
                     out.println("avrdude:   " + Settings.avrdude());
                     out.println("yosys:     " + Settings.fpgaTools().yosys());
                     out.println("xc32-gcc:  " + Settings.xc32());
+                    out.println("arm-gcc:   " + Settings.armGcc());
+                    out.println("openocd:   " + Settings.openocd());
                     return 0;
                 }
                 default -> {
@@ -112,13 +178,17 @@ final class Cli {
                                   -o FILE              write to FILE (default: standard output)
                                   --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default),
                                                        python (Python 3.8 or newer: run it with python3 program.py),
-                                                       arduino (a sketch for Arduino AVR and ESP32 boards),
+                                                       arduino (a sketch for Arduino AVR, ESP32 and STM32 boards),
                                                        avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4),
                                                        pic32 (bare-metal C for xc32-gcc: PIC32MX1xx/2xx, 3xx/4xx, 5xx/6xx/7xx)
+                                                       stm32 (bare-metal C for arm-none-eabi-gcc: STM32F103, F401, F411, F407;
+                                                       with -o FILE the linker script is written next to it as stm32.ld)
                                                        sv, verilog, vhdl (FPGA: SystemVerilog, Verilog-2001, VHDL; with -o FILE the
                                                        pin constraints are written next to it as .xdc or .ccf)
                                   --board BOARD        the board or chip the code is for (pic32 needs one of the pic32mx... chips,
                                                        e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b;
+                                                       STM32: bluepill-f103c8 (default), blackpill-f411ce, nucleo-f401re,
+                                                       nucleo-f411re, disco-f407vg (also for arduino);
                                                        FPGA: nexys-a7-100t (default), arty-a7-35, arty-a7-100, basys3,
                                                        olimex-gatemate, ccgm1a1-evb)
                                   --net WHERE          where the MQTT blocks reach the network on a PIC32: uart (default, a WiFi
@@ -131,6 +201,9 @@ final class Cli {
                                   --values MODE        safe (default): numbers and text, the interpreter's checks
                                                        fast: plain double numbers, text only in Print, no checks
                               java -jar evia-paradigma.jar --example out.evia        save the example
+                              java -jar evia-paradigma.jar --packages                list the packages of the EVIA server
+                              java -jar evia-paradigma.jar --install ID...           install or update packages (or: updates)
+                              java -jar evia-paradigma.jar --remove ID               remove an installed package
                             Build generated code with Clang %d, e.g.:
                               clang++ -std=c++20 -O2 -o program program.cpp
                               clang -std=c11 -O2 -o program program.c -lm
@@ -138,7 +211,10 @@ final class Cli {
                             Boards:
                               arduino-cli compile --fqbn arduino:avr:uno program      (program/program.ino)
                               avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os -o program.elf program.c -lm
-                              xc32-gcc -mprocessor=32MX250F128B -Os -o program.elf program.c -lm   (then xc32-bin2hex program.elf)""".formatted(Settings.LATEST_CLANG, Settings.MIN_GCC));
+                              xc32-gcc -mprocessor=32MX250F128B -Os -o program.elf program.c -lm   (then xc32-bin2hex program.elf)
+                              arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -Os -nostartfiles --specs=nano.specs --specs=nosys.specs
+                                  -T stm32.ld -o program.elf program.c -lm   (the full line is in the generated file)
+                              openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program program.elf verify reset exit\"""".formatted(Settings.LATEST_CLANG, Settings.MIN_GCC));
                     return args[0].equals("--help") || args[0].equals("-h") ? 0 : 2;
                 }
             }

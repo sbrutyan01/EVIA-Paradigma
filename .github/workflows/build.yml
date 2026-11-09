@@ -147,6 +147,54 @@ jobs:
       - name: "The generated MQTT client against a broker on this computer"
         run: scripts/check-mqtt.sh
 
+  # STM32 (bare-metal C for arm-none-eabi-gcc, and Arduino sketches with STMicroelectronics' core): every
+  # example for the five boards, compiled by clang for the core, built with Ubuntu's arm-none-eabi-gcc and
+  # newlib, and the Nucleo-F401RE builds run in QEMU (netduinoplus2, an STM32F405) against the interpreter.
+  stm32:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package
+
+      - name: arm-none-eabi-gcc, newlib and QEMU
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi qemu-system-arm clang
+
+      - name: Cache the STM32 core
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.arduino15
+            ~/.cache/arduino
+          key: arduino-stm32-core-${{ runner.os }}-v1
+
+      - name: arduino-cli
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install the STMicroelectronics:stm32 core
+        run: |
+          url=https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+          arduino-cli config init --overwrite --additional-urls "$url"
+          arduino-cli core update-index
+          arduino-cli core install STMicroelectronics:stm32
+          arduino-cli core list
+
+      - name: "STM32 examples: clang, arm-none-eabi-gcc, QEMU, Arduino sketches for 5 boards"
+        run: scripts/check-stm32.sh
+
+      - name: "Packages: install, update, damaged download, remove, self-update"
+        run: scripts/check-packages.sh
+
   # FPGA designs (SystemVerilog, Verilog-2001, VHDL for Artix-7 and GateMate): simulated against the interpreter
   # with Icarus Verilog and GHDL, synthesised with yosys, and for the GateMate placed, routed and packed into a
   # bitstream with nextpnr-himbaechel and gmpack. There is no Vivado or board in CI.

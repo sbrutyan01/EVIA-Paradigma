@@ -220,3 +220,53 @@ ESP32 Settings...	Настройки ESP32...
 AVR C Settings...	Настройки AVR C...
 PIC32 Settings...	Настройки PIC32...
 FPGA Settings...	Настройки FPGA...
+# 0.9.0: STM32 and packages
+Packages and Updates...	Пакеты и обновления...
+STM32...	STM32...
+STM32 C (bare metal)	STM32 C (без ядра)
+STM32 Settings...	Настройки STM32...
+STM32 Boards (Arduino)	Платы STM32 (Arduino)
+STM32 Boards	Платы STM32
+Install it again?	Установить заново?
+Download	Загрузка
+installed	установлено
+From	Откуда
+Into	Куда
+Install %s	Установить %s
+Packages	Пакеты
+Asking %s what is available...	Запрос к %s: что доступно...
+The package server could not be reached:	Сервер пакетов недоступен:
+Welcome to EVIA Paradigma	Добро пожаловать в EVIA Paradigma
+Packages and Updates	Пакеты и обновления
+Select Updates	Выбрать обновления
+Install / Update	Установить / обновить
+Remove	Удалить
+Restart Now	Перезапустить
+Later	Позже
+<b>Choose the toolchains for your boards.</b> They are downloaded from the EVIA server and kept up to date here; nothing else needs to be installed. You can come back any time: Settings, Packages and Updates.	<b>Выберите наборы инструментов для ваших плат.</b> Они скачиваются с сервера EVIA и обновляются здесь же; больше ничего устанавливать не нужно. Вернуться можно в любой момент: Settings, Packages and Updates.
+for	для
+Installed into	Устанавливается в
+%d updates are available.	Доступно обновлений: %d.
+Everything installed is up to date.	Всё установленное обновлено.
+Remove %s from this computer?	Удалить %s с этого компьютера?
+%s was removed.	%s удалён.
+Could not remove %s: %s	Не удалось удалить %s: %s
+EVIA Paradigma %s is installed: it starts the next time.	EVIA Paradigma %s установлена: она запустится в следующий раз.
+Restart now?	Перезапустить сейчас?
+Cancelling...	Отмена...
+Cancelled.	Отменено.
+Installed: %s.	Установлено: %s.
+Package	Пакет
+Installed	Установлено
+Available	Доступно
+installer	установщик
+not for %s	нет для %s
+Updates are available: %s. Settings, Packages and Updates installs them.	Есть обновления: %s. Их устанавливает Settings, Packages and Updates.
+Could not restart: %s. Close and open EVIA Paradigma again.	Не удалось перезапустить: %s. Закройте и снова откройте EVIA Paradigma.
+Restart	Перезапуск
+STM32	STM32
+STMicroelectronics' board package index; arduino-cli installs the STM32 core from it	Индекс пакетов плат STMicroelectronics; arduino-cli устанавливает из него ядро STM32
+Install or update the STM32 core (STMicroelectronics:stm32) with arduino-cli	Установить или обновить ядро STM32 (STMicroelectronics:stm32) через arduino-cli
+STM32 upload:	Загрузка STM32:
+STM32 core:	Ядро STM32:
+Install the %s core	Установить ядро %s

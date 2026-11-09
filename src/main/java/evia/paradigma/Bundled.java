@@ -44,11 +44,20 @@ final class Bundled {
         return null;
     }
 
-    /** A program of a bundled toolchain, e.g. tool("avr-gcc", "avr-gcc"), or null when it is not there. */
+    /**
+     * A program of a toolchain, e.g. tool("avr-gcc", "avr-gcc"): from the installed package of that name
+     * (Settings, Packages) first, then from the folder that came inside the installer; null when neither has it.
+     */
     static Path tool(String toolchain, String program) {
+        Path fromPackage = in(Packages.dir(toolchain), program);
+        if (fromPackage != null) return fromPackage;
         Path r = root();
-        if (r == null) return null;
-        Path exe = r.resolve(toolchain).resolve("bin").resolve(ExternalEditor.WINDOWS ? program + ".exe" : program);
+        return r == null ? null : in(r.resolve(toolchain), program);
+    }
+
+    /** The program in the bin/ folder of a toolchain's folder, or null. */
+    private static Path in(Path toolchainDir, String program) {
+        Path exe = toolchainDir.resolve("bin").resolve(ExternalEditor.WINDOWS ? program + ".exe" : program);
         if (Files.isRegularFile(exe)) return exe;
         // the OSS CAD Suite on Windows keeps some programs as .bat wrappers
         if (ExternalEditor.WINDOWS) {
@@ -64,13 +73,16 @@ final class Bundled {
         return p != null ? p.toString() : program;
     }
 
-    /** What is inside, one line each, for About and the Settings pages; empty when nothing is bundled. */
+    /** The toolchains EVIA Paradigma knows by folder name. */
+    static final String[] TOOLCHAINS = {"avr-gcc", "arm-none-eabi-gcc", "openocd", "arduino-cli", "oss-cad-suite"};
+
+    /** What is inside, one line each, for About and the Settings pages; empty when nothing is bundled or installed. */
     static String describe() {
-        Path r = root();
-        if (r == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (String name : new String[]{"avr-gcc", "oss-cad-suite"}) {
-            Path v = r.resolve(name).resolve("EVIA-VERSION");
+        Path r = root();
+        for (String name : TOOLCHAINS) {
+            Path v = Packages.dir(name).resolve("EVIA-VERSION");
+            if (!Files.isRegularFile(v) && r != null) v = r.resolve(name).resolve("EVIA-VERSION");
             try {
                 if (Files.isRegularFile(v)) sb.append(Files.readString(v).strip()).append('\n');
             } catch (Exception ignored) {

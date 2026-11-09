@@ -220,3 +220,53 @@ ESP32 Settings...	ESP32 կարգավորումներ...
 AVR C Settings...	AVR C կարգավորումներ...
 PIC32 Settings...	PIC32 կարգավորումներ...
 FPGA Settings...	FPGA կարգավորումներ...
+# 0.9.0: STM32 and packages
+Packages and Updates...	Փաթեթներ և թարմացումներ...
+STM32...	STM32...
+STM32 C (bare metal)	STM32 C (bare metal)
+STM32 Settings...	STM32-ի կարգավորումներ...
+STM32 Boards (Arduino)	STM32 սալիկներ (Arduino)
+STM32 Boards	STM32 սալիկներ
+Install it again?	Կրկին տեղադրե՞լ։
+Download	Ներբեռնում
+installed	տեղադրված
+From	Որտեղից
+Into	Ուր
+Install %s	Տեղադրել %s
+Packages	Փաթեթներ
+Asking %s what is available...	Հարցում %s-ին՝ ինչ կա...
+The package server could not be reached:	Փաթեթների սերվերը հասանելի չէ.
+Welcome to EVIA Paradigma	Բարի գալուստ EVIA Paradigma
+Packages and Updates	Փաթեթներ և թարմացումներ
+Select Updates	Ընտրել թարմացումները
+Install / Update	Տեղադրել / թարմացնել
+Remove	Հեռացնել
+Restart Now	Վերագործարկել հիմա
+Later	Ավելի ուշ
+<b>Choose the toolchains for your boards.</b> They are downloaded from the EVIA server and kept up to date here; nothing else needs to be installed. You can come back any time: Settings, Packages and Updates.	<b>Ընտրեք ձեր սալիկների գործիքակազմերը։</b> Դրանք ներբեռնվում են EVIA սերվերից և թարմացվում են այստեղ. ուրիշ ոչինչ տեղադրել պետք չէ։ Կարող եք վերադառնալ ցանկացած պահի՝ Settings, Packages and Updates։
+for	համար
+Installed into	Տեղադրվում է
+%d updates are available.	Կա %d թարմացում։
+Everything installed is up to date.	Ամբողջ տեղադրվածը թարմ է։
+Remove %s from this computer?	Հեռացնե՞լ %s-ը այս համակարգչից։
+%s was removed.	%s-ը հեռացվեց։
+Could not remove %s: %s	Չհաջողվեց հեռացնել %s-ը. %s
+EVIA Paradigma %s is installed: it starts the next time.	EVIA Paradigma %s-ը տեղադրված է. այն կմեկնարկի հաջորդ անգամ։
+Restart now?	Վերագործարկե՞լ հիմա։
+Cancelling...	Չեղարկում...
+Cancelled.	Չեղարկված է։
+Installed: %s.	Տեղադրված է՝ %s։
+Package	Փաթեթ
+Installed	Տեղադրված
+Available	Հասանելի
+installer	տեղադրիչ
+not for %s	չկա %s-ի համար
+Updates are available: %s. Settings, Packages and Updates installs them.	Կան թարմացումներ՝ %s։ Դրանք տեղադրում է Settings, Packages and Updates-ը։
+Could not restart: %s. Close and open EVIA Paradigma again.	Չհաջողվեց վերագործարկել. %s։ Փակեք և նորից բացեք EVIA Paradigma-ն։
+Restart	Վերագործարկում
+STM32	STM32
+STMicroelectronics' board package index; arduino-cli installs the STM32 core from it	STMicroelectronics-ի սալիկների փաթեթների ինդեքսը. arduino-cli-ն դրանից է տեղադրում STM32 միջուկը
+Install or update the STM32 core (STMicroelectronics:stm32) with arduino-cli	Տեղադրել կամ թարմացնել STM32 միջուկը (STMicroelectronics:stm32) arduino-cli-ով
+STM32 upload:	STM32 բեռնում՝
+STM32 core:	STM32 միջուկ՝
+Install the %s core	Տեղադրել %s միջուկը

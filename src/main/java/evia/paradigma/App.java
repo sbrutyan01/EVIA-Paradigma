@@ -14,9 +14,10 @@ import java.io.File;
  */
 public final class App {
     /** Released version, shown by --version and in the About dialog. */
-    public static final String VERSION = "0.8.0";
+    public static final String VERSION = "0.9.0";
 
     public static void main(String[] args) {
+        if (handOver(args)) return;
         if (args.length > 0 && args[0].startsWith("-")) {
             System.setProperty("java.awt.headless", "true");
             System.exit(Cli.run(args));
@@ -27,6 +28,9 @@ public final class App {
             MainFrame f = new MainFrame();
             f.setVisible(true);
             if (toOpen != null) f.openFile(toOpen);
+            // the first start of an installed copy: pick the toolchains; later starts: a quiet check for updates
+            if (PackagesDialog.welcomeDue()) SwingUtilities.invokeLater(() -> PackagesDialog.show(f, true));
+            else PackagesDialog.checkInBackground(f::notice);
             // macOS delivers double-clicked documents through an event instead of arguments
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_OPEN_FILE)) {
                 Desktop.getDesktop().setOpenFileHandler(e -> {
@@ -34,5 +38,31 @@ public final class App {
                 });
             }
         });
+    }
+
+    /**
+     * Self-update: when a newer version of the application has been installed as a package (Settings,
+     * Packages and Updates), the copy that came with the installer starts that one instead, in a class
+     * loader of its own, on the same Java runtime. True when it did; if the newer one fails to start it is
+     * marked broken (and skipped from then on) and this version starts as usual.
+     */
+    private static boolean handOver(String[] args) {
+        if (System.getProperty("evia.handedOver") != null || "0".equals(System.getenv("EVIA_UPDATES"))) return false;
+        java.nio.file.Path jar = Packages.newerApp(VERSION);
+        if (jar == null) return false;
+        System.setProperty("evia.handedOver", VERSION);
+        try {
+            java.net.URLClassLoader loader = new java.net.URLClassLoader("evia-" + Packages.appVersion(jar),
+                    new java.net.URL[]{jar.toUri().toURL()}, ClassLoader.getPlatformClassLoader());
+            Thread.currentThread().setContextClassLoader(loader);
+            Class<?> app = Class.forName("evia.paradigma.App", true, loader);
+            app.getMethod("main", String[].class).invoke(null, (Object) args);
+            return true;
+        } catch (Throwable t) {
+            System.err.println("EVIA Paradigma " + Packages.appVersion(jar) + " did not start (" + t + "); starting " + VERSION);
+            Packages.markBroken(jar);
+            Thread.currentThread().setContextClassLoader(App.class.getClassLoader());
+            return false;
+        }
     }
 }

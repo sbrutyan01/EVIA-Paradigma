@@ -165,7 +165,8 @@ final class CodeGenerator {
                 + "// Language: " + t.describe() + "\n";
         if (t.lang() == Target.Lang.ARDUINO) {
             return stamp
-                    + "// Boards:   Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32, ESP32-S2, -S3, -C3, -C6, -H2\n"
+                    + "// Boards:   Arduino Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32, ESP32-S2, -S3, -C3, -C6, -H2;\n"
+                    + "//           STM32 Blue Pill, Black Pill, Nucleo-F401RE/F411RE, F4DISCOVERY (core STMicroelectronics:stm32)\n"
                     + "// Build:    arduino-cli compile --fqbn arduino:avr:uno program   (the sketch is program/program.ino)\n"
                     + "// Upload:   arduino-cli upload --fqbn arduino:avr:uno -p /dev/ttyACM0 program\n"
                     + "// Print and Input use the serial port at 115200 baud (Serial Monitor).\n\n";
@@ -205,6 +206,23 @@ final class CodeGenerator {
                     + "// Pins:     " + pins + "\n"
                     + "// Clock:    internal 8 MHz oscillator and PLL, 30 MHz; the settings are the #pragma config lines below.\n"
                     + "// Print and Input use UART1 at 115200 baud. Registers only: no Harmony, no plib.\n\n";
+        }
+        if (t.lang() == Target.Lang.STM32) {
+            Board b = Settings.board(Target.Lang.STM32);
+            Board.Stm32 c = b.stm32;
+            StringBuilder ld = new StringBuilder();
+            for (String line : Stm32Runtime.linkerScript(c).strip().split("\n")) ld.append("//   ").append(line).append('\n');
+            return stamp
+                    + "// Board:    " + b.display + "  (" + c.chip() + ", " + (c.f1() ? "Cortex-M3" : "Cortex-M4F") + ", "
+                    + c.sysclk() / 1_000_000 + " MHz from the internal oscillator)\n"
+                    + "// Build:    " + String.join(" ", Stm32Runtime.gcc(c, "arm-none-eabi-gcc", "program.c", "program.elf", "stm32.ld")) + "\n"
+                    + "// Upload:   openocd -f interface/stlink.cfg -f " + c.openocdTarget() + " -c \"program program.elf verify reset exit\"\n"
+                    + "// Pins:     Print/Input USART" + c.usart() + (c.usart() == 1 ? " PA9 TX, PA10 RX" : " PA2 TX, PA3 RX")
+                    + "; SPI1 PA5 SCK, PA6 MISO, PA7 MOSI; I2C1 PB6 SCL, PB7 SDA;\n"
+                    + "//           PWM PA0-PA3, PA6, PA7, PB0, PB1, PB6-PB9" + (c.f1() ? "" : ", PA5, PD12-PD15") + "; A0-A15 = ADC channels\n"
+                    + "// Print and Input use the USART at 115200 baud. Registers only: no HAL, no CMSIS headers needed.\n"
+                    + "// Linker script: save these lines (without the // ) as stm32.ld next to program.c\n"
+                    + "// ---- stm32.ld\n" + ld + "// ---- end of stm32.ld\n\n";
         }
         String cc = C ? "clang" : "clang++", gcc = C ? "gcc" : "g++";
         String file = "program" + t.ext() + (C ? " -lm" : "");
@@ -1238,6 +1256,10 @@ final class CodeGenerator {
                 if (board != Board.ESP32_H2) return;
                 throw new FlowException(b, "the " + b.type.title + " block needs WiFi, and the ESP32-H2 has none"
                         + " (it is a 802.15.4 and Bluetooth chip): choose another ESP32 board, or Language PIC32 C.");
+            }
+            if (board.isStm32()) {
+                throw new FlowException(b, "the " + b.type.title + " block needs a network, and the " + board.display
+                        + " has none: choose an ESP32 board, or Language PIC32 C. Run simulates a broker on the computer.");
             }
             throw new FlowException(b, "the " + b.type.title + " block needs a network: choose an ESP32 board, or Language PIC32 C"
                     + " (an AVR board has one serial port, which Print already uses). Run simulates a broker on the computer.");

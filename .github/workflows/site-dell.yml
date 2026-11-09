@@ -1,7 +1,10 @@
 name: site-dell
 
 # Builds the website on the machine that serves it and installs it where nginx reads from, so
-# evia.am follows a release without anyone copying files by hand.
+# evia.am follows a release without anyone copying files by hand. It also makes this machine the source
+# of the downloads: the installers go to /var/www/evia/downloads (the site links there), and the package
+# server - the application and every toolchain, which the online installers and the application fetch -
+# is rebuilt in /var/www/evia/packages (scripts/build-packages.sh).
 #
 # It runs on the self-hosted runner, writes only inside the web root, and needs no secret: the
 # release it builds for is read from GitHub's public API.
@@ -17,10 +20,15 @@ on:
   workflow_dispatch:
     inputs:
       downloads:
-        description: 'Also serve the installers from this machine instead of GitHub'
+        description: 'Serve the installers from this machine (evia.am/downloads) instead of GitHub'
         type: boolean
         required: false
-        default: false
+        default: true
+      packages:
+        description: 'Rebuild the package server (evia.am/packages)'
+        type: boolean
+        required: false
+        default: true
   workflow_run:
     workflows: [release]
     types: [completed]
@@ -38,7 +46,7 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
        startsWith(github.event.workflow_run.head_branch, 'v'))
     runs-on: [self-hosted, linux]
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v5
 
@@ -61,11 +69,25 @@ jobs:
       - name: Build and install the site
         if: steps.root.outputs.ready == 'true'
         run: |
-          if [ "${{ inputs.downloads }}" = "true" ]; then
+          # after a release (no inputs) the downloads come from here too
+          if [ "${{ inputs.downloads }}" != "false" ]; then
             scripts/deploy-site.sh --downloads
           else
             scripts/deploy-site.sh
           fi
+
+      - name: Rebuild the package server
+        if: steps.root.outputs.ready == 'true' && inputs.packages != false
+        run: |
+          # the jar of the newest release, exactly as published, is the application package
+          tag=$(curl -fsS https://api.github.com/repos/${{ github.repository }}/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
+          mkdir -p build/release-jar
+          url=$(curl -fsS https://api.github.com/repos/${{ github.repository }}/releases/tags/$tag \
+                | python3 -c 'import json,sys; print([a["browser_download_url"] for a in json.load(sys.stdin)["assets"] if a["name"].endswith(".jar")][0])')
+          curl -fsSL -o "build/release-jar/$(basename "$url")" "$url"
+          JAR="build/release-jar/$(basename "$url")" \
+          TOOLCHAINS_CACHE="$HOME/.cache/evia-toolchain-downloads" \
+            scripts/build-packages.sh --publish "${WEB_ROOT:-/var/www/evia}"
 
       - name: What is being served
         if: steps.root.outputs.ready == 'true'
@@ -73,4 +95,5 @@ jobs:
           root="${WEB_ROOT:-/var/www/evia}"
           echo "files: $(find "$root" -type f | wc -l)"
           echo "version on the page: $(grep -oE 'Download [0-9]+\.[0-9]+\.[0-9]+' "$root/index.html" | head -1)"
-          ls "$root/downloads" 2> /dev/null | head -5 || echo "(downloads still come from GitHub)"
+          ls "$root/downloads" 2> /dev/null | head -8 || echo "(downloads still come from GitHub)"
+          python3 -c 'import json,sys; [print("package", p["id"], ", ".join(sorted(p["files"]))) for p in json.load(open(sys.argv[1]))["packages"]]' "$root/packages/index.json" || true

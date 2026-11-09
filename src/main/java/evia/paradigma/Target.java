@@ -29,9 +29,10 @@ record Target(Lang lang, Flow flow, Values values) {
         CPP14("C++14", "c++14", 14, "ISO C++ 2014"), CPP17("C++17", "c++17", 17, "ISO C++ 2017"),
         CPP20("C++20", "c++20", 20, "ISO C++ 2020"),
         PYTHON("Python 3", "python3", 0, "Python 3.8 or newer, nothing to compile"),
-        ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR and ESP32 boards"),
+        ARDUINO("Arduino", "gnu++17", 0, "Arduino sketch: AVR, ESP32 and STM32 boards"),
         AVR("AVR C", "gnu11", 0, "bare-metal avr-gcc, no Arduino core"),
         PIC32("PIC32 C", "gnu99", 0, "bare-metal xc32-gcc for PIC32MX, no Harmony"),
+        STM32("STM32 C", "gnu11", 0, "bare-metal arm-none-eabi-gcc for STM32F1/F4, no HAL"),
         SYSTEMVERILOG("SystemVerilog", "", 0, "FPGA: Artix-7 and GateMate"),
         VERILOG("Verilog-2001", "", 0, "FPGA: Artix-7 and GateMate"),
         VHDL("VHDL", "", 0, "FPGA: Artix-7 and GateMate");
@@ -57,7 +58,7 @@ record Target(Lang lang, Flow flow, Values values) {
 
         /** Runs on a board: a microcontroller (Arduino sketch, bare-metal AVR or PIC32) or an FPGA. */
         boolean embedded() {
-            return this == ARDUINO || this == AVR || this == PIC32 || fpga();
+            return this == ARDUINO || this == AVR || this == PIC32 || this == STM32 || fpga();
         }
 
         /** A hardware description language for an FPGA. */
@@ -80,6 +81,7 @@ record Target(Lang lang, Flow flow, Values values) {
                 case ARDUINO -> "arduino";
                 case AVR -> "avr";
                 case PIC32 -> "pic32";
+                case STM32 -> "stm32";
                 case SYSTEMVERILOG -> "sv";
                 case VERILOG -> "verilog";
                 case VHDL -> "vhdl";
@@ -91,7 +93,7 @@ record Target(Lang lang, Flow flow, Values values) {
         /** "(2011)", or what it runs on for microcontroller targets. */
         String tag() {
             if (this == PYTHON) return "3.8+";
-            return fpga() ? "Artix-7, GateMate" : embedded() ? (this == ARDUINO ? "AVR, ESP32" : this == PIC32 ? "PIC32MX" : "registers") : note.substring(note.length() - 4);
+            return fpga() ? "Artix-7, GateMate" : embedded() ? (this == ARDUINO ? "AVR, ESP32, STM32" : this == PIC32 ? "PIC32MX" : this == STM32 ? "STM32F1/F4" : "registers") : note.substring(note.length() - 4);
         }
 
         /** 98, 11, 14, 17, 20 for C++ (0 for C); compares chronologically. */
@@ -140,7 +142,7 @@ record Target(Lang lang, Flow flow, Values values) {
     }
 
     String languageName() {
-        return lang.fpga() ? lang.display : lang.python() ? "Python" : lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : isC() ? "C" : "C++";
+        return lang.fpga() ? lang.display : lang.python() ? "Python" : lang == Lang.ARDUINO ? "Arduino" : lang == Lang.AVR ? "AVR C" : lang == Lang.PIC32 ? "PIC32 C" : lang == Lang.STM32 ? "STM32 C" : isC() ? "C" : "C++";
     }
 
     String ext() {

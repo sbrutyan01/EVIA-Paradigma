@@ -156,6 +156,11 @@ esp32:esp32 միջուկներով։</td></tr>
 <tr><td>PIC32 C</td><td>ինը PIC32MX չիպ. MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) և PIC32 Ethernet Starter Kit II (LED1՝ RD0-ին)</td>
 <td>Bare-metal C Microchip-ի XC32-ի համար. ժամացույցը, պինները, PWM-ը, ADC-ն, UART-ը, SPI-ն և I2C-ն կառավարվում են ռեգիստրներով, առանց Harmony-ի և plib-ի։
 Կառուցում է xc32-gcc-ն, <code>.hex</code>-ը ստեղծում է xc32-bin2hex-ը, իսկ բեռնում է ձեր ընտրած հրամանը (լռելյայն՝ pic32prog)։</td></tr>
+<tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
+<td>Bare-metal C arm-none-eabi-gcc-ի համար. ժամացույցը, պինները (PA0 ... PI15), PWM-ը, ADC-ն, USART-ը, SPI1-ը և I2C1-ը կառավարվում են
+ռեգիստրներով, իսկ վեկտորների աղյուսակը, մեկնարկի կոդը և կապակցիչի սկրիպտը հենց ֆայլում են, առանց HAL-ի։ Բեռնում է OpenOCD-ն ST-Link-ով
+(ներկառուցված է Nucleo և Discovery սալիկներում, Pill-երի համար՝ առանձին ST-Link V2)։ Նույն սալիկները ընդունում են նաև Arduino սքեթչներ
+STMicroelectronics-ի միջուկով. Settings &gt; STM32 &gt; Install-ը այն տեղադրում է մեկ անգամ։</td></tr>
 </table>
 <p>Տախտակն ընտրվում է լեզվի կողքի <b>Board</b> ցանկում (նաև Settings ընտրացանկում և Devices ընտրացանկում)։ Կոդի պատուհանի <b>Build</b>-ը ծրագիրը կառուցում է
 դրա համար. <b>Upload</b>-ը կառուցում է և ուղարկում ծրագիրը տախտակին՝ Settings-ում նշված սերիական պորտով։</p>
@@ -202,8 +207,19 @@ TCP/IP փաթեթը։ Այս ուղին փորձարարական է. այն այ
 ժամանակը առաջ է գնում միայն Delay-ում (գլխավոր պատուհանը նաև իրականում սպասում է, եթե արագության սահողը լրիվ արագության վրա չէ),
 յուրաքանչյուր մուտքային պինի կոճակը սեղմվում է ամեն 2 վայրկյանի երկրորդ կեսին, իսկ անալոգային պինները կարդում են դանդաղ
 0..1023..0 ալիք։ Ծրագիրը կատարվում է մեկ անգամ, կարծես <code>setup()</code>-ից. դրանից հետո պինները պահում են իրենց վիճակը։
-<b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b> և <b>PIC32 Boards</b>-ում կան օրինակներ՝ blink, button, fade, analog meter, Led դաս և UART, SPI ու I2C օրինակներ։</p>
+<b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b>, <b>PIC32 Boards</b> և <b>STM32 Boards</b>-ում կան օրինակներ՝ blink, button, fade, analog meter, Led դաս և UART, SPI ու I2C օրինակներ։</p>
 <p>Համակարգչի լեզուները (C, C++) չեն կարող օգտագործել Board բլոկները. Generate code-ը կասի, թե որ բլոկը փոխել։</p>
+
+<a name="packages"></a>
+<h2>Փաթեթներ և թարմացումներ</h2>
+<p>Գործիքակազմերը EVIA սերվերի (evia.am) փաթեթներն են՝ arduino-cli, avr-gcc avrdude-ով, Arm GNU Toolchain,
+OpenOCD և OSS CAD Suite։ Տեղադրված պատճենի առաջին մեկնարկին ծրագիրը հարցնում է, թե որոնք ներբեռնել. <b>Settings &gt; Packages and
+Updates</b>-ը (կամ <b>Help &gt; Check for Updates</b>-ը) ցույց է տալիս, թե ինչ է տեղադրված և ինչ կա, և տեղադրում, թարմացնում
+կամ հեռացնում է դրանք։ Settings-ի <b>Get</b> կոճակները նույն կերպ են ներբեռնում մեկ գործիք։ Յուրաքանչյուր ներբեռնում ստուգվում է
+օգտագործելուց առաջ, և ադմինիստրատորի իրավունքներ պետք չեն. փաթեթները ձեր սեփական տվյալների թղթապանակում են։</p>
+<p>EVIA Paradigma-ի նոր տարբերակը նույնպես փաթեթ է. այն տեղադրվում է ձերի կողքին և մեկնարկում հաջորդ անգամ (կամ անմիջապես
+<b>Restart Now</b>-ով)։ Ոչինչ չի հեռացվում։ Հրամանի տողում՝ <code>--packages</code>, <code>--install ID</code>
+(կամ <code>--install updates</code>) և <code>--remove ID</code>։</p>
 
 <a name="fpga"></a>
 <h2>FPGA՝ Artix-7 և GateMate</h2>

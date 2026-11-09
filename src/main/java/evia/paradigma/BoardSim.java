@@ -24,7 +24,7 @@ final class BoardSim {
     /** The modes of a Pin Mode block. */
     static final Set<String> MODES = Set.of("OUTPUT", "INPUT", "INPUT_PULLUP");
 
-    /** Names every board knows: HIGH, LOW, LED_BUILTIN (13 on the simulated Uno), A0..A15 and RA0..RG15 (PIC32 pins). */
+    /** Names every board knows: HIGH, LOW, LED_BUILTIN (13 on the simulated Uno), A0..A15, RA0..RG15 (PIC32 pins) and PA0..PI15 (STM32 pins). */
     static boolean isConstant(String name) {
         return constant(name) != null;
     }
@@ -38,6 +38,7 @@ final class BoardSim {
             default:
                 if (name.matches("A(\\d|1[0-5])")) return 14.0 + Integer.parseInt(name.substring(1));
                 if (name.matches("R[A-G](\\d|1[0-5])")) return 16.0 * (name.charAt(1) - 'A') + Integer.parseInt(name.substring(2));
+                if (name.matches("P[A-I](\\d|1[0-5])")) return 16.0 * (name.charAt(1) - 'A') + Integer.parseInt(name.substring(2));
                 return fpgaPin(name);
         }
     }

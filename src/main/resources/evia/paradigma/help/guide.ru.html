@@ -156,6 +156,11 @@ MyProject/
 <tr><td>PIC32 C</td><td>девять микросхем PIC32MX: MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) и PIC32 Ethernet Starter Kit II (LED1 на RD0)</td>
 <td>Bare-metal C для Microchip XC32: тактирование, пины, ШИМ, АЦП, UART, SPI и I2C управляются через регистры; без Harmony и plib.
 Собирает xc32-gcc, <code>.hex</code> создаёт xc32-bin2hex, а загружает команда на ваш выбор (по умолчанию pic32prog).</td></tr>
+<tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
+<td>Bare-metal C для arm-none-eabi-gcc: тактирование, пины (PA0 ... PI15), ШИМ, АЦП, USART, SPI1 и I2C1 управляются через
+регистры, а таблица векторов, код запуска и скрипт компоновщика находятся в самом файле; без HAL. Загружает OpenOCD через ST-Link
+(встроен в платы Nucleo и Discovery; для Pill нужен отдельный ST-Link V2). Те же платы принимают и скетчи Arduino
+с ядром STMicroelectronics: Settings &gt; STM32 &gt; Install устанавливает его один раз.</td></tr>
 </table>
 <p>Плату выбирают в списке <b>Board</b> рядом с языком (также в Settings). <b>Build</b> в окне кода компилирует
 программу для неё; <b>Upload</b> собирает и отправляет программу на плату через последовательный порт, указанный в Settings.</p>
@@ -205,9 +210,20 @@ MQTT может идти и через собственный порт Ethernet
 время идёт вперёд только в Delay (главное окно при этом реально ждёт, если ползунок скорости не стоит на полной
 скорости), кнопка на каждом входном пине нажимается во второй половине каждых 2 секунд, а аналоговые пины читают
 медленную волну 0..1023..0. Программа выполняется один раз, как будто из <code>setup()</code>; после этого пины
-сохраняют своё состояние. В <b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b> и <b>PIC32 Boards</b> есть примеры: blink, button,
+сохраняют своё состояние. В <b>File &gt; Open Example &gt; Arduino Boards</b>, <b>ESP32 Boards</b>, <b>PIC32 Boards</b> и <b>STM32 Boards</b> есть примеры: blink, button,
 fade, analog meter, класс Led и примеры UART, SPI и I2C.</p>
 <p>Языки для компьютера (C, C++) не могут использовать блоки Board; Generate code укажет, какой блок нужно заменить.</p>
+
+<a name="packages"></a>
+<h2>Пакеты и обновления</h2>
+<p>Наборы инструментов — это пакеты сервера EVIA (evia.am): arduino-cli, avr-gcc с avrdude, Arm GNU Toolchain,
+OpenOCD и OSS CAD Suite. При первом запуске установленной копии программа спрашивает, какие из них скачать; <b>Settings &gt; Packages and
+Updates</b> (или <b>Help &gt; Check for Updates</b>) показывает, что установлено и что доступно, и устанавливает, обновляет
+или удаляет их. Кнопки <b>Get</b> в Settings так же скачивают один инструмент. Каждая загрузка проверяется перед
+использованием, и права администратора не нужны: пакеты лежат в вашей собственной папке данных.</p>
+<p>Новая версия EVIA Paradigma — тоже пакет: она устанавливается рядом с вашей и запускается в следующий раз (или сразу
+кнопкой <b>Restart Now</b>). Ничего не удаляется. В командной строке: <code>--packages</code>, <code>--install ID</code>
+(или <code>--install updates</code>) и <code>--remove ID</code>.</p>
 
 <a name="fpga"></a>
 <h2>FPGA: Artix-7 и GateMate</h2>

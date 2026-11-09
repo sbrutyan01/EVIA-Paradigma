@@ -47,6 +47,21 @@ final class Toolchains {
                 "avr-gcc-[^\"]*-x64-windows\\.zip",
                 "https://blog.zakkemble.net/avr-gcc-builds/",
                 "Compiles bare-metal AVR C for the ATmega boards (about 100 MB)."),
+        ARM_GCC("Arm GNU Toolchain (xPack)", "arm-none-eabi-gcc", "xpack-dev-tools/arm-none-eabi-gcc-xpack", "arm-none-eabi-gcc",
+                "xpack-arm-none-eabi-gcc-[^\"]*-linux-x64\\.tar\\.gz",
+                "xpack-arm-none-eabi-gcc-[^\"]*-darwin-arm64\\.tar\\.gz",
+                "xpack-arm-none-eabi-gcc-[^\"]*-darwin-x64\\.tar\\.gz",
+                "xpack-arm-none-eabi-gcc-[^\"]*-win32-x64\\.zip",
+                "https://xpack-dev-tools.github.io/arm-none-eabi-gcc-xpack/",
+                "Compiles bare-metal STM32 C: arm-none-eabi-gcc with newlib (about 300 MB to download, 1 GB unpacked)."),
+        OPENOCD("OpenOCD (xPack)", "openocd", "xpack-dev-tools/openocd-xpack", "openocd",
+                "xpack-openocd-[^\"]*-linux-x64\\.tar\\.gz",
+                "xpack-openocd-[^\"]*-darwin-arm64\\.tar\\.gz",
+                "xpack-openocd-[^\"]*-darwin-x64\\.tar\\.gz",
+                "xpack-openocd-[^\"]*-win32-x64\\.zip",
+                "https://xpack-dev-tools.github.io/openocd-xpack/",
+                "Uploads to STM32 boards through an ST-Link (the Nucleo and Discovery boards have one built in; a Blue"
+                        + " or Black Pill needs a separate ST-Link V2). About 3 MB."),
         OSS_CAD("OSS CAD Suite", "oss-cad-suite", "YosysHQ/oss-cad-suite-build", "yosys",
                 "oss-cad-suite-linux-x64-[0-9]+\\.tgz",
                 "oss-cad-suite-darwin-arm64-[0-9]+\\.tgz",
@@ -220,19 +235,33 @@ final class Toolchains {
         return result[0];
     }
 
-    // ---------------------------------------------------------------- the ESP32 core
+    // ---------------------------------------------------------------- the ESP32 and STM32 cores
 
     /** Espressif's board package index, which arduino-cli needs to find the ESP32 core. */
     static final String ESP32_INDEX = "https://espressif.github.io/arduino-esp32/package_esp32_index.json";
+
+    /** STMicroelectronics' board package index, for the STM32 core (STMicroelectronics:stm32). */
+    static final String STM32_INDEX = "https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json";
 
     /**
      * Installs (or updates) the ESP32 core with arduino-cli: its compilers, esptool and libraries, a few
      * hundred MB. The output is shown as it comes. Returns true when arduino-cli finished without an error.
      */
     static boolean installEsp32Core(Component parent, String cli, String indexUrl) {
-        String url = indexUrl == null || indexUrl.isBlank() ? ESP32_INDEX : indexUrl.trim();
+        return installCore(parent, cli, indexUrl == null || indexUrl.isBlank() ? ESP32_INDEX : indexUrl.trim(),
+                "esp32:esp32", "ESP32", "The compilers, esptool and libraries for the ESP32 boards");
+    }
+
+    /** The same for the STM32 core: its compiler, CMSIS and HAL, a few hundred MB. */
+    static boolean installStm32Core(Component parent, String cli, String indexUrl) {
+        return installCore(parent, cli, indexUrl == null || indexUrl.isBlank() ? STM32_INDEX : indexUrl.trim(),
+                "STMicroelectronics:stm32", "STM32", "The compiler, CMSIS and HAL for the STM32 boards");
+    }
+
+    /** Installs an Arduino core from a board package index with arduino-cli, showing its output. */
+    static boolean installCore(Component parent, String cli, String url, String core, String name, String what) {
         Window owner = parent == null ? null : parent instanceof Window w ? w : SwingUtilities.getWindowAncestor(parent);
-        String title = Text.t("Install the ESP32 core");
+        String title = Text.t("Install the %s core", name);
         JDialog d = new JDialog(owner, title, Dialog.ModalityType.APPLICATION_MODAL);
         AppIcon.apply(d);
         JTextArea log = new JTextArea(16, 80);
@@ -243,8 +272,8 @@ final class Toolchains {
         JButton close = new JButton(Text.t("Cancel"));
         JPanel p = new JPanel(new BorderLayout(0, 8));
         p.setBorder(BorderFactory.createEmptyBorder(12, 14, 10, 14));
-        p.add(new JLabel("<html><b>ESP32 (esp32:esp32)</b><br>" + wrap("The compilers, esptool and libraries for the"
-                + " ESP32 boards, a few hundred MB, downloaded by arduino-cli from " + url) + "</html>"), BorderLayout.NORTH);
+        p.add(new JLabel("<html><b>" + name + " (" + core + ")</b><br>" + wrap(what + ", a few hundred MB, downloaded by"
+                + " arduino-cli from " + url) + "</html>"), BorderLayout.NORTH);
         p.add(new JScrollPane(log), BorderLayout.CENTER);
         JPanel south = new JPanel(new BorderLayout(10, 0));
         south.add(bar, BorderLayout.CENTER);
@@ -260,7 +289,7 @@ final class Toolchains {
             @Override protected Integer doInBackground() throws Exception {
                 List<List<String>> steps = List.of(
                         List.of(cli, "core", "update-index", "--additional-urls", url),
-                        List.of(cli, "core", "install", "esp32:esp32", "--additional-urls", url));
+                        List.of(cli, "core", "install", core, "--additional-urls", url));
                 for (List<String> cmd : steps) {
                     publish("$ " + String.join(" ", cmd) + "\n");
                     Process proc;
@@ -305,7 +334,7 @@ final class Toolchains {
                     log.append(">> " + e.getMessage() + "\n");
                 }
                 bar.setValue(ok[0] ? bar.getMaximum() : 0);
-                log.append(ok[0] ? ">> the ESP32 core is installed: the ESP32 boards build and upload now.\n" : "");
+                log.append(ok[0] ? ">> the " + name + " core is installed: the " + name + " boards build and upload now.\n" : "");
             }
         };
         close.addActionListener(e -> {

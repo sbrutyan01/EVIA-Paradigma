@@ -37,7 +37,7 @@ final class MainFrame extends JFrame {
             {"expressions.evia", "Expressions"},
             {"example.evia", "Even/odd and average"},
     };
-    /** Programs for Arduino, ESP32, AVR and PIC32 boards (they use the Board blocks; Run simulates an Uno). */
+    /** Programs for Arduino, ESP32, AVR, PIC32 and STM32 boards (they use the Board blocks; Run simulates an Uno). */
     static final String[][] BOARD_EXAMPLES = {
             {"boards/blink.evia", "Blink the built-in LED"},
             {"boards/button.evia", "Button: read a pin, light the LED"},
@@ -51,7 +51,7 @@ final class MainFrame extends JFrame {
             {"boards/mqtt_esk2.evia", "MQTT on the PIC32 Ethernet Starter Kit II"},
     };
     /** The board families of File > Open Example, and the examples each one can build (MQTT needs a network). */
-    enum ExampleFamily { ARDUINO, ESP32, PIC32 }
+    enum ExampleFamily { ARDUINO, ESP32, PIC32, STM32 }
 
     static boolean exampleFits(String file, ExampleFamily f) {
         boolean mqtt = file.contains("mqtt");
@@ -59,6 +59,7 @@ final class MainFrame extends JFrame {
             case ARDUINO -> !mqtt;
             case ESP32 -> !file.contains("esk2");
             case PIC32 -> true;
+            case STM32 -> !mqtt;
         };
     }
     /** Programs for FPGA boards (LED0, SW0, BTN0 ... are the pins of Digilent boards; Run simulates them like an Uno). */
@@ -307,7 +308,7 @@ final class MainFrame extends JFrame {
         help.addSeparator();
         help.add(item("Online Documentation", null, e -> HelpWindow.browse(this, HelpWindow.REPO + "#readme")));
         help.add(item("Report an Issue...", null, e -> HelpWindow.browse(this, HelpWindow.REPO + "/issues/new")));
-        help.add(item("Check for Updates...", null, e -> HelpWindow.checkForUpdates(this)));
+        help.add(item("Check for Updates...", null, e -> PackagesDialog.show(this, false)));
         if (!ExternalEditor.MAC) {
             help.addSeparator();
             help.add(item("About EVIA Paradigma", null, e -> AppIcon.showAbout(this)));
@@ -388,6 +389,7 @@ final class MainFrame extends JFrame {
     private JMenu settingsMenu() {
         JMenu m = menu("Settings", KeyEvent.VK_S);
         m.add(item("General...", ExternalEditor.MAC ? null : KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, MENU), e -> Settings.showDialog(this, Settings.Page.GENERAL)));
+        m.add(item("Packages and Updates...", null, e -> PackagesDialog.show(this, false)));
         m.addSeparator();
         m.add(item("C, C++ and Python...", null, e -> Settings.showDialog(this, Settings.Page.DESKTOP)));
         m.addSeparator();
@@ -395,6 +397,7 @@ final class MainFrame extends JFrame {
         m.add(item("ESP32 Boards...", null, e -> Settings.showDialog(this, Settings.Page.ESP32)));
         m.add(item("AVR C (bare metal)...", null, e -> Settings.showDialog(this, Settings.Page.AVR)));
         m.add(item("PIC32...", null, e -> Settings.showDialog(this, Settings.Page.PIC32)));
+        m.add(item("STM32...", null, e -> Settings.showDialog(this, Settings.Page.STM32)));
         m.add(item("FPGA Boards...", null, e -> Settings.showDialog(this, Settings.Page.FPGA)));
         return m;
     }
@@ -432,6 +435,10 @@ final class MainFrame extends JFrame {
                         Text.t("AVR C Settings...")));
                 m.add(family(Text.t("PIC32 Chips"), Board::isPic32, Target.Lang.PIC32, lang, board, Settings.Page.PIC32,
                         Text.t("PIC32 Settings...")));
+                m.add(family(Text.t("STM32 C (bare metal)"), Board::isStm32, Target.Lang.STM32, lang, board, Settings.Page.STM32,
+                        Text.t("STM32 Settings...")));
+                m.add(family(Text.t("STM32 Boards (Arduino)"), Board::isStm32, Target.Lang.ARDUINO, lang, board, Settings.Page.STM32,
+                        Text.t("STM32 Settings...")));
                 m.add(family(Text.t("FPGA Boards"), Board::isFpga, lang.fpga() ? lang : Target.Lang.SYSTEMVERILOG, lang, board,
                         Settings.Page.FPGA, Text.t("FPGA Settings...")));
             }
@@ -471,8 +478,14 @@ final class MainFrame extends JFrame {
         JMenu arduino = new JMenu(Text.t("Arduino Boards (Uno, Nano, Mega ...)"));
         JMenu esp32 = new JMenu(Text.t("ESP32 Boards"));
         JMenu pic32 = new JMenu(Text.t("PIC32 Boards"));
+        JMenu stm32 = new JMenu(Text.t("STM32 Boards"));
         for (ExampleFamily f : ExampleFamily.values()) {
-            JMenu sub = f == ExampleFamily.ARDUINO ? arduino : f == ExampleFamily.ESP32 ? esp32 : pic32;
+            JMenu sub = switch (f) {
+                case ARDUINO -> arduino;
+                case ESP32 -> esp32;
+                case PIC32 -> pic32;
+                case STM32 -> stm32;
+            };
             for (String[] ex : BOARD_EXAMPLES) {
                 if (exampleFits(ex[0], f)) sub.add(item(ex[1], null, e -> openExample(ex[0], f)));
             }
@@ -483,6 +496,7 @@ final class MainFrame extends JFrame {
         m.add(arduino);
         m.add(esp32);
         m.add(pic32);
+        m.add(stm32);
         m.add(fpga);
         return m;
     }
@@ -823,6 +837,16 @@ final class MainFrame extends JFrame {
         return !ProgramIO.snapshot(lib).equals(savedSnapshot);
     }
 
+    /** Before a restart for an update: the same question as closing the window. */
+    boolean confirmDiscardForRestart() {
+        return confirmDiscard();
+    }
+
+    /** A sentence in the status bar, e.g. that updates are available. */
+    void notice(String text) {
+        status.setText(text);
+    }
+
     /** Asks about unsaved changes. Returns false if the user cancelled. */
     private boolean confirmDiscard() {
         if (worker != null) {
@@ -995,6 +1019,13 @@ final class MainFrame extends JFrame {
             if (family == ExampleFamily.PIC32) {
                 Settings.setTarget(Settings.target().withLang(Target.Lang.PIC32));
                 if (name.contains("esk2")) Settings.setBoard(Board.PIC32_ESK2);
+            } else if (family == ExampleFamily.STM32) {
+                if (Settings.target().lang() != Target.Lang.ARDUINO && Settings.target().lang() != Target.Lang.STM32) {
+                    Settings.setTarget(Settings.target().withLang(Target.Lang.STM32));
+                }
+                if (Settings.target().lang() == Target.Lang.ARDUINO && !Settings.board().isStm32()) {
+                    Settings.setBoard(Settings.board(Target.Lang.STM32));
+                }
             } else if (family != null) {
                 if (Settings.target().lang() != Target.Lang.ARDUINO && Settings.target().lang() != Target.Lang.AVR) {
                     Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));   // its code is for a board

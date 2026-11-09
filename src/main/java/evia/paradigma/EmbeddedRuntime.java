@@ -1083,6 +1083,7 @@ final class EmbeddedRuntime {
         if (t.lang() == Target.Lang.PIC32) {
             return Pic32Runtime.source(Settings.board(Target.Lang.PIC32), program, Settings.pic32Ethernet());
         }
+        if (t.lang() == Target.Lang.STM32) return Stm32Runtime.source(Settings.board(Target.Lang.STM32), program);
         boolean arduino = t.lang() == Target.Lang.ARDUINO;
         return assemble(arduino ? "Arduino sketch" : "bare-metal AVR", arduino ? ARDUINO_HEAD : AVR_HEAD,
                 arduino ? ARDUINO : AVR, program);

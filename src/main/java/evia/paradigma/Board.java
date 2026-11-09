@@ -11,6 +11,7 @@ import java.util.Locale;
  * @param mcu        avr-gcc -mmcu value (AVR boards only)
  * @param programmer avrdude programmer and baud rate for the bootloader (AVR boards only)
  * @param pic       xc32-gcc -mprocessor value, e.g. "32MX250F128B" (PIC32 boards only)
+ * @param stm32     the chip of an STM32 board (bare-metal STM32 C and OpenOCD; the fqbn is its Arduino core name)
  */
 enum Board {
     UNO("Arduino Uno", "arduino:avr:uno", "atmega328p", "arduino -b 115200"),
@@ -39,6 +40,18 @@ enum Board {
     PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1"),
     PIC32_ESK2("PIC32 Ethernet Starter Kit II (MX795F512L)", "32MX795F512L", 5, 'L', "RD0"),
 
+    // STM32: Arduino sketches with STMicroelectronics' core, or bare-metal STM32 C; both upload with OpenOCD
+    BLUEPILL_F103C8("Blue Pill (STM32F103C8)", "STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8",
+            new Stm32(Stm32.Family.F1, "STM32F103C8", 64, 20, 1, "PC13", true)),
+    BLACKPILL_F411CE("Black Pill (STM32F411CE)", "STMicroelectronics:stm32:GenF4:pnum=BLACKPILL_F411CE",
+            new Stm32(Stm32.Family.F4, "STM32F411CE", 512, 128, 1, "PC13", true)),
+    NUCLEO_F401RE("Nucleo-F401RE", "STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F401RE",
+            new Stm32(Stm32.Family.F4, "STM32F401RE", 512, 96, 2, "PA5", false)),
+    NUCLEO_F411RE("Nucleo-F411RE", "STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE",
+            new Stm32(Stm32.Family.F4, "STM32F411RE", 512, 128, 2, "PA5", false)),
+    DISCO_F407VG("STM32F4DISCOVERY (STM32F407VG)", "STMicroelectronics:stm32:Disco:pnum=DISCO_F407VG",
+            new Stm32(Stm32.Family.F407, "STM32F407VG", 1024, 128, 2, "PD12", false)),
+
     // FPGA boards: the pins, clock and chip are in Fpga
     NEXYS_A7_100T("Digilent Nexys A7-100T (Artix-7)", Fpga::nexysA7100T),
     ARTY_A7_35("Digilent Arty A7-35 (Artix-7)", Fpga::artyA7_35),
@@ -55,6 +68,48 @@ enum Board {
     final String led;
     /** FPGA only: the chip, clock and pins of the board. */
     private final java.util.function.Supplier<Fpga.Spec> fpga;
+    /** STM32 only: the chip, its memory, the serial port Print uses and the LED. */
+    final Stm32 stm32;
+
+    /**
+     * The chip of an STM32 board.
+     *
+     * @param family  F1 (Cortex-M3, 64 MHz from the internal oscillator), F4 (Cortex-M4F, 84 MHz) or F407 (168 MHz)
+     * @param chip    the part number, e.g. "STM32F103C8"
+     * @param flashK  flash in KiB, from 0x08000000
+     * @param ramK    RAM in KiB, from 0x20000000
+     * @param usart   the USART that Print and Input use: 1 (PA9 TX, PA10 RX) or 2 (PA2 TX, PA3 RX; the ST-Link's
+     *                virtual serial port on the Nucleo boards)
+     * @param led     the pin of the board's LED, which LED_BUILTIN names
+     * @param ledLow  true when the LED lights at LOW (the Blue and Black Pill)
+     */
+    record Stm32(Family family, String chip, int flashK, int ramK, int usart, String led, boolean ledLow) {
+        enum Family { F1, F4, F407 }
+
+        boolean f1() {
+            return family == Family.F1;
+        }
+
+        /** arm-none-eabi-gcc's options for the core: the Cortex-M4F has a single-precision FPU. */
+        java.util.List<String> cpuFlags() {
+            return f1() ? java.util.List.of("-mcpu=cortex-m3", "-mthumb", "-mfloat-abi=soft")
+                    : java.util.List.of("-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard");
+        }
+
+        /** OpenOCD's configuration of the chip family. */
+        String openocdTarget() {
+            return f1() ? "target/stm32f1x.cfg" : "target/stm32f4x.cfg";
+        }
+
+        /** The system clock in Hz the runtime sets up. */
+        long sysclk() {
+            return switch (family) {
+                case F1 -> 64_000_000L;
+                case F4 -> 84_000_000L;
+                case F407 -> 168_000_000L;
+            };
+        }
+    }
 
     Board(String display, java.util.function.Supplier<Fpga.Spec> fpga) {
         this.display = display;
@@ -66,6 +121,7 @@ enum Board {
         this.pkg = 0;
         this.led = null;
         this.fpga = fpga;
+        this.stm32 = null;
     }
 
     Board(String display, String fqbn, String mcu, String programmer) {
@@ -78,6 +134,20 @@ enum Board {
         this.pkg = 0;
         this.led = null;
         this.fpga = null;
+        this.stm32 = null;
+    }
+
+    Board(String display, String fqbn, Stm32 stm32) {
+        this.display = display;
+        this.fqbn = fqbn;
+        this.mcu = null;
+        this.programmer = null;
+        this.pic = null;
+        this.family = 0;
+        this.pkg = 0;
+        this.led = stm32.led();
+        this.fpga = null;
+        this.stm32 = stm32;
     }
 
     Board(String display, String pic, int family, char pkg, String led) {
@@ -90,6 +160,7 @@ enum Board {
         this.pkg = pkg;
         this.led = led;
         this.fpga = null;
+        this.stm32 = null;
     }
 
     boolean isAvr() {
@@ -103,7 +174,12 @@ enum Board {
 
     /** An Arduino board with an AVR chip (Uno, Nano, Mega, Leonardo, Micro, Pro Mini). */
     boolean isArduinoAvr() {
-        return !isEsp32() && !isPic32() && !isFpga();
+        return !isEsp32() && !isPic32() && !isFpga() && !isStm32();
+    }
+
+    /** An STM32 board: Arduino sketches with STMicroelectronics' core, or bare-metal STM32 C. */
+    boolean isStm32() {
+        return stm32 != null;
     }
 
     boolean isPic32() {
@@ -124,12 +200,13 @@ enum Board {
         return name().toLowerCase(Locale.ROOT).replace('_', '-');
     }
 
-    /** The boards a language can build for: the Arduino and ESP32 ones for sketches, the AVR ones for AVR C, the PIC32 ones for PIC32 C. */
+    /** The boards a language can build for: Arduino, ESP32 and STM32 for sketches, the AVR ones for AVR C, the PIC32 ones for PIC32 C, the STM32 ones for STM32 C. */
     boolean supports(Target.Lang lang) {
         return switch (lang) {
             case ARDUINO -> !isPic32() && !isFpga();
             case AVR -> isAvr();
             case PIC32 -> isPic32();
+            case STM32 -> isStm32();
             case SYSTEMVERILOG, VERILOG, VHDL -> isFpga();
             default -> false;
         };
@@ -144,7 +221,8 @@ enum Board {
 
     /** The first board of {@code lang}, if {@code b} can't be built for it. */
     static Board forLang(Board b, Target.Lang lang) {
-        return b.supports(lang) ? b : lang == Target.Lang.PIC32 ? PIC32MX250F128B : lang.fpga() ? NEXYS_A7_100T : UNO;
+        return b.supports(lang) ? b : lang == Target.Lang.PIC32 ? PIC32MX250F128B : lang == Target.Lang.STM32 ? BLUEPILL_F103C8
+                : lang.fpga() ? NEXYS_A7_100T : UNO;
     }
 
     /** "avr-gcc -mmcu=atmega328p -DF_CPU=16000000UL -Os ..." for bare-metal C. */

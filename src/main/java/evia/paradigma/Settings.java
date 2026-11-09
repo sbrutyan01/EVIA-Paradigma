@@ -116,6 +116,11 @@ final class Settings {
             Board b = Board.parse(PREFS.get("board.pic32", "pic32mx250f128b"));
             return b.isPic32() ? b : Board.PIC32MX250F128B;
         }
+        if (lang == Target.Lang.STM32) {
+            if (override != null && override.isStm32()) return override;
+            Board b = Board.parse(PREFS.get("board.stm32", "bluepill-f103c8"));
+            return b.isStm32() ? b : Board.BLUEPILL_F103C8;
+        }
         if (lang.fpga()) {
             if (override != null && override.isFpga()) return override;
             Board b = Board.parse(PREFS.get("board.fpga", "nexys-a7-100t"));
@@ -139,6 +144,12 @@ final class Settings {
         } else if (b.isPic32()) {
             if (b == board(Target.Lang.PIC32)) return;
             PREFS.put("board.pic32", b.key());
+        } else if (b.isStm32()) {
+            // one STM32 board for both of its languages: STM32 C, and Arduino when that is the language now
+            boolean arduino = target().lang() == Target.Lang.ARDUINO;
+            if (b == board(Target.Lang.STM32) && (!arduino || b == board())) return;
+            PREFS.put("board.stm32", b.key());
+            if (arduino) PREFS.put("board", b.key());
         } else {
             if (b == board()) return;
             PREFS.put("board", b.key());
@@ -158,14 +169,16 @@ final class Settings {
                 ? "Download " + t.display + " into EVIA Paradigma's own folder and use it"
                 : "Open " + t.display + "'s download page");
         b.addActionListener(e -> {
-            java.nio.file.Path exe = Toolchains.install(parent, t);
+            // from the EVIA package server when it has the tool, else from the tool's own releases
+            java.nio.file.Path exe = PackagesDialog.installTool(parent, t);
+            if (exe == null && !PackagesDialog.served(t.folder)) exe = Toolchains.install(parent, t);
             if (exe != null) field.setText(exe.toString());
         });
         return b;
     }
 
     static String arduinoCli() {
-        return PREFS.get("arduinoCli", "arduino-cli");
+        return tool("arduinoCli", "arduino-cli", "arduino-cli");
     }
 
     // ---- Python
@@ -268,6 +281,33 @@ final class Settings {
         if (saved != null && !saved.isBlank() && !saved.equals("xc32-gcc")) return saved;
         java.nio.file.Path found = Xc32Installer.find();
         return found != null ? found.toString() : "xc32-gcc";
+    }
+
+    // ---- STM32
+
+    static String armGcc() {
+        return tool("armGcc", "arm-none-eabi-gcc", "arm-none-eabi-gcc");
+    }
+
+    static String openocd() {
+        return tool("openocd", "openocd", "openocd");
+    }
+
+    /** OpenOCD through an ST-Link; CPUTAPID 0 also accepts the clone chips of many Blue Pills and ST-Links. */
+    static final String DEFAULT_STM32_UPLOAD = "{openocd} -f interface/stlink.cfg -c \"set CPUTAPID 0\" -f {target}"
+            + " -c \"program {elf} verify reset exit\"";
+
+    /**
+     * The command that loads a program into an STM32 board: {openocd} = OpenOCD, {target} = its chip family,
+     * {elf}, {hex} and {bin} = the program, {device} = the serial port (for a serial bootloader, e.g. stm32flash).
+     */
+    static String stm32Upload() {
+        return PREFS.get("stm32Upload", DEFAULT_STM32_UPLOAD);
+    }
+
+    /** The board package index that arduino-cli installs the STM32 core from. */
+    static String stm32Index() {
+        return PREFS.get("stm32Index", Toolchains.STM32_INDEX);
     }
 
     /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
@@ -387,6 +427,11 @@ final class Settings {
         listeners.add(r);
     }
 
+    /** Something outside Settings changed what the tools are (a package was installed or removed). */
+    static void changed() {
+        fire();
+    }
+
     private static void fire() {
         for (Runnable r : List.copyOf(listeners)) r.run();
     }
@@ -495,7 +540,7 @@ final class Settings {
 
     /** The tabs of the Settings window, one per kind of target; File > Settings opens each directly. */
     enum Page {
-        GENERAL, DESKTOP, ARDUINO, ESP32, AVR, PIC32, FPGA;
+        GENERAL, DESKTOP, ARDUINO, ESP32, AVR, PIC32, STM32, FPGA;
 
         String title() {
             return switch (this) {
@@ -505,6 +550,7 @@ final class Settings {
                 case ESP32 -> Text.t("ESP32");
                 case AVR -> Text.t("AVR C (bare metal)");
                 case PIC32 -> Text.t("PIC32");
+                case STM32 -> Text.t("STM32");
                 case FPGA -> Text.t("FPGA");
             };
         }
@@ -514,8 +560,9 @@ final class Settings {
             Target.Lang l = t.lang();
             if (l.fpga()) return FPGA;
             if (l == Target.Lang.PIC32) return PIC32;
+            if (l == Target.Lang.STM32) return STM32;
             if (l == Target.Lang.AVR) return AVR;
-            if (l == Target.Lang.ARDUINO) return board().isEsp32() ? ESP32 : ARDUINO;
+            if (l == Target.Lang.ARDUINO) return board().isEsp32() ? ESP32 : board().isStm32() ? STM32 : ARDUINO;
             return DESKTOP;
         }
     }
@@ -687,6 +734,25 @@ final class Settings {
         JTextField cli2 = new JTextField(30);
         cli2.setDocument(cli.getDocument());
 
+        JComboBox<Board> stmBoard = new JComboBox<>(java.util.Arrays.stream(Board.values()).filter(Board::isStm32).toArray(Board[]::new));
+        stmBoard.setSelectedItem(current.isStm32() ? current : board(Target.Lang.STM32));
+        stmBoard.addActionListener(e -> chosen[0] = (Board) stmBoard.getSelectedItem());
+        JTextField armGcc = new JTextField(armGcc(), 30);
+        JTextField openocd = new JTextField(openocd(), 30);
+        JTextField stm32Up = new JTextField(stm32Upload(), 30);
+        stm32Up.setCaretPosition(0);
+        JButton stm32UpDefault = new JButton(Text.t("Default"));
+        stm32UpDefault.addActionListener(e -> stm32Up.setText(DEFAULT_STM32_UPLOAD));
+        JTextField stm32Idx = new JTextField(stm32Index(), 30);
+        stm32Idx.setCaretPosition(0);
+        stm32Idx.setToolTipText(Text.t("STMicroelectronics' board package index; arduino-cli installs the STM32 core from it"));
+        JButton stm32Install = new JButton(Text.t("Install"));
+        stm32Install.setToolTipText(Text.t("Install or update the STM32 core (STMicroelectronics:stm32) with arduino-cli"));
+        stm32Install.addActionListener(e -> Toolchains.installStm32Core(p(stm32Install),
+                cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim(), stm32Idx.getText()));
+        JTextField cli3 = new JTextField(30);
+        cli3.setDocument(cli.getDocument());
+
         JTextField avrGcc = new JTextField(avrGcc(), 30);
         JTextField avrdude = new JTextField(avrdude(), 30);
 
@@ -717,7 +783,8 @@ final class Settings {
         JButton getOss = new JButton(Text.t("Get FPGA tools"));
         getOss.setToolTipText(Text.t("Download the OSS CAD Suite (yosys, nextpnr, gmpack, openFPGALoader) and fill in the fields below"));
         getOss.addActionListener(e -> {
-            java.nio.file.Path exe = Toolchains.install(p(getOss), Toolchains.Tool.OSS_CAD);
+            java.nio.file.Path exe = PackagesDialog.installTool(p(getOss), Toolchains.Tool.OSS_CAD);
+            if (exe == null && !PackagesDialog.served(Toolchains.Tool.OSS_CAD.folder)) exe = Toolchains.install(p(getOss), Toolchains.Tool.OSS_CAD);
             if (exe == null) return;
             java.nio.file.Path bin = exe.getParent();
             yosys.setText(bin.resolve(tool("yosys")).toString());
@@ -787,6 +854,21 @@ final class Settings {
                         + "or through the chip's own Ethernet port on the MX695/MX795, which needs Harmony's TCP/IP stack: the generated file is then<br>"
                         + "an application for an MPLAB X Harmony project instead of a self-contained program. See the guide.</html>"));
 
+        Form stm = new Form();
+        stm.row(Text.t("Board:"), stmBoard)
+                .note(small("<html>Blue Pill, Black Pill, Nucleo-F401RE/F411RE and the F4DISCOVERY. Language STM32 C writes bare-metal C for the chip<br>"
+                        + "(registers only, built with arm-none-eabi-gcc); Language Arduino builds a sketch with STMicroelectronics' core.<br>"
+                        + "Both upload with OpenOCD through an ST-Link: built into the Nucleo and Discovery, a separate ST-Link V2 for the Pills.</html>"))
+                .row(Text.t("Serial port:"), portRow.get())
+                .row("arm-none-eabi-gcc:", armGcc, getButton(stm, Toolchains.Tool.ARM_GCC, armGcc))
+                .row("OpenOCD:", openocd, getButton(stm, Toolchains.Tool.OPENOCD, openocd))
+                .row(Text.t("STM32 upload:"), stm32Up, stm32UpDefault)
+                .note(small("{openocd} = OpenOCD above, {target} = the chip family's OpenOCD file, {elf} {hex} {bin} = the program, {device} = serial port."))
+                .gap()
+                .row(Text.t("arduino-cli:"), cli3, getButton(stm, Toolchains.Tool.ARDUINO_CLI, cli3))
+                .row(Text.t("STM32 core:"), stm32Idx, stm32Install)
+                .note(small("Language Arduino needs the STM32 core once: Install runs arduino-cli core install STMicroelectronics:stm32."));
+
         Form fpga = new Form();
         fpga.row(Text.t("Board:"), fpgaBoard, getOss)
                 .row(Text.t("Artix-7 flow:"), artixFlow)
@@ -804,6 +886,7 @@ final class Settings {
         pages.put(Page.ESP32, esp.done());
         pages.put(Page.AVR, avr.done());
         pages.put(Page.PIC32, pic.done());
+        pages.put(Page.STM32, stm.done());
         pages.put(Page.FPGA, fpga.done());
         for (Page pg : Page.values()) tabs.addTab(pg.title(), pages.get(pg));
         tabs.setSelectedIndex(page.ordinal());
@@ -821,6 +904,7 @@ final class Settings {
         PREFS.putBoolean("vimKeys", vim.isSelected());
         PREFS.put("board", chosen[0].key());
         PREFS.put("board.pic32", ((Board) picChip.getSelectedItem()).key());
+        PREFS.put("board.stm32", ((Board) stmBoard.getSelectedItem()).key());
         PREFS.put("board.fpga", ((Board) fpgaBoard.getSelectedItem()).key());
         // the port typed or picked on the page in front, else the one all the lists share
         String port = ports.getSelectedItem() == null ? "" : ports.getSelectedItem().toString().trim();
@@ -828,10 +912,14 @@ final class Settings {
             if (SwingUtilities.isDescendingFrom(box, tabs.getSelectedComponent())) port = portOf(box);
         }
         PREFS.put("serialPort", port);
-        PREFS.put("arduinoCli", cli.getText().trim().isEmpty() ? "arduino-cli" : cli.getText().trim());
+        putTool("arduinoCli", cli, "arduino-cli", "arduino-cli");
         if (!python.getText().trim().equals(pythonCommand())) PREFS.put("python", python.getText().trim());
         PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
         putTool("avrGcc", avrGcc, "avr-gcc", "avr-gcc");
+        putTool("armGcc", armGcc, "arm-none-eabi-gcc", "arm-none-eabi-gcc");
+        putTool("openocd", openocd, "openocd", "openocd");
+        PREFS.put("stm32Upload", stm32Up.getText().trim().isEmpty() ? DEFAULT_STM32_UPLOAD : stm32Up.getText().trim());
+        PREFS.put("stm32Index", stm32Idx.getText().trim().isEmpty() ? Toolchains.STM32_INDEX : stm32Idx.getText().trim());
         putTool("avrdude", avrdude, "avrdude", "avr-gcc");
         java.nio.file.Path foundXc32 = Xc32Installer.find();
         String xc = xc32.getText().trim();
