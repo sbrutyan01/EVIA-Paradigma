@@ -5,6 +5,7 @@
 #   avr-gcc/            avr-gcc and avr-libc (bare-metal AVR C), with avrdude (upload) in its bin/
 #   arm-none-eabi-gcc/  the Arm GNU Toolchain with newlib (bare-metal STM32 C), xPack build
 #   openocd/            OpenOCD (STM32 upload through an ST-Link), xPack build
+#   pic32prog/          pic32prog (PIC32 upload), built by this repository's pic32prog workflow
 #   arduino-cli/        arduino-cli (Arduino, ESP32 and STM32 sketches; the cores come through it)
 #   oss-cad-suite/      yosys, nextpnr, gmpack, openFPGALoader ... (FPGA)
 #
@@ -20,7 +21,7 @@
 # from microchip.com instead (Settings, PIC32, Get XC32).
 set -euo pipefail
 KIND="${1:?usage: fetch-toolchains.sh linux|linux-arm64|windows|macos-arm64|macos-x64}"
-ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd arduino-cli oss-cad-suite}"
+ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd pic32prog arduino-cli oss-cad-suite}"
 want() { case " $ONLY " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 OUT="${TOOLCHAINS_OUT:-build/toolchains}"
 CACHE="${TOOLCHAINS_CACHE:-build/toolchain-downloads}"
@@ -32,6 +33,7 @@ AVR_TAG=v16.1.0-1
 ARM_VER=15.2.1-1.1
 OCD_VER=0.12.0-7
 CLI_VER=1.5.1
+P32_COMMIT=4b4c8e5
 GH=https://github.com
 ARDUINO=https://downloads.arduino.cc/tools
 XPACK=$GH/xpack-dev-tools
@@ -41,23 +43,28 @@ case "$KIND" in
   linux)       XP=linux-x64.tar.gz
                ARM_SHA=da6a49ad4003944b823c6c93702a8787c922ab34bd7e918ec0eaf6933a9b1ff6
                OCD_SHA=94b3790983beaf8ed57e646c0620dd66d705fddae03d290823a6ed3b439468d6
-               CLI=("Linux_64bit.tar.gz" 28a8e119c498a25607821c36cb2dc49e8463941b261a0d99091baa7bc692dd2b) ;;
+               CLI=("Linux_64bit.tar.gz" 28a8e119c498a25607821c36cb2dc49e8463941b261a0d99091baa7bc692dd2b)
+               P32=("linux-x64.tar.gz" 60d5247f358662de1a61027752a790cfeade8174b32435f3634a6306776dfddc) ;;
   linux-arm64) XP=linux-arm64.tar.gz
                ARM_SHA=67980c7990eba7bb7ffdf39699102effd70889f5ac427be19a8c8a6c5fab2972
                OCD_SHA=db73a3ab91c556ecec2405a7e02d404b11139df6aba1031cad94a7e6766d06cc
-               CLI=("Linux_ARM64.tar.gz" 1e69e077479f300614d4551334e0a33f08ee40b04315d83b8e7e0e94f0d0ee62) ;;
+               CLI=("Linux_ARM64.tar.gz" 1e69e077479f300614d4551334e0a33f08ee40b04315d83b8e7e0e94f0d0ee62)
+               P32=("linux-arm64.tar.gz" ab2354b585e3de110534b4bb1ae6866fc46cf46c899c24c7565565f3b576fb38) ;;
   windows)     XP=win32-x64.zip
                ARM_SHA=bae6a3d1667697ce750c3b13d6d26d80973ecedc2cc87bf04869e83447fd93ea
                OCD_SHA=6bfd3c97135aafef8affc9af1acf34fd0e2b9ca26044506f6abd7f95b7630052
-               CLI=("Windows_64bit.zip" fabe42e0eb04d00e776a66178299ff95a46c623dbc260f997e58fd514853dd40) ;;
+               CLI=("Windows_64bit.zip" fabe42e0eb04d00e776a66178299ff95a46c623dbc260f997e58fd514853dd40)
+               P32=("windows-x64.zip" 6b4530b1890605a0735bc7b272d7b4042cc7ea89e7dd3211068edcab68ee45c4) ;;
   macos-arm64) XP=darwin-arm64.tar.gz
                ARM_SHA=574082d35e49a2bcbdc355836b2a3ae5e5bb3b9456c9f5e37177db2ab4aad870
                OCD_SHA=667342c086984f3e5a55b4e0d5f711add13fb04de040fca493303000e6c19327
-               CLI=("macOS_ARM64.tar.gz" cb952e8c1621c95ef5f1d17831c945e3d0ec5973f89c557a7ec8feb9c4f7d4c9) ;;
+               CLI=("macOS_ARM64.tar.gz" cb952e8c1621c95ef5f1d17831c945e3d0ec5973f89c557a7ec8feb9c4f7d4c9)
+               P32=("macos-arm64.tar.gz" 576b7961fd917962792ec23594a36c3e86e152dcb5d0222d6822aae6b4660f01) ;;
   macos-x64)   XP=darwin-x64.tar.gz
                ARM_SHA=5be906a5194c3173e145a58048e5607ffff947773237802b93e55e23c415f1b6
                OCD_SHA=668ad25350103a4357e11629ec833eae5982e973889ce25bad0c2963e37fa8bf
-               CLI=("macOS_64bit.tar.gz" c982e940027996bea9901050e95fae99c59c1dcfee54beedecaf28141e7bf2e7) ;;
+               CLI=("macOS_64bit.tar.gz" c982e940027996bea9901050e95fae99c59c1dcfee54beedecaf28141e7bf2e7)
+               P32=("macos-x64.tar.gz" 8009d4bc75d07cc6ebb85b66d723243eb779f4de566301122a64b4022ae2c4c6) ;;
   *) echo "unknown platform $KIND" >&2; exit 2 ;;
 esac
 
@@ -96,6 +103,7 @@ if [ "${VERSIONS_ONLY:-}" = 1 ]; then
     want avr-gcc && echo "avr-gcc $avr_v+avrdude-8.0"
     want arm-none-eabi-gcc && echo "arm-none-eabi-gcc $ARM_VER"
     want openocd && echo "openocd $OCD_VER"
+    want pic32prog && echo "pic32prog git-$P32_COMMIT"
     want arduino-cli && echo "arduino-cli $CLI_VER"
     want oss-cad-suite && echo "oss-cad-suite $OSS_TAG"
     exit 0
@@ -205,6 +213,15 @@ The xPack OpenOCD $OCD_VER, passed on unchanged with EVIA Paradigma. GNU GPL v2 
 On Linux, OpenOCD needs permission to open the ST-Link: the udev rules are in openocd/contrib/60-openocd.rules
 (copy them to /etc/udev/rules.d/ once and plug the ST-Link in again).
 EOF
+fi
+
+# ---- pic32prog: built by this repository's pic32prog workflow (the project publishes no current builds)
+if want pic32prog; then
+echo "== pic32prog" >&2
+p32=$(fetch "$GH/sbrutyan01/EVIA-Paradigma/releases/download/pic32prog-$P32_COMMIT/pic32prog-$P32_COMMIT-${P32[0]}" "${P32[1]}")
+unpack "$p32" "$OUT/pic32prog"
+echo "pic32prog (git $P32_COMMIT, EVIA build)" > "$OUT/pic32prog/EVIA-VERSION"
+echo "git-$P32_COMMIT" > "$OUT/pic32prog/EVIA-PACKAGE-VERSION"
 fi
 
 # ---- arduino-cli: one program; put in bin/ like the others

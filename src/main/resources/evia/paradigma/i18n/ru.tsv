@@ -270,3 +270,35 @@ Install or update the STM32 core (STMicroelectronics:stm32) with arduino-cli	У�
 STM32 upload:	Загрузка STM32:
 STM32 core:	Ядро STM32:
 Install the %s core	Установить ядро %s
+# 0.9.1: Terminal
+Terminal	Терминал
+A terminal on a board's serial port (UART) or on another computer (SSH)	Терминал на последовательном порту платы (UART) или на другом компьютере (SSH)
+Terminal (UART, SSH)	Терминал (UART, SSH)
+What the Enter key sends	Что отправляет клавиша Enter
+Local echo	Локальное эхо
+Show what you type: most boards do not send it back	Показывать набранное: большинство плат его не возвращают
+Open UART	Открыть UART
+Leave empty to use a key (or to be asked)	Оставьте пустым, чтобы использовать ключ (или ответить на запрос)
+A private key file, e.g. ~/.ssh/id_ed25519; empty for none	Файл закрытого ключа, например ~/.ssh/id_ed25519; пусто — без ключа
+Connect SSH	Подключить SSH
+UART:	UART:
+Baud:	Скорость:
+Enter sends:	Enter отправляет:
+Host:	Хост:
+Port:	Порт:
+User:	Пользователь:
+Password:	Пароль:
+Key:	Ключ:
+Choose a serial port first (Scan lists the ones plugged in).	Сначала выберите последовательный порт (Scan покажет подключённые).
+The baud rate must be a number.	Скорость должна быть числом.
+%s is open at %d baud. Closing the tab closes the port (Upload needs it free).	%s открыт на %d бод. Закрытие вкладки закрывает порт (для Upload он должен быть свободен).
+Could not open %s: %s	Не удалось открыть %s: %s
+Give the host and the user name.	Укажите хост и имя пользователя.
+Connecting to %s...	Подключение к %s...
+Connected to %s.	Подключено к %s.
+Could not connect to %s: %s	Не удалось подключиться к %s: %s
+Open a board's serial port (UART), or connect to another computer over SSH. Each session gets a tab; closing the tab ends it.	Откройте последовательный порт платы (UART) или подключитесь к другому компьютеру по SSH. У каждого сеанса своя вкладка; закрытие вкладки завершает его.
+Close this session	Закрыть этот сеанс
+the port is busy, missing, or needs permission	порт занят, отсутствует или нужны права доступа
+Passphrase of the key %s:	Пароль ключа %s:
+cancelled	отменено

@@ -219,6 +219,10 @@ used, and nothing needs administrator rights: the packages live in your own data
 with <b>Restart Now</b>). Nothing is uninstalled. On the command line: <code>--packages</code>, <code>--install ID</code>
 (or <code>--install updates</code>) and <code>--remove ID</code>.</p>
 
+<p><b>Terminal</b> (toolbar, or Help &gt; Terminal) opens a real terminal on a board's serial port (UART: port, baud rate,
+what Enter sends, local echo) or on another computer over SSH (password or key). Each session gets a tab; close the tab
+before Upload, which needs the port.</p>
+
 <a name="fpga"></a>
 <h2>FPGA: Artix-7 and GateMate</h2>
 <p>Three more languages, <b>SystemVerilog</b>, <b>Verilog-2001</b> and <b>VHDL</b> (VHDL-2008), turn the same diagram into hardware. Every block becomes one state of a state machine and takes one clock cycle. Variables are signed 32-bit registers.</p>

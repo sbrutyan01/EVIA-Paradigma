@@ -270,3 +270,35 @@ Install or update the STM32 core (STMicroelectronics:stm32) with arduino-cli	Տ�
 STM32 upload:	STM32 բեռնում՝
 STM32 core:	STM32 միջուկ՝
 Install the %s core	Տեղադրել %s միջուկը
+# 0.9.1: Terminal
+Terminal	Տերմինալ
+A terminal on a board's serial port (UART) or on another computer (SSH)	Տերմինալ սալիկի հաջորդական պորտում (UART) կամ մեկ այլ համակարգչում (SSH)
+Terminal (UART, SSH)	Տերմինալ (UART, SSH)
+What the Enter key sends	Ինչ է ուղարկում Enter ստեղնը
+Local echo	Տեղական արձագանք
+Show what you type: most boards do not send it back	Ցույց տալ մուտքագրվածը. սալիկների մեծ մասը այն հետ չի ուղարկում
+Open UART	Բացել UART
+Leave empty to use a key (or to be asked)	Թողեք դատարկ՝ բանալի օգտագործելու համար (կամ հարցմանը պատասխանելու)
+A private key file, e.g. ~/.ssh/id_ed25519; empty for none	Գաղտնի բանալու ֆայլ, օր. ~/.ssh/id_ed25519. դատարկ՝ առանց բանալու
+Connect SSH	Միանալ SSH-ով
+UART:	UART՝
+Baud:	Արագություն՝
+Enter sends:	Enter-ը ուղարկում է՝
+Host:	Հոսթ՝
+Port:	Պորտ՝
+User:	Օգտատեր՝
+Password:	Գաղտնաբառ՝
+Key:	Բանալի՝
+Choose a serial port first (Scan lists the ones plugged in).	Նախ ընտրեք հաջորդական պորտը (Scan-ը ցույց կտա միացվածները)։
+The baud rate must be a number.	Արագությունը պետք է թիվ լինի։
+%s is open at %d baud. Closing the tab closes the port (Upload needs it free).	%s-ը բաց է %d բոդով։ Ներդիրը փակելը փակում է պորտը (Upload-ի համար այն պետք է ազատ լինի)։
+Could not open %s: %s	Չհաջողվեց բացել %s-ը. %s
+Give the host and the user name.	Նշեք հոսթը և օգտատիրոջ անունը։
+Connecting to %s...	Միացում %s-ին...
+Connected to %s.	Միացված է %s-ին։
+Could not connect to %s: %s	Չհաջողվեց միանալ %s-ին. %s
+Open a board's serial port (UART), or connect to another computer over SSH. Each session gets a tab; closing the tab ends it.	Բացեք սալիկի հաջորդական պորտը (UART) կամ միացեք մեկ այլ համակարգչի SSH-ով։ Յուրաքանչյուր նիստ ունի իր ներդիրը. ներդիրը փակելը ավարտում է այն։
+Close this session	Փակել այս նիստը
+the port is busy, missing, or needs permission	պորտը զբաղված է, բացակայում է կամ թույլտվություն է պետք
+Passphrase of the key %s:	%s բանալու գաղտնաբառը՝
+cancelled	չեղարկված է

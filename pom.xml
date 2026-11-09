@@ -6,7 +6,7 @@
 
     <groupId>evia</groupId>
     <artifactId>evia-paradigma</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
     <packaging>jar</packaging>
     <name>EVIA Paradigma</name>
 
@@ -24,7 +24,45 @@
             <artifactId>flatlaf</artifactId>
             <version>3.8</version>
         </dependency>
+        <!-- Terminal window: JediTerm, the terminal emulator of the JetBrains IDEs (LGPL v3 or Apache 2.0) -->
+        <dependency>
+            <groupId>org.jetbrains.jediterm</groupId>
+            <artifactId>jediterm-ui</artifactId>
+            <version>3.76</version>
+        </dependency>
+        <!-- jediterm-ui names its core for run time only; the window is written against it too -->
+        <dependency>
+            <groupId>org.jetbrains.jediterm</groupId>
+            <artifactId>jediterm-core</artifactId>
+            <version>3.76</version>
+        </dependency>
+        <!-- its logging goes nowhere (MIT) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        <!-- Terminal window, UART: serial ports on Windows, Linux and macOS (Apache 2.0 or LGPL v3) -->
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>2.11.4</version>
+        </dependency>
+        <!-- Terminal window, SSH: the maintained fork of JSch (BSD) -->
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+            <version>2.28.8</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <!-- JediTerm is published in JetBrains' repository, not Maven Central -->
+        <repository>
+            <id>intellij-dependencies</id>
+            <url>https://packages.jetbrains.team/maven/p/ij/intellij-dependencies</url>
+        </repository>
+    </repositories>
 
     <build>
         <resources>

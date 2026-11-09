@@ -164,7 +164,7 @@ final class Settings {
 
     /** "Get" beside a tool's field: fetches the tool and writes its path into the field. */
     private static JButton getButton(Component parent, Toolchains.Tool t, JTextField field) {
-        JButton b = new JButton(t.downloadable() ? "Get" : "Where?");
+        JButton b = new JButton(t.downloadable() || t.folder != null ? "Get" : "Where?");
         b.setToolTipText(t.downloadable()
                 ? "Download " + t.display + " into EVIA Paradigma's own folder and use it"
                 : "Open " + t.display + "'s download page");
@@ -312,7 +312,14 @@ final class Settings {
 
     /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
     static String pic32Upload() {
-        return PREFS.get("pic32Upload", "pic32prog {hex}");
+        String cmd = PREFS.get("pic32Upload", "pic32prog {hex}");
+        // a command that starts with plain pic32prog runs the installed package's copy when there is one
+        java.nio.file.Path own = Bundled.tool("pic32prog", "pic32prog");
+        if (own != null && (cmd.equals("pic32prog") || cmd.startsWith("pic32prog "))) {
+            String exe = own.toString();
+            cmd = (exe.contains(" ") ? "\"" + exe + "\"" : exe) + cmd.substring("pic32prog".length());
+        }
+        return cmd;
     }
 
     // ---- FPGA tools (Vivado, or the open-source flows)
@@ -847,7 +854,8 @@ final class Settings {
                 .row(Text.t("xc32-gcc:"), xc32, getXc32)
                 .note(small("Get XC32 downloads Microchip's free XC32 " + Xc32Installer.VERSION
                         + " from microchip.com and runs Microchip's installer (it asks for an administrator password)."))
-                .row(Text.t("PIC32 upload:"), pic32Up)
+                .row(Text.t("PIC32 upload:"), pic32Up, getButton(pic, Toolchains.Tool.PIC32PROG, new JTextField()))
+                .note(small("Get installs pic32prog from the EVIA server: PICkit2, PICkit3 (PICkit2 mode), the chipKIT and Microchip bootloaders."))
                 .note(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."))
                 .row(Text.t("PIC32 MQTT over:"), pic32Net)
                 .note(small("<html>The MQTT blocks reach the network through a WiFi module with AT firmware on UART2, which every PIC32MX can do,<br>"
@@ -924,7 +932,13 @@ final class Settings {
         java.nio.file.Path foundXc32 = Xc32Installer.find();
         String xc = xc32.getText().trim();
         PREFS.put("xc32", xc.isEmpty() || (foundXc32 != null && xc.equals(foundXc32.toString())) ? "xc32-gcc" : xc);
-        PREFS.put("pic32Upload", pic32Up.getText().trim().isEmpty() ? "pic32prog {hex}" : pic32Up.getText().trim());
+        String up = pic32Up.getText().trim();
+        java.nio.file.Path ownProg = Bundled.tool("pic32prog", "pic32prog");
+        if (ownProg != null) {
+            String exe = ownProg.toString(), quoted = exe.contains(" ") ? "\"" + exe + "\"" : exe;
+            if (up.startsWith(quoted)) up = "pic32prog" + up.substring(quoted.length());   // stays "pic32prog": follows updates
+        }
+        PREFS.put("pic32Upload", up.isEmpty() ? "pic32prog {hex}" : up);
         Text.Lang beforeLang = uiLanguage();
         useUiLanguage((Text.Lang) uiLang.getSelectedItem());
         PREFS.put("pic32Net", pic32Net.getSelectedIndex() == 1 ? "ethernet" : "uart");

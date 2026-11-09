@@ -70,6 +70,10 @@ final class Toolchains {
                 "https://github.com/YosysHQ/oss-cad-suite-build/releases",
                 "The open-source FPGA tools: yosys, nextpnr, gmpack and openFPGALoader, for Artix-7 and"
                         + " GateMate (about 1 GB unpacked)."),
+        PIC32PROG("pic32prog", "pic32prog", null, "pic32prog", null, null, null, null,
+                "https://github.com/sergev/pic32prog",
+                "Uploads PIC32 programs: PICkit2, PICkit3 in its PICkit2 mode, the chipKIT and Microchip bootloaders,"
+                        + " FT2232 JTAG adapters. A package of the EVIA server (about 1 MB)."),
         PYTHON("Python 3", null, null, "python3", null, null, null, null,
                 "https://www.python.org/downloads/",
                 "Runs generated Python programs: Python 3.8 or newer, nothing else to install. On Windows, the"

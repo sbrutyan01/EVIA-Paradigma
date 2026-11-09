@@ -124,11 +124,15 @@ about = {
     "openocd": ("OpenOCD", "STM32", True,
                 "Uploads to STM32 boards through an ST-Link (built into the Nucleo and Discovery; a separate "
                 "ST-Link V2 for the Blue and Black Pill)."),
+    "pic32prog": ("pic32prog", "PIC32", True,
+                  "Uploads PIC32 programs: PICkit2, PICkit3 in its PICkit2 mode, the chipKIT and Microchip "
+                  "bootloaders, FT2232 JTAG adapters. The PIC32 compiler, XC32, comes from Microchip "
+                  "(Settings, PIC32, Get XC32): its licence does not allow passing it on."),
     "oss-cad-suite": ("OSS CAD Suite", "FPGA", False,
                       "The open-source FPGA tools: yosys, nextpnr, gmpack, openFPGALoader, GHDL and more, for "
                       "Artix-7 and GateMate boards. Large: about 1 GB to download."),
 }
-order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "oss-cad-suite"]
+order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "oss-cad-suite"]
 pk = {}
 for line in open(manifest, encoding="utf-8"):
     i, plat, ver, f, size, sha, unpacked = line.rstrip("\n").split("\t")

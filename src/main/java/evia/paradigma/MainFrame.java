@@ -128,6 +128,10 @@ final class MainFrame extends JFrame {
         tb.add(new JButton(runAction));
         tb.add(new JButton(stopAction));
         tb.addSeparator();
+        JButton terminal = button("Terminal", e -> TerminalWindow.open(this));
+        terminal.setToolTipText(Text.t("A terminal on a board's serial port (UART) or on another computer (SSH)"));
+        tb.add(terminal);
+        tb.addSeparator();
         tb.add(new JLabel(Text.t(" Step delay: ")));
         speed.setMaximumSize(new Dimension(160, 30));
         speed.setPreferredSize(new Dimension(130, 30));
@@ -302,6 +306,7 @@ final class MainFrame extends JFrame {
         help.add(item("Keyboard Shortcuts", null, e -> HelpWindow.showTopic(this, "keys")));
         help.add(item("Vim Keys", null, e -> HelpWindow.showTopic(this, "vim")));
         help.add(examplesMenu("Examples"));
+        help.add(item("Terminal (UART, SSH)", null, e -> TerminalWindow.open(this)));
         JMenu tutorial = new JMenu(Text.t("Tutorial (PDF)"));
         for (String[] t : HelpWindow.TUTORIALS) tutorial.add(item(t[1], null, e -> HelpWindow.openTutorial(this, t[0])));
         help.add(tutorial);
