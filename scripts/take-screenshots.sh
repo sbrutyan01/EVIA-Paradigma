@@ -5,7 +5,7 @@
 #
 # Usage: scripts/take-screenshots.sh [jar]
 set -euo pipefail
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 OUT=build/screenshots-classes
 HOMEDIR="${SCREENSHOT_HOME:-/tmp/evia-screenshots-home}"
 rm -rf "$OUT" "$HOMEDIR" && mkdir -p "$OUT" "$HOMEDIR" docs/screenshots

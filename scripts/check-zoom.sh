@@ -4,7 +4,7 @@
 #
 # Usage: scripts/check-zoom.sh [jar]
 set -euo pipefail
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 OUT=build/zoom
 HOMEDIR="$(mktemp -d)"
 rm -rf "$OUT" && mkdir -p "$OUT/classes"

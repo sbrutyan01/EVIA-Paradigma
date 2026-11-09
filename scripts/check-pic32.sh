@@ -16,7 +16,7 @@
 # Usage: [PIC32_PROC=dir PIC32_INC=dir] scripts/check-pic32.sh [jar]
 set -uo pipefail
 
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 OUT=build/pic32
 rm -rf "$OUT" && mkdir -p "$OUT/mock"
 

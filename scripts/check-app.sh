@@ -4,7 +4,7 @@
 #
 # Usage: scripts/check-app.sh [jar]
 set -euo pipefail
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 OUT=build/app-checks
 rm -rf "$OUT" && mkdir -p "$OUT"
 javac -cp "$JAR" -d "$OUT" scripts/app-checks/evia/paradigma/AppChecks.java

@@ -15,7 +15,7 @@
 #        scripts/check-boards.sh [jar]
 set -uo pipefail
 
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 AVR_GCC="${AVR_GCC:-avr-gcc}"
 OBJCOPY="${AVR_GCC%gcc}objcopy"
 EVIA_SIM="${EVIA_SIM:-build/evia_sim}"

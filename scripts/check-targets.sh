@@ -13,7 +13,7 @@
 # Usage: [CC=clang] [CXX=clang++] [PYTHON=python3] [LANGS="c11 c++20 python"] scripts/check-targets.sh [jar]
 set -uo pipefail
 
-JAR="${1:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${1:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 CC="${CC:-clang}"
 CXX="${CXX:-clang++}"
 PYTHON="${PYTHON:-python3}"

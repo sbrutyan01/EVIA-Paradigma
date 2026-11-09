@@ -7,7 +7,7 @@
 set -euo pipefail
 
 CXX="${1:-clang++}"
-JAR="${2:-$(ls target/evia-paradigma-*.jar | head -n 1)}"
+JAR="${2:-$(ls target/evia-paradigma-*.jar | sort -V | tail -n 1)}"
 OUT=build/examples
 mkdir -p "$OUT"
 
