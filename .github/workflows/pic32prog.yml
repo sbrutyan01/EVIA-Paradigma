@@ -83,6 +83,8 @@ jobs:
       - name: pic32prog
         run: |
           count=$(git rev-list HEAD --count)
+          # Windows' headers define "interface" as a macro; target.c names a parameter so (the only change to the source)
+          [ "${{ matrix.plat }}" = windows-x64 ] && sed -i 's/\binterface\b/usb_interface/g' target.c
           case "${{ matrix.plat }}" in
             windows-x64) make -f make-mingw CC=i686-w64-mingw32-gcc LDFLAGS="-s -static" \
                            CFLAGS="-Wall -O -DMINGW32 -Ihidapi/hidapi -DGITCOUNT='\"$count\"' -Iusb/include -Iusb/include/libusb-1.0 -DUSE_MPSSE" \
@@ -121,6 +123,7 @@ jobs:
           pic32prog, built by EVIA Paradigma's pic32prog workflow from https://github.com/sergev/pic32prog
           at commit $COMMIT (git count $(git rev-list HEAD --count)), with libusb and hidapi linked in statically.
           GNU GPL v2: the source is that commit, and the hidapi submodule at $(git -C hidapi rev-parse HEAD).
+          Windows build only: in target.c the parameter "interface" is renamed "usb_interface" (a macro in Windows' headers).
           EOF
           cd out
           if [ "${{ matrix.plat }}" = windows-x64 ]; then
