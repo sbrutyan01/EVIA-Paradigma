@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.1-blue" alt="version 0.9.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.2-blue" alt="version 0.9.2"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -63,12 +63,35 @@ itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.9.1-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.9.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.9.1-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.1-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.9.1.jar` | `java -jar evia-paradigma-0.9.1.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.2-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.9.2-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.9.2-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.2_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.2_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.9.2-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.2-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.9.2.jar` | `java -jar evia-paradigma-0.9.2.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.9.2
+
+[EVIA Paradigma v0.9.2](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.9.2) ([release notes](docs/release-notes/v0.9.2.md)):
+a **Linux** menu, next to Git, that builds a custom Linux image for a **BeagleBone Black** or a **Raspberry Pi 5** and
+writes it to an SD card. An update package: 0.9.0 and 0.9.1 take it from **Settings → Packages and Updates…**.
+
+| Build system | Version | BeagleBone Black | Raspberry Pi 5 |
+|---|---|---|---|
+| Buildroot | 2026.02.3 (LTS) | `beaglebone_defconfig` | `raspberrypi5_defconfig` |
+| Yocto (Poky) | 5.0 Scarthgap (LTS) | `beaglebone-yocto` | `raspberrypi5` (meta-raspberrypi) |
+| OpenWrt, Image Builder or from source | 25.12.6 | `omap/generic`, `ti_am335x-bone-black` | `bcm27xx/bcm2712`, `rpi-5` |
+
+- **Linux → New Linux Image…**: the build system, the board, a folder, the host name, a root password, an SSH server,
+  Python 3, LuCI (OpenWrt) and more packages. **Build Image** downloads the sources once, applies the choices and
+  builds, with the output in the window; **Menuconfig…** opens the build system's own menu in a terminal.
+- **Write to SD Card…** lists only SD cards and USB drives (never a disk this computer runs from), asks twice, and
+  writes `.img`, `.wic`, `.gz`, `.bz2`, `.xz` or `.zst` images as root through pkexec.
+- **Check This Computer** lists the missing build tools with the `apt` or `dnf` line that installs them, the free
+  disk space and, for Yocto, Ubuntu's AppArmor setting that blocks BitBake.
+- Every image is a folder with `evia-linux.json` and a `build.sh` that runs on its own: `./build.sh all`. The root
+  password stays in `secrets/` (owner-only); the image gets only its SHA-512 hash. Command line:
+  `java -jar evia-paradigma.jar --linux ~/evia-linux/pi --system yocto --board rpi5`.
 
 ### Release 0.9.1
 
@@ -825,6 +848,7 @@ Ctrl+wheel zooms.
 | **View** | Zoom In (Ctrl+=), Zoom Out (Ctrl+-), Actual Size (Ctrl+0), Fit Diagram in Window (Ctrl+9) |
 | **Run** | Run (F5), Stop (Shift+F5), Generate Code (F7), Code Language and Mode (language, flow, values), Clear Output |
 | **Git** | Initialize Repository, Commit… (Ctrl+K), Push (Ctrl+Shift+K), Pull, Connect to GitHub…, Open on GitHub, Status, History |
+| **Linux** | New Linux Image…, Open Linux Image Folder…, Linux Images Window, Build Image, Write Image to SD Card…, Check This Computer, Terminal on the Board, Linux Images Guide: Buildroot, Yocto and OpenWrt for the BeagleBone Black and Raspberry Pi 5 |
 | **Settings** | General… (Ctrl+,), C, C++ and Python…, Arduino Boards…, ESP32 Boards…, AVR C (bare metal)…, PIC32…, FPGA Boards…: each opens its tab of the Settings window |
 | **Devices** | This Computer (C, C++, Python), Arduino Boards, ESP32 Boards, AVR C (bare metal), PIC32 Chips, FPGA Boards: each lists its boards (or languages); picking one sets the language and board, and each ends with its Settings page |
 | **Help** | Guide (F1) with topics, Keyboard Shortcuts, Vim Keys, Examples, Tutorial (PDF; seven languages), Online Documentation, Report an Issue, Check for Updates, About |
@@ -1101,6 +1125,14 @@ xc32-gcc -mprocessor=32MX795F512L -std=gnu99 -Os -o blink.elf blink.c -lm && xc3
 java -jar evia-paradigma.jar --run blink.evia                # simulated Uno; pin changes go to stderr
 java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv   # also writes blink.xdc
 java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd   # also writes blink.ccf
+```
+
+Linux images (Buildroot, Yocto or OpenWrt for a BeagleBone Black or Raspberry Pi 5):
+
+```
+java -jar evia-paradigma.jar --linux ~/evia-linux/bbb --system buildroot --board bbb --python --packages "htop nano"
+~/evia-linux/bbb/build.sh all                                # fetch, configure, build: output/images/sdcard.img
+java -jar evia-paradigma.jar --linux ~/evia-linux/router --system openwrt --board rpi5 --password-file pw.txt
 ```
 
 This lets you write a program in the editor and then generate and build it from Vim (`:!java -jar … --gen %`)

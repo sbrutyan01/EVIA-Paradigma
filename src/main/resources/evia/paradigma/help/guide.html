@@ -239,6 +239,30 @@ before Upload, which needs the port.</p>
 <p><b>Build and Upload.</b> Artix-7: Vivado in batch mode, or the open-source flow (yosys, nextpnr-xilinx, Project X-Ray), chosen in Settings &gt; FPGA. GateMate: yosys, nextpnr-himbaechel, gmpack. Upload uses Vivado or openFPGALoader. The pin constraints are in the first comment of the file, and <code>-o</code> on the command line also writes a <code>.xdc</code> or <code>.ccf</code> file.</p>
 <p><b>Tested:</b> simulation against Run, and synthesis with open-source tools. <b>Not tested:</b> Vivado, openXC7 and real boards.</p>
 <p>Examples are in File &gt; Open Example &gt; FPGA Boards.</p>
+<a name="linux"></a>
+<h2>Linux images</h2>
+<p>The <b>Linux</b> menu builds your own Linux for a <b>BeagleBone Black</b> or a <b>Raspberry Pi 5</b> and writes it to an
+SD card. Choose a build system:</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Build system</th><th>What you get</th><th>First build</th></tr>
+<tr><td>Buildroot 2026.02 (LTS)</td><td>A small system: kernel, BusyBox, the packages you ask for</td><td>about 1 hour, 15 GB</td></tr>
+<tr><td>Yocto 5.0 Scarthgap (LTS)</td><td>A full distribution (core-image-base or core-image-minimal)</td><td>hours, about 90 GB</td></tr>
+<tr><td>OpenWrt 25.12 (Image Builder)</td><td>A network OS with a web interface (LuCI), from ready packages</td><td>minutes, 3 GB</td></tr>
+<tr><td>OpenWrt 25.12 (from source)</td><td>OpenWrt with any option (menuconfig)</td><td>about 2 hours, 30 GB</td></tr>
+</table>
+<p><b>Linux &gt; New Linux Image</b> opens the window: the board, a folder (no spaces in its path), the host name, a root
+password, an SSH server, Python 3, more packages by the build system's names. <b>Build Image</b> downloads the sources
+the first time, applies the choices and builds; the output scrolls in the window. <b>Menuconfig</b> opens a terminal
+with the build system's own menu for everything else. <b>Write to SD Card</b> lists only SD cards and USB drives, asks
+twice, and asks for your password to write.</p>
+<p>Everything is in the folder: <code>evia-linux.json</code> (the choices) and <code>build.sh</code>, which runs on its own
+too: <code>./build.sh all</code>. The root password is kept in <code>secrets/</code>, readable only by you; the image gets
+only its hash. Without a password, root logs in without one (Buildroot, Yocto) or is asked to set one (OpenWrt).</p>
+<p>The builds run on <b>Linux</b> (on Windows: WSL 2; on a Mac: a Linux virtual machine). <b>Check This Computer</b> lists
+what is missing and the command that installs it. On the board: a BeagleBone Black boots from the card when S2 is held
+at power-on; a Raspberry Pi 5 boots from it by itself. Then <b>Terminal</b> logs in over UART (115200) or SSH. On the
+command line: <code>--linux DIR --system yocto --board bbb</code>.</p>
+
 <a name="keys"></a>
 <h2>Keyboard shortcuts</h2>
 <table border="1" cellpadding="4" cellspacing="0">

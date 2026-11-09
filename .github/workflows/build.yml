@@ -195,6 +195,9 @@ jobs:
       - name: "Packages: install, update, damaged download, remove, self-update"
         run: scripts/check-packages.sh
 
+      - name: "Linux images: Buildroot, Yocto and OpenWrt workspaces for the BeagleBone Black and Raspberry Pi 5"
+        run: scripts/check-linux.sh
+
   # FPGA designs (SystemVerilog, Verilog-2001, VHDL for Artix-7 and GateMate): simulated against the interpreter
   # with Icarus Verilog and GHDL, synthesised with yosys, and for the GateMate placed, routed and packed into a
   # bitstream with nextpnr-himbaechel and gmpack. There is no Vivado or board in CI.

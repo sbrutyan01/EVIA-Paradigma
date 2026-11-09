@@ -294,6 +294,7 @@ final class MainFrame extends JFrame {
             @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
         });
         bar.add(git);
+        bar.add(linuxMenu());
 
         bar.add(settingsMenu());
         bar.add(devicesMenu());
@@ -372,6 +373,22 @@ final class MainFrame extends JFrame {
             @Override public void menuDeselected(javax.swing.event.MenuEvent e) { }
             @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
         });
+        return m;
+    }
+
+    /** Linux: custom Linux images (Buildroot, Yocto, OpenWrt) for the BeagleBone Black and the Raspberry Pi 5. */
+    private JMenu linuxMenu() {
+        JMenu m = menu("Linux", KeyEvent.VK_L);
+        m.add(item("New Linux Image...", null, e -> LinuxWindow.open(this, LinuxWindow.Then.NEW)));
+        m.add(item("Open Linux Image Folder...", null, e -> LinuxWindow.openFolder(this)));
+        m.add(item("Linux Images Window", null, e -> LinuxWindow.open(this, LinuxWindow.Then.NOTHING)));
+        m.addSeparator();
+        m.add(item("Build Image", null, e -> LinuxWindow.open(this, LinuxWindow.Then.BUILD)));
+        m.add(item("Write Image to SD Card...", null, e -> LinuxWindow.open(this, LinuxWindow.Then.WRITE)));
+        m.add(item("Check This Computer", null, e -> LinuxWindow.open(this, LinuxWindow.Then.CHECK)));
+        m.addSeparator();
+        m.add(item("Terminal on the Board (UART, SSH)", null, e -> TerminalWindow.open(this)));
+        m.add(item("Linux Images Guide", null, e -> HelpWindow.showTopic(this, "linux")));
         return m;
     }
 

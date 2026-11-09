@@ -19,18 +19,18 @@ final class HelpWindow extends JFrame {
     private record Lang(String code, String name, String title, String[] topics) {}
 
     private static final String[] ANCHORS = {"start", "blocks", "expressions", "classes", "modules", "projects", "git", "cpp",
-            "boards", "fpga", "keys", "vim"};
+            "boards", "fpga", "linux", "keys", "vim"};
 
     private static final Lang[] LANGS = {
             new Lang("en", "English", "EVIA Paradigma Guide", new String[]{"Getting started", "Blocks", "Expressions",
                     "Classes and objects", "Modules", "Projects", "Git and GitHub", "C and C++ code",
-                    "Arduino and ESP32 boards", "FPGA: Artix-7 and GateMate", "Keyboard shortcuts", "Vim keys"}),
+                    "Arduino and ESP32 boards", "FPGA: Artix-7 and GateMate", "Linux images", "Keyboard shortcuts", "Vim keys"}),
             new Lang("ru", "Русский", "Руководство EVIA Paradigma", new String[]{"Начало работы", "Блоки", "Выражения",
                     "Классы и объекты", "Модули", "Проекты", "Git и GitHub", "Код на C и C++",
-                    "Платы Arduino и ESP32", "FPGA: Artix-7 и GateMate", "Горячие клавиши", "Клавиши Vim"}),
+                    "Платы Arduino и ESP32", "FPGA: Artix-7 и GateMate", "Образы Linux", "Горячие клавиши", "Клавиши Vim"}),
             new Lang("hy", "Հայերեն", "EVIA Paradigma ուղեցույց", new String[]{"Սկսել", "Բլոկներ", "Արտահայտություններ",
                     "Դասեր և օբյեկտներ", "Մոդուլներ", "Նախագծեր", "Git և GitHub", "C և C++ կոդ",
-                    "Arduino և ESP32 տախտակներ", "FPGA՝ Artix-7 և GateMate", "Ստեղնային համակցություններ", "Vim ստեղներ"}),
+                    "Arduino և ESP32 տախտակներ", "FPGA՝ Artix-7 և GateMate", "Linux պատկերներ", "Ստեղնային համակցություններ", "Vim ստեղներ"}),
     };
 
     private static HelpWindow instance;

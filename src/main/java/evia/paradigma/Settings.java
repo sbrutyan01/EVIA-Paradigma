@@ -372,6 +372,15 @@ final class Settings {
         PREFS.put("serialPort", port.trim());
     }
 
+    /** The folder of the Linux image last opened in Linux > Linux Images (empty: none yet). */
+    static String linuxWorkspace() {
+        return PREFS.get("linuxWorkspace", "");
+    }
+
+    static void setLinuxWorkspace(String dir) {
+        PREFS.put("linuxWorkspace", dir);
+    }
+
     /** True (default): the mouse wheel zooms block diagrams; false: it scrolls and Ctrl+wheel zooms. */
     static boolean wheelZooms() {
         return PREFS.getBoolean("wheelZooms", true);

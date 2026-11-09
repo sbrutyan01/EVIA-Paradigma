@@ -302,3 +302,81 @@ Close this session	Փակել այս նիստը
 the port is busy, missing, or needs permission	պորտը զբաղված է, բացակայում է կամ թույլտվություն է պետք
 Passphrase of the key %s:	%s բանալու գաղտնաբառը՝
 cancelled	չեղարկված է
+# 0.9.2: Linux images
+Linux	Linux
+New Linux Image...	Նոր Linux պատկեր...
+Open Linux Image Folder...	Բացել Linux պատկերի թղթապանակը...
+Linux Images Window	Linux պատկերների պատուհան
+Build Image	Հավաքել պատկերը
+Write Image to SD Card...	Գրել պատկերը SD քարտի վրա...
+Check This Computer	Ստուգել համակարգիչը
+Terminal on the Board (UART, SSH)	Տախտակի տերմինալ (UART, SSH)
+Linux Images Guide	Linux պատկերների ուղեցույց
+Linux Images	Linux պատկերներ
+Open a Linux image folder (with evia-linux.json)	Բացել Linux պատկերի թղթապանակ (evia-linux.json-ով)
+%s has no evia-linux.json: it is not a Linux image folder.	%s-ում evia-linux.json չկա․ սա Linux պատկերի թղթապանակ չէ։
+SSH server	SSH սերվեր
+Web interface (LuCI)	Վեբ միջերես (LuCI)
+Empty: keep the saved one (or none: root logs in without a password)	Դատարկ՝ պահել պահպանվածը (կամ առանց գաղտնաբառի՝ root-ը մուտք է գործում առանց գաղտնաբառի)
+More packages, by the build system's names, e.g. htop nano i2c-tools	Լրացուցիչ փաթեթներ՝ հավաքման համակարգի անուններով, օրինակ՝ htop nano i2c-tools
+The workspace: sources, build and images. No spaces in the path.	Աշխատանքային թղթապանակ՝ աղբյուրներ, հավաքում և պատկերներ։ Առանց բացատների ճանապարհում։
+Build system:	Հավաքման համակարգ՝
+Folder:	Թղթապանակ՝
+Host name:	Հոսթի անուն՝
+Include:	Ներառել՝
+More packages:	Այլ փաթեթներ՝
+Root password:	Root գաղտնաբառ՝
+Yocto image:	Yocto պատկեր՝
+Write evia-linux.json and build.sh in the folder	Գրել evia-linux.json-ը և build.sh-ը թղթապանակում
+Download the sources (the first time), apply the choices and build	Ներբեռնել աղբյուրները (առաջին անգամ), կիրառել ընտրությունները և հավաքել
+Menuconfig...	Menuconfig...
+Menuconfig	Menuconfig
+Change any option of the build system in a text menu (opens a terminal)	Փոխել հավաքման համակարգի ցանկացած կարգավորում տեքստային ընտրացանկում (բացում է տերմինալ)
+Write to SD Card...	Գրել SD քարտի վրա...
+Write to SD Card	Գրել SD քարտի վրա
+Open Folder	Բացել թղթապանակը
+Terminal (SSH)	Տերմինալ (SSH)
+Log in to the board once it has booted: UART or SSH	Մուտք գործել տախտակ բեռնվելուց հետո՝ UART կամ SSH
+Choose the build system and the board, then Build Image. The steps run build.sh in the folder, which can also be run by hand in a terminal.	Ընտրեք հավաքման համակարգը և տախտակը, ապա «Հավաքել պատկերը»։ Քայլերը գործարկում են թղթապանակի build.sh-ը, որը կարելի է գործարկել նաև ձեռքով տերմինալում։
+A build is running. Stop it and close?	Հավաքումն ընթացքի մեջ է։ Կանգնեցնե՞լ և փակել։
+A new image: choose, then Save or Build Image.	Նոր պատկեր՝ ընտրեք, ապա «Պահպանել» կամ «Հավաքել պատկերը»։
+Opened %s	Բացված է՝ %s
+Could not read %s: %s	Չհաջողվեց կարդալ %s՝ %s
+Saved %s and build.sh%s.	Պահպանվեցին %s-ը և build.sh-ը%s։
+ (root password in secrets/, owner-only)	 (root գաղտնաբառը secrets/-ում է, միայն սեփականատիրոջ համար)
+ (no root password)	 (առանց root գաղտնաբառի)
+Could not save: %s	Չհաջողվեց պահպանել՝ %s
+A step is still running (Stop ends it).	Քայլը դեռ ընթացքի մեջ է («Կանգ»-ը ավարտում է այն)։
+This computer, for %s:	Այս համակարգիչը %s-ի համար՝
+This computer is ready to build.	Համակարգիչը պատրաստ է հավաքման։
+Some things are missing: see the lines with !!	Ինչ-որ բան պակասում է․ տես !!-ով տողերը
+Buildroot, Yocto and OpenWrt build on Linux. The folder has build.sh: run it in WSL 2 (Windows) or a Linux virtual machine (macOS), then come back to write the card.	Buildroot-ը, Yocto-ն և OpenWrt-ը հավաքվում են Linux-ում։ Թղթապանակում կա build.sh․ գործարկեք այն WSL 2-ում (Windows) կամ Linux վիրտուալ մեքենայում (macOS), ապա վերադարձեք քարտը գրելու համար։
+This computer may not be ready:	Համակարգիչը կարող է պատրաստ չլինել՝
+Build anyway?	Այնուամենայնիվ հավաքե՞լ։
+Done: %s. Write to SD Card puts it on a card.	Պատրաստ է՝ %s։ «Գրել SD քարտի վրա»-ն այն կգրի քարտին։
+Could not start %s: %s	Չհաջողվեց գործարկել %s՝ %s
+Running %s...	Գործարկվում է %s...
+%s finished (%d min).	%s-ն ավարտվեց (%d րոպե)։
+%s stopped with exit code %d.	%s-ն կանգ առավ %d կոդով։
+%s stopped with exit code %d: the reason is in the last lines above.	%s-ն կանգ առավ %d կոդով․ պատճառը վերևի վերջին տողերում է։
+Stopping...	Կանգնեցվում է...
+Menuconfig opened in %s. Save there, then Build Image.	Menuconfig-ը բացվեց %s-ում։ Պահպանեք այնտեղ, ապա «Հավաքել պատկերը»։
+No terminal program was found. Run this in a terminal:	Տերմինալ ծրագիր չգտնվեց։ Գործարկեք սա տերմինալում՝
+There is no image in this folder yet: Build Image first.	Այս թղթապանակում դեռ պատկեր չկա․ նախ «Հավաքել պատկերը»։
+Write %s with Raspberry Pi Imager or balenaEtcher (Use custom image).	Գրեք %s-ը Raspberry Pi Imager-ով կամ balenaEtcher-ով (Use custom image)։
+Could not list the disks: %s	Չհաջողվեց ստանալ սկավառակների ցանկը՝ %s
+No SD card or USB drive was found. Put the card in and try again.	SD քարտ կամ USB կրիչ չգտնվեց։ Տեղադրեք քարտը և կրկնեք։
+Everything on the card is erased.	Քարտի ամբողջ պարունակությունը կջնջվի։
+Image:	Պատկեր՝
+Card:	Քարտ՝
+Erase %s and write %s to it?	Ջնջե՞լ %s-ը և գրել դրա վրա %s-ը։
+writing the card	քարտի գրում
+The card is ready. Put it in the board and power it on. %s	Քարտը պատրաստ է։ Տեղադրեք այն տախտակի մեջ և միացրեք սնուցումը։ %s
+The host name may have letters, digits and '-' (up to 63).	Հոսթի անունը կարող է պարունակել տառեր, թվեր և «-» (մինչև 63)։
+Choose a folder for the image.	Ընտրեք թղթապանակ պատկերի համար։
+Small and simple: one make builds the toolchain, kernel, BusyBox and the root file system. About 1 hour, 15 GB.	Փոքր և պարզ՝ մեկ make-ը հավաքում է գործիքաշարը, միջուկը, BusyBox-ը և արմատային ֆայլային համակարգը։ Մոտ 1 ժամ, 15 ԳԲ։
+A full distribution with packages, the industry standard. The first build takes hours and needs about 90 GB.	Լիարժեք բաշխում փաթեթներով, արդյունաբերական ստանդարտ։ Առաջին հավաքումը տևում է ժամեր և պահանջում մոտ 90 ԳԲ։
+A router and network OS with a web interface (LuCI). Prebuilt packages, so an image takes minutes. x86-64 Linux.	Երթուղիչների և ցանցերի ՕՀ վեբ միջերեսով (LuCI)։ Պատրաստի փաթեթներ, ուստի պատկերը պատրաստվում է րոպեներում։ x86-64 Linux։
+OpenWrt compiled from source: any package and kernel option (menuconfig). About 2 hours, 30 GB.	OpenWrt աղբյուրից՝ ցանկացած փաթեթ և միջուկի կարգավորում (menuconfig)։ Մոտ 2 ժամ, 30 ԳԲ։
+Hold the S2 (boot) button while powering on to boot from the SD card instead of the eMMC.	SD քարտից (ոչ eMMC-ից) բեռնվելու համար միացնելիս սեղմած պահեք S2 (boot) կոճակը։
+The serial console is the 3-pin UART connector between the HDMI ports (115200 baud, 3.3 V).	Սերիական վահանակը HDMI պորտերի միջև գտնվող 3-կոնտակտանի UART միակցիչն է (115200 բոդ, 3.3 Վ)։

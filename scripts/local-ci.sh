@@ -96,6 +96,7 @@ echo "jar: $JAR"
 # ---------------------------------------------------------------- the checks
 
 want app   && run "the application, classes, modules, projects and Git" scripts/check-app.sh "$JAR"
+want linux && run "Linux images: workspaces and build.sh for Buildroot, Yocto, OpenWrt" scripts/check-linux.sh "$JAR"
 want mqtt  && { have "$CC" && run "MQTT against a broker on this computer" scripts/check-mqtt.sh "$JAR" \
                || skip mqtt "no C compiler (set CC)"; }
 

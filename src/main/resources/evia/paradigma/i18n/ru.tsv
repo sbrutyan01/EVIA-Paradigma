@@ -302,3 +302,81 @@ Close this session	Закрыть этот сеанс
 the port is busy, missing, or needs permission	порт занят, отсутствует или нужны права доступа
 Passphrase of the key %s:	Пароль ключа %s:
 cancelled	отменено
+# 0.9.2: Linux images
+Linux	Linux
+New Linux Image...	Новый образ Linux...
+Open Linux Image Folder...	Открыть папку образа Linux...
+Linux Images Window	Окно образов Linux
+Build Image	Собрать образ
+Write Image to SD Card...	Записать образ на SD-карту...
+Check This Computer	Проверить компьютер
+Terminal on the Board (UART, SSH)	Терминал платы (UART, SSH)
+Linux Images Guide	Справка по образам Linux
+Linux Images	Образы Linux
+Open a Linux image folder (with evia-linux.json)	Открыть папку образа Linux (с evia-linux.json)
+%s has no evia-linux.json: it is not a Linux image folder.	В %s нет evia-linux.json: это не папка образа Linux.
+SSH server	SSH-сервер
+Web interface (LuCI)	Веб-интерфейс (LuCI)
+Empty: keep the saved one (or none: root logs in without a password)	Пусто: оставить сохранённый (или без пароля: root входит без пароля)
+More packages, by the build system's names, e.g. htop nano i2c-tools	Дополнительные пакеты по именам системы сборки, например htop nano i2c-tools
+The workspace: sources, build and images. No spaces in the path.	Рабочая папка: исходники, сборка и образы. Без пробелов в пути.
+Build system:	Система сборки:
+Folder:	Папка:
+Host name:	Имя хоста:
+Include:	Включить:
+More packages:	Ещё пакеты:
+Root password:	Пароль root:
+Yocto image:	Образ Yocto:
+Write evia-linux.json and build.sh in the folder	Записать evia-linux.json и build.sh в папку
+Download the sources (the first time), apply the choices and build	Скачать исходники (в первый раз), применить настройки и собрать
+Menuconfig...	Menuconfig...
+Menuconfig	Menuconfig
+Change any option of the build system in a text menu (opens a terminal)	Изменить любой параметр системы сборки в текстовом меню (открывает терминал)
+Write to SD Card...	Записать на SD-карту...
+Write to SD Card	Запись на SD-карту
+Open Folder	Открыть папку
+Terminal (SSH)	Терминал (SSH)
+Log in to the board once it has booted: UART or SSH	Войти на плату после загрузки: UART или SSH
+Choose the build system and the board, then Build Image. The steps run build.sh in the folder, which can also be run by hand in a terminal.	Выберите систему сборки и плату, затем «Собрать образ». Шаги запускают build.sh в папке; его можно запустить и вручную в терминале.
+A build is running. Stop it and close?	Идёт сборка. Остановить и закрыть?
+A new image: choose, then Save or Build Image.	Новый образ: выберите параметры, затем «Сохранить» или «Собрать образ».
+Opened %s	Открыто: %s
+Could not read %s: %s	Не удалось прочитать %s: %s
+Saved %s and build.sh%s.	Сохранены %s и build.sh%s.
+ (root password in secrets/, owner-only)	 (пароль root в secrets/, доступен только владельцу)
+ (no root password)	 (без пароля root)
+Could not save: %s	Не удалось сохранить: %s
+A step is still running (Stop ends it).	Шаг ещё выполняется («Стоп» прерывает его).
+This computer, for %s:	Этот компьютер для %s:
+This computer is ready to build.	Компьютер готов к сборке.
+Some things are missing: see the lines with !!	Кое-чего не хватает: см. строки с !!
+Buildroot, Yocto and OpenWrt build on Linux. The folder has build.sh: run it in WSL 2 (Windows) or a Linux virtual machine (macOS), then come back to write the card.	Buildroot, Yocto и OpenWrt собираются в Linux. В папке есть build.sh: запустите его в WSL 2 (Windows) или в виртуальной машине с Linux (macOS), затем вернитесь, чтобы записать карту.
+This computer may not be ready:	Компьютер, возможно, не готов:
+Build anyway?	Всё равно собрать?
+Done: %s. Write to SD Card puts it on a card.	Готово: %s. «Записать на SD-карту» запишет его на карту.
+Could not start %s: %s	Не удалось запустить %s: %s
+Running %s...	Выполняется %s...
+%s finished (%d min).	%s завершено (%d мин).
+%s stopped with exit code %d.	%s остановлено с кодом %d.
+%s stopped with exit code %d: the reason is in the last lines above.	%s остановлено с кодом %d: причина — в последних строках выше.
+Stopping...	Остановка...
+Menuconfig opened in %s. Save there, then Build Image.	Menuconfig открыт в %s. Сохраните там, затем «Собрать образ».
+No terminal program was found. Run this in a terminal:	Программа-терминал не найдена. Выполните в терминале:
+There is no image in this folder yet: Build Image first.	В этой папке ещё нет образа: сначала «Собрать образ».
+Write %s with Raspberry Pi Imager or balenaEtcher (Use custom image).	Запишите %s с помощью Raspberry Pi Imager или balenaEtcher (Use custom image).
+Could not list the disks: %s	Не удалось получить список дисков: %s
+No SD card or USB drive was found. Put the card in and try again.	SD-карта или USB-накопитель не найдены. Вставьте карту и повторите.
+Everything on the card is erased.	Всё содержимое карты будет стёрто.
+Image:	Образ:
+Card:	Карта:
+Erase %s and write %s to it?	Стереть %s и записать на неё %s?
+writing the card	запись карты
+The card is ready. Put it in the board and power it on. %s	Карта готова. Вставьте её в плату и включите питание. %s
+The host name may have letters, digits and '-' (up to 63).	Имя хоста может содержать буквы, цифры и «-» (до 63 символов).
+Choose a folder for the image.	Выберите папку для образа.
+Small and simple: one make builds the toolchain, kernel, BusyBox and the root file system. About 1 hour, 15 GB.	Небольшой и простой: один make собирает тулчейн, ядро, BusyBox и корневую файловую систему. Около 1 часа, 15 ГБ.
+A full distribution with packages, the industry standard. The first build takes hours and needs about 90 GB.	Полноценный дистрибутив с пакетами, промышленный стандарт. Первая сборка занимает часы и требует около 90 ГБ.
+A router and network OS with a web interface (LuCI). Prebuilt packages, so an image takes minutes. x86-64 Linux.	ОС для роутеров и сетей с веб-интерфейсом (LuCI). Готовые пакеты, поэтому образ собирается за минуты. x86-64 Linux.
+OpenWrt compiled from source: any package and kernel option (menuconfig). About 2 hours, 30 GB.	OpenWrt из исходников: любые пакеты и параметры ядра (menuconfig). Около 2 часов, 30 ГБ.
+Hold the S2 (boot) button while powering on to boot from the SD card instead of the eMMC.	Чтобы загрузиться с SD-карты, а не с eMMC, держите кнопку S2 (boot) при включении питания.
+The serial console is the 3-pin UART connector between the HDMI ports (115200 baud, 3.3 V).	Последовательная консоль — 3-контактный разъём UART между портами HDMI (115200 бод, 3,3 В).

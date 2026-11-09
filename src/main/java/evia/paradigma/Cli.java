@@ -93,6 +93,47 @@ final class Cli {
                     ProgramIO.save(lib, Path.of(args[1]));
                     return 0;
                 }
+                case "--linux" -> {
+                    // write a Linux image workspace: evia-linux.json and build.sh (then: DIR/build.sh all)
+                    need(args, 2);
+                    Path dir = Path.of(args[1]).toAbsolutePath();
+                    LinuxImages.Sys sys = LinuxImages.Sys.BUILDROOT;
+                    LinuxImages.Brd brd = LinuxImages.Brd.RASPBERRY_PI_5;
+                    String host = null, pkgs = "";
+                    Boolean ssh = null, python = null, web = null, full = null;
+                    char[] pw = null;
+                    for (int i = 2; i < args.length; i++) {
+                        String opt = args[i];
+                        switch (opt) {
+                            case "--no-ssh" -> ssh = false;
+                            case "--python" -> python = true;
+                            case "--web" -> web = true;
+                            case "--no-web" -> web = false;
+                            case "--minimal" -> full = false;
+                            default -> {
+                                if (i + 1 >= args.length) throw new IllegalArgumentException(opt + " needs a value (see --help)");
+                                String v = args[++i];
+                                switch (opt) {
+                                    case "--system" -> sys = LinuxImages.Sys.of(v);
+                                    case "--board" -> brd = LinuxImages.Brd.of(v);
+                                    case "--hostname" -> host = v;
+                                    case "--packages" -> pkgs = v;
+                                    case "--password-file" -> pw = Files.readString(Path.of(v), StandardCharsets.UTF_8).strip().toCharArray();
+                                    default -> throw new IllegalArgumentException("unknown option " + opt + " (see --help)");
+                                }
+                            }
+                        }
+                    }
+                    LinuxImages.Config d = LinuxImages.Config.defaults(sys, brd);
+                    LinuxImages.Config c = new LinuxImages.Config(sys, brd, host != null ? host : d.hostname(),
+                            ssh != null ? ssh : d.ssh(), python != null ? python : d.python(), web != null ? web : d.web(),
+                            full != null ? full : d.fullImage(), pkgs);
+                    LinuxImages.write(dir, c, pw);
+                    out.println(sys.display + " for the " + brd.display + " in " + dir);
+                    for (LinuxImages.Check k : LinuxImages.checkHost(sys, dir)) out.println((k.ok() ? "  ok   " : "  !!   ") + k.text());
+                    out.println("Build it with:  " + dir.resolve("build.sh") + " all");
+                    return 0;
+                }
                 case "--packages" -> {
                     // what the package server has for this computer, and what is installed
                     java.util.Map<String, String> have = Packages.installed();
@@ -204,6 +245,13 @@ final class Cli {
                               java -jar evia-paradigma.jar --packages                list the packages of the EVIA server
                               java -jar evia-paradigma.jar --install ID...           install or update packages (or: updates)
                               java -jar evia-paradigma.jar --remove ID               remove an installed package
+                              java -jar evia-paradigma.jar --linux DIR [options]     a custom Linux image: writes DIR/build.sh
+                                  --system S           buildroot (default), yocto, openwrt (Image Builder), openwrt-source
+                                  --board B            rpi5 (Raspberry Pi 5, default) or bbb (BeagleBone Black)
+                                  --hostname NAME      the board's host name (default evia-rpi5 / evia-bbb)
+                                  --packages "A B"     more packages, by the build system's names
+                                  --password-file F    the root password (kept in DIR/secrets; the image gets its hash)
+                                  --python --no-ssh --web --no-web --minimal (Yocto: core-image-minimal)
                             Build generated code with Clang %d, e.g.:
                               clang++ -std=c++20 -O2 -o program program.cpp
                               clang -std=c11 -O2 -o program program.c -lm

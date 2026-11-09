@@ -6,7 +6,7 @@
 
     <groupId>evia</groupId>
     <artifactId>evia-paradigma</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2</version>
     <packaging>jar</packaging>
     <name>EVIA Paradigma</name>
 
