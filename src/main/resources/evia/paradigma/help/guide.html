@@ -263,6 +263,11 @@ what is missing and the command that installs it. On the board: a BeagleBone Bla
 at power-on; a Raspberry Pi 5 boots from it by itself. Then <b>Terminal</b> logs in over UART (115200) or SSH. On the
 command line: <code>--linux DIR --system yocto --board bbb</code>.</p>
 
+<p><b>Sources as packages.</b> Buildroot, Yocto (Poky and meta-raspberrypi) and OpenWrt (with the Image Builders for
+both boards) are packages of the EVIA server: <b>Get Sources</b> in the window, or Settings &gt; Packages and Updates,
+group "Linux images". <code>build.sh</code> takes the sources from the installed package; without it, it downloads the
+same pinned files and checks their SHA-256. The build itself still downloads the compilers and packages it needs.</p>
+
 <a name="keys"></a>
 <h2>Keyboard shortcuts</h2>
 <table border="1" cellpadding="4" cellspacing="0">

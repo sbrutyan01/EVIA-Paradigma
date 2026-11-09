@@ -104,6 +104,40 @@ ws="$OUT/openwrt-source-bbb"; mkdir -p "$ws/openwrt/.git"
 has "$ws/openwrt/.config" 'CONFIG_TARGET_omap_generic_DEVICE_ti_am335x-bone-black=y' "openwrt-source bbb: device"
 has "$ws/openwrt/.config" 'CONFIG_PACKAGE_luci=y' "openwrt-source bbb: LuCI"
 
+# 6: the sources come from the EVIA packages when they are installed (stand-in packages), and the pins agree
+PK="$OUT/packages"
+mkdir -p "$PK/buildroot" "$PK/yocto/poky" "$PK/yocto/meta-raspberrypi/conf" "$PK/openwrt/source" "$PK/openwrt/imagebuilder"
+echo "# stand-in" > "$PK/buildroot/Makefile"
+echo "# stand-in" > "$PK/yocto/poky/oe-init-build-env"
+echo "# stand-in" > "$PK/openwrt/source/Makefile"
+ibf=openwrt-imagebuilder-25.12.6-bcm27xx-bcm2712.Linux-x86_64.tar.zst
+if command -v zstd > /dev/null; then
+  mkdir -p "$OUT/ib/openwrt-imagebuilder-x" && echo "# stand-in" > "$OUT/ib/openwrt-imagebuilder-x/Makefile"
+  tar --zstd -cf "$PK/openwrt/imagebuilder/$ibf" -C "$OUT/ib" openwrt-imagebuilder-x
+  (cd "$PK/openwrt/imagebuilder" && sha256sum "$ibf" | sed 's/  / */' > sha256sums)
+fi
+export EVIA_PACKAGES="$PK"
+ws="$OUT/buildroot-rpi5"; rm -rf "$ws/buildroot"
+(cd "$ws" && ./build.sh fetch > fetch.out 2>&1) && [ -f "$ws/buildroot/Makefile" ] && grep -q 'from the EVIA package' "$ws/fetch.out" \
+  && pass "buildroot: the sources come from the installed package" || fail "buildroot: fetch from the package (see $ws/fetch.out)"
+ws="$OUT/yocto-rpi5"; rm -rf "$ws/poky"
+(cd "$ws" && ./build.sh fetch > fetch.out 2>&1) && [ -f "$ws/poky/oe-init-build-env" ] && [ -d "$ws/meta-raspberrypi/conf" ] \
+  && pass "yocto: poky and meta-raspberrypi come from the installed package" || fail "yocto: fetch from the package (see $ws/fetch.out)"
+if command -v zstd > /dev/null; then
+  ws="$OUT/openwrt-rpi5"
+  (cd "$ws" && ./build.sh fetch > fetch.out 2>&1) && [ -f "$ws/imagebuilder/Makefile" ] && grep -q 'from the EVIA package' "$ws/fetch.out" \
+    && pass "openwrt: the Image Builder comes from the installed package, checked" || fail "openwrt: fetch from the package (see $ws/fetch.out)"
+  echo "broken" >> "$PK/openwrt/imagebuilder/$ibf"; rm -rf "$ws/imagebuilder"
+  (cd "$ws" && ./build.sh fetch > fetch.out 2>&1) && fail "openwrt: a damaged Image Builder was used" || pass "openwrt: a damaged Image Builder is refused"
+else
+  echo "skip  openwrt Image Builder from the package (no zstd)"
+fi
+unset EVIA_PACKAGES
+for v in BR_SHA POKY_SHA RPI_SHA OWRT_SHA RPI_COMMIT; do
+  val=$(sed -n "s/^$v=//p" packaging/fetch-toolchains.sh)
+  grep -rqF "$val" "$OUT"/*/build.sh && pass "the pin $v agrees with fetch-toolchains.sh" || fail "the pin $v ($val) is not in any build.sh"
+done
+
 # 5
 mkdir -p "$OUT/java/evia/paradigma"
 cat > "$OUT/java/evia/paradigma/DiskCheck.java" <<'EOF'

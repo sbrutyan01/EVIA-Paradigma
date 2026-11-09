@@ -131,8 +131,18 @@ about = {
     "oss-cad-suite": ("OSS CAD Suite", "FPGA", False,
                       "The open-source FPGA tools: yosys, nextpnr, gmpack, openFPGALoader, GHDL and more, for "
                       "Artix-7 and GateMate boards. Large: about 1 GB to download."),
+    "buildroot": ("Buildroot sources", "Linux images", False,
+                  "Buildroot 2026.02.3 (LTS), for Linux > Linux Images: small custom Linux systems for the BeagleBone "
+                  "Black and Raspberry Pi 5. The build downloads the toolchain and packages it needs itself."),
+    "yocto": ("Yocto sources", "Linux images", False,
+              "Yocto 5.0.21 Scarthgap (LTS): Poky and meta-raspberrypi, for Linux > Linux Images. The build "
+              "downloads what it needs itself; the first one takes hours and about 90 GB."),
+    "openwrt": ("OpenWrt", "Linux images", False,
+                "OpenWrt 25.12.6 for Linux > Linux Images: the sources, and on x86-64 the Image Builders for the "
+                "BeagleBone Black and Raspberry Pi 5, which make an image in minutes."),
 }
-order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "oss-cad-suite"]
+order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "oss-cad-suite",
+         "buildroot", "yocto", "openwrt"]
 pk = {}
 for line in open(manifest, encoding="utf-8"):
     i, plat, ver, f, size, sha, unpacked = line.rstrip("\n").split("\t")

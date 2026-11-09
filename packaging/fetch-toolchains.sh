@@ -8,6 +8,9 @@
 #   pic32prog/          pic32prog (PIC32 upload), built by this repository's pic32prog workflow
 #   arduino-cli/        arduino-cli (Arduino, ESP32 and STM32 sketches; the cores come through it)
 #   oss-cad-suite/      yosys, nextpnr, gmpack, openFPGALoader ... (FPGA)
+#   buildroot/          the Buildroot sources (Linux > Linux Images; Linux computers only)
+#   yocto/              Poky and meta-raspberrypi, the Yocto sources (Linux only)
+#   openwrt/            the OpenWrt sources, and on x86-64 the Image Builders for the two boards (Linux only)
 #
 #   [ONLY="openocd arduino-cli"] packaging/fetch-toolchains.sh linux|linux-arm64|windows|macos-arm64|macos-x64
 #
@@ -21,7 +24,7 @@
 # from microchip.com instead (Settings, PIC32, Get XC32).
 set -euo pipefail
 KIND="${1:?usage: fetch-toolchains.sh linux|linux-arm64|windows|macos-arm64|macos-x64}"
-ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd pic32prog arduino-cli oss-cad-suite}"
+ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd pic32prog arduino-cli oss-cad-suite buildroot yocto openwrt}"
 want() { case " $ONLY " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 OUT="${TOOLCHAINS_OUT:-build/toolchains}"
 CACHE="${TOOLCHAINS_CACHE:-build/toolchain-downloads}"
@@ -34,6 +37,18 @@ ARM_VER=15.2.1-1.1
 OCD_VER=0.12.0-7
 CLI_VER=1.5.1
 P32_COMMIT=4b4c8e5
+# the Linux build systems: the same pins as LinuxImages.java (scripts/check-linux.sh compares them)
+BR_VER=2026.02.3
+BR_SHA=5a59e7501b0b4ec52c41f4bfa79412320e0b37eae5f719605a258e8d0c6fc7fb
+YOCTO_VER=5.0.21
+POKY_URL=https://downloads.yoctoproject.org/releases/yocto/yocto-$YOCTO_VER/poky-4fb7016a07507683359ebd620f1951fd5ea44bfa.tar.bz2
+POKY_SHA=48e797d41bfbe52eafde62b4fe5231656e5233df811f33abb3b83b6413aa148b
+RPI_COMMIT=018d44467c4f09eb63f8ea5e86e85d755250cf89
+RPI_SHA=7a817e26da54421030aad9ea2f1612d5b6cb348c9f7d7f19fba6ac94f1c021d4
+OWRT_VER=25.12.6
+OWRT_SHA=f5ff8258572a82df960470608ceb025655a42bc94b8e7e2a77a4373db46263d9
+OWRT_IB_BBB=("omap/generic" "openwrt-imagebuilder-$OWRT_VER-omap-generic.Linux-x86_64.tar.zst" 68d7e42b84cad9a6f04b014a99ad010e4734023109725d7ccfc9b1fdb46cadbe)
+OWRT_IB_RPI=("bcm27xx/bcm2712" "openwrt-imagebuilder-$OWRT_VER-bcm27xx-bcm2712.Linux-x86_64.tar.zst" 5a379d82bf1e134fc328c01d3de53350c3bca4603be69615581d165bef3867ab)
 GH=https://github.com
 ARDUINO=https://downloads.arduino.cc/tools
 XPACK=$GH/xpack-dev-tools
@@ -66,6 +81,12 @@ case "$KIND" in
                CLI=("macOS_64bit.tar.gz" c982e940027996bea9901050e95fae99c59c1dcfee54beedecaf28141e7bf2e7)
                P32=("macos-x64.tar.gz" 8009d4bc75d07cc6ebb85b66d723243eb779f4de566301122a64b4022ae2c4c6) ;;
   *) echo "unknown platform $KIND" >&2; exit 2 ;;
+esac
+
+# Buildroot, Yocto and OpenWrt build on Linux only
+case "$KIND" in
+  linux|linux-arm64) ;;
+  *) ONLY=$(echo " $ONLY " | sed 's/ buildroot / /; s/ yocto / /; s/ openwrt / /') ;;
 esac
 
 case "$KIND" in
@@ -106,6 +127,9 @@ if [ "${VERSIONS_ONLY:-}" = 1 ]; then
     want pic32prog && echo "pic32prog git-$P32_COMMIT"
     want arduino-cli && echo "arduino-cli $CLI_VER"
     want oss-cad-suite && echo "oss-cad-suite $OSS_TAG"
+    want buildroot && echo "buildroot $BR_VER"
+    want yocto && echo "yocto $YOCTO_VER"
+    want openwrt && echo "openwrt $OWRT_VER"
     exit 0
 fi
 
@@ -264,5 +288,56 @@ Source:   https://github.com/YosysHQ/oss-cad-suite-build (build scripts; each to
 EOF
 echo "$OSS_TAG" > "$OUT/oss-cad-suite/EVIA-PACKAGE-VERSION"
 fi
+
+# ---- Buildroot: the release's source tarball, unpacked
+if want buildroot; then
+echo "== Buildroot" >&2
+br=$(fetch "https://buildroot.org/downloads/buildroot-$BR_VER.tar.xz" "$BR_SHA")
+unpack "$br" "$OUT/buildroot"
+echo "Buildroot $BR_VER (sources)" > "$OUT/buildroot/EVIA-VERSION"
+echo "$BR_VER" > "$OUT/buildroot/EVIA-PACKAGE-VERSION"
+fi
+
+# ---- Yocto: Poky (the release's tarball) and meta-raspberrypi (a pinned commit of scarthgap)
+if want yocto; then
+echo "== Yocto" >&2
+rm -rf "$OUT/yocto" && mkdir -p "$OUT/yocto"
+unpack "$(fetch "$POKY_URL" "$POKY_SHA")" "$OUT/yocto/poky"
+unpack "$(fetch "$GH/agherzan/meta-raspberrypi/archive/$RPI_COMMIT.tar.gz" "$RPI_SHA")" "$OUT/yocto/meta-raspberrypi"
+echo "Yocto $YOCTO_VER Scarthgap: Poky and meta-raspberrypi ${RPI_COMMIT:0:7} (sources)" > "$OUT/yocto/EVIA-VERSION"
+echo "$YOCTO_VER" > "$OUT/yocto/EVIA-PACKAGE-VERSION"
+fi
+
+# ---- OpenWrt: the sources, and on x86-64 the two boards' Image Builders (kept packed: build.sh unpacks one)
+if want openwrt; then
+echo "== OpenWrt" >&2
+rm -rf "$OUT/openwrt" && mkdir -p "$OUT/openwrt"
+unpack "$(fetch "$GH/openwrt/openwrt/archive/refs/tags/v$OWRT_VER.tar.gz" "$OWRT_SHA")" "$OUT/openwrt/source"
+what="sources"
+if [ "$KIND" = linux ]; then
+  mkdir -p "$OUT/openwrt/imagebuilder"
+  : > "$OUT/openwrt/imagebuilder/sha256sums"
+  for ib in "${OWRT_IB_BBB[*]}" "${OWRT_IB_RPI[*]}"; do
+    read -r t f h <<< "$ib"
+    cp "$(fetch "https://downloads.openwrt.org/releases/$OWRT_VER/targets/$t/$f" "$h")" "$OUT/openwrt/imagebuilder/$f"
+    echo "$h *$f" >> "$OUT/openwrt/imagebuilder/sha256sums"
+  done
+  what="sources and the Image Builders for the BeagleBone Black and Raspberry Pi 5"
+fi
+echo "OpenWrt $OWRT_VER ($what)" > "$OUT/openwrt/EVIA-VERSION"
+echo "$OWRT_VER" > "$OUT/openwrt/EVIA-PACKAGE-VERSION"
+fi
+
+for d in buildroot yocto openwrt; do
+  want $d || continue
+  cat > "$OUT/$d/SOURCES.txt" <<NOTE
+The sources of a Linux build system, passed on unchanged with EVIA Paradigma (Linux > Linux Images).
+Buildroot and OpenWrt: GNU GPL v2; Poky (Yocto): MIT, with BitBake under GPL v2; meta-raspberrypi: MIT.
+The software they build is downloaded by the build itself, from each project's own servers.
+  Buildroot $BR_VER  https://buildroot.org
+  Yocto $YOCTO_VER   https://www.yoctoproject.org, https://github.com/agherzan/meta-raspberrypi
+  OpenWrt $OWRT_VER  https://openwrt.org
+NOTE
+done
 
 du -sh "$OUT"/* >&2

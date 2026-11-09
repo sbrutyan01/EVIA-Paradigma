@@ -32,13 +32,52 @@ final class LinuxImages {
 
     static final String BUILDROOT_VERSION = "2026.02.3";      // the long-term-support series of 2026
     static final String YOCTO_BRANCH = "scarthgap";            // Yocto 5.0, long-term support until April 2028
+    static final String YOCTO_RELEASE = "5.0.21";
     static final String OPENWRT_VERSION = "25.12.6";
+
+    // The sources, pinned: the same files as the EVIA packages (packaging/fetch-toolchains.sh, which
+    // scripts/check-linux.sh compares with these). build.sh takes them from the installed package, or downloads them.
+    static final String BUILDROOT_URL = "https://buildroot.org/downloads/buildroot-" + BUILDROOT_VERSION + ".tar.xz";
+    static final String BUILDROOT_SHA = "5a59e7501b0b4ec52c41f4bfa79412320e0b37eae5f719605a258e8d0c6fc7fb";
+    static final String POKY_URL = "https://downloads.yoctoproject.org/releases/yocto/yocto-" + YOCTO_RELEASE
+            + "/poky-4fb7016a07507683359ebd620f1951fd5ea44bfa.tar.bz2";
+    static final String POKY_SHA = "48e797d41bfbe52eafde62b4fe5231656e5233df811f33abb3b83b6413aa148b";
+    static final String RPI_LAYER_COMMIT = "018d44467c4f09eb63f8ea5e86e85d755250cf89";   // meta-raspberrypi, scarthgap
+    static final String RPI_LAYER_URL = "https://github.com/agherzan/meta-raspberrypi/archive/" + RPI_LAYER_COMMIT + ".tar.gz";
+    static final String RPI_LAYER_SHA = "7a817e26da54421030aad9ea2f1612d5b6cb348c9f7d7f19fba6ac94f1c021d4";
+    static final String OPENWRT_URL = "https://github.com/openwrt/openwrt/archive/refs/tags/v" + OPENWRT_VERSION + ".tar.gz";
+    static final String OPENWRT_SHA = "f5ff8258572a82df960470608ceb025655a42bc94b8e7e2a77a4373db46263d9";
+
+    /** The EVIA package with the sources of a build system (Settings > Packages and Updates, or Get Sources). */
+    static String packageId(Sys s) {
+        return switch (s) {
+            case BUILDROOT -> "buildroot";
+            case YOCTO -> "yocto";
+            case OPENWRT, OPENWRT_SOURCE -> "openwrt";
+        };
+    }
+
+    /** True when the sources package of {@code s} is installed (for OpenWrt's Image Builder: with this board's). */
+    static boolean hasPackage(Sys s, Brd b) {
+        Path d = Packages.dir(packageId(s));
+        return switch (s) {
+            case BUILDROOT -> Files.isRegularFile(d.resolve("Makefile"));
+            case YOCTO -> Files.isRegularFile(d.resolve("poky/oe-init-build-env"))
+                    && (b.yoctoLayer == null || Files.isDirectory(d.resolve(b.yoctoLayer)));
+            case OPENWRT -> Files.isRegularFile(d.resolve("imagebuilder/" + imageBuilderFile(b)));
+            case OPENWRT_SOURCE -> Files.isRegularFile(d.resolve("source/Makefile"));
+        };
+    }
+
+    static String imageBuilderFile(Brd b) {
+        return "openwrt-imagebuilder-" + OPENWRT_VERSION + "-" + b.owrtTarget + "-" + b.owrtSubtarget + ".Linux-x86_64.tar.zst";
+    }
 
     /** The build systems. */
     enum Sys {
         BUILDROOT("buildroot", "Buildroot " + BUILDROOT_VERSION,
                 "Small and simple: one make builds the toolchain, kernel, BusyBox and the root file system. About 1 hour, 15 GB."),
-        YOCTO("yocto", "Yocto " + YOCTO_BRANCH + " (5.0 LTS)",
+        YOCTO("yocto", "Yocto " + YOCTO_RELEASE + " Scarthgap (LTS)",
                 "A full distribution with packages, the industry standard. The first build takes hours and needs about 90 GB."),
         OPENWRT("openwrt", "OpenWrt " + OPENWRT_VERSION + " (Image Builder)",
                 "A router and network OS with a web interface (LuCI). Prebuilt packages, so an image takes minutes. x86-64 Linux."),
@@ -265,8 +304,26 @@ final class LinuxImages {
                 .append("set -euo pipefail\ncd \"$(dirname \"$0\")\"\nWS=\"$PWD\"\n")
                 .append("JOBS=\"${JOBS:-$(nproc 2>/dev/null || echo 4)}\"\n")
                 .append("HOSTNAME_=").append(c.hostname()).append('\n')
+                .append("PKGS=\"${EVIA_PACKAGES:-").append(Packages.home().toAbsolutePath()).append("}\"   # the EVIA packages\n")
                 .append("say() { printf '\\n>> %s\\n' \"$*\"; }\n")
                 .append("die() { printf '\\n!! %s\\n' \"$*\" >&2; exit 1; }\n")
+                .append("""
+                        get() {   # url, sha256, file: dl/file, downloaded once and checked
+                          mkdir -p "$WS/dl"
+                          local f="$WS/dl/$3"
+                          if ! echo "$2  $f" | sha256sum -c --status 2> /dev/null; then
+                            say "Downloading $3"
+                            wget -q --show-progress -O "$f.part" "$1" || die "could not download $1"
+                            mv "$f.part" "$f"
+                          fi
+                          echo "$2  $f" | sha256sum -c --status || die "$3 is damaged (SHA-256); delete dl/$3 and try again"
+                        }
+                        unpack() {   # archive, folder: the archive's one top folder becomes the folder
+                          rm -rf "$2.tmp" && mkdir -p "$2.tmp"
+                          tar -xf "$1" -C "$2.tmp" --strip-components=1
+                          rm -rf "$2" && mv "$2.tmp" "$2"
+                        }
+                        """)
                 // the password is kept beside, never in this script; the image gets only its SHA-512 crypt hash
                 .append("root_hash() {\n")
                 .append("  [ -s \"$WS/secrets/root-password\" ] || return 1\n")
@@ -309,10 +366,14 @@ final class LinuxImages {
         frag.add("BR2_TARGET_ROOTFS_EXT2_SIZE=\\\"" + (c.python() || !c.packageList().isEmpty() ? "1G" : "256M") + "\\\"");
         s.append("BR=\"$WS/buildroot\"; OUT=\"$WS/output\"\n");
         s.append("do_fetch() {\n")
-                .append("  [ -d \"$BR/.git\" ] && { say \"Buildroot is already here\"; return; }\n")
-                .append("  say \"Downloading Buildroot ").append(BUILDROOT_VERSION).append("\"\n")
-                .append("  git clone --depth 1 -b ").append(BUILDROOT_VERSION)
-                .append(" https://gitlab.com/buildroot.org/buildroot.git \"$BR\"\n}\n");
+                .append("  if [ -f \"$BR/Makefile\" ]; then say \"Buildroot is already here\"; return; fi\n")
+                .append("  if [ -f \"$PKGS/buildroot/Makefile\" ]; then\n")
+                .append("    say \"Buildroot ").append(BUILDROOT_VERSION).append(" from the EVIA package ($PKGS/buildroot)\"\n")
+                .append("    cp -a \"$PKGS/buildroot\" \"$BR.tmp\" && mv \"$BR.tmp\" \"$BR\"\n")
+                .append("  else\n")
+                .append("    get ").append(BUILDROOT_URL).append(' ').append(BUILDROOT_SHA).append(" buildroot-").append(BUILDROOT_VERSION).append(".tar.xz\n")
+                .append("    unpack \"$WS/dl/buildroot-").append(BUILDROOT_VERSION).append(".tar.xz\" \"$BR\"\n")
+                .append("  fi\n}\n");
         s.append("do_configure() {\n")
                 .append("  say \"Configuring ").append(c.board().buildrootDefconfig).append("\"\n")
                 .append("  make -C \"$BR\" O=\"$OUT\" ").append(c.board().buildrootDefconfig).append('\n')
@@ -346,12 +407,24 @@ final class LinuxImages {
                 }
                 """);
         s.append("do_fetch() {\n")
-                .append("  [ -d poky/.git ] || { say \"Downloading Poky (Yocto ").append(YOCTO_BRANCH).append(")\"; ")
-                .append("git clone --depth 1 -b ").append(YOCTO_BRANCH).append(" https://git.yoctoproject.org/poky poky; }\n");
+                .append("  if [ ! -f poky/oe-init-build-env ]; then\n")
+                .append("    if [ -f \"$PKGS/yocto/poky/oe-init-build-env\" ]; then\n")
+                .append("      say \"Poky (Yocto ").append(YOCTO_RELEASE).append(") from the EVIA package\"\n")
+                .append("      cp -a \"$PKGS/yocto/poky\" poky.tmp && mv poky.tmp poky\n")
+                .append("    else\n")
+                .append("      get ").append(POKY_URL).append(' ').append(POKY_SHA).append(" poky-").append(YOCTO_RELEASE).append(".tar.bz2\n")
+                .append("      unpack \"$WS/dl/poky-").append(YOCTO_RELEASE).append(".tar.bz2\" poky\n")
+                .append("    fi\n  fi\n");
         if (b.yoctoLayer != null) {
-            s.append("  [ -d ").append(b.yoctoLayer).append("/.git ] || { say \"Downloading ").append(b.yoctoLayer).append("\"; ")
-                    .append("git clone --depth 1 -b ").append(YOCTO_BRANCH).append(" https://git.yoctoproject.org/")
-                    .append(b.yoctoLayer).append(' ').append(b.yoctoLayer).append("; }\n");
+            s.append("  if [ ! -d ").append(b.yoctoLayer).append("/conf ]; then\n")
+                    .append("    if [ -d \"$PKGS/yocto/").append(b.yoctoLayer).append("/conf\" ]; then\n")
+                    .append("      say \"").append(b.yoctoLayer).append(" from the EVIA package\"\n")
+                    .append("      cp -a \"$PKGS/yocto/").append(b.yoctoLayer).append("\" ").append(b.yoctoLayer).append(".tmp && mv ")
+                    .append(b.yoctoLayer).append(".tmp ").append(b.yoctoLayer).append('\n')
+                    .append("    else\n")
+                    .append("      get ").append(RPI_LAYER_URL).append(' ').append(RPI_LAYER_SHA).append(' ').append(b.yoctoLayer).append(".tar.gz\n")
+                    .append("      unpack \"$WS/dl/").append(b.yoctoLayer).append(".tar.gz\" ").append(b.yoctoLayer).append('\n')
+                    .append("    fi\n  fi\n");
         }
         s.append("  say \"The sources are here\"\n}\n");
         s.append("do_configure() {\n  env_\n");
@@ -437,12 +510,21 @@ final class LinuxImages {
                   [ -f "$IB/Makefile" ] && { say "The Image Builder is already here"; return; }
                   [ "$(uname -m)" = x86_64 ] || die "the OpenWrt Image Builder runs on x86-64 Linux only; choose OpenWrt (from source)"
                   mkdir -p dl
-                  say "Downloading the OpenWrt Image Builder ($FILE)"
-                  wget -q -O dl/sha256sums "$URL/sha256sums"
-                  wget -c -O "dl/$FILE" "$URL/$FILE"
-                  (cd dl && grep " \\*$FILE\\$" sha256sums | sha256sum -c -) || die "the download is damaged; delete dl/ and try again"
-                  mkdir -p "$IB"
-                  tar --zstd -xf "dl/$FILE" -C "$IB" --strip-components=1
+                  if [ -f "$PKGS/openwrt/imagebuilder/$FILE" ]; then
+                    say "The Image Builder from the EVIA package"
+                    (cd "$PKGS/openwrt/imagebuilder" && grep " \\*$FILE\\$" sha256sums | sha256sum -c --status) \\
+                      || die "the EVIA package's $FILE is damaged: install the openwrt package again"
+                    src="$PKGS/openwrt/imagebuilder/$FILE"
+                  else
+                    say "Downloading the OpenWrt Image Builder ($FILE)"
+                    wget -q -O dl/sha256sums "$URL/sha256sums"
+                    wget -c -O "dl/$FILE" "$URL/$FILE"
+                    (cd dl && grep " \\*$FILE\\$" sha256sums | sha256sum -c -) || die "the download is damaged; delete dl/ and try again"
+                    src="dl/$FILE"
+                  fi
+                  rm -rf "$IB.tmp" && mkdir -p "$IB.tmp"
+                  tar --zstd -xf "$src" -C "$IB.tmp" --strip-components=1
+                  mv "$IB.tmp" "$IB"
                 }
                 do_configure() {
                   write_files
@@ -464,9 +546,15 @@ final class LinuxImages {
         s.append("OW=\"$WS/openwrt\"\n");
         s.append(owrtFirstBoot(c));
         s.append("do_fetch() {\n")
-                .append("  if [ ! -d \"$OW/.git\" ]; then\n    say \"Downloading OpenWrt ").append(OPENWRT_VERSION).append("\"\n")
-                .append("    git clone --depth 1 -b v").append(OPENWRT_VERSION).append(" https://git.openwrt.org/openwrt/openwrt.git \"$OW\"\n")
-                .append("  fi\n  say \"Updating the package feeds\"\n")
+                .append("  if [ ! -f \"$OW/Makefile\" ]; then\n")
+                .append("    if [ -f \"$PKGS/openwrt/source/Makefile\" ]; then\n")
+                .append("      say \"OpenWrt ").append(OPENWRT_VERSION).append(" from the EVIA package\"\n")
+                .append("      cp -a \"$PKGS/openwrt/source\" \"$OW.tmp\" && mv \"$OW.tmp\" \"$OW\"\n")
+                .append("    else\n")
+                .append("      get ").append(OPENWRT_URL).append(' ').append(OPENWRT_SHA).append(" openwrt-").append(OPENWRT_VERSION).append(".tar.gz\n")
+                .append("      unpack \"$WS/dl/openwrt-").append(OPENWRT_VERSION).append(".tar.gz\" \"$OW\"\n")
+                .append("    fi\n  fi\n")
+                .append("  say \"Updating the package feeds (from the internet)\"\n")
                 .append("  (cd \"$OW\" && ./scripts/feeds update -a && ./scripts/feeds install -a)\n}\n");
         s.append("do_configure() {\n  write_files\n  ln -sfn ../files \"$OW/files\"\n  {\n")
                 .append("    echo 'CONFIG_TARGET_").append(b.owrtTarget).append("=y'\n")

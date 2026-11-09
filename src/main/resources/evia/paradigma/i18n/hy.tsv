@@ -380,3 +380,11 @@ A router and network OS with a web interface (LuCI). Prebuilt packages, so an im
 OpenWrt compiled from source: any package and kernel option (menuconfig). About 2 hours, 30 GB.	OpenWrt աղբյուրից՝ ցանկացած փաթեթ և միջուկի կարգավորում (menuconfig)։ Մոտ 2 ժամ, 30 ԳԲ։
 Hold the S2 (boot) button while powering on to boot from the SD card instead of the eMMC.	SD քարտից (ոչ eMMC-ից) բեռնվելու համար միացնելիս սեղմած պահեք S2 (boot) կոճակը։
 The serial console is the 3-pin UART connector between the HDMI ports (115200 baud, 3.3 V).	Սերիական վահանակը HDMI պորտերի միջև գտնվող 3-կոնտակտանի UART միակցիչն է (115200 բոդ, 3.3 Վ)։
+# 0.9.3: sources packages
+Get Sources...	Ստանալ աղբյուրները...
+Install the build system's sources from the EVIA package server (Settings > Packages and Updates)	Տեղադրել հավաքման համակարգի աղբյուրները EVIA փաթեթների սերվերից (Կարգավորումներ > Փաթեթներ և թարմացումներ)
+The sources are installed: Build Image uses them.	Աղբյուրները տեղադրված են․ «Հավաքել պատկերը»-ն կօգտագործի դրանք։
+Sources: the EVIA package %s is installed.	Աղբյուրներ՝ EVIA %s փաթեթը տեղադրված է։
+Sources: downloaded by Build Image the first time, or now with Get Sources (EVIA package %s).	Աղբյուրներ՝ ներբեռնվում են առաջին հավաքման ժամանակ կամ հիմա՝ «Ստանալ աղբյուրները» կոճակով (EVIA %s փաթեթ)։
+%s has no package %s for this computer (%s).	%1$s-ում այս համակարգչի համար (%3$s) %2$s փաթեթ չկա։
+is installed.	տեղադրված է։

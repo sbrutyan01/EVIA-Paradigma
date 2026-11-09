@@ -64,6 +64,32 @@ final class PackagesDialog {
         return Bundled.tool(t.folder, t.exe);
     }
 
+    /**
+     * Installs (or updates) package {@code id} from the EVIA server after asking, for a Get button that is not a
+     * tool's (the Linux build systems' sources). True when it is installed afterwards.
+     */
+    static boolean installPackage(Component parent, String id) {
+        List<Packages.Pkg> idx = fetchWithDialog(parent);
+        if (idx == null) return false;
+        Packages.Pkg pkg = null;
+        for (Packages.Pkg p : idx) if (p.id().equals(id)) pkg = p;
+        if (pkg == null || !pkg.available()) {
+            JOptionPane.showMessageDialog(parent, Text.t("%s has no package %s for this computer (%s).", Packages.repo(), id,
+                    Packages.platform()), Text.t("Packages"), JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        String have = Packages.installed().get(pkg.id());
+        String q = pkg.version().equals(have)
+                ? "<html>" + pkg.name() + " " + have + " " + Text.t("is installed.") + "<br><br>" + Text.t("Install it again?") + "</html>"
+                : "<html><b>" + pkg.name() + " " + pkg.version() + "</b><br>" + wrap(pkg.about()) + "<br><br>" + Text.t("Download")
+                  + ": " + Packages.mb(pkg.size()) + (pkg.unpacked() > 0 ? ", " + Text.t("installed") + ": " + Packages.mb(pkg.unpacked()) : "")
+                  + "<br>" + Text.t("From") + ": " + Packages.repo() + "<br>" + Text.t("Into") + ": " + Packages.dir(pkg.id()) + "</html>";
+        int a = JOptionPane.showConfirmDialog(parent, q, Text.t("Install %s", pkg.name()), JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        if (a != JOptionPane.OK_OPTION) return pkg.version().equals(have);
+        return runInstall(parent, List.of(pkg));
+    }
+
     /** Reads the index with a small "please wait" window; null (after saying why) when the server can't be reached. */
     private static List<Packages.Pkg> fetchWithDialog(Component parent) {
         Window owner = owner(parent);

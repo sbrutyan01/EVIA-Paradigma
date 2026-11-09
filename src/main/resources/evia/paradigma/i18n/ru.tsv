@@ -380,3 +380,11 @@ A router and network OS with a web interface (LuCI). Prebuilt packages, so an im
 OpenWrt compiled from source: any package and kernel option (menuconfig). About 2 hours, 30 GB.	OpenWrt из исходников: любые пакеты и параметры ядра (menuconfig). Около 2 часов, 30 ГБ.
 Hold the S2 (boot) button while powering on to boot from the SD card instead of the eMMC.	Чтобы загрузиться с SD-карты, а не с eMMC, держите кнопку S2 (boot) при включении питания.
 The serial console is the 3-pin UART connector between the HDMI ports (115200 baud, 3.3 V).	Последовательная консоль — 3-контактный разъём UART между портами HDMI (115200 бод, 3,3 В).
+# 0.9.3: sources packages
+Get Sources...	Получить исходники...
+Install the build system's sources from the EVIA package server (Settings > Packages and Updates)	Установить исходники системы сборки с сервера пакетов EVIA (Настройки > Пакеты и обновления)
+The sources are installed: Build Image uses them.	Исходники установлены: «Собрать образ» использует их.
+Sources: the EVIA package %s is installed.	Исходники: пакет EVIA %s установлен.
+Sources: downloaded by Build Image the first time, or now with Get Sources (EVIA package %s).	Исходники: скачиваются при первой сборке или сейчас кнопкой «Получить исходники» (пакет EVIA %s).
+%s has no package %s for this computer (%s).	На %s нет пакета %s для этого компьютера (%s).
+is installed.	установлен.

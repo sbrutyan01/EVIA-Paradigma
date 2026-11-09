@@ -114,6 +114,13 @@ final class LinuxWindow extends JFrame {
         JButton save = new JButton(Text.t("Save"));
         save.setToolTipText(Text.t("Write evia-linux.json and build.sh in the folder"));
         save.addActionListener(e -> save());
+        JButton sources = new JButton(Text.t("Get Sources..."));
+        sources.setToolTipText(Text.t("Install the build system's sources from the EVIA package server (Settings > Packages and Updates)"));
+        sources.addActionListener(e -> {
+            LinuxImages.Sys s = (LinuxImages.Sys) sys.getSelectedItem();
+            if (PackagesDialog.installPackage(this, LinuxImages.packageId(s))) status.setText(Text.t("The sources are installed: Build Image uses them."));
+            choicesChanged(false);
+        });
         JButton checkBtn = new JButton(Text.t("Check This Computer"));
         checkBtn.addActionListener(e -> check());
         JButton build = new JButton(Text.t("Build Image"));
@@ -137,9 +144,10 @@ final class LinuxWindow extends JFrame {
         term.addActionListener(e -> TerminalWindow.open(this));
         stop.setEnabled(false);
         stop.addActionListener(e -> stopProcess());
-        busyOff.addAll(List.of(save, checkBtn, build, menuconfig, write, sys, board));
-        JPanel buttons = row(save, checkBtn, new JSeparator(SwingConstants.VERTICAL), build, stop, menuconfig,
-                new JSeparator(SwingConstants.VERTICAL), write, openDir, term);
+        busyOff.addAll(List.of(save, sources, checkBtn, build, menuconfig, write, sys, board));
+        JPanel buttons = new JPanel(new GridLayout(2, 1));
+        buttons.add(row(save, sources, checkBtn, new JSeparator(SwingConstants.VERTICAL), build, stop, menuconfig));
+        buttons.add(row(write, openDir, term));
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(form, BorderLayout.CENTER);
@@ -278,7 +286,11 @@ final class LinuxWindow extends JFrame {
             }
             if (hostname.getText().matches("evia-(bbb|rpi5)")) hostname.setText("evia-" + b.key);
         }
-        note.setText("<html><div style='width:640px'><small>" + Text.t(s.note) + "<br>" + Text.t(b.bootNote) + "</small></div></html>");
+        String src = LinuxImages.hasPackage(s, b)
+                ? Text.t("Sources: the EVIA package %s is installed.", LinuxImages.packageId(s))
+                : Text.t("Sources: downloaded by Build Image the first time, or now with Get Sources (EVIA package %s).", LinuxImages.packageId(s));
+        note.setText("<html><div style='width:640px'><small>" + Text.t(s.note) + "<br>" + Text.t(b.bootNote) + "<br>" + src
+                + "</small></div></html>");
     }
 
     private static boolean sameKind(Path ws, LinuxImages.Sys s, LinuxImages.Brd b) {

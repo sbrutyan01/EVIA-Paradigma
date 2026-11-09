@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.2-blue" alt="version 0.9.2"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.3-blue" alt="version 0.9.3"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -63,12 +63,23 @@ itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.2-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.9.2-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.9.2-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.2_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.2_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.9.2-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.2-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.9.2.jar` | `java -jar evia-paradigma-0.9.2.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.3-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.9.3-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.9.3-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.3_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.3_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.9.3-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.3-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.9.3.jar` | `java -jar evia-paradigma-0.9.3.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.9.3
+
+[EVIA Paradigma v0.9.3](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.9.3) ([release notes](docs/release-notes/v0.9.3.md)):
+the Linux build systems as packages. An update package: 0.9.0 to 0.9.2 take it from **Settings → Packages and Updates…**.
+
+- **Buildroot** 2026.02.3, **Yocto** 5.0.21 (Poky and meta-raspberrypi) and **OpenWrt** 25.12.6 (the sources, and on
+  x86-64 the Image Builders for the BeagleBone Black and Raspberry Pi 5) in the package panel, group *Linux images*,
+  and from **Get Sources…** in the Linux Images window. Linux only (x64 and ARM64).
+- `build.sh` takes the sources from the installed package, and otherwise downloads the same pinned files and checks
+  their SHA-256, instead of cloning a branch. Yocto is now pinned to the 5.0.21 release.
 
 ### Release 0.9.2
 
