@@ -66,14 +66,31 @@ jobs:
           $ar rcs "$lib" hid.o
           ls -l "$lib"
 
+      # Windows: libusb from its own release, built for mingw (the old libusb-1.0.a in the repository does not link
+      # with today's mingw-w64)
+      - name: libusb (Windows)
+        if: matrix.plat == 'windows-x64'
+        run: |
+          curl -fsSL -o libusb.tar.bz2 https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2
+          echo "ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575  libusb.tar.bz2" | sha256sum -c
+          tar -xjf libusb.tar.bz2
+          cd libusb-1.0.27
+          ./configure --host=i686-w64-mingw32 --enable-static --disable-shared --prefix="$PWD/../usb" > ../libusb.log 2>&1 \
+            && make -j4 >> ../libusb.log 2>&1 && make install >> ../libusb.log 2>&1 \
+            || { echo "::error title=libusb::$(tail -25 ../libusb.log | tr '\n' '|')"; exit 1; }
+          ls -l ../usb/lib
+
       - name: pic32prog
         run: |
+          count=$(git rev-list HEAD --count)
           case "${{ matrix.plat }}" in
-            windows-x64) make -f make-mingw CC=i686-w64-mingw32-gcc LDFLAGS="-s -static" ;;
+            windows-x64) make -f make-mingw CC=i686-w64-mingw32-gcc LDFLAGS="-s -static" \
+                           CFLAGS="-Wall -O -DMINGW32 -Ihidapi/hidapi -DGITCOUNT='\"$count\"' -Iusb/include -Iusb/include/libusb-1.0 -DUSE_MPSSE" \
+                           LIBS="-Lhidapi/windows/.libs -lhidapi -lsetupapi usb/lib/libusb-1.0.a" > build.log 2>&1 ;;
             macos-*)     usb="$(brew --prefix libusb)/lib/libusb-1.0.a"
-                         make LIBS="-framework IOKit -framework CoreFoundation -framework Security -lobjc $usb" ;;
-            *)           make ;;
-          esac
+                         make LIBS="-framework IOKit -framework CoreFoundation -framework Security -lobjc $usb" > build.log 2>&1 ;;
+            *)           make > build.log 2>&1 ;;
+          esac || { cat build.log; echo "::error title=pic32prog::$(grep -E 'error|undefined' build.log | head -12 | tr '\n' '|')"; exit 1; }
           ls -l pic32prog*
 
       - name: Check it runs and needs nothing it does not bring
