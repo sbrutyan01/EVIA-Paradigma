@@ -45,23 +45,26 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq autoconf automake libtool pkg-config libusb-1.0-0-dev libudev-dev
+          sudo apt-get install -y -qq pkg-config libusb-1.0-0-dev libudev-dev
           [ "${{ matrix.plat }}" = windows-x64 ] && sudo apt-get install -y -qq gcc-mingw-w64-i686 binutils-mingw-w64-i686 || true
 
       - name: Tools (macOS)
         if: runner.os == 'macOS'
-        run: brew install autoconf automake libtool pkg-config libusb
+        run: brew install pkg-config libusb
 
+      # hidapi is one C file per system; it is compiled straight into the archive pic32prog's makefile links
+      # (its 2015 autotools scripts do not run on today's autoconf)
       - name: hidapi
         run: |
-          cd hidapi
-          ./bootstrap
-          if [ "${{ matrix.plat }}" = windows-x64 ]; then
-            ./configure --host=i686-w64-mingw32 --enable-static --disable-shared
-          else
-            ./configure --enable-static --disable-shared
-          fi
-          make
+          case "${{ matrix.plat }}" in
+            windows-x64) src=windows; lib=hidapi/windows/.libs/libhidapi.a; cc=i686-w64-mingw32-gcc; ar=i686-w64-mingw32-ar; flags="" ;;
+            macos-*)     src=mac;     lib=hidapi/mac/.libs/libhidapi.a;     cc=cc;  ar=ar; flags="" ;;
+            *)           src=libusb;  lib=hidapi/libusb/.libs/libhidapi-libusb.a; cc=gcc; ar=ar; flags="$(pkg-config --cflags libusb-1.0)" ;;
+          esac
+          mkdir -p "$(dirname "$lib")"
+          $cc -O2 -c -Ihidapi/hidapi $flags "hidapi/$src/hid.c" -o hid.o
+          $ar rcs "$lib" hid.o
+          ls -l "$lib"
 
       - name: pic32prog
         run: |
