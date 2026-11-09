@@ -88,8 +88,24 @@ def current(page, lang):
     return page.replace(f'hreflang="{lang}" lang="{lang}"', f'hreflang="{lang}" lang="{lang}" aria-current="page"', 1)
 
 
+def released(page):
+    """Drops the download rows for formats the published release does not carry yet.
+
+    The site is built for the newest *published* release, so a row added here in the commit that
+    introduces a new installer would link to an asset that release has none of - a 404 for whoever
+    clicks it. A row marked data-since="x.y.z" therefore appears only once the version the site is
+    built for has reached it. Called after translation, so the English strings are still on the page
+    when the translations are applied.
+    """
+    def keep(m):
+        since = tuple(int(n) for n in m.group(1).split("."))
+        return "" if tuple(int(n) for n in version.split(".")) < since else \
+            m.group(0).replace(f' data-since="{m.group(1)}"', "", 1)
+    return re.sub(r'<tr data-since="([0-9.]+)">.*?</tr>\n\s*', keep, page, flags=re.S)
+
+
 with open(out + "/index.html", "w") as f:
-    f.write(relink(current(html, "en")))
+    f.write(released(relink(current(html, "en"))))
 
 # Russian and Armenian files hold [English, translation] pairs. The newer locales hold translations
 # in the same order as the source strings in site/i18n/ru.json. Every English string must still be
@@ -117,7 +133,7 @@ for lang in ["ru", "hy", "de", "zh-CN", "zh-TW", "ja"]:
     page = re.sub(r'(src|href)="(?!https?:|#|mailto:|/)', r'\1="../', page)
     os.makedirs(f"{out}/{lang}", exist_ok=True)
     with open(f"{out}/{lang}/index.html", "w", encoding="utf-8") as f:
-        f.write(relink(current(page, lang)))
+        f.write(released(relink(current(page, lang))))
 shutil.rmtree(out + "/i18n")
 open(out + "/.nojekyll", "w").close()
 
