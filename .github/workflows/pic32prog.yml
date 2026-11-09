@@ -1,0 +1,138 @@
+name: pic32prog
+
+# Builds pic32prog (https://github.com/sergev/pic32prog, GPL v2) from a pinned commit for every platform
+# the EVIA package server serves, and publishes the archives as the release "pic32prog-<commit>" of this
+# repository. packaging/fetch-toolchains.sh pins those archives by SHA-256 and scripts/build-packages.sh
+# makes them the "pic32prog" package: the uploader of Language PIC32 C (PICkit2, PICkit3 in its PICkit2
+# mode, the chipKIT and Microchip bootloaders, FT2232 JTAG adapters, a Bus Pirate ...).
+#
+# The project publishes no builds of its own newer than 2016, hence this. libusb and hidapi are linked in
+# statically, so the program needs nothing beyond the system's own libraries.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/pic32prog.yml]
+
+permissions:
+  contents: write
+
+env:
+  COMMIT: 4b4c8e5f7175f7c18bc82b8d744ee9aef7b6e746
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04,     plat: linux-x64 }
+          - { os: ubuntu-22.04-arm, plat: linux-arm64 }
+          - { os: ubuntu-22.04,     plat: windows-x64 }
+          - { os: macos-15,         plat: macos-arm64 }
+          - { os: macos-15-intel,   plat: macos-x64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: sergev/pic32prog
+          ref: ${{ env.COMMIT }}
+          submodules: true
+          fetch-depth: 0
+
+      - name: Tools (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq autoconf automake libtool pkg-config libusb-1.0-0-dev libudev-dev
+          [ "${{ matrix.plat }}" = windows-x64 ] && sudo apt-get install -y -qq gcc-mingw-w64-i686 binutils-mingw-w64-i686 || true
+
+      - name: Tools (macOS)
+        if: runner.os == 'macOS'
+        run: brew install autoconf automake libtool pkg-config libusb
+
+      - name: hidapi
+        run: |
+          cd hidapi
+          ./bootstrap
+          if [ "${{ matrix.plat }}" = windows-x64 ]; then
+            ./configure --host=i686-w64-mingw32 --enable-static --disable-shared
+          else
+            ./configure --enable-static --disable-shared
+          fi
+          make
+
+      - name: pic32prog
+        run: |
+          case "${{ matrix.plat }}" in
+            windows-x64) make -f make-mingw CC=i686-w64-mingw32-gcc LDFLAGS="-s -static" ;;
+            macos-*)     usb="$(brew --prefix libusb)/lib/libusb-1.0.a"
+                         make LIBS="-framework IOKit -framework CoreFoundation -framework Security -lobjc $usb" ;;
+            *)           make ;;
+          esac
+          ls -l pic32prog*
+
+      - name: Check it runs and needs nothing it does not bring
+        run: |
+          case "${{ matrix.plat }}" in
+            windows-x64)
+              i686-w64-mingw32-objdump -p pic32prog.exe | grep "DLL Name" | tee dlls.txt
+              # only DLLs every Windows has
+              if grep -viE "kernel32|msvcrt|setupapi|user32|advapi32|ws2_32|hid\.dll|ole32|shell32|cfgmgr32" dlls.txt | grep -q .; then
+                echo "::error::pic32prog.exe needs a DLL that Windows does not have"; exit 1
+              fi ;;
+            macos-*)
+              otool -L pic32prog | tee libs.txt
+              if grep -E "/opt/homebrew|/usr/local" libs.txt; then echo "::error::linked against Homebrew"; exit 1; fi
+              ./pic32prog -h 2>&1 | head -5 || true ;;
+            *)
+              ldd pic32prog | tee libs.txt
+              if grep -q "libusb" libs.txt; then echo "::error::libusb is not linked in"; exit 1; fi
+              ./pic32prog -h 2>&1 | head -5 || true ;;
+          esac
+
+      - name: Archive
+        run: |
+          mkdir -p out/pic32prog/bin
+          if [ "${{ matrix.plat }}" = windows-x64 ]; then cp pic32prog.exe out/pic32prog/bin/; else cp pic32prog out/pic32prog/bin/; fi
+          cp COPYING.txt README.txt out/pic32prog/
+          cat > out/pic32prog/SOURCES.txt <<EOF
+          pic32prog, built by EVIA Paradigma's pic32prog workflow from https://github.com/sergev/pic32prog
+          at commit $COMMIT (git count $(git rev-list HEAD --count)), with libusb and hidapi linked in statically.
+          GNU GPL v2: the source is that commit, and the hidapi submodule at $(git -C hidapi rev-parse HEAD).
+          EOF
+          cd out
+          if [ "${{ matrix.plat }}" = windows-x64 ]; then
+            python3 -c "import shutil; shutil.make_archive('pic32prog-${COMMIT:0:7}-${{ matrix.plat }}', 'zip', '.', 'pic32prog')"
+          else
+            tar -czf "pic32prog-${COMMIT:0:7}-${{ matrix.plat }}.tar.gz" pic32prog
+          fi
+          ls -l
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pic32prog-${{ matrix.plat }}
+          path: out/pic32prog-*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: The release pic32prog-<commit>
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag="pic32prog-${COMMIT:0:7}"
+          (cd assets && sha256sum * | tee SHA256SUMS)
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" assets/* --clobber
+          else
+            gh release create "$tag" assets/* --prerelease --target main --title "pic32prog ${COMMIT:0:7} (EVIA build)" \
+              --notes "pic32prog from https://github.com/sergev/pic32prog at $COMMIT, built for the EVIA package server. GNU GPL v2. Not an EVIA Paradigma release."
+          fi
