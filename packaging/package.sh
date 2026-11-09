@@ -59,6 +59,12 @@ case "$KIND" in
       --about-url https://github.com/sbrutyan01/EVIA-Paradigma \
       --dest "$WORK/installer"
     mv "$WORK"/installer/*.deb "$OUT/evia-paradigma_${VERSION}_amd64.deb"
+    # And a generic AppImage from the same application image, for the distributions apt does not
+    # serve. Skipped rather than fatal when appimagetool cannot be fetched: a release should not
+    # be lost because one extra format could not be built.
+    if ! packaging/appimage.sh "$WORK/image/$NAME" "$VERSION"; then
+      echo "WARNING: the AppImage was not built; the .deb above is unaffected" >&2
+    fi
     ;;
 
   windows)

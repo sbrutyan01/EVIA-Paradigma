@@ -1,558 +1,570 @@
 [
- [
-  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
-  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, Python, прошивки и HDL</title>"
- ],
- [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
-  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из пятнадцати языков: от C99 до C++20 со сборкой Clang или GCC, Python 3, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
- ],
- [
-  "content=\"Draw a program as blocks. Pick the language it becomes.\"",
-  "content=\"Нарисуйте программу из блоков. Выберите язык, в который она превратится.\""
- ],
- [
-  ">Skip to content</a>",
-  ">Перейти к содержимому</a>"
- ],
- [
-  "aria-label=\"EVIA Paradigma home\"",
-  "aria-label=\"EVIA Paradigma: на главную\""
- ],
- [
-  "aria-label=\"Main\"",
-  "aria-label=\"Главное меню\""
- ],
- [
-  "<a href=\"#features\">Features</a>",
-  "<a href=\"#features\">Возможности</a>"
- ],
- [
-  "<a href=\"#tutorial\">Tutorial</a>",
-  "<a href=\"#tutorial\">Учебник</a>"
- ],
- [
-  "<a href=\"#download\">Download</a>",
-  "<a href=\"#download\">Скачать</a>"
- ],
- [
-  "<a href=\"#docs\">Docs</a>",
-  "<a href=\"#docs\">Документация</a>"
- ],
- [
-  "aria-label=\"Site language\"",
-  "aria-label=\"Язык сайта\""
- ],
- [
-  "<span class=\"site-language-label\">Language</span>",
-  "<span class=\"site-language-label\">Язык сайта</span>"
- ],
- [
-  "aria-label=\"Color theme\"",
-  "aria-label=\"Цветовая тема\""
- ],
- [
-  "</svg>Light</button>",
-  "</svg>Светлая</button>"
- ],
- [
-  "</svg>Dark</button>",
-  "</svg>Тёмная</button>"
- ],
- [
-  "<h1>Draw a program.<br>Pick its language.</h1>",
-  "<h1>Нарисуйте программу.<br>Выберите её язык.</h1>"
- ],
- [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
-  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, программа на Python 3, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
- ],
- [
-  "href=\"#download\">Download {{VERSION}}</a>",
-  "href=\"#download\">Скачать {{VERSION}}</a>"
- ],
- [
-  ">Source on GitHub</a>",
-  ">Исходный код на GitHub</a>"
- ],
- [
-  "Windows, macOS and Linux. Free and open source, MIT license.",
-  "Windows, macOS и Linux. Бесплатно, открытый исходный код, лицензия MIT."
- ],
- [
-  "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
-  "alt=\"Блок-схема: Start, Set n = 3, цикл For от 1 до n, который печатает шаг и вызывает c.add(i) у объекта Counter, затем c.show() и End.\""
- ],
- [
-  "aria-label=\"Generated code options\"",
-  "aria-label=\"Параметры генерируемого кода\""
- ],
- [
-  "aria-label=\"Language\"",
-  "aria-label=\"Язык\""
- ],
- [
-  "aria-label=\"Flow\"",
-  "aria-label=\"Поток управления\""
- ],
- [
-  "aria-label=\"Values\"",
-  "aria-label=\"Значения\""
- ],
- [
-  "aria-label=\"Program output\"",
-  "aria-label=\"Вывод программы\""
- ],
- [
-  "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
-  "data-note=\"Схема слева на {lang}: {fn} из сгенерированного файла ({lines} строк).\""
- ],
- [
-  ">The diagram on the left, as the generator writes it.</span>",
-  ">Схема слева в том виде, в каком её пишет генератор.</span>"
- ],
- [
-  "All 36 versions print the same output as the built-in interpreter.",
-  "Все 36 вариантов выводят то же, что и встроенный интерпретатор."
- ],
- [
-  "<h2 id=\"features-h\">What it does</h2>",
-  "<h2 id=\"features-h\">Что умеет программа</h2>"
- ],
- [
-  "<h3>Programs are blocks and wires</h3>",
-  "<h3>Программа — это блоки и связи</h3>"
- ],
- [
-  "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
-  "Start, Set, Input, Print, If/Else, For, While и Do-While — это блоки, а связи между ними задают порядок выполнения. Нажмите Run, и выполняемый блок подсвечивается. Выражения работают с числами и текстом: <code>&amp;&amp; || !</code>, сравнения и обычная арифметика."
- ],
- [
-  "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
-  "alt=\"Цикл For, собранный из блоков, и его вывод: step 1, step 2, step 3.\""
- ],
- [
-  "<h3>Classes, objects and modules</h3>",
-  "<h3>Классы, объекты и модули</h3>"
- ],
- [
-  "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
-  "У класса есть поля с начальными значениями, конструктор и методы, и каждый метод — отдельная блок-схема от Enter до Exit. Каждый Exit становится выходом вызывающего блока. Блоки с одинаковым именем объекта работают с одним объектом. Классы можно сохранить как модули (<code>.eviam</code>) и подключать в другие программы."
- ],
- [
-  "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
-  "alt=\"Окно класса Counter: вкладки полей, конструктора и методов; метод add(x) прибавляет x к this.total.\""
- ],
- [
-  "<h3>Eight C and C++ standards, two ways to write them</h3>",
-  "<h3>Восемь стандартов C и C++ и два стиля кода</h3>"
- ],
- [
-  "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
-  "Выберите на панели инструментов C99, C11, C17, C++98, C++11, C++14, C++17 или C++20. <b>Structured</b> пишет if/else, циклы и switch; <b>Goto</b> превращает каждый блок в метку, а каждую связь — в переход. Значения <b>Safe</b> хранят текст и сохраняют все проверки интерпретатора; значения <b>Fast</b> — это простые <code>double</code> без проверок во время выполнения. Среда выполнения C содержит только то, что использует программа, поэтому код компилируется без предупреждений с <code>-Wall -Wextra -Wpedantic -Werror</code>."
- ],
- [
-  "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
-  "alt=\"Окно кода: программа на C11, скомпилированная Clang и запущенная.\""
- ],
- [
-  "<h3>See the code of any block</h3>",
-  "<h3>Код любого блока</h3>"
- ],
- [
-  "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
-  "Щёлкните блок правой кнопкой и выберите View source code: откроется сгенерированный файл, в котором подсвечены именно те строки, в которые превратился блок. Так же это работает для целого метода или класса, на любом выбранном языке. Compile &amp; Run тут же собирает код с помощью Clang или GCC; в Windows программа сама устанавливает llvm-mingw или WinLibs GCC, Visual Studio не нужна."
- ],
- [
-  "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
-  "alt=\"Сгенерированный C++ с подсвеченными строками блока c.add(i), скомпилированный Clang и запущенный.\""
- ],
- [
-  "<h3>Arduino and ESP32 boards</h3>",
-  "<h3>Платы Arduino и ESP32</h3>"
- ],
- [
-  "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
-  "Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. UART, SPI, I2C и MQTT — тоже блоки. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе."
- ],
- [
-  "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
-  "alt=\"Пример blink с блоками Board в палитре; в выводе видно, как имитируемый пин 13 переключается каждые 500 мс.\""
- ],
- [
-  "<h3>Bare metal, down to the registers</h3>",
-  "<h3>Без Arduino, прямо на регистрах</h3>"
- ],
- [
-  "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
-  "AVR C пишет программу для ATmega328P, ATmega2560 или ATmega32U4 без ядра Arduino: порты, таймеры, ШИМ, АЦП и UART настраиваются на понятном C. avr-gcc собирает её примерно в 4 КБ, а Upload загружает на плату через avrdude. Каждый пример запускается в симуляторе simavr и сверяется с интерпретатором."
- ],
- [
-  "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
-  "Новое в 0.5: PIC32 C делает то же для девяти микросхем PIC32MX с Microchip XC32, а UART, SPI и I2C стали блоками, в Run и во всех трёх языках для плат. Код PIC32 проверен по заголовочным файлам Microchip, но ещё не собирался XC32 и не запускался на микросхеме."
- ],
- [
-  "New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.",
-  "Новое в 0.6: поддержка FPGA. SystemVerilog, Verilog-2001 и VHDL превращают ту же схему в аппаратуру для Artix-7 (Nexys A7, Arty A7, Basys 3) и плат Cologne Chip GateMate. Результат моделировался в сравнении с Run и синтезировался открытыми средствами, но не проходил через Vivado и не загружался в плату."
- ],
- [
-  "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
-  "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
- ],
- [
-  "<h3>Zoom and move the canvas with the mouse</h3>",
-  "<h3>Масштаб и перемещение холста мышью</h3>"
- ],
- [
-  "Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.",
-  "Прокрутите колесо над схемой, чтобы менять масштаб от 25% до 300% в сторону указателя. Блоки, текст и связи остаются чёткими, а редактировать можно при любом масштабе. Ctrl+0 возвращает 100%, Ctrl+9 вписывает всю схему. Новое в 0.6.1: удерживайте среднюю кнопку мыши и перетаскивайте, чтобы двигать холст — с пустого места или с блока."
- ],
- [
-  "alt=\"The diagram zoomed in to 161 percent.\"",
-  "alt=\"Схема в масштабе 161%.\""
- ],
- [
-  "<h3>Projects, Git and GitHub</h3>",
-  "<h3>Проекты, Git и GitHub</h3>"
- ],
- [
-  "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
-  "File, New Project создаёт папку с программой, папкой модулей, README и Git-репозиторием. Commit, push и pull — в меню Git; Connect to GitHub публикует проект под той учётной записью, которую уже использует ваш git. Программа никогда не запрашивает и не хранит пароль."
- ],
- [
-  "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
-  "alt=\"Окно Connect to GitHub с именем репозитория sbrutyan01/CounterDemo.\""
- ],
- [
-  "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
-  "<b>Vim повсюду.</b> В полях кода, окне кода и сообщениях коммитов работают клавиши Vim; Edit in Vim открывает настоящий Vim."
- ],
- [
-  "<b>Command line.</b>",
-  "<b>Командная строка.</b>"
- ],
- [
-  "</code> and <code>evia --gen",
-  "</code> и <code>evia --gen"
- ],
- [
-  "</code> for scripts and Makefiles.",
-  "</code> для скриптов и Makefile."
- ],
- [
-  "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
-  "<b>Clang или GCC.</b> Переключаются в Settings; в Windows любой из них устанавливается сам, Visual Studio не нужна."
- ],
- [
-  "<b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.",
-  "<b>Тёмная тема.</b> Программа выглядит как IntelliJ IDEA, со шрифтами Inter и JetBrains Mono. View, Theme выбирает светлую, тёмную или системную."
- ],
- [
-  "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.",
-  "<b>Встроенное руководство.</b> Help, Guide (F1) описывает каждый блок, выражения, возможности классов, сочетания клавиш и клавиши Vim, на английском, русском и армянском."
- ],
- [
-  "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
-  "<h2 id=\"tutorial-h\">Первая программа за восемь шагов</h2>"
- ],
- [
-  "The full walk-through, with every screenshot, is a PDF in seven languages: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. It is also under Help, Tutorial in the app, and in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
-  "Полный пошаговый учебник со всеми снимками экрана доступен в PDF на семи языках: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. Он доступен в программе в меню Help, Tutorial и в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>."
- ],
- [
-  "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
-  "<h3>Создайте проект</h3><p>File, New Project. Оставьте отмеченным Create a Git repository.</p>"
- ],
- [
-  "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
-  "<h3>Соберите цикл</h3><p>Перетащите Set, For и Print на холст, соедините их и нажмите Run.</p>"
- ],
- [
-  "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
-  "<h3>Создайте класс</h3><p>Edit, New Class: задайте классу Counter поля total и calls.</p>"
- ],
- [
-  "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
-  "<h3>Используйте класс</h3><p>Перетащите Counter.add(x) в цикл и назовите объект c.</p>"
- ],
- [
-  "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
-  "<h3>Посмотрите код</h3><p>Правый щелчок по блоку, View source code.</p>"
- ],
- [
-  "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
-  "<h3>Выберите язык</h3><p>Переключитесь на C11 или любой стандарт C++, и код сгенерируется заново.</p>"
- ],
- [
-  "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
-  "<h3>Коммит и публикация</h3><p>Git, Commit, затем Connect to GitHub.</p>"
- ],
- [
-  "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
-  "<h3>Что дальше</h3><p>Модули, примеры и руководство (F1).</p>"
- ],
- [
-  "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
-  "<h2 id=\"download-h\">Скачать EVIA Paradigma {{VERSION}}</h2>"
- ],
- [
-  "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
-  "Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама); для сгенерированного Python нужен только Python 3.8 или новее."
- ],
- [
-  "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
-  "<th scope=\"col\">Система</th><th scope=\"col\">Файл</th><th scope=\"col\">Примечания</th>"
- ],
- [
-  "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
-  "Пока без цифровой подписи: в предупреждении SmartScreen выберите «Подробнее», затем «Выполнить в любом случае»."
- ],
- [
-  "<td>macOS, Apple Silicon</td>",
-  "<td>macOS, Apple Silicon</td>"
- ],
- [
-  "<td>macOS, Intel</td>",
-  "<td>macOS, Intel</td>"
- ],
- [
-  "Not notarized by Apple yet: if macOS won't open it, choose Open Anyway in System Settings, Privacy &amp; Security.",
-  "Пока не заверено Apple: если macOS не открывает программу, нажмите «Всё равно открыть» в Системных настройках, раздел «Конфиденциальность и безопасность»."
- ],
- [
-  "<td>Any system with Java 25</td>",
-  "<td>Любая система с Java 25</td>"
- ],
- [
-  ">All releases and release notes</a>",
-  ">Все выпуски и примечания к ним</a>"
- ],
- [
-  "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
-  "<h2 id=\"tested-h\">Проверено собственным интерпретатором</h2>"
- ],
- [
-  "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
-  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 36 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками (Python — проверяет), запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
- ],
- [
-  "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
-  "<th scope=\"col\">Где</th><th scope=\"col\">Компилятор</th><th scope=\"col\">Совпадает с интерпретатором</th>"
- ],
- [
-  "<td>Linux, all 8 C and C++ standards</td>",
-  "<td>Linux, все 8 стандартов C и C++</td>"
- ],
- [
-  "<td>416 of 416</td>",
-  "<td>416 из 416</td>"
- ],
- [
-  "<td>260 of 260</td>",
-  "<td>260 из 260</td>"
- ],
- [
-  "<td>30 of 30</td>",
-  "<td>30 из 30</td>"
- ],
- [
-  "<td>15 of 15</td>",
-  "<td>15 из 15</td>"
- ],
- [
-  ", static</td>",
-  ", статически</td>"
- ],
- [
-  "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
-  "<td>Примеры для плат, AVR C без Arduino в simavr (ATmega328P, 2560, 32U4)</td>"
- ],
- [
-  "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
-  "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
- ],
- [
-  "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. The MQTT client is compiled on the build machine and run against a real broker. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
-  "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Клиент MQTT собирается на машине сборки и проверяется на настоящем брокере. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
- ],
- [
-  "<h2 id=\"docs-h\">Documentation</h2>",
-  "<h2 id=\"docs-h\">Документация</h2>"
- ],
- [
-  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
-  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.ru.md\">Учебник на русском</a> и <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (на английском): возможности, меню, языки, командная строка</li>"
- ],
- [
-  ">Release notes</a> for every version; what's new in",
-  ">Примечания к выпускам</a> для каждой версии; что нового в"
- ],
- [
-  ">Example programs</a>, also under File, Open Example (board programs in",
-  ">Примеры программ</a>, также в File, Open Example (программы для плат — в"
- ],
- [
-  ">Report a problem or ask for a feature</a>",
-  ">Сообщить о проблеме или предложить идею</a>"
- ],
- [
-  "Copyright 2026 Sergey Brutyan. Released under the",
-  "© 2026 Сергей Брутян. Распространяется по"
- ],
- [
-  ">MIT license</a>.",
-  ">лицензии MIT</a>."
- ],
- [
-  "Your first FPGA program in four steps",
-  "Ваша первая программа для FPGA в четыре шага"
- ],
- [
-  "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
-  "Та же схема мигания становится аппаратурой для плат Artix-7 и GateMate. Полное руководство, шаг 10, в PDF выше, а в справке есть раздел про FPGA (F1)."
- ],
- [
-  "Pick a language and a board",
-  "Выберите язык и плату"
- ],
- [
-  "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
-  "Язык: SystemVerilog, Verilog-2001 или VHDL. Плата: Nexys A7, Arty A7, Basys 3 или плата GateMate."
- ],
- [
-  "Open the Blink example",
-  "Откройте пример Blink"
- ],
- [
-  "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
-  "Файл, Открыть пример, FPGA Boards, Blink. Выводы задаются именами: LED0, SW3, BTNC, JA1."
- ],
- [
-  "Generate code",
-  "Создайте код"
- ],
- [
-  "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
-  "Нажмите F7. Ограничения выводов лежат в первом комментарии, а командная строка записывает их в отдельный файл."
- ],
- [
-  "Build and upload",
-  "Сборка и загрузка"
- ],
- [
-  "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
-  "Vivado или открытые средства, выбор в Настройках. Загрузка прошивает плату."
- ],
- [
-  "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
-  "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
- ],
- [
-  "<h3>One diagram, fifteen languages</h3>",
-  "<h3>Одна схема — пятнадцать языков</h3>"
- ],
- [
-  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
-  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
- ],
- [
-  "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
-  "Открытое меню Code Language and Mode: от C99 до C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения."
- ],
- [
-  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
-  "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">Примеры программ для FPGA</a>, также в File, Open Example, FPGA Boards</li>"
- ],
- [
-  "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
-  "<tr><td>Проекты для FPGA в моделировании (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 из 27</td></tr>"
- ],
- [
-  "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in any of seven languages.</li>",
-  "<li><b>Учебник в PDF.</b> Help, Tutorial открывает всё руководство на любом из семи языков.</li>"
- ],
- [
-  "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.",
-  "Новое в 0.6.5: MQTT. Пять блоков публикуют числа программы брокеру и читают команды обратно: на PIC32MX с модулем WiFi на UART2, на ESP32 с собственным WiFi и в Run — брокеру на вашем компьютере. Сгенерированный клиент проверяется на настоящем брокере; ни модуля WiFi, ни микросхемы в этой проверке не было. К нему идут два примера, один — для PIC32 Ethernet Starter Kit II. Новое в 0.6.7: MQTT может уходить и через собственный порт Ethernet чипов MX695, MX795 и стартового набора — как приложение для MPLAB X Harmony; это экспериментально и ещё не собиралось с настоящей Harmony. Сам интерфейс тоже теперь на английском, русском или армянском — выбирается в Настройках."
- ],
- [
-  "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
-  "<li><b>Настройки скачивают инструменты.</b> arduino-cli, avr-gcc и набор для FPGA загружаются в собственную папку приложения; XC32 открывает страницу Microchip.</li>"
- ],
- [
-  "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
-  "<p>Новое в 0.6.9: Python 3. Та же схема превращается в один файл .py, который работает в Python 3.8 и новее без установки чего-либо ещё, а кнопка Run в окне кода запускает его. Вывод, ошибки и код завершения совпадают с интерпретатором, как у каждого стандарта C и C++.</p>"
- ],
- [
-  "<h3>Python 3, nothing to compile</h3>",
-  "<h3>Python 3 — без компиляции</h3>"
- ],
- [
-  "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
-  "Выберите Python 3, и та же схема станет одним файлом .py, который работает в Python 3.8 и новее без пакетов и без компилятора. Классы становятся классами Python, а переменные программы — глобальными переменными модуля; Run в окне кода запускает программу, а текст, введённый в Input, передаётся ей. В Python нет goto, поэтому <b>Structured</b> пишет if/else и циклы while, а <b>Goto</b> превращается в небольшой конечный автомат с одной веткой на блок. Print, Input, запись чисел и все сообщения об ошибках — те же, что у интерпретатора."
- ],
- [
-  "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
-  "alt=\"Программа из учебника на Python 3 в окне кода, запущенная в Python 3.13; строки блока c.add(i) подсвечены.\""
- ],
- [
-  "Your first Python program in four steps",
-  "Ваша первая программа на Python в четыре шага"
- ],
- [
-  "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
-  "Любая схема работает как программа на Python. Нужен только Python 3.8 или новее с python.org, а EVIA Paradigma находит его сама."
- ],
- [
-  "Choose Python 3",
-  "Выберите Python 3"
- ],
- [
-  "Pick Python 3 in the Language list, in the toolbar or in the code window.",
-  "Выберите Python 3 в списке Language на панели инструментов или в окне кода."
- ],
- [
-  "Generate the Python code",
-  "Создайте код на Python"
- ],
- [
-  "Press F7. Right-click a block and choose View source code to see the lines it became.",
-  "Нажмите F7. Щёлкните блок правой кнопкой и выберите View source code, чтобы увидеть, в какие строки он превратился."
- ],
- [
-  "Run it in the code window",
-  "Запустите в окне кода"
- ],
- [
-  "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
-  "Нажмите Run. Текст, введённый в Input, передаётся программе, а ошибка останавливает её с тем же сообщением, что и в редакторе."
- ],
- [
-  "Keep the .py file",
-  "Сохраните файл .py"
- ],
- [
-  "Save writes the file, and it runs anywhere with python3 program.py.",
-  "Save записывает файл, и он запускается где угодно командой python3 program.py."
- ],
- [
-  "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
-  "Settings, Python хранит команду: python3, лаунчер py в Windows или полный путь. Detect ищет его заново, а Check показывает версию."
- ],
- [
-  "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
-  "<li><b>Python находится сам.</b> Settings, Python использует python3 или лаунчер py в Windows без настройки; Check показывает версию.</li>"
- ],
- [
-  "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
-  "<td>Linux, Python 3: все примеры и тесты, оба потока управления, оба режима значений</td>"
- ],
- [
-  "<td>52 of 52</td>",
-  "<td>52 из 52</td>"
- ],
- [
-  "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
-  "<p>Новое в 0.7.0: настройки находятся в меню File, по странице на каждое семейство устройств — общие, C, C++ и Python, Arduino, ESP32, AVR C, PIC32 и FPGA, — а в Open Example есть отдельные подменю Arduino, ESP32 и PIC32, которые сразу выбирают нужный язык и плату.</p>"
- ]
+  [
+    "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
+    "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, Python, прошивки и HDL</title>"
+  ],
+  [
+    "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+    "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из пятнадцати языков: от C99 до C++20 со сборкой Clang или GCC, Python 3, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
+  ],
+  [
+    "content=\"Draw a program as blocks. Pick the language it becomes.\"",
+    "content=\"Нарисуйте программу из блоков. Выберите язык, в который она превратится.\""
+  ],
+  [
+    ">Skip to content</a>",
+    ">Перейти к содержимому</a>"
+  ],
+  [
+    "aria-label=\"EVIA Paradigma home\"",
+    "aria-label=\"EVIA Paradigma: на главную\""
+  ],
+  [
+    "aria-label=\"Main\"",
+    "aria-label=\"Главное меню\""
+  ],
+  [
+    "<a href=\"#features\">Features</a>",
+    "<a href=\"#features\">Возможности</a>"
+  ],
+  [
+    "<a href=\"#tutorial\">Tutorial</a>",
+    "<a href=\"#tutorial\">Учебник</a>"
+  ],
+  [
+    "<a href=\"#download\">Download</a>",
+    "<a href=\"#download\">Скачать</a>"
+  ],
+  [
+    "<a href=\"#docs\">Docs</a>",
+    "<a href=\"#docs\">Документация</a>"
+  ],
+  [
+    "aria-label=\"Site language\"",
+    "aria-label=\"Язык сайта\""
+  ],
+  [
+    "<span class=\"site-language-label\">Language</span>",
+    "<span class=\"site-language-label\">Язык сайта</span>"
+  ],
+  [
+    "aria-label=\"Color theme\"",
+    "aria-label=\"Цветовая тема\""
+  ],
+  [
+    "</svg>Light</button>",
+    "</svg>Светлая</button>"
+  ],
+  [
+    "</svg>Dark</button>",
+    "</svg>Тёмная</button>"
+  ],
+  [
+    "<h1>Draw a program.<br>Pick its language.</h1>",
+    "<h1>Нарисуйте программу.<br>Выберите её язык.</h1>"
+  ],
+  [
+    "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+    "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, программа на Python 3, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
+  ],
+  [
+    "href=\"#download\">Download {{VERSION}}</a>",
+    "href=\"#download\">Скачать {{VERSION}}</a>"
+  ],
+  [
+    ">Source on GitHub</a>",
+    ">Исходный код на GitHub</a>"
+  ],
+  [
+    "Windows, macOS and Linux. Free and open source, MIT license.",
+    "Windows, macOS и Linux. Бесплатно, открытый исходный код, лицензия MIT."
+  ],
+  [
+    "alt=\"Block diagram: Start, Set n = 3, a For loop from 1 to n that prints the step and calls c.add(i) on a Counter object, then c.show() and End.\"",
+    "alt=\"Блок-схема: Start, Set n = 3, цикл For от 1 до n, который печатает шаг и вызывает c.add(i) у объекта Counter, затем c.show() и End.\""
+  ],
+  [
+    "aria-label=\"Generated code options\"",
+    "aria-label=\"Параметры генерируемого кода\""
+  ],
+  [
+    "aria-label=\"Language\"",
+    "aria-label=\"Язык\""
+  ],
+  [
+    "aria-label=\"Flow\"",
+    "aria-label=\"Поток управления\""
+  ],
+  [
+    "aria-label=\"Values\"",
+    "aria-label=\"Значения\""
+  ],
+  [
+    "aria-label=\"Program output\"",
+    "aria-label=\"Вывод программы\""
+  ],
+  [
+    "data-note=\"The diagram on the left as {lang}: {fn} from the generated {lines}-line file.\"",
+    "data-note=\"Схема слева на {lang}: {fn} из сгенерированного файла ({lines} строк).\""
+  ],
+  [
+    ">The diagram on the left, as the generator writes it.</span>",
+    ">Схема слева в том виде, в каком её пишет генератор.</span>"
+  ],
+  [
+    "All 36 versions print the same output as the built-in interpreter.",
+    "Все 36 вариантов выводят то же, что и встроенный интерпретатор."
+  ],
+  [
+    "<h2 id=\"features-h\">What it does</h2>",
+    "<h2 id=\"features-h\">Что умеет программа</h2>"
+  ],
+  [
+    "<h3>Programs are blocks and wires</h3>",
+    "<h3>Программа — это блоки и связи</h3>"
+  ],
+  [
+    "Start, Set, Input, Print, If/Else, For, While and Do-While are blocks; the wires between them are the control flow. Press Run and the active block lights up as it executes. Expressions work on numbers and text, with <code>&amp;&amp; || !</code>, comparisons and the usual arithmetic.",
+    "Start, Set, Input, Print, If/Else, For, While и Do-While — это блоки, а связи между ними задают порядок выполнения. Нажмите Run, и выполняемый блок подсвечивается. Выражения работают с числами и текстом: <code>&amp;&amp; || !</code>, сравнения и обычная арифметика."
+  ],
+  [
+    "alt=\"A For loop wired from blocks, and its output: step 1, step 2, step 3.\"",
+    "alt=\"Цикл For, собранный из блоков, и его вывод: step 1, step 2, step 3.\""
+  ],
+  [
+    "<h3>Classes, objects and modules</h3>",
+    "<h3>Классы, объекты и модули</h3>"
+  ],
+  [
+    "A class has fields with initial values, a constructor and methods, and each method is its own block diagram from Enter to Exit. Every Exit becomes an output of the calling block. Blocks that use the same object name share one object. Save classes as modules (<code>.eviam</code>) and import them into other programs.",
+    "У класса есть поля с начальными значениями, конструктор и методы, и каждый метод — отдельная блок-схема от Enter до Exit. Каждый Exit становится выходом вызывающего блока. Блоки с одинаковым именем объекта работают с одним объектом. Классы можно сохранить как модули (<code>.eviam</code>) и подключать в другие программы."
+  ],
+  [
+    "alt=\"Class window for Counter: tabs for fields, constructor and methods; the add(x) method adds x to this.total.\"",
+    "alt=\"Окно класса Counter: вкладки полей, конструктора и методов; метод add(x) прибавляет x к this.total.\""
+  ],
+  [
+    "<h3>Eight C and C++ standards, two ways to write them</h3>",
+    "<h3>Восемь стандартов C и C++ и два стиля кода</h3>"
+  ],
+  [
+    "Pick C99, C11, C17, C++98, C++11, C++14, C++17 or C++20 from the toolbar. <b>Structured</b> writes if/else, loops and switch; <b>Goto</b> turns every block into a label and every wire into a jump. <b>Safe</b> values keep text and every check of the interpreter; <b>Fast</b> values are plain <code>double</code>s with no runtime checks. The C runtime contains only what your program uses, so it compiles cleanly with <code>-Wall -Wextra -Wpedantic -Werror</code>.",
+    "Выберите на панели инструментов C99, C11, C17, C++98, C++11, C++14, C++17 или C++20. <b>Structured</b> пишет if/else, циклы и switch; <b>Goto</b> превращает каждый блок в метку, а каждую связь — в переход. Значения <b>Safe</b> хранят текст и сохраняют все проверки интерпретатора; значения <b>Fast</b> — это простые <code>double</code> без проверок во время выполнения. Среда выполнения C содержит только то, что использует программа, поэтому код компилируется без предупреждений с <code>-Wall -Wextra -Wpedantic -Werror</code>."
+  ],
+  [
+    "alt=\"Code window showing the program as C11, compiled with Clang and run.\"",
+    "alt=\"Окно кода: программа на C11, скомпилированная Clang и запущенная.\""
+  ],
+  [
+    "<h3>See the code of any block</h3>",
+    "<h3>Код любого блока</h3>"
+  ],
+  [
+    "Right-click a block and choose View source code: the generated file opens with exactly the lines that block became highlighted. It works for a whole method or class too, in whichever language you chose. Compile &amp; Run builds it with Clang or GCC right there; on Windows the app installs llvm-mingw or WinLibs GCC for you, no Visual Studio needed.",
+    "Щёлкните блок правой кнопкой и выберите View source code: откроется сгенерированный файл, в котором подсвечены именно те строки, в которые превратился блок. Так же это работает для целого метода или класса, на любом выбранном языке. Compile &amp; Run тут же собирает код с помощью Clang или GCC; в Windows программа сама устанавливает llvm-mingw или WinLibs GCC, Visual Studio не нужна."
+  ],
+  [
+    "alt=\"Generated C++ with the lines of the c.add(i) block highlighted, compiled with Clang and run.\"",
+    "alt=\"Сгенерированный C++ с подсвеченными строками блока c.add(i), скомпилированный Clang и запущенный.\""
+  ],
+  [
+    "<h3>Arduino and ESP32 boards</h3>",
+    "<h3>Платы Arduino и ESP32</h3>"
+  ],
+  [
+    "Pin Mode, Digital Write and Read, Analog Read and Write, Delay and Millis are blocks too. One Arduino sketch builds for the Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini, and for the ESP32, ESP32-S2, -S3, -C3, -C6 and -H2. UART, SPI, I2C and MQTT are blocks as well. Run simulates an Uno on your computer, with every pin change in the output, so you can try a program before there is a board on your desk.",
+    "Pin Mode, Digital Write и Read, Analog Read и Write, Delay и Millis — тоже блоки. Один скетч Arduino собирается для Uno, Nano, Mega 2560, Leonardo, Micro и Pro Mini, а также для ESP32, ESP32-S2, -S3, -C3, -C6 и -H2. UART, SPI, I2C и MQTT — тоже блоки. Run имитирует Uno прямо на компьютере и показывает каждое изменение пинов, так что программу можно опробовать ещё до того, как плата окажется на столе."
+  ],
+  [
+    "alt=\"The blink example with the Board blocks in the palette; the output shows the simulated pin 13 switching every 500 ms.\"",
+    "alt=\"Пример blink с блоками Board в палитре; в выводе видно, как имитируемый пин 13 переключается каждые 500 мс.\""
+  ],
+  [
+    "<h3>Bare metal, down to the registers</h3>",
+    "<h3>Без Arduino, прямо на регистрах</h3>"
+  ],
+  [
+    "AVR C writes the program for the ATmega328P, ATmega2560 or ATmega32U4 without the Arduino core: ports, timers, PWM, the ADC and the UART are set up in plain C that you can read. avr-gcc builds it in about 4 KB, and Upload sends it to the board with avrdude. Every example is run in the simavr simulator and checked against the interpreter.",
+    "AVR C пишет программу для ATmega328P, ATmega2560 или ATmega32U4 без ядра Arduino: порты, таймеры, ШИМ, АЦП и UART настраиваются на понятном C. avr-gcc собирает её примерно в 4 КБ, а Upload загружает на плату через avrdude. Каждый пример запускается в симуляторе simavr и сверяется с интерпретатором."
+  ],
+  [
+    "New in 0.5: PIC32 C does the same for nine PIC32MX chips with Microchip's XC32, and UART, SPI and I2C are blocks, in Run and in all three board languages. The PIC32 code is checked against Microchip's device headers, but has not yet been built with XC32 or run on a chip.",
+    "Новое в 0.5: PIC32 C делает то же для девяти микросхем PIC32MX с Microchip XC32, а UART, SPI и I2C стали блоками, в Run и во всех трёх языках для плат. Код PIC32 проверен по заголовочным файлам Microchip, но ещё не собирался XC32 и не запускался на микросхеме."
+  ],
+  [
+    "New in 0.6: FPGA support. SystemVerilog, Verilog-2001 and VHDL turn the same diagram into hardware for Artix-7 (Nexys A7, Arty A7, Basys 3) and Cologne Chip GateMate boards. The output is simulated against Run and synthesised with open-source tools, but has not been run through Vivado or loaded onto a board.",
+    "Новое в 0.6: поддержка FPGA. SystemVerilog, Verilog-2001 и VHDL превращают ту же схему в аппаратуру для Artix-7 (Nexys A7, Arty A7, Basys 3) и плат Cologne Chip GateMate. Результат моделировался в сравнении с Run и синтезировался открытыми средствами, но не проходил через Vivado и не загружался в плату."
+  ],
+  [
+    "alt=\"The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.\"",
+    "alt=\"Программа blink на AVR C без Arduino, собранная avr-gcc 14 для Arduino Uno: 4032 байта кода.\""
+  ],
+  [
+    "<h3>Modules a board program can use</h3>",
+    "<h3>Модули, доступные программе для платы</h3>"
+  ],
+  [
+    "<b>UART</b> sends and receives bytes or lines on a chosen port, and is what Print writes to on a board. <b>SPI</b> transfers a byte or a buffer as master, with the mode and clock you pick, and a chip-select pin per device. <b>I2C</b> reads and writes registers by device address, which is how most sensors are driven. <b>MQTT</b> is five blocks — Connect, Publish, Subscribe, Has Message, Read — that put a program's numbers on a broker and take commands back, over a WiFi module on UART2, an ESP32's own WiFi, or a PIC32's Ethernet port as a Harmony application. Each module is a block in the palette rather than a library to install, works the same in Run as on the chip, and is refused by name on a target that cannot do it instead of compiling into something that silently will not work.",
+    "<b>UART</b> передаёт и принимает байты или строки на выбранном порту — именно туда пишет Print на плате. <b>SPI</b> передаёт байт или буфер в режиме master, с выбранными режимом и тактовой частотой и отдельным выводом выбора на каждое устройство. <b>I2C</b> читает и пишет регистры по адресу устройства — так работает большинство датчиков. <b>MQTT</b> — это пять блоков: Connect, Publish, Subscribe, Has Message и Read; они отправляют числа программы брокеру и принимают команды обратно — через WiFi-модуль на UART2, собственный WiFi ESP32 или порт Ethernet чипа PIC32 как приложение Harmony. Каждый модуль — блок в палитре, а не библиотека для установки; в Run он работает так же, как на чипе, а на цели, которая его не поддерживает, отказ называет блок вместо того чтобы собрать код, который молча не заработает."
+  ],
+  [
+    "alt=\"A board program as an Arduino sketch, with its UART output beside it.\"",
+    "alt=\"Программа для платы как скетч Arduino, рядом — вывод через UART.\""
+  ],
+  [
+    "<h3>Projects, Git and GitHub</h3>",
+    "<h3>Проекты, Git и GitHub</h3>"
+  ],
+  [
+    "File, New Project creates a folder with the program, a modules folder, a README and a Git repository. Commit, push and pull from the Git menu; Connect to GitHub publishes the project using the login your git already has. The app never asks for or stores a password.",
+    "File, New Project создаёт папку с программой, папкой модулей, README и Git-репозиторием. Commit, push и pull — в меню Git; Connect to GitHub публикует проект под той учётной записью, которую уже использует ваш git. Программа никогда не запрашивает и не хранит пароль."
+  ],
+  [
+    "alt=\"Connect to GitHub dialog with the repository name sbrutyan01/CounterDemo.\"",
+    "alt=\"Окно Connect to GitHub с именем репозитория sbrutyan01/CounterDemo.\""
+  ],
+  [
+    "<b>Vim everywhere.</b> Code fields, the code window and commit messages have Vim keys; Edit in Vim opens the real one.",
+    "<b>Vim повсюду.</b> В полях кода, окне кода и сообщениях коммитов работают клавиши Vim; Edit in Vim открывает настоящий Vim."
+  ],
+  [
+    "<b>Command line.</b>",
+    "<b>Командная строка.</b>"
+  ],
+  [
+    "</code> and <code>evia --gen",
+    "</code> и <code>evia --gen"
+  ],
+  [
+    "</code> for scripts and Makefiles.",
+    "</code> для скриптов и Makefile."
+  ],
+  [
+    "<b>Clang or GCC.</b> Settings switches between them; on Windows either one installs itself, no Visual Studio needed.",
+    "<b>Clang или GCC.</b> Переключаются в Settings; в Windows любой из них устанавливается сам, Visual Studio не нужна."
+  ],
+  [
+    "<b>Dark mode.</b> The app looks like IntelliJ IDEA, with Inter and JetBrains Mono. View, Theme picks light, dark or the system's.",
+    "<b>Тёмная тема.</b> Программа выглядит как IntelliJ IDEA, со шрифтами Inter и JetBrains Mono. View, Theme выбирает светлую, тёмную или системную."
+  ],
+  [
+    "<b>Built-in guide.</b> Help, Guide (F1) explains every block, expression, class feature, shortcut and Vim key, in English, Russian and Armenian.",
+    "<b>Встроенное руководство.</b> Help, Guide (F1) описывает каждый блок, выражения, возможности классов, сочетания клавиш и клавиши Vim, на английском, русском и армянском."
+  ],
+  [
+    "<h2 id=\"tutorial-h\">Your first program in eight steps</h2>",
+    "<h2 id=\"tutorial-h\">Первая программа за восемь шагов</h2>"
+  ],
+  [
+    "The full walk-through, with every screenshot, is a PDF in seven languages: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. It is also under Help, Tutorial in the app, and in the <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>.",
+    "Полный пошаговый учебник со всеми снимками экрана доступен в PDF на семи языках: <a href=\"tutorial/EVIA-Paradigma-Tutorial.en.pdf\">English</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ru.pdf\">Русский</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.hy.pdf\">Հայերեն</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.de.pdf\">Deutsch</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf\">简体中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf\">繁體中文</a>, <a href=\"tutorial/EVIA-Paradigma-Tutorial.ja.pdf\">日本語</a>. Он доступен в программе в меню Help, Tutorial и в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#tutorial\">README</a>."
+  ],
+  [
+    "<h3>Create a project</h3><p>File, New Project. Keep Create a Git repository checked.</p>",
+    "<h3>Создайте проект</h3><p>File, New Project. Оставьте отмеченным Create a Git repository.</p>"
+  ],
+  [
+    "<h3>Build a loop</h3><p>Drag Set, For and Print onto the canvas, wire them, press Run.</p>",
+    "<h3>Соберите цикл</h3><p>Перетащите Set, For и Print на холст, соедините их и нажмите Run.</p>"
+  ],
+  [
+    "<h3>Create a class</h3><p>Edit, New Class: give Counter the fields total and calls.</p>",
+    "<h3>Создайте класс</h3><p>Edit, New Class: задайте классу Counter поля total и calls.</p>"
+  ],
+  [
+    "<h3>Use the class</h3><p>Drag Counter.add(x) into the loop and name its object c.</p>",
+    "<h3>Используйте класс</h3><p>Перетащите Counter.add(x) в цикл и назовите объект c.</p>"
+  ],
+  [
+    "<h3>See the code</h3><p>Right-click a block, View source code.</p>",
+    "<h3>Посмотрите код</h3><p>Правый щелчок по блоку, View source code.</p>"
+  ],
+  [
+    "<h3>Choose a language</h3><p>Switch to C11 or any C++ standard; the code is generated again.</p>",
+    "<h3>Выберите язык</h3><p>Переключитесь на C11 или любой стандарт C++, и код сгенерируется заново.</p>"
+  ],
+  [
+    "<h3>Commit and publish</h3><p>Git, Commit, then Connect to GitHub.</p>",
+    "<h3>Коммит и публикация</h3><p>Git, Commit, затем Connect to GitHub.</p>"
+  ],
+  [
+    "<h3>Keep going</h3><p>Modules, examples and the guide (F1).</p>",
+    "<h3>Что дальше</h3><p>Модули, примеры и руководство (F1).</p>"
+  ],
+  [
+    "<h2 id=\"download-h\">Download EVIA Paradigma {{VERSION}}</h2>",
+    "<h2 id=\"download-h\">Скачать EVIA Paradigma {{VERSION}}</h2>"
+  ],
+  [
+    "Each installer brings its own Java runtime, so nothing else needs to be installed. To compile the generated code you need Clang or GCC (the app sets either up on Windows); generated Python needs only Python 3.8 or newer.",
+    "Каждый установщик содержит собственную среду Java, поэтому больше ничего устанавливать не нужно. Для компиляции сгенерированного кода нужен Clang или GCC (в Windows программа устанавливает любой из них сама); для сгенерированного Python нужен только Python 3.8 или новее."
+  ],
+  [
+    "<th scope=\"col\">System</th><th scope=\"col\">File</th><th scope=\"col\">Notes</th>",
+    "<th scope=\"col\">Система</th><th scope=\"col\">Файл</th><th scope=\"col\">Примечания</th>"
+  ],
+  [
+    "Not code-signed yet: on the SmartScreen warning choose More info, Run anyway.",
+    "Пока без цифровой подписи: в предупреждении SmartScreen выберите «Подробнее», затем «Выполнить в любом случае»."
+  ],
+  [
+    "<td>macOS, Apple Silicon</td>",
+    "<td>macOS, Apple Silicon</td>"
+  ],
+  [
+    "<td>macOS, Intel</td>",
+    "<td>macOS, Intel</td>"
+  ],
+  [
+    "Not notarized by Apple yet: if macOS won't open it, choose Open Anyway in System Settings, Privacy &amp; Security.",
+    "Пока не заверено Apple: если macOS не открывает программу, нажмите «Всё равно открыть» в Системных настройках, раздел «Конфиденциальность и безопасность»."
+  ],
+  [
+    "<td>Any Linux, x86-64</td>",
+    "<td>Любой Linux, x86-64</td>"
+  ],
+  [
+    "Nothing to install: make it executable and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system.",
+    "Ничего не нужно устанавливать: сделайте файл исполняемым и запустите. Без root и без пакетного менеджера — подходит для Fedora, Arch, openSUSE или live-системы."
+  ],
+  [
+    "<td>Any system with Java 25</td>",
+    "<td>Любая система с Java 25</td>"
+  ],
+  [
+    ">All releases and release notes</a>",
+    ">Все выпуски и примечания к ним</a>"
+  ],
+  [
+    "<h2 id=\"tested-h\">Tested against its own interpreter</h2>",
+    "<h2 id=\"tested-h\">Проверено собственным интерпретатором</h2>"
+  ],
+  [
+    "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
+    "При каждом изменении CI генерирует все примеры и тестовые программы во всех 36 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками (Python — проверяет), запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
+  ],
+  [
+    "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
+    "<th scope=\"col\">Где</th><th scope=\"col\">Компилятор</th><th scope=\"col\">Совпадает с интерпретатором</th>"
+  ],
+  [
+    "<td>Linux, all 8 C and C++ standards</td>",
+    "<td>Linux, все 8 стандартов C и C++</td>"
+  ],
+  [
+    "<td>416 of 416</td>",
+    "<td>416 из 416</td>"
+  ],
+  [
+    "<td>260 of 260</td>",
+    "<td>260 из 260</td>"
+  ],
+  [
+    "<td>30 of 30</td>",
+    "<td>30 из 30</td>"
+  ],
+  [
+    "<td>15 of 15</td>",
+    "<td>15 из 15</td>"
+  ],
+  [
+    ", static</td>",
+    ", статически</td>"
+  ],
+  [
+    "<td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td>",
+    "<td>Примеры для плат, AVR C без Arduino в simavr (ATmega328P, 2560, 32U4)</td>"
+  ],
+  [
+    "<td>Arduino Uno and Mega 2560 sketches in simavr</td>",
+    "<td>Скетчи Arduino Uno и Mega 2560 в simavr</td>"
+  ],
+  [
+    "The Arduino sketches are also built for all 12 boards, ESP32 included (70 builds, no warnings). The PIC32 examples are compiled syntax-only against Microchip's device headers (144 of 144). Every FPGA example and test is synthesised with yosys for Artix-7, and the GateMate designs are placed, routed and packed into bitstreams; Vivado, openXC7 and real boards are not part of CI. The MQTT client is compiled on the build machine and run against a real broker. Plus checks of the application, modules, projects, Git, and zooming and panning on a real window. See <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>.",
+    "Скетчи Arduino также собираются для всех 12 плат, включая ESP32 (70 сборок, без предупреждений). Примеры PIC32 компилируются (только синтаксис) по заголовкам Microchip (144 из 144). Каждый пример и тест для FPGA синтезируется yosys для Artix-7, а проекты GateMate размещаются, трассируются и упаковываются в битстримы; Vivado, openXC7 и реальные платы в CI не участвуют. Клиент MQTT собирается на машине сборки и проверяется на настоящем брокере. Плюс проверки приложения, модулей, проектов, Git, масштабирования и перемещения холста в настоящем окне. Подробнее — в <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/actions\">GitHub Actions</a>."
+  ],
+  [
+    "<h2 id=\"docs-h\">Documentation</h2>",
+    "<h2 id=\"docs-h\">Документация</h2>"
+  ],
+  [
+    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a>: features, tutorial, menus, languages, command line</li>",
+    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/docs/tutorial/TUTORIAL.ru.md\">Учебник на русском</a> и <a href=\"https://github.com/sbrutyan01/EVIA-Paradigma#readme\">README</a> (на английском): возможности, меню, языки, командная строка</li>"
+  ],
+  [
+    ">Release notes</a> for every version; what's new in",
+    ">Примечания к выпускам</a> для каждой версии; что нового в"
+  ],
+  [
+    ">Example programs</a>, also under File, Open Example (board programs in",
+    ">Примеры программ</a>, также в File, Open Example (программы для плат — в"
+  ],
+  [
+    ">Report a problem or ask for a feature</a>",
+    ">Сообщить о проблеме или предложить идею</a>"
+  ],
+  [
+    "Copyright 2026 Sergey Brutyan. Released under the",
+    "© 2026 Сергей Брутян. Распространяется по"
+  ],
+  [
+    ">MIT license</a>.",
+    ">лицензии MIT</a>."
+  ],
+  [
+    "Your first FPGA program in four steps",
+    "Ваша первая программа для FPGA в четыре шага"
+  ],
+  [
+    "The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).",
+    "Та же схема мигания становится аппаратурой для плат Artix-7 и GateMate. Полное руководство, шаг 10, в PDF выше, а в справке есть раздел про FPGA (F1)."
+  ],
+  [
+    "Pick a language and a board",
+    "Выберите язык и плату"
+  ],
+  [
+    "Language: SystemVerilog, Verilog-2001 or VHDL. Board: Nexys A7, Arty A7, Basys 3, or a GateMate board.",
+    "Язык: SystemVerilog, Verilog-2001 или VHDL. Плата: Nexys A7, Arty A7, Basys 3 или плата GateMate."
+  ],
+  [
+    "Open the Blink example",
+    "Откройте пример Blink"
+  ],
+  [
+    "File, Open Example, FPGA Boards, Blink. Pins are names such as LED0, SW3, BTNC and JA1.",
+    "Файл, Открыть пример, FPGA Boards, Blink. Выводы задаются именами: LED0, SW3, BTNC, JA1."
+  ],
+  [
+    "Generate code",
+    "Создайте код"
+  ],
+  [
+    "Press F7. The pin constraints are in the first comment, and the command line writes them as a separate file.",
+    "Нажмите F7. Ограничения выводов лежат в первом комментарии, а командная строка записывает их в отдельный файл."
+  ],
+  [
+    "Build and upload",
+    "Сборка и загрузка"
+  ],
+  [
+    "Vivado or the open-source tools, chosen in Settings. Upload programs the board.",
+    "Vivado или открытые средства, выбор в Настройках. Загрузка прошивает плату."
+  ],
+  [
+    "Checked against the interpreter in simulation, and synthesised with open-source tools. Not yet run through Vivado or on a real board.",
+    "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
+  ],
+  [
+    "<h3>One diagram, fifteen languages</h3>",
+    "<h3>Одна схема — пятнадцать языков</h3>"
+  ],
+  [
+    "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+    "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
+  ],
+  [
+    "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
+    "Открытое меню Code Language and Mode: от C99 до C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 и VHDL, а под ними — стиль кода и значения."
+  ],
+  [
+    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">FPGA example programs</a>, also under File, Open Example, FPGA Boards</li>",
+    "<li><a href=\"https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga\">Примеры программ для FPGA</a>, также в File, Open Example, FPGA Boards</li>"
+  ],
+  [
+    "<tr><td>FPGA designs in simulation (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 of 27</td></tr>",
+    "<tr><td>Проекты для FPGA в моделировании (SystemVerilog, Verilog-2001, VHDL)</td><td>Icarus Verilog, GHDL</td><td>27 из 27</td></tr>"
+  ],
+  [
+    "<li><b>Tutorial as PDF.</b> Help, Tutorial opens the whole walk-through in any of seven languages.</li>",
+    "<li><b>Учебник в PDF.</b> Help, Tutorial открывает всё руководство на любом из семи языков.</li>"
+  ],
+  [
+    "New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.",
+    "Новое в 0.6.5: MQTT. Пять блоков публикуют числа программы брокеру и читают команды обратно: на PIC32MX с модулем WiFi на UART2, на ESP32 с собственным WiFi и в Run — брокеру на вашем компьютере. Сгенерированный клиент проверяется на настоящем брокере; ни модуля WiFi, ни микросхемы в этой проверке не было. К нему идут два примера, один — для PIC32 Ethernet Starter Kit II. Новое в 0.6.7: MQTT может уходить и через собственный порт Ethernet чипов MX695, MX795 и стартового набора — как приложение для MPLAB X Harmony; это экспериментально и ещё не собиралось с настоящей Harmony. Сам интерфейс тоже теперь на английском, русском или армянском — выбирается в Настройках."
+  ],
+  [
+    "<li><b>Settings fetches the tools.</b> arduino-cli, avr-gcc and the FPGA suite are downloaded into the app's own folder; XC32 opens Microchip's page.</li>",
+    "<li><b>Настройки скачивают инструменты.</b> arduino-cli, avr-gcc и набор для FPGA загружаются в собственную папку приложения; XC32 открывает страницу Microchip.</li>"
+  ],
+  [
+    "<p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>",
+    "<p>Новое в 0.6.9: Python 3. Та же схема превращается в один файл .py, который работает в Python 3.8 и новее без установки чего-либо ещё, а кнопка Run в окне кода запускает его. Вывод, ошибки и код завершения совпадают с интерпретатором, как у каждого стандарта C и C++.</p>"
+  ],
+  [
+    "<h3>Python 3, nothing to compile</h3>",
+    "<h3>Python 3 — без компиляции</h3>"
+  ],
+  [
+    "Choose Python 3 and the same diagram becomes one .py file that runs on Python 3.8 or newer, with no packages and no compiler. Classes become Python classes and program variables module globals; Run in the code window starts the program, and text typed into Input goes to it. Python has no goto, so <b>Structured</b> writes if/else and while loops and <b>Goto</b> becomes a small state machine with one branch per block. Print, Input, the number text and every error message are the interpreter's own.",
+    "Выберите Python 3, и та же схема станет одним файлом .py, который работает в Python 3.8 и новее без пакетов и без компилятора. Классы становятся классами Python, а переменные программы — глобальными переменными модуля; Run в окне кода запускает программу, а текст, введённый в Input, передаётся ей. В Python нет goto, поэтому <b>Structured</b> пишет if/else и циклы while, а <b>Goto</b> превращается в небольшой конечный автомат с одной веткой на блок. Print, Input, запись чисел и все сообщения об ошибках — те же, что у интерпретатора."
+  ],
+  [
+    "alt=\"The tutorial program as Python 3 in the code window, run with Python 3.13; the lines of the c.add(i) block are highlighted.\"",
+    "alt=\"Программа из учебника на Python 3 в окне кода, запущенная в Python 3.13; строки блока c.add(i) подсвечены.\""
+  ],
+  [
+    "Your first Python program in four steps",
+    "Ваша первая программа на Python в четыре шага"
+  ],
+  [
+    "Any diagram runs as Python. All it needs is Python 3.8 or newer from python.org, which EVIA Paradigma finds by itself.",
+    "Любая схема работает как программа на Python. Нужен только Python 3.8 или новее с python.org, а EVIA Paradigma находит его сама."
+  ],
+  [
+    "Choose Python 3",
+    "Выберите Python 3"
+  ],
+  [
+    "Pick Python 3 in the Language list, in the toolbar or in the code window.",
+    "Выберите Python 3 в списке Language на панели инструментов или в окне кода."
+  ],
+  [
+    "Generate the Python code",
+    "Создайте код на Python"
+  ],
+  [
+    "Press F7. Right-click a block and choose View source code to see the lines it became.",
+    "Нажмите F7. Щёлкните блок правой кнопкой и выберите View source code, чтобы увидеть, в какие строки он превратился."
+  ],
+  [
+    "Run it in the code window",
+    "Запустите в окне кода"
+  ],
+  [
+    "Press Run. Text typed into Input goes to the program, and an error stops it with the same message as in the editor.",
+    "Нажмите Run. Текст, введённый в Input, передаётся программе, а ошибка останавливает её с тем же сообщением, что и в редакторе."
+  ],
+  [
+    "Keep the .py file",
+    "Сохраните файл .py"
+  ],
+  [
+    "Save writes the file, and it runs anywhere with python3 program.py.",
+    "Save записывает файл, и он запускается где угодно командой python3 program.py."
+  ],
+  [
+    "Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.",
+    "Settings, Python хранит команду: python3, лаунчер py в Windows или полный путь. Detect ищет его заново, а Check показывает версию."
+  ],
+  [
+    "<li><b>Python found by itself.</b> Settings, Python uses python3, or the py launcher on Windows, with no setup; Check shows the version.</li>",
+    "<li><b>Python находится сам.</b> Settings, Python использует python3 или лаунчер py в Windows без настройки; Check показывает версию.</li>"
+  ],
+  [
+    "<td>Linux, Python 3: every example and test, both flows, both value modes</td>",
+    "<td>Linux, Python 3: все примеры и тесты, оба потока управления, оба режима значений</td>"
+  ],
+  [
+    "<td>52 of 52</td>",
+    "<td>52 из 52</td>"
+  ],
+  [
+    "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
+    "<p>Новое в 0.7.0: настройки находятся в меню File, по странице на каждое семейство устройств — общие, C, C++ и Python, Arduino, ESP32, AVR C, PIC32 и FPGA, — а в Open Example есть отдельные подменю Arduino, ESP32 и PIC32, которые сразу выбирают нужный язык и плату.</p>"
+  ],
+  [
+    "<p>New in 0.7.1: an AppImage for any Linux on x86-64, next to the .deb — one executable file with the Java runtime inside it, nothing to install and no root needed. The modules a board program can use are described above: UART, SPI, I2C and MQTT.</p>",
+    "<p>Новое в 0.7.1: AppImage для любого Linux на x86-64, рядом с .deb — один исполняемый файл с Java внутри, ничего не нужно устанавливать и не нужен root. Модули, доступные программе для платы, описаны выше: UART, SPI, I2C и MQTT.</p>"
+  ]
 ]

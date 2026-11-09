@@ -218,16 +218,17 @@
       <p>New in 0.6.5: MQTT. Five blocks publish a program's numbers to a broker and read commands back: on a PIC32MX with a WiFi module on UART2, on an ESP32 with its own WiFi, and in Run against a broker on your computer. Two examples come with it, one of them for the PIC32 Ethernet Starter Kit II. The generated client is checked against a real broker; no WiFi module or chip was part of that. New in 0.6.7: MQTT can also leave through the chip's own Ethernet port on the MX695, the MX795 and the starter kit, as an MPLAB X Harmony application — experimental, and not yet built against real Harmony. The interface itself is now in English, Russian or Armenian too, chosen in Settings.</p>
       <p>New in 0.6.9: Python 3. The same diagram becomes one .py file that runs on Python 3.8 or newer with nothing to install, and Run in the code window starts it. Its output, errors and exit code match the interpreter's, like every C and C++ standard.</p>
       <p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>
+      <p>New in 0.7.1: an AppImage for any Linux on x86-64, next to the .deb — one executable file with the Java runtime inside it, nothing to install and no root needed. The modules a board program can use are described above: UART, SPI, I2C and MQTT.</p>
     </div>
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
 
   <article class="feature">
     <div class="feature-text">
-      <h3>Zoom and move the canvas with the mouse</h3>
-      <p>Turn the wheel over a diagram to zoom between 25% and 300%, toward the pointer. Blocks, text and wires stay sharp, and you can keep editing at any size. Ctrl+0 returns to 100%, Ctrl+9 fits the whole diagram. New in 0.6.1: hold the middle mouse button and drag to move the canvas, from empty space or from a block.</p>
+      <h3>Modules a board program can use</h3>
+      <p><b>UART</b> sends and receives bytes or lines on a chosen port, and is what Print writes to on a board. <b>SPI</b> transfers a byte or a buffer as master, with the mode and clock you pick, and a chip-select pin per device. <b>I2C</b> reads and writes registers by device address, which is how most sensors are driven. <b>MQTT</b> is five blocks — Connect, Publish, Subscribe, Has Message, Read — that put a program's numbers on a broker and take commands back, over a WiFi module on UART2, an ESP32's own WiFi, or a PIC32's Ethernet port as a Harmony application. Each module is a block in the palette rather than a library to install, works the same in Run as on the chip, and is refused by name on a target that cannot do it instead of compiling into something that silently will not work.</p>
     </div>
-    <img src="img/25-zoom-in.png" loading="lazy" width="2360" height="1760" alt="The diagram zoomed in to 161 percent.">
+    <img src="img/28-arduino-sketch.png" loading="lazy" width="2360" height="1720" alt="A board program as an Arduino sketch, with its UART output beside it.">
   </article>
 
   <article class="feature flip">
@@ -319,6 +320,9 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
       <tr><td>Ubuntu 22.04+ / Debian 12+</td>
         <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/evia-paradigma_{{VERSION}}_amd64.deb">evia-paradigma_{{VERSION}}_amd64.deb</a></td>
         <td><code>sudo apt install ./evia-paradigma_{{VERSION}}_amd64.deb</code></td></tr>
+      <tr><td>Any Linux, x86-64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/EVIA-Paradigma-{{VERSION}}-x86_64.AppImage">EVIA-Paradigma-{{VERSION}}-x86_64.AppImage</a></td>
+        <td>Nothing to install: make it executable and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system.</td></tr>
       <tr><td>Any system with Java 25</td>
         <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v{{VERSION}}/evia-paradigma-{{VERSION}}.jar">evia-paradigma-{{VERSION}}.jar</a></td>
         <td><code>java -jar evia-paradigma-{{VERSION}}.jar</code></td></tr>
