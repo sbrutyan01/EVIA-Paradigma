@@ -310,16 +310,21 @@ final class Settings {
         return PREFS.get("stm32Index", Toolchains.STM32_INDEX);
     }
 
-    /** The command that loads a .hex file into the chip; {hex} and {device} are replaced. */
+    /** The command that loads a .hex file into the chip; {hex}, {device} and {chip} (e.g. 32MX795F512L) are replaced. */
     static String pic32Upload() {
-        String cmd = PREFS.get("pic32Upload", "pic32prog {hex}");
+        return pic32UploadFor(PREFS.get("pic32Upload", "pic32prog {hex}"));
+    }
+
+    /** {@code cmd} with plain pic32prog or ipecmd at the start replaced by the installed program. */
+    static String pic32UploadFor(String cmd) {
         // a command that starts with plain pic32prog runs the installed package's copy when there is one
         java.nio.file.Path own = Bundled.tool("pic32prog", "pic32prog");
         if (own != null && (cmd.equals("pic32prog") || cmd.startsWith("pic32prog "))) {
             String exe = own.toString();
             cmd = (exe.contains(" ") ? "\"" + exe + "\"" : exe) + cmd.substring("pic32prog".length());
         }
-        return cmd;
+        // and one that starts with plain ipecmd runs Microchip's, from MPLAB X / IPE
+        return IpeInstaller.resolve(cmd);
     }
 
     // ---- FPGA tools (Vivado, or the open-source flows)
@@ -782,6 +787,27 @@ final class Settings {
             java.nio.file.Path gcc = Xc32Installer.install(p(getXc32));
             if (gcc != null) xc32.setText(gcc.toString());
         });
+        // the programmer: pic32prog (PICkit2/3, bootloaders) or Microchip's ipecmd (starter kits, PICkit 4/5, ICD, Snap)
+        String[] progLabels = new String[IpeInstaller.PRESETS.length + 1];
+        progLabels[0] = Text.t("pic32prog: PICkit2, PICkit3 (PICkit2 mode), bootloaders");
+        for (int i = 0; i < IpeInstaller.PRESETS.length; i++) progLabels[i + 1] = "ipecmd: " + Text.t(IpeInstaller.PRESETS[i][0]);
+        JComboBox<String> pic32Prog = new JComboBox<>(progLabels);
+        pic32Prog.setSelectedIndex(-1);
+        String cur = PREFS.get("pic32Upload", "pic32prog {hex}");
+        if (cur.equals("pic32prog {hex}")) pic32Prog.setSelectedIndex(0);
+        for (int i = 0; i < IpeInstaller.PRESETS.length; i++) if (cur.equals(IpeInstaller.PRESETS[i][1])) pic32Prog.setSelectedIndex(i + 1);
+        pic32Prog.addActionListener(e -> {
+            int i = pic32Prog.getSelectedIndex();
+            if (i < 0) return;
+            pic32Up.setText(IpeInstaller.resolve(i == 0 ? "pic32prog {hex}" : IpeInstaller.PRESETS[i - 1][1]));
+            if (i == 0 && Bundled.tool("pic32prog", "pic32prog") != null) pic32Up.setText(pic32UploadFor("pic32prog {hex}"));
+        });
+        JButton getIpe = new JButton(Text.t("Get MPLAB IPE..."));
+        getIpe.setToolTipText(Text.t("Install Microchip's MPLAB IPE (ipecmd) from the MPLAB X installer you download at microchip.com"));
+        getIpe.addActionListener(e -> {
+            java.nio.file.Path exe = IpeInstaller.install(p(getIpe));
+            if (exe != null && pic32Up.getText().trim().startsWith("ipecmd")) pic32Up.setText(IpeInstaller.resolve(pic32Up.getText().trim()));
+        });
         JComboBox<String> pic32Net = new JComboBox<>(new String[] {
                 "WiFi module on UART2 (every chip)", "Ethernet, Harmony TCP/IP (MX695/795)"});
         pic32Net.setSelectedIndex(pic32Ethernet() ? 1 : 0);
@@ -863,9 +889,12 @@ final class Settings {
                 .row(Text.t("xc32-gcc:"), xc32, getXc32)
                 .note(small("Get XC32 downloads Microchip's free XC32 " + Xc32Installer.VERSION
                         + " from microchip.com and runs Microchip's installer (it asks for an administrator password)."))
+                .row(Text.t("Programmer:"), pic32Prog)
                 .row(Text.t("PIC32 upload:"), pic32Up, getButton(pic, Toolchains.Tool.PIC32PROG, new JTextField()))
                 .note(small("Get installs pic32prog from the EVIA server: PICkit2, PICkit3 (PICkit2 mode), the chipKIT and Microchip bootloaders."))
-                .note(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port)."))
+                .row(Text.t("MPLAB IPE:"), new JLabel(IpeInstaller.find() == null ? Text.t("not installed") : IpeInstaller.find().toString()), getIpe)
+                .note(small("ipecmd (Microchip's MPLAB IPE) programs the starter kits' on-board programmer (PIC32MX Ethernet Starter Kit II), PICkit 4/5, ICD 4/5 and Snap. {chip} = the chip above."))
+                .note(small("PIC32 C builds with Microchip's free XC32 and loads the .hex with this command ({hex} = file, {device} = serial port, {chip} = chip)."))
                 .row(Text.t("PIC32 MQTT over:"), pic32Net)
                 .note(small("<html>The MQTT blocks reach the network through a WiFi module with AT firmware on UART2, which every PIC32MX can do,<br>"
                         + "or through the chip's own Ethernet port on the MX695/MX795, which needs Harmony's TCP/IP stack: the generated file is then<br>"
@@ -946,6 +975,11 @@ final class Settings {
         if (ownProg != null) {
             String exe = ownProg.toString(), quoted = exe.contains(" ") ? "\"" + exe + "\"" : exe;
             if (up.startsWith(quoted)) up = "pic32prog" + up.substring(quoted.length());   // stays "pic32prog": follows updates
+        }
+        java.nio.file.Path ipe = IpeInstaller.find();
+        if (ipe != null) {
+            String exe = ipe.toString(), quoted = exe.contains(" ") ? "\"" + exe + "\"" : exe;
+            if (up.startsWith(quoted)) up = "ipecmd" + up.substring(quoted.length());       // stays "ipecmd": follows MPLAB X updates
         }
         PREFS.put("pic32Upload", up.isEmpty() ? "pic32prog {hex}" : up);
         Text.Lang beforeLang = uiLanguage();

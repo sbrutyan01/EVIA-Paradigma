@@ -235,33 +235,9 @@ final class Xc32Installer {
     private static void runInstaller(Path download) throws IOException, InterruptedException {
         Path dir = download.getParent();
         if (ExternalEditor.WINDOWS) {
-            // the installer asks for elevation itself (UAC); Start-Process -Verb RunAs shows that prompt
-            String args = String.join(" ", installerOptions(true));
-            run(List.of("powershell", "-NoProfile", "-NonInteractive", "-Command",
-                    "$p = Start-Process -FilePath '" + download.toString().replace("'", "''") + "' -ArgumentList '" + args
-                            + "' -Verb RunAs -Wait -PassThru; exit $p.ExitCode"), "Windows");
+            runWindows(download, installerOptions(true));
         } else if (mac()) {
-            Path mount = Files.createTempDirectory(dir, "xc32-dmg");
-            run(List.of("hdiutil", "attach", "-nobrowse", "-readonly", "-mountpoint", mount.toString(), download.toString()), "hdiutil");
-            try {
-                Path app;
-                try (Stream<Path> s = Files.list(mount)) {
-                    app = s.filter(p -> p.getFileName().toString().endsWith(".app")).findFirst()
-                            .orElseThrow(() -> new IOException("no installer application in Microchip's disk image"));
-                }
-                Path exe = app.resolve("Contents/MacOS/installbuilder.sh");
-                if (!Files.exists(exe)) {
-                    try (Stream<Path> s = Files.list(app.resolve("Contents/MacOS"))) {
-                        exe = s.findFirst().orElseThrow(() -> new IOException("no installer program in " + app));
-                    }
-                }
-                StringBuilder cmd = new StringBuilder(shellQuote(exe.toString()));
-                for (String o : installerOptions(true)) cmd.append(' ').append(shellQuote(o));
-                run(List.of("osascript", "-e", "do shell script \"" + cmd.toString().replace("\\", "\\\\").replace("\"", "\\\"")
-                        + "\" with administrator privileges"), "the macOS administrator prompt");
-            } finally {
-                run(List.of("hdiutil", "detach", mount.toString(), "-force"), null);
-            }
+            runMac(download, installerOptions(true));
         } else {
             // the .tar holds Microchip's .run installer, which must run as root
             run(List.of("tar", "-xf", download.toString(), "-C", dir.toString()), "tar");
@@ -285,8 +261,42 @@ final class Xc32Installer {
         }
     }
 
+    /** Windows: Microchip's .exe installer with {@code args}; it asks for elevation itself (UAC). */
+    static void runWindows(Path download, List<String> args) throws IOException, InterruptedException {
+        run(List.of("powershell", "-NoProfile", "-NonInteractive", "-Command",
+                "$p = Start-Process -FilePath '" + download.toString().replace("'", "''") + "' -ArgumentList '" + String.join(" ", args)
+                        + "' -Verb RunAs -Wait -PassThru; exit $p.ExitCode"), "Windows");
+    }
+
+    /** macOS: Microchip's .dmg, its installer run with {@code args} behind the administrator prompt. */
+    static void runMac(Path download, List<String> args) throws IOException, InterruptedException {
+        Path dir = download.getParent();
+        Path mount = Files.createTempDirectory(dir, "microchip-dmg");
+        run(List.of("hdiutil", "attach", "-nobrowse", "-readonly", "-mountpoint", mount.toString(), download.toString()), "hdiutil");
+        try {
+            Path app;
+            try (Stream<Path> s = Files.list(mount)) {
+                app = s.filter(p -> p.getFileName().toString().endsWith(".app")).findFirst()
+                        .orElseThrow(() -> new IOException("no installer application in Microchip's disk image"));
+            }
+            Path exe = app.resolve("Contents/MacOS/installbuilder.sh");
+            if (!Files.exists(exe)) {
+                try (Stream<Path> s = Files.list(app.resolve("Contents/MacOS"))) {
+                    exe = s.findFirst().orElseThrow(() -> new IOException("no installer program in " + app));
+                }
+            }
+            StringBuilder cmd = new StringBuilder(shellQuote(exe.toString()));
+            for (String o : args) cmd.append(' ').append(shellQuote(o));
+            run(List.of("osascript", "-e", "do shell script \"" + cmd.toString().replace("\\", "\\\\").replace("\"", "\\\"")
+                    + "\" with administrator privileges"), "the macOS administrator prompt");
+        } finally {
+            run(List.of("hdiutil", "detach", mount.toString(), "-force"), null);
+            Files.deleteIfExists(mount);
+        }
+    }
+
     /** Runs a command to its end; a failure names the step (what=null: failures do not matter). */
-    private static void run(List<String> cmd, String what) throws IOException, InterruptedException {
+    static void run(List<String> cmd, String what) throws IOException, InterruptedException {
         Process p;
         try {
             p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
@@ -309,7 +319,7 @@ final class Xc32Installer {
         }
     }
 
-    private static String shellQuote(String s) {
+    static String shellQuote(String s) {
         return "'" + s.replace("'", "'\\''") + "'";
     }
 }

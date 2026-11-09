@@ -388,3 +388,25 @@ Sources: the EVIA package %s is installed.	Исходники: пакет EVIA %
 Sources: downloaded by Build Image the first time, or now with Get Sources (EVIA package %s).	Исходники: скачиваются при первой сборке или сейчас кнопкой «Получить исходники» (пакет EVIA %s).
 %s has no package %s for this computer (%s).	На %s нет пакета %s для этого компьютера (%s).
 is installed.	установлен.
+# ipecmd (MPLAB IPE)
+ipecmd is already installed:	ipecmd уже установлен:
+Install MPLAB IPE again from an installer?	Установить MPLAB IPE заново из установщика?
+MPLAB IPE is Microchip's software, not part of EVIA Paradigma.	MPLAB IPE — программа Microchip, она не входит в EVIA Paradigma.
+It comes with MPLAB X. Microchip lets it be downloaded only from its site, in the browser:	Она входит в MPLAB X. Microchip разрешает скачивать её только со своего сайта, в браузере:
+Open Microchip's page and download MPLAB X v6.20 for this computer (the .tar for Linux, .exe for Windows, .dmg for macOS).	Откройте страницу Microchip и скачайте MPLAB X v6.20 для этого компьютера (.tar для Linux, .exe для Windows, .dmg для macOS).
+Choose the downloaded file here. EVIA Paradigma runs Microchip's installer for IPE only, with the 32-bit devices; your system asks for an administrator password.	Выберите здесь скачанный файл. EVIA Paradigma запустит установщик Microchip только для IPE, с 32-битными устройствами; система попросит пароль администратора.
+IPE is used under Microchip's licence agreement, which its installer shows. By choosing the file you agree to it.	IPE используется по лицензионному соглашению Microchip, которое показывает её установщик. Выбирая файл, вы его принимаете.
+Choose the installer...	Выбрать установщик...
+Open Microchip's page	Открыть страницу Microchip
+The MPLAB X installer you downloaded	Скачанный установщик MPLAB X
+%s is not the MPLAB X v6.20 installer for this computer (MPLABX-v6.20-linux-installer.tar, .exe or .dmg).	%s — не установщик MPLAB X v6.20 для этого компьютера (MPLABX-v6.20-linux-installer.tar, .exe или .dmg).
+Microchip's installer is running (IPE only); your system asks for an administrator password. This takes a few minutes.	Работает установщик Microchip (только IPE); система попросит пароль администратора. Это займёт несколько минут.
+MPLAB IPE is installed:	MPLAB IPE установлена:
+Could not install MPLAB IPE:	Не удалось установить MPLAB IPE:
+pic32prog: PICkit2, PICkit3 (PICkit2 mode), bootloaders	pic32prog: PICkit2, PICkit3 (режим PICkit2), загрузчики
+Starter kit, on-board programmer (PKOB): PIC32MX Ethernet Starter Kit II	Стартовый набор, встроенный программатор (PKOB): PIC32MX Ethernet Starter Kit II
+Get MPLAB IPE...	Получить MPLAB IPE...
+Install Microchip's MPLAB IPE (ipecmd) from the MPLAB X installer you download at microchip.com	Установить MPLAB IPE (ipecmd) от Microchip из установщика MPLAB X, скачанного с microchip.com
+Programmer:	Программатор:
+MPLAB IPE:	MPLAB IPE:
+not installed	не установлена

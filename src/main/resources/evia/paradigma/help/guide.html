@@ -151,7 +151,7 @@ and esp32:esp32 cores.</td></tr>
 avr-gcc and avr-libc build it, avrdude uploads it.</td></tr>
 <tr><td>PIC32 C</td><td>nine PIC32MX chips: MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) and the PIC32 Ethernet Starter Kit II (LED1 on RD0)</td>
 <td>Bare-metal C for Microchip's XC32: clock, pins, PWM, ADC, UART, SPI and I2C are driven through the registers; no Harmony or plib.
-xc32-gcc builds it, xc32-bin2hex makes the <code>.hex</code>, and an upload command of your choice (pic32prog by default) loads it.</td></tr>
+xc32-gcc builds it, xc32-bin2hex makes the <code>.hex</code>, and an upload command of your choice (pic32prog by default) loads it. Boards pic32prog cannot program, such as the <b>PIC32MX Ethernet Starter Kit II</b> (its on-board programmer), the PICkit 4/5, ICD 4/5 and Snap, use Microchip's <b>ipecmd</b>: Settings &gt; PIC32 &gt; <b>Get MPLAB IPE</b> installs IPE from the MPLAB X v6.20 installer you download at microchip.com, and <b>Programmer</b> sets the upload command, e.g. <code>ipecmd -TPPKOB -P{chip} -M -F{hex} -OL</code>.</td></tr>
 <tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
 <td>Bare-metal C for arm-none-eabi-gcc: clock, pins (PA0 ... PI15), PWM, the ADC, USART, SPI1 and I2C1 are driven through the
 registers, with the vector table, start-up code and linker script in the file; no HAL. OpenOCD uploads it through an ST-Link

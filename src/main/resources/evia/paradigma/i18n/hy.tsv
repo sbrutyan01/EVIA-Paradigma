@@ -388,3 +388,25 @@ Sources: the EVIA package %s is installed.	Աղբյուրներ՝ EVIA %s փաթ
 Sources: downloaded by Build Image the first time, or now with Get Sources (EVIA package %s).	Աղբյուրներ՝ ներբեռնվում են առաջին հավաքման ժամանակ կամ հիմա՝ «Ստանալ աղբյուրները» կոճակով (EVIA %s փաթեթ)։
 %s has no package %s for this computer (%s).	%1$s-ում այս համակարգչի համար (%3$s) %2$s փաթեթ չկա։
 is installed.	տեղադրված է։
+# ipecmd (MPLAB IPE)
+ipecmd is already installed:	ipecmd-ն արդեն տեղադրված է՝
+Install MPLAB IPE again from an installer?	Կրկի՞ն տեղադրել MPLAB IPE-ն տեղադրիչից։
+MPLAB IPE is Microchip's software, not part of EVIA Paradigma.	MPLAB IPE-ն Microchip-ի ծրագիր է, EVIA Paradigma-ի մաս չէ։
+It comes with MPLAB X. Microchip lets it be downloaded only from its site, in the browser:	Այն գալիս է MPLAB X-ի հետ։ Microchip-ը թույլ է տալիս ներբեռնել այն միայն իր կայքից՝ դիտարկիչում՝
+Open Microchip's page and download MPLAB X v6.20 for this computer (the .tar for Linux, .exe for Windows, .dmg for macOS).	Բացեք Microchip-ի էջը և ներբեռնեք MPLAB X v6.20-ը այս համակարգչի համար (.tar՝ Linux, .exe՝ Windows, .dmg՝ macOS)։
+Choose the downloaded file here. EVIA Paradigma runs Microchip's installer for IPE only, with the 32-bit devices; your system asks for an administrator password.	Ընտրեք ներբեռնված ֆայլն այստեղ։ EVIA Paradigma-ն կգործարկի Microchip-ի տեղադրիչը միայն IPE-ի համար՝ 32-բիթ սարքերով․ համակարգը կխնդրի ադմինիստրատորի գաղտնաբառը։
+IPE is used under Microchip's licence agreement, which its installer shows. By choosing the file you agree to it.	IPE-ն օգտագործվում է Microchip-ի լիցենզային համաձայնագրով, որը ցույց է տալիս տեղադրիչը։ Ընտրելով ֆայլը՝ դուք համաձայնում եք դրան։
+Choose the installer...	Ընտրել տեղադրիչը...
+Open Microchip's page	Բացել Microchip-ի էջը
+The MPLAB X installer you downloaded	Ձեր ներբեռնած MPLAB X տեղադրիչը
+%s is not the MPLAB X v6.20 installer for this computer (MPLABX-v6.20-linux-installer.tar, .exe or .dmg).	%s-ը այս համակարգչի համար MPLAB X v6.20-ի տեղադրիչ չէ (MPLABX-v6.20-linux-installer.tar, .exe կամ .dmg)։
+Microchip's installer is running (IPE only); your system asks for an administrator password. This takes a few minutes.	Microchip-ի տեղադրիչն աշխատում է (միայն IPE)․ համակարգը կխնդրի ադմինիստրատորի գաղտնաբառը։ Սա կտևի մի քանի րոպե։
+MPLAB IPE is installed:	MPLAB IPE-ն տեղադրված է՝
+Could not install MPLAB IPE:	Չհաջողվեց տեղադրել MPLAB IPE-ն՝
+pic32prog: PICkit2, PICkit3 (PICkit2 mode), bootloaders	pic32prog՝ PICkit2, PICkit3 (PICkit2 ռեժիմ), բեռնիչներ
+Starter kit, on-board programmer (PKOB): PIC32MX Ethernet Starter Kit II	Մեկնարկային հավաքածու, ներկառուցված ծրագրավորիչ (PKOB)՝ PIC32MX Ethernet Starter Kit II
+Get MPLAB IPE...	Ստանալ MPLAB IPE...
+Install Microchip's MPLAB IPE (ipecmd) from the MPLAB X installer you download at microchip.com	Տեղադրել Microchip-ի MPLAB IPE-ն (ipecmd) microchip.com-ից ներբեռնված MPLAB X տեղադրիչից
+Programmer:	Ծրագրավորիչ՝
+MPLAB IPE:	MPLAB IPE՝
+not installed	տեղադրված չէ

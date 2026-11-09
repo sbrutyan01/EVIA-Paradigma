@@ -195,6 +195,9 @@ jobs:
       - name: "Packages: install, update, damaged download, remove, self-update"
         run: scripts/check-packages.sh
 
+      - name: "PIC32 upload with ipecmd (MPLAB IPE): presets, finding it, the installer check"
+        run: scripts/check-ipe.sh
+
       - name: "Linux images: Buildroot, Yocto and OpenWrt workspaces for the BeagleBone Black and Raspberry Pi 5"
         run: scripts/check-linux.sh
 

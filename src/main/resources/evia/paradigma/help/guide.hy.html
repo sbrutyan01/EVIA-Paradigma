@@ -155,7 +155,7 @@ esp32:esp32 միջուկներով։</td></tr>
 Կառուցում են avr-gcc-ն և avr-libc-ը, բեռնում է avrdude-ը։</td></tr>
 <tr><td>PIC32 C</td><td>ինը PIC32MX չիպ. MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) և PIC32 Ethernet Starter Kit II (LED1՝ RD0-ին)</td>
 <td>Bare-metal C Microchip-ի XC32-ի համար. ժամացույցը, պինները, PWM-ը, ADC-ն, UART-ը, SPI-ն և I2C-ն կառավարվում են ռեգիստրներով, առանց Harmony-ի և plib-ի։
-Կառուցում է xc32-gcc-ն, <code>.hex</code>-ը ստեղծում է xc32-bin2hex-ը, իսկ բեռնում է ձեր ընտրած հրամանը (լռելյայն՝ pic32prog)։</td></tr>
+Կառուցում է xc32-gcc-ն, <code>.hex</code>-ը ստեղծում է xc32-bin2hex-ը, իսկ բեռնում է ձեր ընտրած հրամանը (լռելյայն՝ pic32prog)։ Տախտակները, որոնք pic32prog-ը չի կարող ծրագրավորել, օրինակ՝ <b>PIC32MX Ethernet Starter Kit II</b>-ը (ներկառուցված ծրագրավորիչ), PICkit 4/5-ը, ICD 4/5-ը և Snap-ը, օգտագործում են Microchip-ի <b>ipecmd</b>-ը՝ Կարգավորումներ &gt; PIC32 &gt; <b>Ստանալ MPLAB IPE</b>-ն տեղադրում է IPE-ն microchip.com-ից ներբեռնված MPLAB X v6.20 տեղադրիչից, իսկ <b>Ծրագրավորիչ</b>-ը սահմանում է բեռնման հրամանը, օրինակ՝ <code>ipecmd -TPPKOB -P{chip} -M -F{hex} -OL</code>։</td></tr>
 <tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
 <td>Bare-metal C arm-none-eabi-gcc-ի համար. ժամացույցը, պինները (PA0 ... PI15), PWM-ը, ADC-ն, USART-ը, SPI1-ը և I2C1-ը կառավարվում են
 ռեգիստրներով, իսկ վեկտորների աղյուսակը, մեկնարկի կոդը և կապակցիչի սկրիպտը հենց ֆայլում են, առանց HAL-ի։ Բեռնում է OpenOCD-ն ST-Link-ով

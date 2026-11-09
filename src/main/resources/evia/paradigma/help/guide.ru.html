@@ -155,7 +155,7 @@ MyProject/
 Собирают avr-gcc и avr-libc, загружает avrdude.</td></tr>
 <tr><td>PIC32 C</td><td>девять микросхем PIC32MX: MX1xx/2xx (PIC32MX150F128B, 250F128B, 270F256B), MX3xx/4xx (320F128H, 340F512H, 440F256H, 460F512L), MX5xx/6xx/7xx (695F512L, 795F512L) и PIC32 Ethernet Starter Kit II (LED1 на RD0)</td>
 <td>Bare-metal C для Microchip XC32: тактирование, пины, ШИМ, АЦП, UART, SPI и I2C управляются через регистры; без Harmony и plib.
-Собирает xc32-gcc, <code>.hex</code> создаёт xc32-bin2hex, а загружает команда на ваш выбор (по умолчанию pic32prog).</td></tr>
+Собирает xc32-gcc, <code>.hex</code> создаёт xc32-bin2hex, а загружает команда на ваш выбор (по умолчанию pic32prog). Платы, которые pic32prog не умеет программировать, например <b>PIC32MX Ethernet Starter Kit II</b> (встроенный программатор), PICkit 4/5, ICD 4/5 и Snap, используют <b>ipecmd</b> от Microchip: Настройки &gt; PIC32 &gt; <b>Получить MPLAB IPE</b> устанавливает IPE из установщика MPLAB X v6.20, скачанного с microchip.com, а <b>Программатор</b> задаёт команду загрузки, например <code>ipecmd -TPPKOB -P{chip} -M -F{hex} -OL</code>.</td></tr>
 <tr><td>STM32 C</td><td>Blue Pill (STM32F103C8), Black Pill (STM32F411CE), Nucleo-F401RE, Nucleo-F411RE, STM32F4DISCOVERY (STM32F407VG)</td>
 <td>Bare-metal C для arm-none-eabi-gcc: тактирование, пины (PA0 ... PI15), ШИМ, АЦП, USART, SPI1 и I2C1 управляются через
 регистры, а таблица векторов, код запуска и скрипт компоновщика находятся в самом файле; без HAL. Загружает OpenOCD через ST-Link

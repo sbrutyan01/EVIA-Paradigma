@@ -597,7 +597,7 @@ final class CodeViewer extends JFrame {
                     if (upload) {
                         List<String> u = new ArrayList<>();
                         for (String part : Settings.split(Settings.pic32Upload())) {
-                            u.add(part.replace("{hex}", hex.toString()).replace("{device}", thePort));
+                            u.add(part.replace("{hex}", hex.toString()).replace("{device}", thePort).replace("{chip}", board.pic));
                         }
                         steps.add(u);
                     }
