@@ -229,7 +229,8 @@ final class Cli {
                                   --board BOARD        the board or chip the code is for (pic32 needs one of the pic32mx... chips,
                                                        e.g. pic32mx250f128b, pic32mx320f128h, pic32mx795f512l; default pic32mx250f128b;
                                                        STM32: bluepill-f103c8 (default), blackpill-f411ce, nucleo-f401re,
-                                                       nucleo-f411re, disco-f407vg (also for arduino);
+                                                       nucleo-f411re, disco-f407vg, disco-f429zi (also for arduino);
+                                                       PIC32 boards: pic32-esk2, chipkit-pro-mx7;
                                                        FPGA: nexys-a7-100t (default), arty-a7-35, arty-a7-100, basys3,
                                                        olimex-gatemate, ccgm1a1-evb)
                                   --net WHERE          where the MQTT blocks reach the network on a PIC32: uart (default, a WiFi

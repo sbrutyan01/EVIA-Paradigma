@@ -39,6 +39,9 @@ enum Board {
     PIC32MX695F512L("PIC32MX695F512L (chipKIT WF32)", "32MX695F512L", 5, 'L', "RF0"),
     PIC32MX795F512L("PIC32MX795F512L (chipKIT Max32)", "32MX795F512L", 5, 'L', "RC1"),
     PIC32_ESK2("PIC32 Ethernet Starter Kit II (MX795F512L)", "32MX795F512L", 5, 'L', "RD0"),
+    // Digilent chipKIT Pro MX7 (formerly Cerebot MX7cK): LD1-LD4 on RG12-RG15, BTN1/BTN2/BTN3 on RG6/RG7/RA0,
+    // the USB-UART on UART1 (RF2/RF8), a LAN8720 Ethernet PHY
+    CHIPKIT_PRO_MX7("chipKIT Pro MX7 (MX795F512L)", "32MX795F512L", 5, 'L', "RG12"),
 
     // STM32: Arduino sketches with STMicroelectronics' core, or bare-metal STM32 C; both upload with OpenOCD
     BLUEPILL_F103C8("Blue Pill (STM32F103C8)", "STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8",
@@ -51,6 +54,10 @@ enum Board {
             new Stm32(Stm32.Family.F4, "STM32F411RE", 512, 128, 2, "PA5", false)),
     DISCO_F407VG("STM32F4DISCOVERY (STM32F407VG)", "STMicroelectronics:stm32:Disco:pnum=DISCO_F407VG",
             new Stm32(Stm32.Family.F407, "STM32F407VG", 1024, 128, 2, "PD12", false)),
+    // 32F429IDISCOVERY (STM32F429I-DISC1): the F407's clock and peripherals, 2 MB flash, 192 KB of SRAM from 0x20000000
+    // (the 64 KB CCM is left out), LD3 green PG13 / LD4 red PG14, the ST-LINK's virtual serial port on USART1 (PA9/PA10)
+    DISCO_F429ZI("32F429IDISCOVERY (STM32F429ZI)", "STMicroelectronics:stm32:Disco:pnum=DISCO_F429ZI",
+            new Stm32(Stm32.Family.F407, "STM32F429ZI", 2048, 192, 1, "PG13", false)),
 
     // FPGA boards: the pins, clock and chip are in Fpga
     NEXYS_A7_100T("Digilent Nexys A7-100T (Artix-7)", Fpga::nexysA7100T),

@@ -41,7 +41,7 @@ BOARDS=(
   "pic32mx150f128b p32mx250f128b" "pic32mx250f128b p32mx250f128b" "pic32mx270f256b p32mx270f256b"
   "pic32mx320f128h p32mx440f256h" "pic32mx340f512h p32mx440f256h" "pic32mx440f256h p32mx440f256h"
   "pic32mx460f512l p32mx460f512l"
-  "pic32mx695f512l p32mx795f512l" "pic32mx795f512l p32mx795f512l")
+  "pic32mx695f512l p32mx795f512l" "pic32mx795f512l p32mx795f512l" "chipkit-pro-mx7 p32mx795f512l")
 
 ok=0; failed=0
 fail() { echo "FAIL  $*"; failed=$((failed + 1)); }
@@ -56,7 +56,7 @@ for src in examples/boards/*.evia; do
     # the MX695/795, and only for a program that actually connects to a broker, so that pass is added just
     # for those: it is a different output shape (no #pragma config, no main(), app_run() instead).
     nets=uart
-    case $board in pic32mx695f512l | pic32mx795f512l) grep -q MQTT_CONNECT "$src" && nets="uart ethernet";; esac
+    case $board in pic32mx695f512l | pic32mx795f512l | chipkit-pro-mx7) grep -q MQTT_CONNECT "$src" && nets="uart ethernet";; esac
     for flow in structured goto; do
       for net in $nets; do
         c="$OUT/$name-$board-$flow-$net.c"

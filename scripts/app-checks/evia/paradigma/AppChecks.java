@@ -151,9 +151,15 @@ public class AppChecks {
         // ---------- UART / SPI / I2C blocks and PIC32
         check(Target.parse("pic32").lang() == Target.Lang.PIC32 && Target.parse("pic32/goto").values() == Target.Values.FAST
                 && Target.parse(Target.parse("pic32").key()).lang() == Target.Lang.PIC32, "pic32 target (always fast values)");
-        check(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).count() == 10
+        check(java.util.Arrays.stream(Board.values()).filter(Board::isPic32).count() == 11
                 && Board.forLang(Board.UNO, Target.Lang.PIC32).isPic32() && !Board.UNO.supports(Target.Lang.PIC32)
                 && Board.parse("pic32mx250f128b").isPic32(), "PIC32 boards");
+        check(Board.parse("chipkit-pro-mx7") == Board.CHIPKIT_PRO_MX7 && "RG12".equals(Board.CHIPKIT_PRO_MX7.led)
+                && "32MX795F512L".equals(Board.CHIPKIT_PRO_MX7.pic), "chipKIT Pro MX7: MX795F512L, LD1 on RG12");
+        check(Board.parse("disco-f429zi") == Board.DISCO_F429ZI && Board.DISCO_F429ZI.stm32.flashK() == 2048
+                && Board.DISCO_F429ZI.stm32.ramK() == 192 && Board.DISCO_F429ZI.stm32.usart() == 1
+                && "PG13".equals(Board.DISCO_F429ZI.led) && Board.DISCO_F429ZI.supports(Target.Lang.ARDUINO),
+                "32F429IDISCOVERY: 2 MB, 192 KB, USART1, LD3 on PG13, Arduino too");
         for (String name : new String[] {"uart_echo", "spi_loopback", "i2c_memory"}) {
             Library bus = newLib();
             ProgramIO.load(bus, Path.of("examples/boards/" + name + ".evia"));

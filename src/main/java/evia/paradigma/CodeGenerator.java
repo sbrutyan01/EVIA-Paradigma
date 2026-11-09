@@ -1247,10 +1247,11 @@ final class CodeGenerator {
             Board board = Settings.board(t.lang());
             if (t.lang() == Target.Lang.PIC32) {
                 if (!Settings.pic32Ethernet()) return;
-                if (board == Board.PIC32MX695F512L || board == Board.PIC32MX795F512L || board == Board.PIC32_ESK2) return;
+                if (board == Board.PIC32MX695F512L || board == Board.PIC32MX795F512L || board == Board.PIC32_ESK2
+                        || board == Board.CHIPKIT_PRO_MX7) return;
                 throw new FlowException(b, "the " + b.type.title + " block is set to use Ethernet (Settings, PIC32 MQTT over),"
-                        + " and " + board.display + " has no Ethernet port: choose the MX695F512L, the MX795F512L or the"
-                        + " Ethernet Starter Kit II, or switch back to the WiFi module on UART2.");
+                        + " and " + board.display + " has no Ethernet port: choose the MX695F512L, the MX795F512L, the"
+                        + " Ethernet Starter Kit II or the chipKIT Pro MX7, or switch back to the WiFi module on UART2.");
             }
             if (t.lang() == Target.Lang.ARDUINO && board.fqbn.startsWith("esp32:")) {
                 if (board != Board.ESP32_H2) return;

@@ -33,7 +33,8 @@ BOARDS=(
   "blackpill-f411ce thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
   "nucleo-f401re thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
   "nucleo-f411re thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
-  "disco-f407vg thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
+  "disco-f407vg thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
+  "disco-f429zi thumbv7em-none-eabihf -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 
 # ---- the declarations clang needs in place of newlib's headers
 cat > "$OUT/mock/math.h" <<'H'
@@ -163,7 +164,8 @@ if [ "${SKIP_ARDUINO:-}" != 1 ] && command -v "$ARDUINO_CLI" > /dev/null \
           m["blackpill-f411ce"]="STMicroelectronics:stm32:GenF4:pnum=BLACKPILL_F411CE";
           m["nucleo-f401re"]="STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F401RE";
           m["nucleo-f411re"]="STMicroelectronics:stm32:Nucleo_64:pnum=NUCLEO_F411RE";
-          m["disco-f407vg"]="STMicroelectronics:stm32:Disco:pnum=DISCO_F407VG"; print m[b] }')
+          m["disco-f407vg"]="STMicroelectronics:stm32:Disco:pnum=DISCO_F407VG";
+          m["disco-f429zi"]="STMicroelectronics:stm32:Disco:pnum=DISCO_F429ZI"; print m[b] }')
       if ! "$ARDUINO_CLI" compile --fqbn "$fqbn" --warnings all --output-dir "$dir-build" "$dir" > "$dir.log" 2>&1; then
         fail "$name $board: arduino-cli"; grep -E "error|Error" "$dir.log" | head -8; continue
       fi
