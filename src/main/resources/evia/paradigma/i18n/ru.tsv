@@ -455,3 +455,13 @@ Phone Sensor	Датчик телефона
 Android Phones	Телефоны Android
 Phone	Телефон
 Language Android reads the phone's sensors; Run simulates them.	Язык Android читает датчики телефона; Run их имитирует.
+Build executable	Собрать программу
+Compile the blocks straight to a program for this computer (F7)	Скомпилировать блоки прямо в программу для этого компьютера (F7)
+Run executable	Запустить программу
+Build, then run the program; Input goes to it from the field under the output (F6)	Собрать и запустить программу; Input вводится в поле под выводом (F6)
+Build Executable	Собрать программу
+Run Executable	Запустить программу
+Stop Executable	Остановить программу
+Time	Время
+  Executable: Linux x86-64	  Программа: Linux x86-64
+Build makes a program for Linux on 64-bit Intel and AMD processors, straight from the blocks	Сборка делает программу для Linux на 64-битных процессорах Intel и AMD прямо из блоков

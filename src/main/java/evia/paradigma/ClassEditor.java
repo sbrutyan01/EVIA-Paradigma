@@ -57,6 +57,7 @@ final class ClassEditor extends JFrame {
         });
         JButton source = new JButton("View code");
         source.addActionListener(e -> lib.viewSource(def));
+        source.setVisible(!App.nativeEdition());
         top.add(addMethod);
         top.add(addCtor);
         top.add(place);
@@ -209,6 +210,7 @@ final class ClassEditor extends JFrame {
         delete.addActionListener(e -> deleteMethod(m));
         JButton src = new JButton("View code");
         src.addActionListener(e -> lib.viewSource(m));
+        src.setVisible(!App.nativeEdition());
 
         JPanel head = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         head.add(new JLabel(m.isConstructor() ? "Constructor:" : "Method:"));

@@ -71,6 +71,9 @@ jobs:
       - name: Android apps (the runner's Android SDK), run against the interpreter, and one APK
         run: scripts/check-android.sh
 
+      - name: Native executables straight from the blocks (no compiler), against the interpreter and Java's numbers
+        run: scripts/check-native.sh
+
       - name: Upload the application and generated C++
         uses: actions/upload-artifact@v4
         with:

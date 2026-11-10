@@ -1,0 +1,141 @@
+// ---- safe values: one 64-bit word. A number is its own bits; text is a string's address in a NaN that no
+// arithmetic makes (top 16 bits FFFC); a program variable that was never assigned is FFFD000000000000.
+
+const TAG_STR = 0xFFFC000000000000;
+const UNDEF = 0xFFFD000000000000;
+const PTR_MASK = 0x0000FFFFFFFFFFFF;
+const ONE = 0x3FF0000000000000;
+const NAN_BITS = 0x7FF8000000000000;
+
+fn is_str(v): int {
+    return (v >>> 48) == 0xFFFC;
+}
+
+fn box_num(x: float): int {
+    if (x != x) { return NAN_BITS; }
+    return bits(x);
+}
+
+fn box_str(s): int {
+    return s | TAG_STR;
+}
+
+fn str_of(v): int {
+    return v & PTR_MASK;
+}
+
+fn rd(v, name): int {
+    if (v == UNDEF) { fail(str3("undefined variable '", name, "'")); }
+    return v;
+}
+
+fn num(v): float {
+    if (!is_str(v)) { return fbits(v); }
+    var x = parse_text(str_of(v));
+    if (!parse_ok) { fail(str3("'", str_of(v), "' is not a number")); }
+    return x;
+}
+
+fn text(v): int {
+    if (is_str(v)) { return str_of(v); }
+    return num_text(fbits(v));
+}
+
+fn truthy(v): int {
+    if (is_str(v)) { return load64(str_of(v)) != 0; }
+    return fbits(v) != 0.0;
+}
+
+fn B(c): int {
+    if (c) { return ONE; }
+    return 0;
+}
+
+fn non_zero(d: float): float {
+    if (d == 0.0) { fail("division by zero"); }
+    return d;
+}
+
+fn v_add(a, b): int {
+    if (is_str(a) || is_str(b)) { return box_str(str_concat(text(a), text(b))); }
+    return box_num(fbits(a) + fbits(b));
+}
+
+fn v_sub(a, b): int {
+    var x = num(a);
+    return box_num(x - num(b));
+}
+
+fn v_mul(a, b): int {
+    var x = num(a);
+    return box_num(x * num(b));
+}
+
+fn v_div(a, b): int {
+    var x = num(a);
+    return box_num(x / non_zero(num(b)));
+}
+
+fn v_mod(a, b): int {
+    var x = num(a);
+    return box_num(x % non_zero(num(b)));
+}
+
+fn v_neg(a): int {
+    return box_num(-num(a));
+}
+
+fn v_not(a): int {
+    return B(!truthy(a));
+}
+
+fn equal(a, b): int {
+    if (!is_str(a) && !is_str(b)) { return fbits(a) == fbits(b); }
+    return str_eq(text(a), text(b));
+}
+
+/** Java's Double.compare for numbers (-0.0 below 0.0, NaN above everything), text by its characters. */
+fn compare(a, b): int {
+    if (is_str(a) && is_str(b)) { return str_cmp(str_of(a), str_of(b)); }
+    var x = num(a);
+    var y = num(b);
+    if (x < y) { return -1; }
+    if (x > y) { return 1; }
+    var xn = x != x;
+    var yn = y != y;
+    if (xn || yn) { return xn - yn; }
+    var sx = bits(x) < 0;
+    var sy = bits(y) < 0;
+    return sy - sx;
+}
+
+fn v_eq(a, b): int { return B(equal(a, b)); }
+fn v_ne(a, b): int { return B(!equal(a, b)); }
+fn v_lt(a, b): int { return B(compare(a, b) < 0); }
+fn v_le(a, b): int { return B(compare(a, b) <= 0); }
+fn v_gt(a, b): int { return B(compare(a, b) > 0); }
+fn v_ge(a, b): int { return B(compare(a, b) >= 0); }
+
+fn v_and(a, b): int {
+    return B(truthy(a) && truthy(b));
+}
+
+fn print(v) {
+    out_line(text(v));
+}
+
+/** Input block: a line that reads as a number becomes a number, otherwise text. */
+fn input(name): int {
+    var line = read_line(name);
+    var x = parse_text(line);
+    if (parse_ok) { return box_num(x); }
+    return box_str(line);
+}
+
+fn delay_v(v) {
+    delay(num(v));
+}
+
+fn millis_v(): int {
+    return box_num(millis());
+}

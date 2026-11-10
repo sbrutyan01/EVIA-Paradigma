@@ -20,7 +20,13 @@ VERSION="${2:?usage: appimage.sh <jpackage app-image dir> <version>}"
 
 OUT=packages
 WORK=build/appimage
-APPDIR="$WORK/EVIA-Paradigma.AppDir"
+SLUG=EVIA-Paradigma; ID=evia-paradigma; TITLE="EVIA Paradigma"
+COMMENT="Visual block programming with classes, and code generation for C, C++, Python and boards"
+if [ "${EDITION:-}" = native ]; then
+  SLUG=EVIA-Paradigma-Native; ID=evia-paradigma-native; TITLE="EVIA Paradigma Native"
+  COMMENT="Visual block programming compiled straight to executables"
+fi
+APPDIR="$WORK/$SLUG.AppDir"
 ARCH="${ARCH:-$(uname -m)}"
 TOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${ARCH}.AppImage"
 
@@ -45,31 +51,31 @@ sed -i "s|usr/bin/EVIA Paradigma|usr/bin/$LAUNCHER|" "$APPDIR/AppRun"
 chmod +x "$APPDIR/AppRun"
 
 # ---- the desktop entry, which an AppImage must carry at the top of the AppDir
-cat > "$APPDIR/evia-paradigma.desktop" <<DESKTOP
+cat > "$APPDIR/$ID.desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=EVIA Paradigma
+Name=$TITLE
 GenericName=Visual block programming
-Comment=Visual block programming with classes, and code generation for C, C++, Python and boards
+Comment=$COMMENT
 Exec=AppRun %f
-Icon=evia-paradigma
+Icon=$ID
 Categories=Development;IDE;
 Terminal=false
 MimeType=application/x-evia;application/x-evia-project;
-StartupWMClass=evia-paradigma
+StartupWMClass=$ID
 X-AppImage-Version=$VERSION
 DESKTOP
 
 # ---- the icon, at the name the desktop entry asks for
 if [ -f packaging/icons/evia.png ]; then
-    cp packaging/icons/evia.png "$APPDIR/evia-paradigma.png"
+    cp packaging/icons/evia.png "$APPDIR/$ID.png"
     install -Dm644 packaging/icons/evia.png \
-        "$APPDIR/usr/share/icons/hicolor/256x256/apps/evia-paradigma.png"
+        "$APPDIR/usr/share/icons/hicolor/256x256/apps/$ID.png"
 else
     echo "appimage: packaging/icons/evia.png is missing" >&2; exit 1
 fi
-install -Dm644 "$APPDIR/evia-paradigma.desktop" \
-    "$APPDIR/usr/share/applications/evia-paradigma.desktop"
+install -Dm644 "$APPDIR/$ID.desktop" \
+    "$APPDIR/usr/share/applications/$ID.desktop"
 
 # ---- it has to actually start before it is worth packaging
 echo "appimage: smoke test through AppRun"
@@ -85,7 +91,7 @@ if ! curl -fsSL -o "$TOOL" "$TOOL_URL"; then
 fi
 chmod +x "$TOOL"
 
-TARGET="$OUT/EVIA-Paradigma-${VERSION}-${ARCH}.AppImage"
+TARGET="$OUT/$SLUG-${VERSION}-${ARCH}.AppImage"
 # No signing key here, so --no-appstream keeps it from demanding metadata we do not ship.
 ARCH="$ARCH" "$TOOL" --appimage-extract-and-run --no-appstream "$APPDIR" "$TARGET"
 chmod +x "$TARGET"

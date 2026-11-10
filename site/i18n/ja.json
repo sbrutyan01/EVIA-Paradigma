@@ -157,5 +157,6 @@
  "<td>Linux、JavaとKotlin：すべてのサンプルとテスト、両方のフロー、両方の値モード</td>",
  "<td>Androidアプリ：プログラム部分をコンピューターで実行、すべてのサンプルとテスト</td>",
  "<td>108 / 108</td>",
- "<p>0.10.1の新機能：スマートフォンのセンサー。Phone SensorブロックでAndroidスマートフォンの加速度センサー、ジャイロスコープ、GPSを読み取れ、Runではそれらをシミュレートします。File → Open Example → Android Phonesには、Hello world、GPS座標ビューア、モーションテスターの3つのアプリがあります。</p>"
+ "<p>0.10.1の新機能：スマートフォンのセンサー。Phone SensorブロックでAndroidスマートフォンの加速度センサー、ジャイロスコープ、GPSを読み取れ、Runではそれらをシミュレートします。File → Open Example → Android Phonesには、Hello world、GPS座標ビューア、モーションテスターの3つのアプリがあります。</p>",
+ "<p>0.11.0の新機能：ネイティブ実行ファイル。EVIA Paradigma独自のコンパイラーがブロックを直接Linux x86-64プログラムに変換します。コンピューターにコンパイラー、アセンブラー、リンカーは不要で、プログラムはRunとまったく同じように動作します。EVIA Paradigma Nativeはそれを中心にした2つ目のアプリケーションで、コード生成はなく、Build executableとRun executableだけがあります。</p>"
 ]

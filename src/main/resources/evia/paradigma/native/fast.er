@@ -1,0 +1,18 @@
+// ---- fast values: plain doubles, text only in Print, no checks (dividing by zero gives Infinity or NaN)
+
+fn b2f(c): float {
+    if (c) { return 1.0; }
+    return 0.0;
+}
+
+fn out_num(x: float) {
+    out_str(num_text(x));
+}
+
+/** Input block (fast values): the line must be a number. */
+fn input_num(name): float {
+    var line = read_line(name);
+    var x = parse_text(line);
+    if (!parse_ok) { fail(str3("'", line, "' is not a number")); }
+    return x;
+}

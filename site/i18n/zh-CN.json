@@ -157,5 +157,6 @@
  "<td>Linux，Java 和 Kotlin：所有示例和测试，两种流程，两种数值模式</td>",
  "<td>Android 应用：程序部分在电脑上运行，所有示例和测试</td>",
  "<td>108 / 108</td>",
- "<p>0.10.1 新增：手机传感器。Phone Sensor 程序块可读取 Android 手机的加速度计、陀螺仪和 GPS，Run 会模拟它们。File → Open Example → Android Phones 中有三个入门应用：Hello world、GPS 坐标查看器和运动测试器。</p>"
+ "<p>0.10.1 新增：手机传感器。Phone Sensor 程序块可读取 Android 手机的加速度计、陀螺仪和 GPS，Run 会模拟它们。File → Open Example → Android Phones 中有三个入门应用：Hello world、GPS 坐标查看器和运动测试器。</p>",
+ "<p>0.11.0 新增：原生可执行程序。EVIA Paradigma 自带的编译器可将程序块直接转换为 Linux x86-64 程序，电脑上无需编译器、汇编器或链接器，程序的行为与 Run 完全一致。EVIA Paradigma Native 是基于它的第二个应用：不生成代码，只有 Build executable 和 Run executable。</p>"
 ]

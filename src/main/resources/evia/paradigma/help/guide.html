@@ -171,6 +171,12 @@ phone on a table; Language Android reads the real sensors, and an app that reads
 permission. <b>Delay</b> and <b>Millis</b> work in Java, Kotlin and Android too. Examples: <i>File &gt; Open Example &gt;
 Android Phones</i> (Hello world, GPS viewer, Motion tester).</p>
 
+<p><b>Native executables.</b> <b>EVIA Paradigma Native</b>, the second edition, has no Language list and no code
+window: <b>Build executable</b> (F7) turns the blocks straight into a Linux x86-64 program, and <b>Run executable</b>
+(F6) starts it; Input goes to it from the field under the output. No compiler, assembler or linker is used: EVIA
+Paradigma writes the machine code itself, and the program behaves exactly as Run does (output, errors, exit code,
+numbers). From EVIA Paradigma: <code>java -jar evia-paradigma.jar --native program.evia -o program</code>.</p>
+
 <a name="boards"></a>
 <h2>Arduino and ESP32 boards</h2>
 <p>Three more languages make code for microcontrollers. Both use fast values (numbers; text only in Print), and Print and

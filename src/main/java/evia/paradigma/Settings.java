@@ -573,12 +573,14 @@ final class Settings {
 
     /** The language and generation mode used by Generate code (and by projects that don't set their own). */
     static Target target() {
+        // the Native edition keeps only the values; its own key, so the two editions do not change each other
+        if (App.nativeEdition()) return Target.parse(PREFS.get("target.native", null)).withLang(Target.DEFAULT.lang());
         return Target.parse(PREFS.get("target", null));
     }
 
     static void setTarget(Target t) {
         if (t.equals(target())) return;
-        PREFS.put("target", t.key());
+        PREFS.put(App.nativeEdition() ? "target.native" : "target", t.key());
         fire();
     }
 

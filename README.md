@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python / Java / Kotlin code generation, and Android apps.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.10.1-blue" alt="version 0.10.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.11.0-blue" alt="version 0.11.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -39,7 +39,9 @@ fields, a constructor and methods, share them between programs as **modules**, k
 in **project folders** under **Git/GitHub**, edit everything with **Vim**, and turn the
 program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23** or **GCC**,
 or a **Python**, **Java** or **Kotlin** file, with structured or goto control flow and safe or fast values. **Android**
-turns it into a phone app (Kotlin) that EVIA Paradigma builds and installs over USB, no Android Studio needed. The same diagrams program **Arduino and ESP32 boards**:
+turns it into a phone app (Kotlin) that EVIA Paradigma builds and installs over USB, no Android Studio needed.
+**EVIA Paradigma Native**, a second edition, skips languages altogether: its own compiler turns the blocks straight
+into a Linux x86-64 executable, with no compiler, assembler or linker on the computer. The same diagrams program **Arduino and ESP32 boards**:
 pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
 -S2, -S3, -C3, -C6, -H2), bare-metal **AVR C** or bare-metal **PIC32 C** (nine PIC32MX chips) that drive the chip's
 registers directly, with **UART, SPI and I2C** blocks, and **Run** simulates the board on your computer. They also become
@@ -64,12 +66,23 @@ itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.10.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.10.1-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.10.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.10.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.10.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.10.1-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.10.1-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.10.1.jar` | `java -jar evia-paradigma-0.10.1.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.11.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.11.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.11.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.11.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.11.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.11.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.11.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| **EVIA Paradigma Native**: Windows, macOS, Ubuntu/Debian, any Linux | `EVIA-Paradigma-Native-0.11.0-windows-x64.exe`, `-macos-arm64.dmg`, `-macos-x64.dmg`, `evia-paradigma-native_0.11.0_amd64.deb`, `EVIA-Paradigma-Native-0.11.0-x86_64.AppImage` | The edition without code generation: **Build executable** turns the blocks straight into a Linux x86-64 program. Installs next to EVIA Paradigma (`/opt/evia-paradigma-native`, the `evia-paradigma-native` command) |
+| Any OS with Java 25 | `evia-paradigma-0.11.0.jar` | `java -jar evia-paradigma-0.11.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.11.0
+
+[EVIA Paradigma v0.11.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.11.0) ([release notes](docs/release-notes/v0.11.0.md)):
+**native executables** and **EVIA Paradigma Native**. An update package for 0.9.0 to 0.10.1.
+
+- A compiler from the blocks straight to a **Linux x86-64 executable**: no compiler, assembler or linker, about 33 KB,
+  identical to the interpreter. `--native program.evia -o program`.
+- **EVIA Paradigma Native**, a second application with installers of its own: no code generation, **Build
+  executable** and **Run executable** instead.
 
 ### Release 0.10.1
 
@@ -1056,6 +1069,33 @@ accelerometer, gyroscope and GPS, and asks for the location permission only when
 
 `scripts/check-android.sh` compiles the app of every example against an Android platform, runs its program part on the
 computer with the console in place of the screen, compares it with the interpreter, and builds one APK.
+
+## Native executables: EVIA Paradigma Native
+
+**EVIA Paradigma Native** is the same editor, blocks, classes, projects and Run, without a Language list and without
+a code window: **Build executable** (F7) turns the program straight into a **Linux x86-64 executable**, and **Run
+executable** (F6) starts it, with Input typed in the field under the output. There is no C, no compiler, no
+assembler and no linker anywhere: EVIA Paradigma's own back end writes the machine code and the ELF file itself.
+
+| | |
+|---|---|
+| The executable | a static ELF file of about 33 KB that talks to the Linux kernel with system calls only (no libc, no shared libraries), so it runs on any x86-64 Linux |
+| Behaviour | the interpreter's, exactly: the same output, error messages (`>> error: ...` on stderr) and exit code; numbers are written and read as Java writes and reads them (the shortest digits that read back, correctly rounded input) |
+| Values | *Safe*: numbers and text with every check; *Fast*: plain doubles, text only in Print |
+| Blocks | everything a desktop program uses, with classes and objects, plus **Delay** and **Millis**; the board, bus and phone blocks need their languages |
+| How | the blocks are lowered to a small internal language (every block a label, every wire a jump), compiled with the runtime (strings, big-number arithmetic for the numbers, buffered output) to x86-64 by `NativeAsm`, and written by `NativeElf` |
+
+The same compiler is in EVIA Paradigma too, on the command line:
+
+```
+java -jar evia-paradigma.jar --native program.evia -o program [--values fast]
+./program
+```
+
+It starts as a separate application (`-Devia.edition=native`, or `--edition native` before the other arguments) with
+installers of its own, so both editions can be installed side by side; they share the settings and the update
+packages. `scripts/check-native.sh` compiles every example and test program in both value modes and compares each
+executable with the interpreter, and checks 100,000 numbers against Java's. Windows and ARM executables are next.
 
 ## Arduino and ESP32 boards
 

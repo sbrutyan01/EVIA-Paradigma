@@ -1,0 +1,14 @@
+#!/bin/sh
+# prerm for evia-paradigma-native: remove what postinst added (postinst adds it again on upgrade).
+set -e
+
+case "$1" in
+  remove|upgrade|deconfigure)
+    rm -f /usr/share/applications/evia-paradigma-native.desktop \
+          /usr/share/icons/hicolor/512x512/apps/evia-paradigma-native.png
+    if [ -L /usr/bin/evia-paradigma-native ]; then rm -f /usr/bin/evia-paradigma-native; fi
+    if command -v update-desktop-database > /dev/null 2>&1; then update-desktop-database -q /usr/share/applications || true; fi
+    ;;
+esac
+
+exit 0

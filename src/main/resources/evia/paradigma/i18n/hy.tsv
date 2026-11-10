@@ -455,3 +455,13 @@ Phone Sensor	Հեռախոսի սենսոր
 Android Phones	Android հեռախոսներ
 Phone	Հեռախոս
 Language Android reads the phone's sensors; Run simulates them.	Android լեզուն կարդում է հեռախոսի սենսորները, Run-ը դրանք նմանակում է։
+Build executable	Կառուցել ծրագիրը
+Compile the blocks straight to a program for this computer (F7)	Կոմպիլացնել բլոկներն ուղղակի այս համակարգչի ծրագրի (F7)
+Run executable	Գործարկել ծրագիրը
+Build, then run the program; Input goes to it from the field under the output (F6)	Կառուցել և գործարկել ծրագիրը. Input-ը մուտքագրվում է ելքի տակի դաշտում (F6)
+Build Executable	Կառուցել ծրագիրը
+Run Executable	Գործարկել ծրագիրը
+Stop Executable	Կանգնեցնել ծրագիրը
+Time	Ժամանակ
+  Executable: Linux x86-64	  Ծրագիր՝ Linux x86-64
+Build makes a program for Linux on 64-bit Intel and AMD processors, straight from the blocks	Կառուցումը բլոկներից ուղղակի ստեղծում է ծրագիր Linux-ի համար՝ 64-բիթանոց Intel և AMD պրոցեսորներով

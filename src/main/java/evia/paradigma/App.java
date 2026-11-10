@@ -14,9 +14,26 @@ import java.io.File;
  */
 public final class App {
     /** Released version, shown by --version and in the About dialog. */
-    public static final String VERSION = "0.10.1";
+    public static final String VERSION = "0.11.0";
+
+    /**
+     * EVIA Paradigma Native: the same editor, but no code generation. Build makes an executable straight from the
+     * blocks (NativeCompiler). Its installers set -Devia.edition=native; "--edition native" does the same.
+     */
+    static boolean nativeEdition() {
+        return "native".equals(System.getProperty("evia.edition"));
+    }
+
+    /** The name of this edition, for titles and dialogs. */
+    static String name() {
+        return nativeEdition() ? "EVIA Paradigma Native" : "EVIA Paradigma";
+    }
 
     public static void main(String[] args) {
+        if (args.length >= 2 && args[0].equals("--edition")) {
+            System.setProperty("evia.edition", args[1]);
+            args = java.util.Arrays.copyOfRange(args, 2, args.length);
+        }
         if (handOver(args)) return;
         if (args.length > 0 && args[0].startsWith("-")) {
             System.setProperty("java.awt.headless", "true");

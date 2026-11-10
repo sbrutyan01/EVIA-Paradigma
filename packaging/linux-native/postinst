@@ -1,0 +1,28 @@
+#!/bin/sh
+# postinst for evia-paradigma-native: menu entry, icon and a command on PATH (.evia files stay with EVIA Paradigma).
+set -e
+
+APP=/opt/evia-paradigma-native
+
+case "$1" in
+  configure)
+    for f in "$APP"/lib/*.desktop; do
+      [ -f "$f" ] || continue
+      install -D -m 644 "$f" /usr/share/applications/evia-paradigma-native.desktop
+    done
+    for f in "$APP"/lib/*.png; do
+      [ -f "$f" ] || continue
+      install -D -m 644 "$f" /usr/share/icons/hicolor/512x512/apps/evia-paradigma-native.png
+    done
+    if [ -f /usr/share/applications/evia-paradigma-native.desktop ]; then
+      sed -i 's|^Icon=.*|Icon=evia-paradigma-native|; s|^Exec=.*|Exec="/opt/evia-paradigma-native/bin/EVIA Paradigma Native" %f|' \
+        /usr/share/applications/evia-paradigma-native.desktop
+    fi
+    ln -sf "$APP/bin/EVIA Paradigma Native" /usr/bin/evia-paradigma-native
+
+    if command -v update-desktop-database > /dev/null 2>&1; then update-desktop-database -q /usr/share/applications || true; fi
+    if command -v gtk-update-icon-cache > /dev/null 2>&1; then gtk-update-icon-cache -q -t /usr/share/icons/hicolor || true; fi
+    ;;
+esac
+
+exit 0

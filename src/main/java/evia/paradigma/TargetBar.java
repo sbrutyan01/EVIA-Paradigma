@@ -47,6 +47,17 @@ final class TargetBar extends JPanel {
         add(boardLabel);
         add(board);
         for (JComboBox<?> c : new JComboBox<?>[]{lang, flow, values, board}) c.setFocusable(false);
+        if (App.nativeEdition()) {
+            // no languages: the values only, and what the executable runs on
+            for (Component c : getComponents()) c.setVisible(false);
+            removeAll();
+            add(new JLabel(Text.t(" Values:")));
+            values.setVisible(true);
+            add(values);
+            JLabel what = new JLabel(Text.t("  Executable: Linux x86-64"));
+            what.setToolTipText(Text.t("Build makes a program for Linux on 64-bit Intel and AMD processors, straight from the blocks"));
+            add(what);
+        }
         refresh();
         lang.addActionListener(e -> changed());
         flow.addActionListener(e -> changed());
@@ -77,8 +88,9 @@ final class TargetBar extends JPanel {
             board.removeAllItems();
             for (Board b : Board.values()) if (b.supports(t.lang())) board.addItem(b);
             board.setSelectedItem(Settings.board(t.lang()));
-            board.setVisible(t.embedded());
-            boardLabel.setVisible(t.embedded());
+            board.setVisible(t.embedded() && !App.nativeEdition());
+            boardLabel.setVisible(t.embedded() && !App.nativeEdition());
+            if (App.nativeEdition()) values.setEnabled(true);
             revalidate();
         } finally {
             updating = false;

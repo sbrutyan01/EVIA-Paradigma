@@ -494,9 +494,11 @@ public final class FlowCanvas extends JPanel {
                 edit.addActionListener(e -> editBlock(b));
                 menu.add(edit);
             }
-            JMenuItem src = new JMenuItem(Text.t("View source code"));
-            src.addActionListener(e -> lib.viewSource(b));
-            menu.add(src);
+            if (!App.nativeEdition()) {   // the Native edition makes no source code
+                JMenuItem src = new JMenuItem(Text.t("View source code"));
+                src.addActionListener(e -> lib.viewSource(b));
+                menu.add(src);
+            }
             if (b.def != null) {
                 JMenuItem open = new JMenuItem("Open class " + b.def.name + "...");
                 open.addActionListener(e -> lib.openEditor(b.def));

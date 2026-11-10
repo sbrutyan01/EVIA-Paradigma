@@ -48,10 +48,20 @@ final class PalettePanel extends JPanel {
             add(Box.createVerticalStrut(5));
         }
 
+        if (App.nativeEdition()) {
+            // an executable on this computer: of the board blocks, only time
+            add(Box.createVerticalStrut(10));
+            add(header(Text.t("Time")));
+            for (BlockType t : new BlockType[]{BlockType.DELAY, BlockType.MILLIS}) {
+                add(item(Text.t(t.title), t.color, Text.t(t.hint), "TYPE:" + t.name(), null, null));
+                add(Box.createVerticalStrut(5));
+            }
+        }
+
         add(Box.createVerticalStrut(10));
-        add(header(Text.t("Phone")));
+        if (!App.nativeEdition()) add(header(Text.t("Phone")));
         for (BlockType t : BlockType.values()) {
-            if (!t.isPhone() || !target.allows(t)) continue;
+            if (App.nativeEdition() || !t.isPhone() || !target.allows(t)) continue;
             add(item(Text.t(t.title), t.color, "<html>" + Text.t(t.hint) + "<br><i>"
                             + Text.t("Language Android reads the phone's sensors; Run simulates them.") + "</i></html>",
                     "TYPE:" + t.name(), null, null));
@@ -59,9 +69,9 @@ final class PalettePanel extends JPanel {
         }
 
         add(Box.createVerticalStrut(10));
-        add(header(Text.t("Board")));
+        if (!App.nativeEdition()) add(header(Text.t("Board")));
         for (BlockType t : BlockType.values()) {
-            if (!t.isBoard() || !target.allows(t)) continue;
+            if (App.nativeEdition() || !t.isBoard() || !target.allows(t)) continue;
             add(item(Text.t(t.title), t.color, "<html>" + Text.t(t.hint) + "<br><i>" + Text.t("Arduino / AVR C code; Run simulates an Arduino Uno.") + "</i></html>",
                     "TYPE:" + t.name(), null, null));
             add(Box.createVerticalStrut(5));
@@ -201,9 +211,11 @@ final class PalettePanel extends JPanel {
                 JMenuItem open = new JMenuItem("Open class...");
                 open.addActionListener(ev -> lib.openEditor(def));
                 m.add(open);
-                JMenuItem src = new JMenuItem("View source code");
-                src.addActionListener(ev -> lib.viewSource(def));
-                m.add(src);
+                if (!App.nativeEdition()) {
+                    JMenuItem src = new JMenuItem("View source code");
+                    src.addActionListener(ev -> lib.viewSource(def));
+                    m.add(src);
+                }
                 JMenuItem del = new JMenuItem("Delete class");
                 del.addActionListener(ev -> deleteDefinition(def));
                 m.add(del);

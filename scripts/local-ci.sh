@@ -117,6 +117,9 @@ if want targets; then
     [ -n "$CXX" ] && run "every language and mode" env CC="$CC" CXX="$CXX" scripts/check-targets.sh \
         || skip targets "no C++ compiler (set CXX)"
 fi
+if want native; then
+    run "native executables straight from the blocks (Linux x86-64), against the interpreter" scripts/check-native.sh "$JAR"
+fi
 if want android; then
     if have kotlinc; then run "Android apps: compiled for Android, run against the interpreter" scripts/check-android.sh "$JAR"
     else skip android "no kotlinc (set KOTLINC, or Settings > Java and Kotlin > Get)"; fi

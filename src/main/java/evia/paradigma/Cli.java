@@ -231,6 +231,37 @@ final class Cli {
                     }
                     return 0;
                 }
+                case "--native" -> {
+                    // a Linux x86-64 executable straight from the blocks: no C, no compiler, no linker
+                    need(args, 2);
+                    Target t = Target.DEFAULT;
+                    String output = null;
+                    boolean lowered = false;
+                    for (int i = 2; i < args.length; i++) {
+                        String opt = args[i];
+                        if (opt.equals("--lowered")) {
+                            lowered = true;
+                            continue;
+                        }
+                        if (i + 1 >= args.length) throw new IllegalArgumentException(opt + " needs a value (see --help)");
+                        String v = args[++i];
+                        switch (opt) {
+                            case "-o" -> output = v;
+                            case "--values" -> t = t.withValues(v.equalsIgnoreCase("fast") ? Target.Values.FAST : Target.Values.SAFE);
+                            default -> throw new IllegalArgumentException("unknown option " + opt + " (see --help)");
+                        }
+                    }
+                    NativeCompiler.Result r = NativeCompiler.compile(load(args[1]), t);
+                    if (lowered) {
+                        out.print(r.lowered());
+                        if (output == null) return 0;
+                    }
+                    Path exe = Path.of(output != null ? output : Path.of(args[1]).getFileName().toString().replaceFirst("\\.evia$", ""));
+                    Files.write(exe, r.executable());
+                    exe.toFile().setExecutable(true);
+                    if (!lowered) out.println("wrote " + exe + " (" + r.executable().length + " bytes, Linux x86-64)");
+                    return 0;
+                }
                 case "--android-sdk" -> {
                     // fetch the Android SDK from Google into DIR (default: Settings, or EVIA's own folder)
                     Path sdk = args.length > 1 && !args[1].startsWith("--") ? Path.of(args[1]).toAbsolutePath() : Settings.androidSdk();
@@ -320,6 +351,9 @@ final class Cli {
                                   --build              also build DIR/build/<name>-debug.apk (Android SDK, JDK, kotlinc)
                                   --install            build, install on the connected phone with adb and start it
                                   --device SERIAL      the phone to install on, when more than one is connected
+                              java -jar evia-paradigma.jar --native program.evia [-o FILE] [--values safe|fast]
+                                                                                     a Linux x86-64 executable straight from
+                                                                                     the blocks: no compiler or linker needed
                               java -jar evia-paradigma.jar --android-sdk [DIR] [--accept-license]
                                                                                      download the Android SDK from Google
                                                                                      (shows Google's licence first)

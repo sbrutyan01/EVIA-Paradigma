@@ -157,5 +157,6 @@
  "<td>Linux, Java und Kotlin: jedes Beispiel und jeder Test, beide Abläufe, beide Wertemodi</td>",
  "<td>Android-Apps: der Programmteil auf dem Computer ausgeführt, jedes Beispiel und jeder Test</td>",
  "<td>108 von 108</td>",
- "<p>Neu in 0.10.1: die Sensoren des Telefons. Ein Phone-Sensor-Block liest Beschleunigungssensor, Gyroskop und GPS eines Android-Telefons, und Run simuliert sie. Unter File, Open Example, Android Phones gibt es drei Apps zum Einstieg: Hello world, einen GPS-Viewer und einen Bewegungstester.</p>"
+ "<p>Neu in 0.10.1: die Sensoren des Telefons. Ein Phone-Sensor-Block liest Beschleunigungssensor, Gyroskop und GPS eines Android-Telefons, und Run simuliert sie. Unter File, Open Example, Android Phones gibt es drei Apps zum Einstieg: Hello world, einen GPS-Viewer und einen Bewegungstester.</p>",
+ "<p>Neu in 0.11.0: native ausführbare Programme. Ein eigener Compiler von EVIA Paradigma macht aus den Blöcken direkt ein Linux-x86-64-Programm, ohne Compiler, Assembler oder Linker auf dem Computer, und das Programm verhält sich genau wie Run. EVIA Paradigma Native ist eine zweite Anwendung darum herum: keine Codeerzeugung, nur Build executable und Run executable.</p>"
 ]

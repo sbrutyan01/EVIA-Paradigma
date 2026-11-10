@@ -634,5 +634,9 @@
  [
   "<p>New in 0.10.1: the phone's sensors. A Phone Sensor block reads the accelerometer, the gyroscope and the GPS of an Android phone, and Run simulates them. File, Open Example, Android Phones has three apps to start from: Hello world, a GPS viewer and a motion tester.</p>",
   "<p>Նորը 0.10.1-ում՝ հեռախոսի սենսորները։ «Հեռախոսի սենսոր» բլոկը կարդում է Android հեռախոսի արագացմաչափը, գիրոսկոպը և GPS-ը, իսկ Run-ը դրանք նմանակում է։ «Ֆայլ → Բացել օրինակ → Android հեռախոսներ» ընտրացանկում կա երեք պատրաստի հավելված՝ Hello world, GPS կոորդինատների դիտիչ և շարժման թեստ։</p>"
+ ],
+ [
+  "<p>New in 0.11.0: native executables. A compiler of EVIA Paradigma's own turns the blocks straight into a Linux x86-64 program, with no compiler, assembler or linker on the computer, and the program behaves exactly as Run does. EVIA Paradigma Native is a second application built around it: no code generation, just Build executable and Run executable.</p>",
+  "<p>Նորը 0.11.0-ում՝ կատարվող ծրագրեր։ EVIA Paradigma-ի սեփական կոմպիլյատորը բլոկներն ուղղակի վերածում է Linux x86-64 ծրագրի՝ առանց համակարգչում կոմպիլյատորի, ասեմբլերի և կապակցիչի, և ծրագիրն աշխատում է ճիշտ ինչպես Run-ը։ EVIA Paradigma Native-ը դրա վրա հիմնված երկրորդ հավելվածն է՝ առանց կոդի գեներացման, միայն «Կառուցել ծրագիրը» և «Գործարկել ծրագիրը»։</p>"
  ]
 ]

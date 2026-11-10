@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 /** Main window: menu bar, toolbar, palette, main program canvas and output console. */
 final class MainFrame extends JFrame {
-    static final String APP = "EVIA Paradigma";
+    static final String APP = App.name();
     private final int MENU = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 
     /** Bundled examples: file name (in resources/evia/paradigma/examples) and menu title. */
@@ -128,15 +128,25 @@ final class MainFrame extends JFrame {
         tb.add(button("New class...", e -> newClass()));
         tb.add(button("Group into class", e -> canvas.groupSelection()));
         tb.addSeparator();
-        tb.add(button("Generate code", e -> generateCode()));
-        tb.add(new TargetBar());
+        if (App.nativeEdition()) {
+            JButton build = button("Build executable", e -> buildExecutable(false));
+            build.setToolTipText(Text.t("Compile the blocks straight to a program for this computer (F7)"));
+            tb.add(build);
+            tb.add(new TargetBar());
+            JButton runExe = button("Run executable", e -> buildExecutable(true));
+            runExe.setToolTipText(Text.t("Build, then run the program; Input goes to it from the field under the output (F6)"));
+            tb.add(runExe);
+        } else {
+            tb.add(button("Generate code", e -> generateCode()));
+            tb.add(new TargetBar());
+        }
         tb.addSeparator();
         tb.add(new JButton(runAction));
         tb.add(new JButton(stopAction));
         tb.addSeparator();
         JButton terminal = button("Terminal", e -> TerminalWindow.open(this));
         terminal.setToolTipText(Text.t("A terminal on a board's serial port (UART) or on another computer (SSH)"));
-        tb.add(terminal);
+        if (!App.nativeEdition()) tb.add(terminal);
         tb.addSeparator();
         tb.add(new JLabel(Text.t(" Step delay: ")));
         speed.setMaximumSize(new Dimension(160, 30));
@@ -158,13 +168,27 @@ final class MainFrame extends JFrame {
         console.setMargin(new Insets(6, 8, 6, 8));
         JScrollPane consoleScroll = new JScrollPane(console);
         consoleScroll.setBorder(BorderFactory.createTitledBorder(Text.t("Output")));
+        JComponent consoleBox = consoleScroll;
+        if (App.nativeEdition()) {
+            // Input for a running executable: a line typed here goes to its stdin
+            exeInput.setEnabled(false);
+            exeInput.setToolTipText(Text.t("Type a line and press Enter to send it to the running program"));
+            exeInput.addActionListener(e -> sendToExecutable());
+            JPanel row = new JPanel(new BorderLayout(6, 0));
+            row.add(new JLabel(Text.t(" Input: ")), BorderLayout.WEST);
+            row.add(exeInput, BorderLayout.CENTER);
+            JPanel box = new JPanel(new BorderLayout());
+            box.add(consoleScroll, BorderLayout.CENTER);
+            box.add(row, BorderLayout.SOUTH);
+            consoleBox = box;
+        }
 
         // ---- layout
         JScrollPane canvasScroll = new JScrollPane(canvas);
         canvasScroll.getVerticalScrollBar().setUnitIncrement(16);
         canvasScroll.getHorizontalScrollBar().setUnitIncrement(16);
 
-        JSplitPane right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, canvasScroll, consoleScroll);
+        JSplitPane right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, canvasScroll, consoleBox);
         right.setResizeWeight(0.78);
 
         JPanel paletteBox = new JPanel(new BorderLayout());
@@ -185,7 +209,7 @@ final class MainFrame extends JFrame {
         getContentPane().add(statusBar(), BorderLayout.SOUTH);
 
         Settings.onChange(() -> {
-            if (project != null) {
+            if (project != null && !App.nativeEdition()) {
                 try {
                     project.setTarget(Settings.target());
                 } catch (IOException e) {
@@ -277,8 +301,14 @@ final class MainFrame extends JFrame {
         run.add(new JMenuItem(runAction));
         run.add(new JMenuItem(stopAction));
         run.addSeparator();
-        run.add(item("Generate Code", KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), e -> generateCode()));
-        run.add(targetMenu());
+        if (App.nativeEdition()) {
+            run.add(item("Build Executable", KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), e -> buildExecutable(false)));
+            run.add(item("Run Executable", KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0), e -> buildExecutable(true)));
+            run.add(item("Stop Executable", null, e -> stopExecutable()));
+        } else {
+            run.add(item("Generate Code", KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0), e -> generateCode()));
+            run.add(targetMenu());
+        }
         run.add(item("Clear Output", null, e -> console.setText("")));
         bar.add(run);
 
@@ -300,10 +330,10 @@ final class MainFrame extends JFrame {
             @Override public void menuCanceled(javax.swing.event.MenuEvent e) { }
         });
         bar.add(git);
-        bar.add(linuxMenu());
+        if (!App.nativeEdition()) bar.add(linuxMenu());
 
         bar.add(settingsMenu());
-        bar.add(devicesMenu());
+        if (!App.nativeEdition()) bar.add(devicesMenu());
 
         JMenu help = menu("Help", KeyEvent.VK_H);
         help.add(item("Guide", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), e -> HelpWindow.showTopic(this, "start")));
@@ -313,7 +343,7 @@ final class MainFrame extends JFrame {
         help.add(item("Keyboard Shortcuts", null, e -> HelpWindow.showTopic(this, "keys")));
         help.add(item("Vim Keys", null, e -> HelpWindow.showTopic(this, "vim")));
         help.add(examplesMenu("Examples"));
-        help.add(item("Terminal (UART, SSH)", null, e -> TerminalWindow.open(this)));
+        if (!App.nativeEdition()) help.add(item("Terminal (UART, SSH)", null, e -> TerminalWindow.open(this)));
         JMenu tutorial = new JMenu(Text.t("Tutorial (PDF)"));
         for (String[] t : HelpWindow.TUTORIALS) tutorial.add(item(t[1], null, e -> HelpWindow.openTutorial(this, t[0])));
         help.add(tutorial);
@@ -323,7 +353,7 @@ final class MainFrame extends JFrame {
         help.add(item("Check for Updates...", null, e -> PackagesDialog.show(this, false)));
         if (!ExternalEditor.MAC) {
             help.addSeparator();
-            help.add(item("About EVIA Paradigma", null, e -> AppIcon.showAbout(this)));
+            help.add(item(App.nativeEdition() ? "About EVIA Paradigma Native" : "About EVIA Paradigma", null, e -> AppIcon.showAbout(this)));
         }
         bar.add(help);
         return bar;
@@ -419,6 +449,7 @@ final class MainFrame extends JFrame {
         JMenu m = menu("Settings", KeyEvent.VK_S);
         m.add(item("General...", ExternalEditor.MAC ? null : KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, MENU), e -> Settings.showDialog(this, Settings.Page.GENERAL)));
         m.add(item("Packages and Updates...", null, e -> PackagesDialog.show(this, false)));
+        if (App.nativeEdition()) return m;   // no languages, no boards
         m.addSeparator();
         m.add(item("C, C++ and Python...", null, e -> Settings.showDialog(this, Settings.Page.DESKTOP)));
         m.add(item("Java and Kotlin...", null, e -> Settings.showDialog(this, Settings.Page.JVM)));
@@ -513,6 +544,7 @@ final class MainFrame extends JFrame {
         title = Text.t(title);
         JMenu m = new JMenu(title);
         for (String[] ex : EXAMPLES) m.add(item(ex[1], null, e -> openExample(ex[0])));
+        if (App.nativeEdition()) return m;   // the board, phone and FPGA examples need their languages
         JMenu arduino = new JMenu(Text.t("Arduino Boards (Uno, Nano, Mega ...)"));
         JMenu esp32 = new JMenu(Text.t("ESP32 Boards"));
         JMenu pic32 = new JMenu(Text.t("PIC32 Boards"));
@@ -609,7 +641,8 @@ final class MainFrame extends JFrame {
 
     /** EVIA logo and name at the top of the palette; click for About. */
     private JComponent brand() {
-        JLabel l = new JLabel(Text.t(" EVIA Paradigma"));
+        JLabel l = new JLabel(App.nativeEdition() ? "<html>EVIA Paradigma<br><span style='font-size:11px'>Native</span></html>"
+                : Text.t(" EVIA Paradigma"));
         l.setFont(l.getFont().deriveFont(Font.BOLD, 15f));
         for (Image img : AppIcon.icons()) {
             if (img.getWidth(null) == 40) l.setIcon(new ImageIcon(img));
@@ -796,6 +829,104 @@ final class MainFrame extends JFrame {
                     : Project.defaultParent().resolve("Android").resolve(programName()));
         }
         return codeViewer;
+    }
+
+    // ================================================================ the Native edition: executables
+
+    private final JTextField exeInput = new JTextField();
+    private volatile Process exeProcess;
+    private java.io.Writer exeStdin;
+
+    /** Where Build puts the executable: the project's build folder, next to the program file, or a temporary folder. */
+    private Path executablePath() throws IOException {
+        if (project != null) {
+            Files.createDirectories(project.buildDir());
+            return project.buildDir().resolve(programName());
+        }
+        if (currentFile != null) return currentFile.toPath().toAbsolutePath().resolveSibling(programName());
+        return Files.createTempDirectory("evia-native").resolve(programName());
+    }
+
+    /** Build Executable (F7) and Run Executable (F6): straight from the blocks to a program, no compiler. */
+    private void buildExecutable(boolean run) {
+        if (worker != null || exeProcess != null) return;
+        for (FlowCanvas c : lib.canvases()) c.clearMarks();
+        Target t = Settings.target();
+        Path exe;
+        long started = System.nanoTime();
+        try {
+            NativeCompiler.Result r = NativeCompiler.compile(lib, t);
+            exe = executablePath();
+            Files.write(exe, r.executable());
+            exe.toFile().setExecutable(true);
+            status.setText(String.format("Built %s: %,d bytes of machine code for Linux x86-64 in %d ms (%s values).",
+                    exe, r.executable().length, (System.nanoTime() - started) / 1_000_000, t.values().display.toLowerCase()));
+        } catch (FlowException e) {
+            console.setText("");
+            reportError(e);
+            return;
+        } catch (IOException e) {
+            status.setText("Could not write the executable: " + e.getMessage());
+            return;
+        }
+        if (!run) return;
+        boolean here = System.getProperty("os.name", "").toLowerCase().contains("linux")
+                && System.getProperty("os.arch", "").matches("amd64|x86_64");
+        console.setText("");
+        if (!here) {
+            console.append(">> " + exe.getFileName() + " is a Linux x86-64 program; this computer is "
+                    + System.getProperty("os.name") + " " + System.getProperty("os.arch") + ". Copy it to a Linux PC to run it.\n");
+            return;
+        }
+        Path file = exe;
+        Thread th = new Thread(() -> {
+            try {
+                Process p = new ProcessBuilder(file.toString()).redirectErrorStream(true).start();
+                exeProcess = p;
+                exeStdin = new java.io.OutputStreamWriter(p.getOutputStream(), StandardCharsets.UTF_8);
+                SwingUtilities.invokeLater(() -> {
+                    exeInput.setEnabled(true);
+                    exeInput.requestFocusInWindow();
+                });
+                try (java.io.Reader in = new java.io.InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8)) {
+                    char[] buf = new char[4096];
+                    int n;
+                    while ((n = in.read(buf)) > 0) {
+                        String chunk = new String(buf, 0, n);
+                        SwingUtilities.invokeLater(() -> console.append(chunk));
+                    }
+                }
+                int rc = p.waitFor();
+                SwingUtilities.invokeLater(() -> console.append("\n>> " + file.getFileName() + " exited with code " + rc + "\n"));
+            } catch (IOException | InterruptedException e) {
+                SwingUtilities.invokeLater(() -> console.append(">> " + e.getMessage() + "\n"));
+            } finally {
+                exeProcess = null;
+                exeStdin = null;
+                SwingUtilities.invokeLater(() -> exeInput.setEnabled(false));
+            }
+        }, "evia-executable");
+        th.setDaemon(true);
+        th.start();
+    }
+
+    private void sendToExecutable() {
+        java.io.Writer w = exeStdin;
+        String line = exeInput.getText();
+        exeInput.setText("");
+        if (w == null) return;
+        console.append(line + "\n");
+        try {
+            w.write(line + "\n");
+            w.flush();
+        } catch (IOException e) {
+            console.append(">> could not send input: " + e.getMessage() + "\n");
+        }
+    }
+
+    private void stopExecutable() {
+        Process p = exeProcess;
+        if (p != null) p.destroyForcibly();
     }
 
     /** What the code window shows: null = the whole program, else the block/method/class whose lines are marked. */

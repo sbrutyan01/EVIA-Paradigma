@@ -634,5 +634,9 @@
  [
   "<p>New in 0.10.1: the phone's sensors. A Phone Sensor block reads the accelerometer, the gyroscope and the GPS of an Android phone, and Run simulates them. File, Open Example, Android Phones has three apps to start from: Hello world, a GPS viewer and a motion tester.</p>",
   "<p>Новое в 0.10.1: датчики телефона. Блок «Датчик телефона» читает акселерометр, гироскоп и GPS телефона Android, а Run их имитирует. В меню «Файл → Открыть пример → Телефоны Android» есть три готовых приложения: Hello world, просмотр GPS-координат и тест движения.</p>"
+ ],
+ [
+  "<p>New in 0.11.0: native executables. A compiler of EVIA Paradigma's own turns the blocks straight into a Linux x86-64 program, with no compiler, assembler or linker on the computer, and the program behaves exactly as Run does. EVIA Paradigma Native is a second application built around it: no code generation, just Build executable and Run executable.</p>",
+  "<p>Новое в 0.11.0: исполняемые программы. Собственный компилятор EVIA Paradigma превращает блоки прямо в программу для Linux x86-64 — без компилятора, ассемблера и компоновщика на компьютере, — и программа ведёт себя точно как Run. EVIA Paradigma Native — второе приложение на его основе: без генерации кода, только «Собрать программу» и «Запустить программу».</p>"
  ]
 ]
