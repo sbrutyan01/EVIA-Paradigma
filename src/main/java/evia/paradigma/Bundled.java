@@ -74,7 +74,7 @@ final class Bundled {
     }
 
     /** The toolchains EVIA Paradigma knows by folder name. */
-    static final String[] TOOLCHAINS = {"avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "arduino-cli", "oss-cad-suite", "buildroot", "yocto", "openwrt"};
+    static final String[] TOOLCHAINS = {"avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "arduino-cli", "oss-cad-suite", "jdk", "kotlin", "buildroot", "yocto", "openwrt"};
 
     /** What is inside, one line each, for About and the Settings pages; empty when nothing is bundled or installed. */
     static String describe() {

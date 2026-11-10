@@ -8,10 +8,10 @@
 <h1 align="center">EVIA Paradigma</h1>
 
 <p align="center">
-  Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python code generation.
+  Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python / Java / Kotlin code generation, and Android apps.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.9.5-blue" alt="version 0.9.5"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.10.0-blue" alt="version 0.10.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -38,7 +38,8 @@ Drag blocks onto a canvas, wire them together, zoom with the mouse wheel, run th
 fields, a constructor and methods, share them between programs as **modules**, keep your work
 in **project folders** under **Git/GitHub**, edit everything with **Vim**, and turn the
 program into a single **C** (C99, C11, C17) or **C++** (C++98 to C++20) file built with **Clang 23** or **GCC**,
-with structured or goto control flow and safe or fast values. The same diagrams program **Arduino and ESP32 boards**:
+or a **Python**, **Java** or **Kotlin** file, with structured or goto control flow and safe or fast values. **Android**
+turns it into a phone app (Kotlin) that EVIA Paradigma builds and installs over USB, no Android Studio needed. The same diagrams program **Arduino and ESP32 boards**:
 pin, PWM, analog and time blocks become an Arduino sketch (Uno, Nano, Mega 2560, Leonardo, Micro, Pro Mini; ESP32,
 -S2, -S3, -C3, -C6, -H2), bare-metal **AVR C** or bare-metal **PIC32 C** (nine PIC32MX chips) that drive the chip's
 registers directly, with **UART, SPI and I2C** blocks, and **Run** simulates the board on your computer. They also become
@@ -63,12 +64,25 @@ itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.9.5-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.9.5-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.9.5-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.9.5_amd64.deb` | `sudo apt install ./evia-paradigma_0.9.5_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.9.5-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.9.5-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.9.5.jar` | `java -jar evia-paradigma-0.9.5.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.10.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.10.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.10.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.10.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.10.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.10.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.10.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.10.0.jar` | `java -jar evia-paradigma-0.10.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.10.0
+
+[EVIA Paradigma v0.10.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.10.0) ([release notes](docs/release-notes/v0.10.0.md)):
+**Java, Kotlin and Android**. An update package for 0.9.0 to 0.9.5.
+
+- **Java** and **Kotlin**: two more languages for this computer. **Compile & Run** in the code window builds and runs
+  them with the JDK and kotlinc (**Settings → Java and Kotlin**; **Get** downloads Eclipse Temurin 25 and Kotlin
+  2.4.21, also packages of the EVIA server). Every example matches the interpreter in both flows and both value modes.
+- **Android**: the program becomes a phone app (Kotlin) with Print on the screen and Input in a text field. **Build**
+  makes the APK in seconds without Gradle; **Install on Phone** installs it with adb and starts it. **Settings →
+  Android → Get Android SDK…** downloads the SDK from Google after you accept Google's licence. The folder is also an
+  Android Studio project. `--android program.evia DIR --install` on the command line.
 
 ### Release 0.9.5
 
@@ -998,6 +1012,35 @@ python3 program.py
 - Errors end the program with `>> error: ...` on stderr and exit code 1, exactly like the interpreter and the C and
   C++ programs.
 
+### Java, Kotlin and Android
+
+**Language → Java** writes one file with `class Program` (Java 17 or newer, nothing but the JDK); **Language →
+Kotlin** one `.kt` file. **Compile & Run** in the code window builds and runs them with the JDK in **Settings → Java
+and Kotlin** (found by itself from `JAVA_HOME` or the `javac` on PATH; **Get** downloads Eclipse Temurin 25) and, for
+Kotlin, kotlinc (**Get** downloads JetBrains' compiler). Both are also packages of the EVIA server.
+
+- Like Python, neither has `goto`: *Structured* flow writes nested `if`/`else` and `while` loops, and elsewhere (and
+  always in *Goto* flow) the graph becomes a state machine, `while (true)` with one branch per block.
+- *Safe* values are `Double` or `String` (`Object` / `Any`) with the interpreter's checks and messages; *Fast* values
+  are plain `double`s. Text is printed exactly as the interpreter prints it (Java's own `Double.toString`).
+- The Java file compiles cleanly with `javac -Xlint:all -Werror`, the Kotlin file with `kotlinc -Werror`, and both give
+  the interpreter's output, errors and exit code for every example in every mode (`scripts/check-targets.sh`).
+
+**Language → Android** makes an Android app of the program: `MainActivity.kt` runs it on a thread of its own, Print
+lines appear on the screen, Input asks in a text field, and **Run again** starts it over. In the code window, **Build**
+makes the APK and **Install on Phone** installs it with adb and starts it.
+
+| | |
+|---|---|
+| What it needs | a JDK, kotlinc, and the Android SDK: platform `android-37.0` (Android 17), build-tools 37.0.0, platform-tools |
+| Getting the SDK | **Settings → Android → Get Android SDK…** shows Google's licence (the text from Google's own index) and, once you accept it, downloads the three pieces from Google (about 140 MB). An SDK of Android Studio is found by itself |
+| How it builds | without Gradle, in seconds: aapt2 links the manifest, kotlinc compiles, R8 keeps only the part of the Kotlin library the app uses (an APK of tens of KB), zipalign and apksigner sign it with the debug key `~/.android/debug.keystore` |
+| The project | the project's `build/android/`, or `EVIA Projects/Android/<program>/`: also an ordinary Android Studio project (Gradle, Android Gradle plugin 9.5) |
+| The phone | Android 7.0 or newer, USB debugging on (Settings → About phone: tap *Build number* seven times, then Developer options → USB debugging); **Settings → Android → Phone** picks one when several are connected |
+
+`scripts/check-android.sh` compiles the app of every example against an Android platform, runs its program part on the
+computer with the console in place of the screen, compares it with the interpreter, and builds one APK.
+
 ## Arduino and ESP32 boards
 
 Four more entries in the **Language** list make code for microcontrollers. Both always use fast values (numbers; text
@@ -1143,6 +1186,17 @@ java -jar evia-paradigma.jar --gen program.evia --lang c11 -o prog.c
 java -jar evia-paradigma.jar --gen program.evia --lang c++98 --flow goto --values fast -o prog.cpp
 clang -std=c11 -O2 -o prog prog.c -lm && ./prog
 java -jar evia-paradigma.jar --gen program.evia --lang python -o prog.py && python3 prog.py
+java -jar evia-paradigma.jar --gen program.evia --lang java -o Program.java && java Program.java
+java -jar evia-paradigma.jar --gen program.evia --lang kotlin -o prog.kt
+kotlinc prog.kt -include-runtime -d prog.jar && java -jar prog.jar
+```
+
+Android apps:
+
+```
+java -jar evia-paradigma.jar --android-sdk                   # shows Google's licence; add --accept-license to download
+java -jar evia-paradigma.jar --android counter.evia ~/apps/counter --name "Counter"            # the project folder
+java -jar evia-paradigma.jar --android counter.evia ~/apps/counter --install                   # build, install, start
 ```
 
 Boards:

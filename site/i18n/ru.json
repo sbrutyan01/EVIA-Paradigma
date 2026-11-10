@@ -1,11 +1,11 @@
 [
  [
-  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>",
-  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, Python, прошивки и HDL</title>"
+  "<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, Java, Kotlin, Android, firmware and HDL</title>",
+  "<title>EVIA Paradigma: визуальное программирование с компиляцией в C, C++, Python, Java, Kotlin, Android, прошивки и HDL</title>"
  ],
  [
-  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
-  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из пятнадцати языков: от C99 до C++20 со сборкой Clang или GCC, Python 3, скетчи Arduino, bare-metal C для AVR и PIC32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
+  "content=\"Wire blocks on a canvas, run them, and turn them into one clean source file in any of nineteen languages: C99 to C++20 built with Clang or GCC, Python 3, Java, Kotlin, Android apps, Arduino sketches, bare-metal AVR, PIC32 and STM32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).",
+  "content=\"Соединяйте блоки на холсте, запускайте их и превращайте в один чистый исходный файл на любом из девятнадцати языков: от C99 до C++20 со сборкой Clang или GCC, Python 3, Java, Kotlin, приложения Android, скетчи Arduino, bare-metal C для AVR, PIC32 и STM32, а также SystemVerilog, Verilog или VHDL для FPGA Artix-7 и GateMate. Классы, модули, проекты, Git, Vim. Бесплатно, открытый исходный код (MIT)."
  ],
  [
   "content=\"Draw a program as blocks. Pick the language it becomes.\"",
@@ -64,8 +64,8 @@
   "<h1>Нарисуйте программу.<br>Выберите её язык.</h1>"
  ],
  [
-  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
-  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, программа на Python 3, скетч Arduino, bare-metal C для микросхемы AVR или PIC32, либо SystemVerilog, Verilog или VHDL для FPGA."
+  "EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3, Java or Kotlin program, an Android app, an Arduino sketch, bare-metal C for an AVR, PIC32 or STM32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.",
+  "EVIA Paradigma — визуальное программирование для тех, кто хочет видеть, что получает машина. Схема и есть программа, а язык — это настройка. Соединяйте блоки на холсте, запускайте их, а затем выбирайте, во что они превратятся: от C99 до C++20 со сборкой Clang или GCC, программа на Python 3, Java или Kotlin, приложение Android, скетч Arduino, bare-metal C для микросхемы AVR, PIC32 или STM32, либо SystemVerilog, Verilog или VHDL для FPGA."
  ],
  [
   "href=\"#download\">Download {{VERSION}}</a>",
@@ -112,8 +112,8 @@
   ">Схема слева в том виде, в каком её пишет генератор.</span>"
  ],
  [
-  "All 36 versions print the same output as the built-in interpreter.",
-  "Все 36 вариантов выводят то же, что и встроенный интерпретатор."
+  "All 44 versions print the same output as the built-in interpreter.",
+  "Все 44 вариантов выводят то же, что и встроенный интерпретатор."
  ],
  [
   "<h2 id=\"features-h\">What it does</h2>",
@@ -340,8 +340,8 @@
   "<h2 id=\"tested-h\">Проверено собственным интерпретатором</h2>"
  ],
  [
-  "On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
-  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 36 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками (Python — проверяет), запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
+  "On every change, CI generates every example and test program in all 44 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the exit code with the interpreter.",
+  "При каждом изменении CI генерирует все примеры и тестовые программы во всех 44 сочетаниях языка, потока управления и значений, компилирует их с предупреждениями как ошибками (Python — проверяет), запускает и сравнивает stdout, stderr и код выхода с интерпретатором."
  ],
  [
   "<th scope=\"col\">Where</th><th scope=\"col\">Compiler</th><th scope=\"col\">Identical to the interpreter</th>",
@@ -456,12 +456,12 @@
   "Проверено моделированием в сравнении с интерпретатором и синтезом открытыми средствами. Пока не проходило через Vivado и не запускалось на реальной плате."
  ],
  [
-  "<h3>One diagram, fifteen languages</h3>",
-  "<h3>Одна схема — пятнадцать языков</h3>"
+  "<h3>One diagram, nineteen languages</h3>",
+  "<h3>Одна схема — девятнадцать языков</h3>"
  ],
  [
-  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
-  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, скетч Arduino, bare-metal C для AVR или PIC32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
+  "A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++ standards, Python 3, Java, Kotlin, an Android app, an Arduino sketch, bare-metal AVR, PIC32 or STM32 C, or SystemVerilog, Verilog-2001 and VHDL for an FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target cannot keep a block, the error names that block instead of quietly changing what the program means.",
+  "Схема говорит, что программа делает, а не на чём она написана. Один и тот же холст превращается в восемь стандартов C и C++, Python 3, Java, Kotlin, приложение Android, скетч Arduino, bare-metal C для AVR, PIC32 или STM32, либо в SystemVerilog, Verilog-2001 и VHDL для FPGA, а Run выполняет саму схему, так что её вывод можно сравнить с любым из них. Если цель не может сохранить блок, ошибка называет этот блок, вместо того чтобы молча менять смысл программы."
  ],
  [
   "The Code Language and Mode menu, open: C99 to C++20, Python 3, Arduino, AVR C, PIC32 C, SystemVerilog, Verilog-2001 and VHDL, with the flow and values below them.",
@@ -556,8 +556,8 @@
   "<td>Linux, Python 3: все примеры и тесты, оба потока управления, оба режима значений</td>"
  ],
  [
-  "<td>52 of 52</td>",
-  "<td>52 из 52</td>"
+  "<td>54 of 54</td>",
+  "<td>54 из 54</td>"
  ],
  [
   "<p>New in 0.7.0: Settings live in the File menu, with one page per device family — General, C, C++ and Python, Arduino, ESP32, AVR C, PIC32 and FPGA — and Open Example has separate Arduino, ESP32 and PIC32 submenus that also pick the matching language and board.</p>",
@@ -570,5 +570,65 @@
  [
   "<p>New in 0.8.0: the installers bring their toolchains — avr-gcc with avrdude, and the OSS CAD Suite for FPGAs — so bare-metal AVR C and the FPGA flows work with nothing to set up. Microchip's free XC32 installs from inside the application (Settings, PIC32, Get XC32), straight from microchip.com. Settings and Devices are now menus of their own.</p>",
   "<p>Новое в 0.8.0: установщики приносят инструменты с собой — avr-gcc с avrdude и OSS CAD Suite для FPGA, — поэтому bare-metal C для AVR и маршруты FPGA работают без всякой настройки. Бесплатный XC32 от Microchip устанавливается прямо из приложения (Settings, PIC32, Get XC32) с microchip.com. Settings и Devices теперь отдельные меню.</p>"
+ ],
+ [
+  "<p>New in 0.10.0: Java, Kotlin and Android. The same diagram becomes a Java or Kotlin program, compiled and run from the code window, or an Android app that EVIA Paradigma builds without Gradle and installs on a phone over USB. The JDK and the Kotlin compiler are packages of the EVIA server; the Android SDK comes from Google once you accept its licence.</p>",
+  "<p>Новое в 0.10.0: Java, Kotlin и Android. Та же схема становится программой на Java или Kotlin, которую можно собрать и запустить прямо в окне кода, или приложением Android, которое EVIA Paradigma собирает без Gradle и устанавливает на телефон по USB. JDK и компилятор Kotlin — пакеты сервера EVIA; Android SDK скачивается с сайта Google после того, как вы примете его лицензию.</p>"
+ ],
+ [
+  "Java, Kotlin and Android apps in four steps",
+  "Java, Kotlin и приложения Android за четыре шага"
+ ],
+ [
+  "The same diagram becomes a Java or Kotlin program, or an app for an Android phone. Settings fetches a JDK and the Kotlin compiler with one click, and the Android SDK from Google once you accept its licence.",
+  "Та же схема становится программой на Java или Kotlin или приложением для телефона Android. Настройки скачивают JDK и компилятор Kotlin одним щелчком, а Android SDK — с сайта Google, после того как вы примете его лицензию."
+ ],
+ [
+  "Choose Java, Kotlin or Android",
+  "Выберите Java, Kotlin или Android"
+ ],
+ [
+  "Pick it in the Language list, in the toolbar or in the code window, and press F7 to see the code.",
+  "Выберите язык в списке Language на панели инструментов или в окне кода и нажмите F7, чтобы увидеть код."
+ ],
+ [
+  "Compile and run",
+  "Соберите и запустите"
+ ],
+ [
+  "For Java and Kotlin, press Compile &amp; Run in the code window. Text typed into Input goes to the program.",
+  "Для Java и Kotlin нажмите «Собрать и запустить» в окне кода. Текст, введённый в поле Input, передаётся программе."
+ ],
+ [
+  "Build the Android app",
+  "Соберите приложение Android"
+ ],
+ [
+  "Build makes the APK in seconds with the Android SDK's own tools, without Gradle or Android Studio. The folder still opens in Android Studio.",
+  "Кнопка «Собрать» за несколько секунд делает APK собственными инструментами Android SDK, без Gradle и Android Studio. Папку при этом можно открыть и в Android Studio."
+ ],
+ [
+  "Install it on your phone",
+  "Установите его на телефон"
+ ],
+ [
+  "Turn on USB debugging, connect the phone and press Install on Phone. The app starts by itself: Print on the screen, Input in a text field.",
+  "Включите отладку по USB, подключите телефон и нажмите «Установить на телефон». Приложение запустится само: Print — на экране, Input — в текстовом поле."
+ ],
+ [
+  "Settings, Java and Kotlin holds the JDK and kotlinc; Settings, Android holds the SDK, the app's id and name, and the phone. The Java and Kotlin output matches the interpreter in CI; the apps are checked on the computer but have not yet been run on a phone.",
+  "В «Настройки → Java и Kotlin» указываются JDK и kotlinc, в «Настройки → Android» — SDK, id и название приложения и телефон. Вывод Java и Kotlin совпадает с интерпретатором в CI; приложения проверены на компьютере, но на телефоне ещё не запускались."
+ ],
+ [
+  "<td>Linux, Java and Kotlin: every example and test, both flows, both value modes</td>",
+  "<td>Linux, Java и Kotlin: все примеры и тесты, оба потока, оба режима значений</td>"
+ ],
+ [
+  "<td>Android apps: the program part run on the computer, every example and test</td>",
+  "<td>Приложения Android: часть с программой, запущенная на компьютере, все примеры и тесты</td>"
+ ],
+ [
+  "<td>108 of 108</td>",
+  "<td>108 из 108</td>"
  ]
 ]

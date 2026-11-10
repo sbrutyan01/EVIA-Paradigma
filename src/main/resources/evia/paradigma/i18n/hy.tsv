@@ -410,3 +410,44 @@ Install Microchip's MPLAB IPE (ipecmd) from the MPLAB X installer you download a
 Programmer:	Ծրագրավորիչ՝
 MPLAB IPE:	MPLAB IPE՝
 not installed	տեղադրված չէ
+Get Android SDK	Ներբեռնել Android SDK
+Android SDK from Google	Android SDK Google-ից
+Platform %s, build-tools %s and platform-tools (adb), into:	Պլատֆորմ %s, build-tools %s և platform-tools (adb), այս թղթապանակում՝
+Reading Google's SDK index...	Google-ի SDK ցուցակի ընթերցում...
+I accept the terms of Google's licence above	Ընդունում եմ վերևում բերված Google-ի լիցենզիայի պայմանները
+Download: %s	Ներբեռնում՝ %s
+Google's SDK index could not be read:	Չհաջողվեց կարդալ Google-ի SDK ցուցակը՝
+Done	Պատրաստ է
+Failed	Սխալ
+Build	Կառուցել
+Build the app (an APK) with the Android SDK; the project folder opens in Android Studio too	Կառուցել հավելվածը (APK) Android SDK-ով. նախագծի թղթապանակը բացվում է նաև Android Studio-ում
+Install on Phone	Տեղադրել հեռախոսում
+Build, then install the app on the phone with adb and start it	Կառուցել, adb-ով տեղադրել հավելվածը հեռախոսում և գործարկել այն
+Checking the JDK...	JDK-ի ստուգում...
+No JDK found - Settings > Java and Kotlin > Get	JDK չի գտնվել - Կարգավորումներ > Java և Kotlin > Ներբեռնել
+, no kotlinc - Settings > Java and Kotlin > Get	, kotlinc չկա - Կարգավորումներ > Java և Kotlin > Ներբեռնել
+, no Android SDK - Settings > Android > Get Android SDK...	, Android SDK չկա - Կարգավորումներ > Android > Ներբեռնել Android SDK...
+Open the Settings page to get what is missing?	Բացե՞լ կարգավորումների էջը՝ պակասողը ստանալու համար
+Android	Android
+Java and Kotlin...	Java և Kotlin...
+Android...	Android...
+This Computer (C, C++, Python, Java, Kotlin)	Այս համակարգիչը (C, C++, Python, Java, Kotlin)
+Java and Kotlin Settings...	Java և Kotlin կարգավորումներ...
+Android Phones and Tablets	Android հեռախոսներ և պլանշետներ
+Android app (Kotlin)	Android հավելված (Kotlin)
+Android Settings...	Android կարգավորումներ...
+Java and Kotlin	Java և Kotlin
+The JDK's folder (the one with bin/javac), or empty to find one by itself	JDK-ի թղթապանակը (որտեղ bin/javac-ն է), կամ դատարկ՝ ինքնաշխատ գտնելու համար
+kotlinc: its full path, or kotlinc to take it from PATH	kotlinc՝ ամբողջական ուղին, կամ kotlinc՝ PATH-ից վերցնելու համար
+Get Android SDK...	Ներբեռնել Android SDK...
+Download the platform, build-tools and platform-tools from Google, after you accept Google's licence	Ներբեռնել platform, build-tools և platform-tools Google-ից՝ Google-ի լիցենզիան ընդունելուց հետո
+Lower-case words with dots, e.g. am.evia.counter; a phone keeps one app per id	Փոքրատառ բառեր՝ կետերով, օրինակ am.evia.counter. հեռախոսում յուրաքանչյուր id-ի համար մեկ հավելված է
+JDK:	JDK՝
+Android SDK:	Android SDK՝
+Application id:	Հավելվածի id՝
+App name:	Հավելվածի անուն՝
+Phone:	Հեռախոս՝
+Checking kotlinc...	kotlinc-ի ստուգում...
+Looking for phones...	Հեռախոսների որոնում...
+No phones found: is USB debugging on, and adb installed (Get Android SDK)?	Հեռախոս չի գտնվել. միացվա՞ծ է USB վրիպազերծումը, և տեղադրվա՞ծ է adb-ն (Ներբեռնել Android SDK)
+Found %d phone(s) or emulator(s). Empty uses the only one connected.	Գտնվել է %d հեռախոս կամ էմուլյատոր։ Դատարկի դեպքում օգտագործվում է միակ միացվածը։

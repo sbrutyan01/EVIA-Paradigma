@@ -1,0 +1,67 @@
+    // ===================== EVIA Paradigma runtime (Java) =====================
+
+    /** An error the interpreter reports too: the program stops with ">> error: ..." and exit code 1. */
+    static final class EviaError extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        EviaError(String message) {
+            super(message, null, false, false);
+        }
+    }
+
+    /** UTF-8 in and out on every console; "\n" line ends, like the interpreter. */
+    static final java.io.PrintStream rt_out = new java.io.PrintStream(
+            new java.io.FileOutputStream(java.io.FileDescriptor.out), false, java.nio.charset.StandardCharsets.UTF_8);
+    static final java.io.Reader rt_in = new java.io.BufferedReader(
+            new java.io.InputStreamReader(System.in, java.nio.charset.StandardCharsets.UTF_8));
+
+    /** The number in a text (Java's own rules, as the interpreter reads it), or null when it is not one. */
+    static Double rt_parse(String s) {
+        try {
+            return Double.parseDouble(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /** Text like the interpreter: whole numbers without ".0", others as Double.toString writes them. */
+    static String rt_text(double v) {
+        if (v == Math.rint(v) && !Double.isInfinite(v) && Math.abs(v) < 1e15) return Long.toString((long) v);
+        return Double.toString(v);
+    }
+
+    /** ">> error: ..." on stderr after the output so far, as the interpreter reports it. */
+    static void rt_error(String message) {
+        rt_out.flush();
+        java.io.PrintStream err = new java.io.PrintStream(
+                new java.io.FileOutputStream(java.io.FileDescriptor.err), true, java.nio.charset.StandardCharsets.UTF_8);
+        err.print(">> error: " + message + "\n");
+        err.flush();
+    }
+
+    static void rt_print_line(String text) {
+        rt_out.print(text);
+        rt_out.print('\n');
+    }
+
+    static String rt_read_line(String name) {
+        rt_out.print("Enter a value for " + name + ": ");
+        rt_out.flush();
+        StringBuilder line = new StringBuilder();
+        try {
+            int c = rt_in.read();
+            if (c < 0) throw new EviaError("input cancelled");
+            while (c >= 0 && c != '\n') {
+                line.append((char) c);
+                c = rt_in.read();
+            }
+        } catch (java.io.IOException e) {
+            throw new EviaError("input cancelled");
+        }
+        int n = line.length();
+        if (n > 0 && line.charAt(n - 1) == '\r') line.setLength(n - 1);
+        return line.toString();
+    }
+
+    /** A loop with no condition; not the constant true, so the code after it still counts as reachable. */
+    static boolean rt_forever = true;

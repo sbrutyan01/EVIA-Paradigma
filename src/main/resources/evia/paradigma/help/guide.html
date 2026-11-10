@@ -137,6 +137,32 @@ right <code>-std=</code> and <code>-lm</code>. <b>Settings &gt; C, C++ and Pytho
 <b>GCC</b> (g++ / gcc, version 13 or newer). On Windows EVIA Paradigma can install either one for you: llvm-mingw
 (Clang) or WinLibs (GCC, MinGW-w64). Visual Studio is not needed.</p>
 
+<a name="jvm"></a>
+<h2>Java, Kotlin and Android</h2>
+<p>Three more languages for computers and phones. Like Python, they have no <code>goto</code>: Structured flow writes
+nested <code>if</code>/<code>else</code> and <code>while</code> loops, and where the wiring is not block-structured (and
+always with Goto flow) the diagram becomes a state machine, one branch per block. Safe and Fast values work as in C++,
+with the interpreter's output, error messages and exit code.</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Language</th><th>What it makes</th><th>Needs</th></tr>
+<tr><td>Java</td><td>One file with <code>class Program</code>. <b>Compile &amp; Run</b> compiles it with javac and runs it.
+Outside EVIA Paradigma: <code>java Program.java</code>.</td><td>A JDK, 17 or newer</td></tr>
+<tr><td>Kotlin</td><td>One <code>.kt</code> file. <b>Compile &amp; Run</b> makes a runnable jar with kotlinc and runs it.</td>
+<td>A JDK and kotlinc</td></tr>
+<tr><td>Android</td><td>An app: the program's Print lines on the screen, Input in a text field with OK, and
+<b>Run again</b>. <b>Build</b> makes the APK; <b>Install on Phone</b> installs it with adb and starts it.</td>
+<td>A JDK, kotlinc and the Android SDK</td></tr>
+</table>
+<p><b>Settings &gt; Java and Kotlin</b>: the JDK (found by itself from JAVA_HOME or PATH; <b>Get</b> downloads Eclipse
+Temurin) and kotlinc (<b>Get</b> downloads JetBrains' compiler). <b>Settings &gt; Android</b>: the SDK folder (Android
+Studio's is found by itself; <b>Get Android SDK...</b> shows Google's licence and, once you accept it, downloads the
+platform, build-tools and adb from Google), the application id (for example <code>am.evia.counter</code>), the name under
+the icon and the phone. On the phone, turn on USB debugging: <i>Settings &gt; About phone</i>, tap <i>Build number</i>
+seven times, then <i>Developer options &gt; USB debugging</i>.</p>
+<p>EVIA Paradigma builds the app itself with the SDK's tools in a few seconds, without Gradle. The folder it writes (the
+project's <code>build/android</code>, or <code>EVIA Projects/Android/</code>) is also an ordinary Android Studio project:
+<i>File &gt; Open</i> and Run.</p>
+
 <a name="boards"></a>
 <h2>Arduino and ESP32 boards</h2>
 <p>Three more languages make code for microcontrollers. Both use fast values (numbers; text only in Print), and Print and

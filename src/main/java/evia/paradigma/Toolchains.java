@@ -74,6 +74,19 @@ final class Toolchains {
                 "https://github.com/sergev/pic32prog",
                 "Uploads PIC32 programs: PICkit2, PICkit3 in its PICkit2 mode, the chipKIT and Microchip bootloaders,"
                         + " FT2232 JTAG adapters. A package of the EVIA server (about 1 MB)."),
+        JDK("JDK (Eclipse Temurin 25)", "jdk", "adoptium/temurin25-binaries", "javac",
+                "OpenJDK25U-jdk_x64_linux_hotspot_[0-9._]+\\.tar\\.gz",
+                "OpenJDK25U-jdk_aarch64_mac_hotspot_[0-9._]+\\.tar\\.gz",
+                "OpenJDK25U-jdk_x64_mac_hotspot_[0-9._]+\\.tar\\.gz",
+                "OpenJDK25U-jdk_x64_windows_hotspot_[0-9._]+\\.zip",
+                "https://adoptium.net/temurin/releases/",
+                "Compiles and runs generated Java and Kotlin, and builds Android apps: the Eclipse Temurin JDK 25"
+                        + " (about 200 MB; any JDK 17 or newer works too)."),
+        KOTLINC("Kotlin compiler", "kotlin", "JetBrains/kotlin", "kotlinc",
+                "kotlin-compiler-[0-9.]+\\.zip", "kotlin-compiler-[0-9.]+\\.zip",
+                "kotlin-compiler-[0-9.]+\\.zip", "kotlin-compiler-[0-9.]+\\.zip",
+                "https://kotlinlang.org/docs/command-line.html",
+                "Compiles generated Kotlin and Android apps: kotlinc from JetBrains (about 90 MB). It needs a JDK."),
         PYTHON("Python 3", null, null, "python3", null, null, null, null,
                 "https://www.python.org/downloads/",
                 "Runs generated Python programs: Python 3.8 or newer, nothing else to install. On Windows, the"
@@ -114,6 +127,7 @@ final class Toolchains {
 
         /** The name of the program to look for once the archive is unpacked. */
         String program() {
+            if (this == KOTLINC) return ExternalEditor.WINDOWS ? exe + ".bat" : exe;   // a script, not a program
             return ExternalEditor.WINDOWS ? exe + ".exe" : exe;
         }
     }

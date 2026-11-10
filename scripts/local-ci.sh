@@ -15,6 +15,8 @@
 #   AVR_GCC_BIN     folder with avr-gcc                                             - AVR board checks
 #   EVIA_SIM        the simavr-based simulator built by scripts/simavr/build.sh      - AVR board checks
 #   CXX / CC        the C++ and C compilers to check the generated code with         - C/C++ checks
+#   KOTLINC         kotlinc (also found in EVIA Paradigma's own kotlin package)     - Kotlin and Android checks
+#   ANDROID_HOME    an Android SDK (or ANDROID_JAR: an android.jar to compile with)  - Android checks
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -65,6 +67,12 @@ for d in "${XC32_BIN:-}" /opt/microchip/xc32/v4.35/bin; do
     PATH="$d:$PATH"
     break
 done
+# kotlinc: as given, else EVIA Paradigma's own package, else ~/tools/kotlinc
+for d in "$(dirname "${KOTLINC:-/none/x}")" "$HOME/.evia-paradigma/packages/kotlin/bin" "$HOME/tools/kotlinc/bin"; do
+    [ -x "$d/kotlinc" ] || continue
+    PATH="$d:$PATH"
+    break
+done
 # arduino-cli and simavr land beside them
 [ -x "$PREFIX/arduino-cli/arduino-cli" ] && PATH="$PREFIX/arduino-cli:$PATH"
 [ -x "$HOME/tools/arduino-cli/arduino-cli" ] && PATH="$HOME/tools/arduino-cli:$PATH"
@@ -108,6 +116,10 @@ fi
 if want targets; then
     [ -n "$CXX" ] && run "every language and mode" env CC="$CC" CXX="$CXX" scripts/check-targets.sh \
         || skip targets "no C++ compiler (set CXX)"
+fi
+if want android; then
+    if have kotlinc; then run "Android apps: compiled for Android, run against the interpreter" scripts/check-android.sh "$JAR"
+    else skip android "no kotlinc (set KOTLINC, or Settings > Java and Kotlin > Get)"; fi
 fi
 if want zoom; then
     if have xvfb-run; then run "zoom and panning on a real window" scripts/check-zoom.sh "$JAR"

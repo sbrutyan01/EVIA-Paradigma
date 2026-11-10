@@ -92,6 +92,7 @@ final class CodeGenerator {
             return new Result(r.hdl(), new HashMap<>());
         }
         if (t.lang().python()) return PythonGenerator.generate(lib, t);
+        if (t.lang().jvm()) return JvmGenerator.generate(lib, t);
         Interpreter.prepare(lib);
         CodeGenerator g = new CodeGenerator(lib, t);
         String code = g.build();

@@ -256,6 +256,186 @@ final class Settings {
         }, "evia-python-check").start();
     }
 
+    // ---- Java, Kotlin and Android
+
+    /** The oldest JDK that compiles the generated Java (pattern matching for instanceof). */
+    static final int MIN_JDK = 17;
+
+    /**
+     * The JDK that compiles and runs generated Java and Kotlin: its folder, the one with bin/javac. As set in
+     * Settings, else the EVIA package "jdk", else JAVA_HOME, else the javac found on PATH; null when there is none.
+     */
+    static java.nio.file.Path jdkHome() {
+        String saved = PREFS.get("jdk", null);
+        if (saved != null && !saved.isBlank()) return jdkFolder(saved);
+        java.nio.file.Path pkg = Bundled.tool("jdk", "javac");
+        if (pkg == null) pkg = Toolchains.installed(Toolchains.Tool.JDK);
+        if (pkg != null) return pkg.getParent().getParent();
+        String home = System.getenv("JAVA_HOME");
+        if (home != null && !home.isBlank() && java.nio.file.Files.isRegularFile(jdkProgram(java.nio.file.Path.of(home), "javac"))) {
+            return java.nio.file.Path.of(home);
+        }
+        java.nio.file.Path javac = onPath(ExternalEditor.WINDOWS ? "javac.exe" : "javac");
+        if (javac == null) return null;
+        try {
+            return javac.toRealPath().getParent().getParent();   // /usr/bin/javac is often a link into the JDK
+        } catch (java.io.IOException e) {
+            return javac.getParent().getParent();
+        }
+    }
+
+    /** A JDK folder from what was typed: the folder itself, or its bin/javac or bin/java. */
+    static java.nio.file.Path jdkFolder(String typed) {
+        java.nio.file.Path p = java.nio.file.Path.of(typed.strip());
+        if (java.nio.file.Files.isRegularFile(p) && p.getParent() != null && p.getParent().getParent() != null) {
+            return p.getParent().getParent();
+        }
+        return p;
+    }
+
+    static void setJdkHome(String dir) {
+        PREFS.put("jdk", dir == null ? "" : dir.strip());
+        fire();
+    }
+
+    /** java, javac, keytool ... of a JDK folder. */
+    static java.nio.file.Path jdkProgram(java.nio.file.Path home, String program) {
+        return home.resolve("bin").resolve(ExternalEditor.WINDOWS ? program + ".exe" : program);
+    }
+
+    /** A program of the chosen JDK, or its plain name (found on PATH) when no JDK is known. */
+    static String jdkTool(String program) {
+        java.nio.file.Path h = jdkHome();
+        return h != null ? jdkProgram(h, program).toString() : program;
+    }
+
+    /** The major version of the JDK in a folder (17, 21, 25 ...), from its release file; 0 when unknown. */
+    static int jdkVersion(java.nio.file.Path home) {
+        try {
+            for (String l : java.nio.file.Files.readAllLines(home.resolve("release"))) {
+                Matcher m = Pattern.compile("^JAVA_VERSION=\"(?:1\\.)?(\\d+)").matcher(l);
+                if (m.find()) return Integer.parseInt(m.group(1));
+            }
+        } catch (Exception ignored) {
+            // no release file: an unusual layout
+        }
+        return 0;
+    }
+
+    /** kotlinc: as set, else the EVIA package "kotlin", else from PATH. */
+    static String kotlinc() {
+        String t = tool("kotlinc", "kotlinc", "kotlin");
+        if (!t.equals("kotlinc")) return t;
+        java.nio.file.Path own = Toolchains.installed(Toolchains.Tool.KOTLINC);
+        return own != null ? own.toString() : t;
+    }
+
+    static void setKotlinc(String command) {
+        PREFS.put("kotlinc", command == null ? "" : command.strip());
+        fire();
+    }
+
+    /** The Kotlin standard library next to kotlinc (lib/kotlin-stdlib.jar), for an Android app; null if not found. */
+    static java.nio.file.Path kotlinStdlib() {
+        java.nio.file.Path k = java.nio.file.Path.of(kotlinc());
+        if (!k.isAbsolute()) k = onPath(ExternalEditor.WINDOWS ? "kotlinc.bat" : "kotlinc");
+        if (k == null) return null;
+        try {
+            k = k.toRealPath();
+        } catch (java.io.IOException ignored) {
+            // keep the path as it is
+        }
+        java.nio.file.Path jar = k.getParent().getParent().resolve("lib").resolve("kotlin-stdlib.jar");
+        return java.nio.file.Files.isRegularFile(jar) ? jar : null;
+    }
+
+    /** kotlinc's version from build.txt in its folder ("2.4.21"), or null when kotlinc is not found. */
+    static String kotlincVersion() {
+        java.nio.file.Path lib = kotlinStdlib();
+        if (lib == null) return null;
+        try {
+            String b = java.nio.file.Files.readString(lib.getParent().getParent().resolve("build.txt")).strip();
+            return b.replaceFirst("-release.*", "");
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * The Android SDK: as set, else ANDROID_HOME or ANDROID_SDK_ROOT, else Android Studio's usual folder,
+     * else the one EVIA Paradigma downloads into. May not exist yet.
+     */
+    static java.nio.file.Path androidSdk() {
+        String saved = PREFS.get("androidSdk", null);
+        if (saved != null && !saved.isBlank()) return java.nio.file.Path.of(saved);
+        for (String env : new String[]{"ANDROID_HOME", "ANDROID_SDK_ROOT"}) {
+            String v = System.getenv(env);
+            if (v != null && !v.isBlank() && java.nio.file.Files.isDirectory(java.nio.file.Path.of(v))) return java.nio.file.Path.of(v);
+        }
+        String user = System.getProperty("user.home");
+        String local = System.getenv("LOCALAPPDATA");
+        java.nio.file.Path studio = ExternalEditor.WINDOWS && local != null ? java.nio.file.Path.of(local, "Android", "Sdk")
+                : System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("mac")
+                ? java.nio.file.Path.of(user, "Library", "Android", "sdk") : java.nio.file.Path.of(user, "Android", "Sdk");
+        if (java.nio.file.Files.isDirectory(studio.resolve("platforms"))) return studio;
+        return Packages.home().getParent().resolve("android-sdk");
+    }
+
+    static void setAndroidSdk(String dir) {
+        PREFS.put("androidSdk", dir == null ? "" : dir.strip());
+        fire();
+    }
+
+    private static String androidPackageOverride, androidNameOverride;
+
+    /** The Android app's id (its Java package), e.g. am.evia.counter. */
+    static String androidPackage() {
+        if (androidPackageOverride != null) return androidPackageOverride;
+        String p = PREFS.get("android.package", "am.evia.program");
+        return AndroidBuild.validPackage(p) ? p : "am.evia.program";
+    }
+
+    /** The name under the app's icon. */
+    static String androidAppName() {
+        if (androidNameOverride != null) return androidNameOverride;
+        String n = PREFS.get("android.name", "EVIA Program");
+        return n.isBlank() ? "EVIA Program" : n;
+    }
+
+    static void setAndroidApp(String pkg, String name) {
+        if (pkg != null) PREFS.put("android.package", pkg.strip());
+        if (name != null) PREFS.put("android.name", name.strip());
+        fire();
+    }
+
+    /** For the command line: this run only, nothing saved. */
+    static void useAndroidApp(String pkg, String name) {
+        if (pkg != null) androidPackageOverride = pkg;
+        if (name != null) androidNameOverride = name;
+    }
+
+    /** The adb serial of the phone to install on, or "" for the only one connected. */
+    static String androidDevice() {
+        return PREFS.get("android.device", "");
+    }
+
+    static void setAndroidDevice(String serial) {
+        PREFS.put("android.device", serial == null ? "" : serial.strip());
+        fire();
+    }
+
+    /** A program found on PATH, or null. */
+    static java.nio.file.Path onPath(String name) {
+        String path = System.getenv("PATH");
+        if (path == null) return null;
+        for (String d : path.split(java.io.File.pathSeparator)) {
+            if (d.isBlank()) continue;
+            java.nio.file.Path p = java.nio.file.Path.of(d, name);
+            if (java.nio.file.Files.isRegularFile(p) && java.nio.file.Files.isExecutable(p)) return p;
+        }
+        return null;
+    }
+
     /** The board package index that arduino-cli installs the ESP32 core from. */
     static String esp32Index() {
         return PREFS.get("esp32Index", Toolchains.ESP32_INDEX);
@@ -561,12 +741,14 @@ final class Settings {
 
     /** The tabs of the Settings window, one per kind of target; File > Settings opens each directly. */
     enum Page {
-        GENERAL, DESKTOP, ARDUINO, ESP32, AVR, PIC32, STM32, FPGA;
+        GENERAL, DESKTOP, JVM, ANDROID, ARDUINO, ESP32, AVR, PIC32, STM32, FPGA;
 
         String title() {
             return switch (this) {
                 case GENERAL -> Text.t("General");
                 case DESKTOP -> Text.t("C, C++ and Python");
+                case JVM -> Text.t("Java and Kotlin");
+                case ANDROID -> Text.t("Android");
                 case ARDUINO -> Text.t("Arduino");
                 case ESP32 -> Text.t("ESP32");
                 case AVR -> Text.t("AVR C (bare metal)");
@@ -584,6 +766,8 @@ final class Settings {
             if (l == Target.Lang.STM32) return STM32;
             if (l == Target.Lang.AVR) return AVR;
             if (l == Target.Lang.ARDUINO) return board().isEsp32() ? ESP32 : board().isStm32() ? STM32 : ARDUINO;
+            if (l == Target.Lang.ANDROID) return ANDROID;
+            if (l.jvm()) return JVM;
             return DESKTOP;
         }
     }
@@ -860,6 +1044,78 @@ final class Settings {
                         + " or newer, standard library only)."))
                 .note(pythonStatus);
 
+        // ---- Java and Kotlin
+        java.nio.file.Path jdkNow = jdkHome();
+        JTextField jdk = new JTextField(jdkNow == null ? "" : jdkNow.toString(), 42);
+        jdk.setToolTipText(Text.t("The JDK's folder (the one with bin/javac), or empty to find one by itself"));
+        JLabel jdkStatus = new JLabel(" ");
+        JButton detectJdk = new JButton(Text.t("Detect"));
+        detectJdk.addActionListener(e -> {
+            String before = PREFS.get("jdk", "");
+            PREFS.put("jdk", "");
+            java.nio.file.Path found = jdkHome();
+            PREFS.put("jdk", before);
+            jdk.setText(found == null ? "" : found.toString());
+            checkJdk(jdk.getText(), jdkStatus);
+        });
+        JButton checkJdkBtn = new JButton(Text.t("Check"));
+        checkJdkBtn.addActionListener(e -> checkJdk(jdk.getText(), jdkStatus));
+        JTextField kotlinc = new JTextField(kotlinc(), 42);
+        kotlinc.setToolTipText(Text.t("kotlinc: its full path, or kotlinc to take it from PATH"));
+        JLabel kotlinStatus = new JLabel(" ");
+        JButton checkKotlinBtn = new JButton(Text.t("Check"));
+        checkKotlinBtn.addActionListener(e -> checkKotlinc(kotlinc.getText(), kotlinStatus));
+
+        // ---- Android
+        JTextField sdk = new JTextField(androidSdk().toString(), 42);
+        JLabel sdkStatus = new JLabel(" ");
+        JButton getSdk = new JButton(Text.t("Get Android SDK..."));
+        getSdk.setToolTipText(Text.t("Download the platform, build-tools and platform-tools from Google, after you accept Google's licence"));
+        getSdk.addActionListener(e -> {
+            if (AndroidSdkDialog.install(p(sdk), java.nio.file.Path.of(sdk.getText().strip()))) checkSdk(sdk.getText(), sdkStatus);
+        });
+        JButton checkSdkBtn = new JButton(Text.t("Check"));
+        checkSdkBtn.addActionListener(e -> checkSdk(sdk.getText(), sdkStatus));
+        JTextField appId = new JTextField(androidPackage(), 30);
+        appId.setToolTipText(Text.t("Lower-case words with dots, e.g. am.evia.counter; a phone keeps one app per id"));
+        JTextField appName = new JTextField(androidAppName(), 30);
+        DefaultComboBoxModel<String> phoneModel = new DefaultComboBoxModel<>();
+        JComboBox<String> phone = new JComboBox<>(phoneModel);
+        phone.setEditable(true);
+        phone.setPrototypeDisplayValue("emulator-5554  -  Pixel 9 Pro XL");
+        phoneModel.addElement(androidDevice());
+        JLabel phoneStatus = new JLabel(" ");
+        JButton scanPhones = new JButton(Text.t("Scan"));
+        scanPhones.addActionListener(e -> scanPhones(phoneModel, phone, phoneStatus, scanPhones));
+
+        Form jvm = new Form();
+        jvm.row(Text.t("JDK:"), jdk, detectJdk, checkJdkBtn, getButton(jvm, Toolchains.Tool.JDK, jdk))
+                .note(small("Language Java compiles the generated file with this JDK's javac and runs it with its java (JDK "
+                        + MIN_JDK + " or newer). Kotlin and Android apps use it too. Empty: JAVA_HOME, or the javac on PATH."))
+                .note(jdkStatus)
+                .gap()
+                .row("kotlinc:", kotlinc, checkKotlinBtn, getButton(jvm, Toolchains.Tool.KOTLINC, kotlinc))
+                .note(small("Language Kotlin builds a runnable jar with kotlinc (-include-runtime) and runs it with the JDK above."
+                        + " Get downloads JetBrains' latest Kotlin compiler."))
+                .note(kotlinStatus);
+
+        Form android = new Form();
+        android.row(Text.t("Android SDK:"), sdk, checkSdkBtn, getSdk)
+                .note(small("Language Android builds an app (an APK) with the SDK's aapt2, R8 and apksigner and kotlinc: no Gradle and no"
+                        + " Android Studio needed. Get Android SDK downloads platform " + AndroidBuild.PLATFORM + ", build-tools "
+                        + AndroidBuild.BUILD_TOOLS + " and platform-tools (adb) from Google, about 140 MB. An SDK of Android Studio works too."))
+                .note(sdkStatus)
+                .gap()
+                .row(Text.t("Application id:"), appId)
+                .row(Text.t("App name:"), appName)
+                .note(small("The id names the app on the phone (installing again replaces the app with the same id); the name is shown"
+                        + " under its icon. The project folder opens in Android Studio as well (Gradle, Android Gradle plugin " + AndroidBuild.AGP + ")."))
+                .gap()
+                .row(Text.t("Phone:"), phone, scanPhones)
+                .note(small("Install on Phone uses adb: connect the phone by USB with USB debugging on (Settings > About phone: tap"
+                        + " Build number seven times; then Developer options > USB debugging), or start an emulator. Empty: the only one connected."))
+                .note(phoneStatus);
+
         Form arduino = new Form();
         arduino.row(Text.t("Board:"), arduinoBoard)
                 .note(small("Uno, Nano, Mega 2560, Leonardo, Micro and Pro Mini: Language Arduino builds a sketch with arduino-cli (core arduino:avr)."))
@@ -928,6 +1184,8 @@ final class Settings {
         Map<Page, JComponent> pages = new java.util.EnumMap<>(Page.class);
         pages.put(Page.GENERAL, general.done());
         pages.put(Page.DESKTOP, desktop.done());
+        pages.put(Page.JVM, jvm.done());
+        pages.put(Page.ANDROID, android.done());
         pages.put(Page.ARDUINO, arduino.done());
         pages.put(Page.ESP32, esp.done());
         pages.put(Page.AVR, avr.done());
@@ -940,6 +1198,9 @@ final class Settings {
 
         checkCompiler(compiler.getText(), compilerStatus);
         checkPython(python.getText(), pythonStatus);
+        checkJdk(jdk.getText(), jdkStatus);
+        checkKotlinc(kotlinc.getText(), kotlinStatus);
+        checkSdk(sdk.getText(), sdkStatus);
         scanAll.run();
 
         int r = JOptionPane.showConfirmDialog(parent, tabs, Text.t("Settings") + " - EVIA Paradigma",
@@ -960,6 +1221,27 @@ final class Settings {
         PREFS.put("serialPort", port);
         putTool("arduinoCli", cli, "arduino-cli", "arduino-cli");
         if (!python.getText().trim().equals(pythonCommand())) PREFS.put("python", python.getText().trim());
+        java.nio.file.Path autoJdk;
+        {
+            String before = PREFS.get("jdk", "");
+            PREFS.put("jdk", "");
+            autoJdk = jdkHome();
+            PREFS.put("jdk", before);
+        }
+        String jdkTyped = jdk.getText().trim();
+        PREFS.put("jdk", jdkTyped.isEmpty() || (autoJdk != null && jdkFolder(jdkTyped).equals(autoJdk)) ? "" : jdkTyped);
+        putTool("kotlinc", kotlinc, "kotlinc", "kotlin");
+        String sdkTyped = sdk.getText().trim();
+        PREFS.put("androidSdk", sdkTyped);
+        if (AndroidBuild.validPackage(appId.getText().trim())) PREFS.put("android.package", appId.getText().trim());
+        else if (!appId.getText().trim().equals(androidPackage())) {
+            JOptionPane.showMessageDialog(parent, "'" + appId.getText().trim() + "' is not a valid application id: lower-case words"
+                    + " joined by dots, at least two (e.g. am.evia.counter). The id stays " + androidPackage() + ".",
+                    Text.t("Android"), JOptionPane.WARNING_MESSAGE);
+        }
+        PREFS.put("android.name", appName.getText().trim().isEmpty() ? "EVIA Program" : appName.getText().trim());
+        String phoneTyped = phone.getEditor().getItem() == null ? "" : phone.getEditor().getItem().toString().trim();
+        PREFS.put("android.device", phoneTyped.contains(" ") ? phoneTyped.substring(0, phoneTyped.indexOf(' ')) : phoneTyped);
         PREFS.put("esp32Index", esp32.getText().trim().isEmpty() ? Toolchains.ESP32_INDEX : esp32.getText().trim());
         putTool("avrGcc", avrGcc, "avr-gcc", "avr-gcc");
         putTool("armGcc", armGcc, "arm-none-eabi-gcc", "arm-none-eabi-gcc");
@@ -1140,6 +1422,102 @@ final class Settings {
             label.setText(ci.display() + "  - Clang " + LATEST_CLANG + " is the recommended compiler");
             label.setForeground(Theme.warn());
         }
+    }
+
+    /** Shows which JDK a folder holds: green for JDK 17 or newer, red when there is none or it is too old. */
+    static void checkJdk(String typed, JLabel label) {
+        label.setText(Text.t("Checking the JDK..."));
+        label.setForeground(Theme.muted());
+        Object token = newCheck(label);
+        new Thread(() -> {
+            java.nio.file.Path home = typed.isBlank() ? null : jdkFolder(typed);
+            if (typed.isBlank()) {
+                String before = PREFS.get("jdk", "");
+                if (before.isBlank()) home = jdkHome();
+            }
+            final java.nio.file.Path h = home;
+            boolean ok = h != null && java.nio.file.Files.isRegularFile(jdkProgram(h, "javac"));
+            int v = ok ? jdkVersion(h) : 0;
+            SwingUtilities.invokeLater(() -> {
+                if (!isLatestCheck(label, token)) return;
+                if (!ok) {
+                    label.setText("No JDK there (no bin/javac) - click Get, or install a JDK " + MIN_JDK + "+ and Detect");
+                    label.setForeground(Theme.error());
+                } else if (v != 0 && v < MIN_JDK) {
+                    label.setText("JDK " + v + " - JDK " + MIN_JDK + " or newer is needed");
+                    label.setForeground(Theme.error());
+                } else {
+                    label.setText("JDK " + (v == 0 ? "" : v + "  ") + "(" + h + ")");
+                    label.setForeground(Theme.ok());
+                }
+            });
+        }, "evia-jdk-check").start();
+    }
+
+    /** Shows the version of kotlinc, from build.txt next to it (starting kotlinc takes seconds). */
+    static void checkKotlinc(String command, JLabel label) {
+        label.setText(Text.t("Checking kotlinc..."));
+        label.setForeground(Theme.muted());
+        Object token = newCheck(label);
+        new Thread(() -> {
+            java.nio.file.Path k = command.isBlank() ? null : java.nio.file.Path.of(command.strip());
+            if (k != null && !k.isAbsolute()) k = onPath(ExternalEditor.WINDOWS ? command.strip() + ".bat" : command.strip());
+            String version = null;
+            if (k != null && java.nio.file.Files.isRegularFile(k)) {
+                try {
+                    java.nio.file.Path real = k.toRealPath();
+                    version = java.nio.file.Files.readString(real.getParent().getParent().resolve("build.txt")).strip()
+                            .replaceFirst("-release.*", "");
+                } catch (Exception e) {
+                    version = "";
+                }
+            }
+            final String v = version;
+            SwingUtilities.invokeLater(() -> {
+                if (!isLatestCheck(label, token)) return;
+                if (v == null) {
+                    label.setText("kotlinc not found - click Get to download it");
+                    label.setForeground(Theme.error());
+                } else {
+                    label.setText("Kotlin " + v);
+                    label.setForeground(Theme.ok());
+                }
+            });
+        }, "evia-kotlinc-check").start();
+    }
+
+    /** Shows what an SDK folder has: the platform and build-tools a build needs, and adb. */
+    static void checkSdk(String folder, JLabel label) {
+        java.nio.file.Path sdk = java.nio.file.Path.of(folder.strip());
+        java.nio.file.Path jar = AndroidBuild.platformJar(sdk), bt = AndroidBuild.buildTools(sdk), adb = AndroidBuild.adb(sdk);
+        if (jar == null || bt == null) {
+            label.setText("No Android SDK here" + (jar == null ? " (no platform)" : " (no build-tools)") + " - click Get Android SDK...");
+            label.setForeground(Theme.error());
+        } else {
+            label.setText("Platform " + jar.getParent().getFileName() + ", build-tools " + bt.getFileName()
+                    + (adb == null ? ", no adb (Install on Phone needs platform-tools)" : ", adb"));
+            label.setForeground(adb == null ? Theme.warn() : Theme.ok());
+        }
+    }
+
+    /** Fills the phone list with what adb sees. */
+    private static void scanPhones(DefaultComboBoxModel<String> model, JComboBox<String> box, JLabel status, JButton scan) {
+        scan.setEnabled(false);
+        status.setText(Text.t("Looking for phones..."));
+        new Thread(() -> {
+            List<String[]> found = AndroidBuild.devices();
+            SwingUtilities.invokeLater(() -> {
+                Object current = box.getEditor().getItem();
+                model.removeAllElements();
+                model.addElement("");
+                for (String[] d : found) model.addElement(d[0] + (d[2].isEmpty() ? "" : "  -  " + d[2]) + (d[1].equals("device") ? "" : "  (" + d[1] + ")"));
+                model.setSelectedItem(current == null ? "" : current);
+                status.setText(found.isEmpty() ? Text.t("No phones found: is USB debugging on, and adb installed (Get Android SDK)?")
+                        : Text.t("Found %d phone(s) or emulator(s). Empty uses the only one connected.", found.size()));
+                status.setForeground(Theme.muted());
+                scan.setEnabled(true);
+            });
+        }, "evia-phone-scan").start();
     }
 
     private static JLabel small(String s) {

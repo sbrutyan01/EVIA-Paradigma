@@ -141,6 +141,32 @@ MyProject/
 <b>GCC</b> (g++ / gcc, версия 13 или новее). В Windows EVIA Paradigma может установить любой из них сам: llvm-mingw
 (Clang) или WinLibs (GCC, MinGW-w64). Visual Studio не нужна.</p>
 
+<a name="jvm"></a>
+<h2>Java, Kotlin и Android</h2>
+<p>Ещё три языка, для компьютеров и телефонов. Как и в Python, в них нет <code>goto</code>: при структурном потоке
+получаются вложенные <code>if</code>/<code>else</code> и циклы <code>while</code>, а там, где соединения не
+складываются в блоки (и всегда при потоке Goto), схема становится конечным автоматом: по одной ветке на блок.
+Безопасные и быстрые значения работают как в C++, с выводом, сообщениями об ошибках и кодом выхода интерпретатора.</p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th>Язык</th><th>Что получается</th><th>Что нужно</th></tr>
+<tr><td>Java</td><td>Один файл с <code>class Program</code>. <b>Собрать и запустить</b> компилирует его javac и
+запускает. Без EVIA Paradigma: <code>java Program.java</code>.</td><td>JDK версии 17 или новее</td></tr>
+<tr><td>Kotlin</td><td>Один файл <code>.kt</code>. <b>Собрать и запустить</b> делает исполняемый jar с помощью kotlinc и
+запускает его.</td><td>JDK и kotlinc</td></tr>
+<tr><td>Android</td><td>Приложение: строки Print на экране, Input в текстовом поле с кнопкой OK, и кнопка
+<b>Run again</b>. <b>Собрать</b> делает APK; <b>Установить на телефон</b> ставит его через adb и запускает.</td>
+<td>JDK, kotlinc и Android SDK</td></tr>
+</table>
+<p><b>Настройки &gt; Java и Kotlin</b>: JDK (находится сам по JAVA_HOME или PATH; <b>Get</b> скачивает Eclipse Temurin) и
+kotlinc (<b>Get</b> скачивает компилятор JetBrains). <b>Настройки &gt; Android</b>: папка SDK (SDK из Android Studio
+находится сам; <b>Скачать Android SDK...</b> показывает лицензию Google и, если вы её принимаете, скачивает с сайта Google
+платформу, build-tools и adb), идентификатор приложения (например <code>am.evia.counter</code>), название под значком и
+телефон. На телефоне включите отладку по USB: <i>Настройки &gt; О телефоне</i>, семь раз нажмите <i>Номер сборки</i>,
+затем <i>Для разработчиков &gt; Отладка по USB</i>.</p>
+<p>EVIA Paradigma собирает приложение сама, инструментами SDK, за несколько секунд и без Gradle. Папка, которую она
+пишет (<code>build/android</code> проекта или <code>EVIA Projects/Android/</code>), это ещё и обычный проект Android
+Studio: <i>File &gt; Open</i> и Run.</p>
+
 <a name="boards"></a>
 <h2>Платы Arduino и ESP32</h2>
 <p>Ещё три языка создают код для микроконтроллеров. Оба используют быстрые значения (числа; текст только в Print),

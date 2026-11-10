@@ -345,7 +345,8 @@ final class MainFrame extends JFrame {
                 Target cur = Settings.target();
                 ButtonGroup g1 = new ButtonGroup(), g2 = new ButtonGroup(), g3 = new ButtonGroup();
                 for (Target.Lang l : Target.Lang.values()) {
-                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON || l == Target.Lang.ARDUINO || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON || l == Target.Lang.JAVA || l == Target.Lang.ARDUINO
+                            || l == Target.Lang.SYSTEMVERILOG) m.addSeparator();
                     JRadioButtonMenuItem i = new JRadioButtonMenuItem(l.display + "   (" + Text.t(l.note) + ")", l == cur.lang());
                     i.addActionListener(ev -> Settings.setTarget(Settings.target().withLang(l)));
                     g1.add(i);
@@ -414,6 +415,8 @@ final class MainFrame extends JFrame {
         m.add(item("Packages and Updates...", null, e -> PackagesDialog.show(this, false)));
         m.addSeparator();
         m.add(item("C, C++ and Python...", null, e -> Settings.showDialog(this, Settings.Page.DESKTOP)));
+        m.add(item("Java and Kotlin...", null, e -> Settings.showDialog(this, Settings.Page.JVM)));
+        m.add(item("Android...", null, e -> Settings.showDialog(this, Settings.Page.ANDROID)));
         m.addSeparator();
         m.add(item("Arduino Boards...", null, e -> Settings.showDialog(this, Settings.Page.ARDUINO)));
         m.add(item("ESP32 Boards...", null, e -> Settings.showDialog(this, Settings.Page.ESP32)));
@@ -438,15 +441,22 @@ final class MainFrame extends JFrame {
                 Target.Lang lang = cur.lang();
                 Board board = Settings.board(lang);
 
-                JMenu pc = new JMenu(Text.t("This Computer (C, C++, Python)"));
+                JMenu pc = new JMenu(Text.t("This Computer (C, C++, Python, Java, Kotlin)"));
                 for (Target.Lang l : Target.Lang.values()) {
-                    if (l.embedded()) continue;
-                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON) pc.addSeparator();
+                    if (l.embedded() || l == Target.Lang.ANDROID) continue;
+                    if (l == Target.Lang.CPP98 || l == Target.Lang.PYTHON || l == Target.Lang.JAVA) pc.addSeparator();
                     pc.add(choice(l.display + "   (" + l.tag() + ")", l == lang, () -> Settings.setTarget(cur.withLang(l))));
                 }
                 pc.addSeparator();
                 pc.add(item("C, C++ and Python Settings...", null, ev -> Settings.showDialog(MainFrame.this, Settings.Page.DESKTOP)));
+                pc.add(item("Java and Kotlin Settings...", null, ev -> Settings.showDialog(MainFrame.this, Settings.Page.JVM)));
                 m.add(pc);
+                JMenu phone = new JMenu(Text.t("Android Phones and Tablets"));
+                phone.add(choice(Text.t("Android app (Kotlin)"), lang == Target.Lang.ANDROID,
+                        () -> Settings.setTarget(cur.withLang(Target.Lang.ANDROID))));
+                phone.addSeparator();
+                phone.add(item("Android Settings...", null, ev -> Settings.showDialog(MainFrame.this, Settings.Page.ANDROID)));
+                m.add(phone);
                 m.addSeparator();
 
                 m.add(family(Text.t("Arduino Boards"), Board::isArduinoAvr, Target.Lang.ARDUINO, lang, board, Settings.Page.ARDUINO,
@@ -772,6 +782,9 @@ final class MainFrame extends JFrame {
                 if (lastSourceView != null) viewSource(lastSourceView);
                 else generateCode();
             });
+            // an Android app goes into the project's build folder, or ~/EVIA Projects/Android/<program>
+            codeViewer.setAndroidDir(() -> project != null ? project.buildDir().resolve("android")
+                    : Project.defaultParent().resolve("Android").resolve(programName()));
         }
         return codeViewer;
     }

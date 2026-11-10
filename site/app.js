@@ -8,7 +8,7 @@
   var noteEl = document.getElementById("sample-note");
 
   var PY_KEYWORDS = /\b(def|class|return|if|elif|else|while|for|in|not|and|or|break|pass|global|raise|try|except|True|False|None|self)\b/g;
-  var KEYWORDS = /\b(void|int|double|static|return|if|else|for|while|do|switch|case|break|default|struct|const|goto|throw|try|catch|namespace|using|typedef|char|unsigned|sizeof|auto|new|delete|nullptr)\b/g;
+  var KEYWORDS = /\b(void|int|double|static|return|if|else|for|while|do|switch|case|break|default|struct|const|goto|throw|try|catch|namespace|using|typedef|char|unsigned|sizeof|auto|new|delete|nullptr|fun|val|var|null|true|false|is|when|final|class)\b/g;
 
   function esc(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -40,7 +40,8 @@
     if (!s) return;
     var py = state.lang === "python";
     codeEl.innerHTML = highlight(s.code, py);
-    var fn = py ? "Program.run()" : state.lang.indexOf("c++") === 0 ? "Program::run()" : "run_program()";
+    var jvm = state.lang === "java" || state.lang === "kotlin";
+    var fn = py || jvm ? "Program.run()" : state.lang.indexOf("c++") === 0 ? "Program::run()" : "run_program()";
     var label = document.querySelector('[data-lang="' + state.lang + '"]').textContent;
     noteEl.textContent = (noteEl.dataset.note || "{lang}: {fn}, {lines}")   // the page's language
       .replace("{lang}", label).replace("{fn}", fn).replace("{lines}", s.lines);

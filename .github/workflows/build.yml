@@ -53,11 +53,23 @@ jobs:
           command -v xvfb-run > /dev/null || sudo apt-get install -y xvfb
           scripts/check-zoom.sh
 
-      - name: "Every language and mode (C99..C++20 x structured/goto x safe/fast) with Clang"
+      - name: Kotlin compiler 2.4.21
+        run: |
+          curl -fsSL -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.4.21/kotlin-compiler-2.4.21.zip
+          echo "7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd  kotlin.zip" | sha256sum -c
+          unzip -q kotlin.zip -d "$RUNNER_TEMP" && rm kotlin.zip
+          echo "$RUNNER_TEMP/kotlinc/bin" >> "$GITHUB_PATH"
+
+      - name: "Every language and mode (C99..C++20, Python, Java, Kotlin x structured/goto x safe/fast) with Clang"
         run: CC="${CXX/clang++/clang}" CXX="$CXX" scripts/check-targets.sh
 
       - name: "Every language and mode with GCC"
+        env:
+          LANGS: c99 c11 c17 c++98 c++11 c++14 c++17 c++20 python
         run: CC=gcc CXX=g++ scripts/check-targets.sh
+
+      - name: Android apps (the runner's Android SDK), run against the interpreter, and one APK
+        run: scripts/check-android.sh
 
       - name: Upload the application and generated C++
         uses: actions/upload-artifact@v4

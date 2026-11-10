@@ -43,6 +43,8 @@ final class CodeViewer extends JFrame {
     private Target target = Settings.target();
     /** Generates the program again for the current target (set by the main window). */
     private Runnable regenerate;
+    /** Where the Android app's project goes (set by the main window: the project's build/android, or ~/EVIA Projects/Android/NAME). */
+    private java.util.function.Supplier<Path> androidDir;
     private Path savedPath;
     private Process process;
     private final StringBuilder lastOutput = new StringBuilder();
@@ -149,9 +151,14 @@ final class CodeViewer extends JFrame {
 
     /** Desktop languages compile and run; microcontroller languages build and upload. */
     private void updateButtons() {
-        runBtn.setText(target.embedded() ? "Build" : target.lang().python() ? Text.t("Run") : Text.t("Compile & Run"));
-        runBtn.setToolTipText(target.embedded() ? "Build for the board chosen in the Board list" : null);
-        uploadBtn.setVisible(target.embedded());
+        boolean android = target.lang() == Target.Lang.ANDROID;
+        runBtn.setText(target.embedded() || android ? Text.t("Build") : target.lang().python() ? Text.t("Run") : Text.t("Compile & Run"));
+        runBtn.setToolTipText(android ? Text.t("Build the app (an APK) with the Android SDK; the project folder opens in Android Studio too")
+                : target.embedded() ? "Build for the board chosen in the Board list" : null);
+        uploadBtn.setVisible(target.embedded() || android);
+        uploadBtn.setText(android ? Text.t("Install on Phone") : Text.t("Upload"));
+        uploadBtn.setToolTipText(android ? Text.t("Build, then install the app on the phone with adb and start it")
+                : Text.t("Build, then upload to the board on the serial port set in Settings"));
     }
 
     private static JButton button(String text, java.awt.event.ActionListener l) {
@@ -163,6 +170,10 @@ final class CodeViewer extends JFrame {
     /** Shows freshly generated code. Asks before throwing away edits made here. */
     void setRegenerator(Runnable r) {
         regenerate = r;
+    }
+
+    void setAndroidDir(java.util.function.Supplier<Path> where) {
+        androidDir = where;
     }
 
     void show(String cppCode, String name) {
@@ -320,6 +331,11 @@ final class CodeViewer extends JFrame {
             "const", "constexpr", "default", "delete", "double", "else", "for", "goto", "if", "inline", "int",
             "long", "namespace", "new", "return", "static_cast", "struct", "switch", "template", "throw", "try",
             "using", "void", "while", "nullptr", "true", "false", "this", "operator", "sizeof", "noexcept");
+    private static final Set<String> JVM_KEYWORDS = Set.of("abstract", "boolean", "break", "case", "catch", "class",
+            "continue", "double", "else", "extends", "final", "finally", "for", "if", "import", "instanceof", "int",
+            "interface", "long", "new", "package", "private", "public", "return", "static", "super", "switch", "this",
+            "throw", "try", "void", "while", "true", "false", "null", "var", "val", "fun", "is", "as", "when", "object",
+            "override", "init", "lateinit", "do", "in");
     private static final Pattern TOKENS = Pattern.compile(
             "(//[^\\n]*)|(\"(?:\\\\.|[^\"\\\\\\n])*\")|('(?:\\\\.|[^'\\\\\\n])*')|(^\\s*#\\w+)|\\b([A-Za-z_]\\w*)\\b|(^L\\d+:)",
             Pattern.MULTILINE);
@@ -334,7 +350,7 @@ final class CodeViewer extends JFrame {
     private void highlight() {
         String code = codePane.getText();
         boolean py = target.lang().python();
-        Set<String> keywords = py ? PY_KEYWORDS : KEYWORDS;
+        Set<String> keywords = py ? PY_KEYWORDS : target.lang().jvm() ? JVM_KEYWORDS : KEYWORDS;
         StyledDocument doc = codePane.getStyledDocument();
         SimpleAttributeSet plain = style(Theme.plain(), false, false);
         SimpleAttributeSet comment = style(Theme.comment(), false, true);
@@ -393,7 +409,8 @@ final class CodeViewer extends JFrame {
     // ================================================================ compile & run
 
     private void checkCompiler() {
-        if (target.embedded()) checkBoardTools();
+        if (target.lang().jvm()) checkJvmTools();
+        else if (target.embedded()) checkBoardTools();
         else if (target.lang().python()) Settings.checkPython(Settings.pythonCommand(), compilerLabel);
         else Settings.checkCompiler(Settings.commandFor(target), compilerLabel, target.isC());
     }
@@ -544,6 +561,10 @@ final class CodeViewer extends JFrame {
      * and, if asked, uploads it (arduino-cli upload, or avrdude).
      */
     private void buildForBoard(boolean upload) {
+        if (target.lang() == Target.Lang.ANDROID) {
+            buildAndroid(upload);
+            return;
+        }
         if (process != null) return;
         if (target.lang().fpga()) {
             buildFpga(upload);
@@ -731,6 +752,14 @@ final class CodeViewer extends JFrame {
             runPython();
             return;
         }
+        if (target.lang() == Target.Lang.ANDROID) {
+            buildAndroid(false);
+            return;
+        }
+        if (target.lang().jvm()) {
+            runJvm();
+            return;
+        }
         String code = codePane.getText();
         String command = Settings.commandFor(target);
         output.setText("");
@@ -776,6 +805,172 @@ final class CodeViewer extends JFrame {
                 });
             }
         }, "evia-compile-run");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    // ================================================================ Java, Kotlin and Android
+
+    /** The JDK (and kotlinc, and the Android SDK) in the toolbar: green when everything is there. */
+    private void checkJvmTools() {
+        Target.Lang l = target.lang();
+        compilerLabel.setText(Text.t("Checking the JDK..."));
+        compilerLabel.setForeground(Theme.muted());
+        Object token = Settings.newCheck(compilerLabel);
+        new Thread(() -> {
+            Path jdk = Settings.jdkHome();
+            boolean haveJdk = jdk != null && Files.isRegularFile(Settings.jdkProgram(jdk, "javac"));
+            int v = haveJdk ? Settings.jdkVersion(jdk) : 0;
+            String kotlin = l == Target.Lang.JAVA ? "" : Settings.kotlincVersion();
+            List<String> missing = l == Target.Lang.ANDROID ? AndroidBuild.missing() : List.of();
+            SwingUtilities.invokeLater(() -> {
+                if (!Settings.isLatestCheck(compilerLabel, token)) return;
+                if (!haveJdk) {
+                    compilerLabel.setText(Text.t("No JDK found - Settings > Java and Kotlin > Get"));
+                    compilerLabel.setForeground(Theme.error());
+                } else if (kotlin == null) {
+                    compilerLabel.setText("JDK " + v + Text.t(", no kotlinc - Settings > Java and Kotlin > Get"));
+                    compilerLabel.setForeground(Theme.error());
+                } else if (!missing.isEmpty()) {
+                    compilerLabel.setText("JDK " + v + Text.t(", no Android SDK - Settings > Android > Get Android SDK..."));
+                    compilerLabel.setForeground(Theme.error());
+                } else {
+                    Path sdk = Settings.androidSdk();
+                    compilerLabel.setText("JDK " + (v == 0 ? "" : v) + (kotlin.isEmpty() ? "" : ", Kotlin " + kotlin)
+                            + (l == Target.Lang.ANDROID ? ", Android " + AndroidBuild.platformJar(sdk).getParent().getFileName() : ""));
+                    compilerLabel.setForeground(Theme.ok());
+                }
+            });
+        }, "evia-jvm-check").start();
+    }
+
+    /** Java: javac, then java. Kotlin: kotlinc makes a runnable jar (with the Kotlin library), then java -jar. */
+    private void runJvm() {
+        String code = codePane.getText();
+        boolean kotlin = target.lang() == Target.Lang.KOTLIN;
+        output.setText("");
+        runBtn.setEnabled(false);
+        stopBtn.setEnabled(true);
+        Thread t = new Thread(() -> {
+            try {
+                Path jdk = Settings.jdkHome();
+                if (jdk == null || !Files.isRegularFile(Settings.jdkProgram(jdk, "javac"))) {
+                    append(">> No JDK was found. Settings > Java and Kotlin: Get downloads one (Eclipse Temurin),\n"
+                            + "   or install JDK " + Settings.MIN_JDK + " or newer and click Detect.\n");
+                    return;
+                }
+                String java = Settings.jdkProgram(jdk, "java").toString();
+                Path dir = Files.createTempDirectory(kotlin ? "evia-kotlin" : "evia-java");
+                List<String> compile;
+                List<String> run;
+                if (kotlin) {
+                    Path src = dir.resolve("program.kt");
+                    Files.writeString(src, code, StandardCharsets.UTF_8);
+                    String kc = Settings.kotlinc();   // a path with spaces is one program, not a command line
+                    boolean oneFile;
+                    try {
+                        oneFile = Files.isRegularFile(Path.of(kc));
+                    } catch (java.nio.file.InvalidPathException e) {
+                        oneFile = false;   // quotes and options: a command line
+                    }
+                    compile = new ArrayList<>(oneFile ? List.of(kc) : Settings.split(kc));
+                    compile.addAll(List.of(src.toString(), "-include-runtime", "-d", dir.resolve("program.jar").toString()));
+                    run = List.of(java, "-jar", dir.resolve("program.jar").toString());
+                } else {
+                    Path src = dir.resolve("Program.java");
+                    Files.writeString(src, code, StandardCharsets.UTF_8);
+                    compile = List.of(Settings.jdkProgram(jdk, "javac").toString(), "-encoding", "UTF-8", "-d",
+                            dir.resolve("classes").toString(), src.toString());
+                    run = List.of(java, "-cp", dir.resolve("classes").toString(), "Program");
+                }
+                append("$ " + String.join(" ", compile) + "\n");
+                ProcessBuilder pb = new ProcessBuilder(compile).directory(dir.toFile());
+                pb.environment().put("JAVA_HOME", jdk.toString());
+                lastOutput.setLength(0);
+                int rc;
+                try {
+                    rc = runProcess(pb, false);
+                } catch (IOException e) {
+                    append(">> " + (kotlin ? "kotlinc" : "javac") + " could not be started: " + e.getMessage() + "\n"
+                            + (kotlin ? ">> Settings > Java and Kotlin: Get downloads the Kotlin compiler.\n" : ""));
+                    return;
+                }
+                if (rc != 0) {
+                    append(">> compilation failed (exit code " + rc + ")\n");
+                    return;
+                }
+                append(">> compiled, running...\n\n");
+                rc = runProcess(new ProcessBuilder(run).directory(dir.toFile()), true);
+                append("\n>> program exited with code " + rc + "\n");
+            } catch (IOException e) {
+                append(">> " + e.getMessage() + "\n");
+            } catch (InterruptedException e) {
+                append(">> stopped\n");
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    process = null;
+                    stdin = null;
+                    inputField.setEnabled(false);
+                    runBtn.setEnabled(true);
+                    stopBtn.setEnabled(false);
+                });
+            }
+        }, "evia-jvm-run");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    /** Android: writes the project folder, builds the APK and, if asked, installs it on the phone and starts it. */
+    private void buildAndroid(boolean install) {
+        String code = codePane.getText();
+        String pkg = AndroidBuild.packageOf(code);
+        String name = Settings.androidAppName();
+        Path dir = androidDir != null ? androidDir.get()
+                : Project.defaultParent().resolve("Android").resolve(baseName.replaceAll("[^A-Za-z0-9_ -]", "_"));
+        output.setText("");
+        if (pkg == null || !AndroidBuild.validPackage(pkg)) {
+            append(">> MainActivity.kt has no valid package line (package am.evia.something): generate the code again\n");
+            return;
+        }
+        List<String> missing = AndroidBuild.missing();
+        if (!missing.isEmpty()) {
+            append(">> To build an Android app, EVIA Paradigma needs:\n");
+            for (String m : missing) append("   - " + m + "\n");
+            SwingUtilities.invokeLater(() -> {
+                int a = JOptionPane.showConfirmDialog(this, Text.t("Open the Settings page to get what is missing?"),
+                        Text.t("Android"), JOptionPane.YES_NO_OPTION);
+                if (a == JOptionPane.YES_OPTION) {
+                    Settings.showDialog(this, missing.get(0).startsWith("the Android SDK") ? Settings.Page.ANDROID : Settings.Page.JVM);
+                    checkCompiler();
+                }
+            });
+            return;
+        }
+        runBtn.setEnabled(false);
+        uploadBtn.setEnabled(false);
+        Thread t = new Thread(() -> {
+            try {
+                AndroidBuild.writeProject(code, dir, pkg, name);
+                append(">> project: " + dir + "\n");
+                Path apk = AndroidBuild.build(dir, pkg, name, line -> append(line + "\n"));
+                if (install) {
+                    AndroidBuild.install(apk, pkg, Settings.androidDevice(), line -> append(line + "\n"));
+                    append(">> installed and started " + pkg + " on the phone\n");
+                } else {
+                    append(">> built. Install on Phone puts it on a phone connected by USB (or copy the APK to the phone).\n"
+                            + ">> The folder is an Android Studio project as well: File > Open, then Run.\n");
+                }
+            } catch (IOException e) {
+                append(">> " + e.getMessage() + "\n");
+            } catch (InterruptedException e) {
+                append(">> stopped\n");
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    runBtn.setEnabled(true);
+                    uploadBtn.setEnabled(true);
+                });
+            }
+        }, "evia-android-build");
         t.setDaemon(true);
         t.start();
     }

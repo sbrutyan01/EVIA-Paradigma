@@ -1,0 +1,10 @@
+
+    // ---- fast values: plain doubles, text only in Print, no checks (dividing by zero gives Infinity or NaN)
+
+    /** Input block (fast values): the line must be a number. */
+    static double rt_input_num(String name) {
+        String line = rt_read_line(name);
+        Double d = rt_parse(line);
+        if (d == null) throw new EviaError("'" + line + "' is not a number");
+        return d;
+    }

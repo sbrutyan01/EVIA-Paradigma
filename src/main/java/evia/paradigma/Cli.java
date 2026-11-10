@@ -10,7 +10,8 @@ import java.nio.file.Path;
  * <pre>
  * java -jar evia-paradigma.jar --run program.evia            run with the interpreter (stdin/stdout)
  * java -jar evia-paradigma.jar --gen program.evia [-o x.cpp] [--lang c++20] [--flow structured] [--values safe]
- *                                                             write C, C++ or Python (stdout if no -o)
+ *                                                             write C, C++, Python, Java or Kotlin (stdout if no -o)
+ * java -jar evia-paradigma.jar --android program.evia DIR [--build | --install]   an Android app
  * java -jar evia-paradigma.jar --example out.evia             save the built-in example program
  * </pre>
  * Output and errors are identical to the generated program, so the two can be compared.
@@ -40,7 +41,7 @@ final class Cli {
                             case "--lang" -> {
                                 Target.Lang l = Target.langOf(v);
                                 if (l == null) throw new IllegalArgumentException("unknown language " + v
-                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, python, arduino, avr, pic32, stm32, sv, verilog, vhdl)");
+                                        + " (c99, c11, c17, c++98, c++11, c++14, c++17, c++20, python, java, kotlin, android, arduino, avr, pic32, stm32, sv, verilog, vhdl)");
                                 t = t.withLang(l);
                             }
                             case "--board" -> {
@@ -189,6 +190,66 @@ final class Cli {
                     }
                     return rc;
                 }
+                case "--android" -> {
+                    // write the Android Studio project of a program, and optionally build and install the app
+                    need(args, 3);
+                    Library program = load(args[1]);
+                    Path dir = Path.of(args[2]).toAbsolutePath();
+                    String base = Path.of(args[1]).getFileName().toString().replaceFirst("\\.evia$", "");
+                    String pkg = AndroidBuild.packageFor(base), name = base;
+                    Target t = Target.DEFAULT.withLang(Target.Lang.ANDROID);
+                    boolean build = false, install = false;
+                    String serial = null;
+                    for (int i = 3; i < args.length; i++) {
+                        String opt = args[i];
+                        switch (opt) {
+                            case "--build" -> build = true;
+                            case "--install" -> build = install = true;
+                            default -> {
+                                if (i + 1 >= args.length) throw new IllegalArgumentException(opt + " needs a value (see --help)");
+                                String v = args[++i];
+                                switch (opt) {
+                                    case "--package" -> pkg = v;
+                                    case "--name" -> name = v;
+                                    case "--device" -> serial = v;
+                                    case "--flow" -> t = t.withFlow(v.equalsIgnoreCase("goto") ? Target.Flow.GOTO : Target.Flow.STRUCTURED);
+                                    case "--values" -> t = t.withValues(v.equalsIgnoreCase("fast") ? Target.Values.FAST : Target.Values.SAFE);
+                                    default -> throw new IllegalArgumentException("unknown option " + opt + " (see --help)");
+                                }
+                            }
+                        }
+                    }
+                    Path src = AndroidBuild.writeProject(program, t, dir, pkg, name);
+                    out.println("wrote " + dir + " (" + pkg + ", " + src.getFileName() + ")");
+                    if (!build) return 0;
+                    try {
+                        Path apk = AndroidBuild.build(dir, pkg, name, out::println);
+                        if (install) AndroidBuild.install(apk, pkg, serial, out::println);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return 1;
+                    }
+                    return 0;
+                }
+                case "--android-sdk" -> {
+                    // fetch the Android SDK from Google into DIR (default: Settings, or EVIA's own folder)
+                    Path sdk = args.length > 1 && !args[1].startsWith("--") ? Path.of(args[1]).toAbsolutePath() : Settings.androidSdk();
+                    boolean accept = java.util.Arrays.asList(args).contains("--accept-license");
+                    AndroidBuild.Plan plan = AndroidBuild.plan();
+                    if (!accept) {
+                        for (var l : plan.licenses().entrySet()) out.println("=== " + l.getKey() + " ===\n" + l.getValue().strip() + "\n");
+                        out.println("The Android SDK is Google's. To download it (" + Packages.mb(plan.bytes()) + " into " + sdk
+                                + "), read the licence above and run this again with --accept-license");
+                        return 2;
+                    }
+                    try {
+                        AndroidBuild.installSdk(plan, sdk, (d, total) -> { }, () -> false, out::println);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return 1;
+                    }
+                    return 0;
+                }
                 case "--version" -> {
                     out.println("EVIA Paradigma " + App.VERSION + " (Java " + System.getProperty("java.version") + ")");
                     if (System.getProperty("evia.handedOver") != null) {
@@ -204,21 +265,28 @@ final class Cli {
                     out.println("xc32-gcc:  " + Settings.xc32());
                     out.println("arm-gcc:   " + Settings.armGcc());
                     out.println("openocd:   " + Settings.openocd());
+                    java.nio.file.Path jdk = Settings.jdkHome();
+                    out.println("JDK:       " + (jdk == null ? "none found (Java and Kotlin need one)" : jdk + " (Java " + Settings.jdkVersion(jdk) + ")"));
+                    out.println("kotlinc:   " + Settings.kotlinc());
+                    out.println("Android:   " + Settings.androidSdk());
                     return 0;
                 }
                 default -> {
                     out.println("""
-                            EVIA Paradigma - visual block programming with C, C++ and Python generation
+                            EVIA Paradigma - visual block programming with C, C++, Python, Java and Kotlin generation
 
                             Usage:
                               java -jar evia-paradigma.jar                           start the editor
                               java -jar evia-paradigma.jar --run  program.evia       run a program
                                                           (or a project folder / .eviaproj)
                               java -jar evia-paradigma.jar --gen  program.evia [options]
-                                                                                     generate C, C++ or Python
+                                                                                     generate C, C++, Python, Java or Kotlin
                                   -o FILE              write to FILE (default: standard output)
                                   --lang LANGUAGE      c99, c11, c17, c++98, c++11, c++14, c++17, c++20 (default),
                                                        python (Python 3.8 or newer: run it with python3 program.py),
+                                                       java (JDK 17 or newer: java Program.java),
+                                                       kotlin (kotlinc program.kt -include-runtime -d program.jar),
+                                                       android (the Kotlin activity of an Android app; see --android),
                                                        arduino (a sketch for Arduino AVR, ESP32 and STM32 boards),
                                                        avr (bare-metal C for avr-gcc: ATmega328P, 2560, 32U4),
                                                        pic32 (bare-metal C for xc32-gcc: PIC32MX1xx/2xx, 3xx/4xx, 5xx/6xx/7xx)
@@ -239,9 +307,22 @@ final class Cli {
                                                        MPLAB X Harmony project, MX695/MX795 only)
                                   --flow MODE          structured (default): if/else, loops, switch
                                                        goto: every block a label, wires are jumps
-                                                       (Python has no goto: a state machine, one branch per block)
+                                                       (Python, Java and Kotlin have no goto: a state machine, one
+                                                       branch per block)
                                   --values MODE        safe (default): numbers and text, the interpreter's checks
                                                        fast: plain double numbers, text only in Print, no checks
+                              java -jar evia-paradigma.jar --android program.evia DIR [options]
+                                                                                     an Android app: writes the Android Studio
+                                                                                     project into DIR
+                                  --package ID         the application id (default am.evia.<program name>)
+                                  --name TEXT          the name under the icon (default: the program's)
+                                  --flow, --values     as for --gen
+                                  --build              also build DIR/build/<name>-debug.apk (Android SDK, JDK, kotlinc)
+                                  --install            build, install on the connected phone with adb and start it
+                                  --device SERIAL      the phone to install on, when more than one is connected
+                              java -jar evia-paradigma.jar --android-sdk [DIR] [--accept-license]
+                                                                                     download the Android SDK from Google
+                                                                                     (shows Google's licence first)
                               java -jar evia-paradigma.jar --example out.evia        save the example
                               java -jar evia-paradigma.jar --packages                list the packages of the EVIA server
                               java -jar evia-paradigma.jar --install ID...           install or update packages (or: updates)

@@ -1,0 +1,88 @@
+
+    // ---- safe values: a value is a Double or a String; a program variable is null until it is assigned
+
+    static Object rt_rd(Object x, String name) {
+        if (x == null) throw new EviaError("undefined variable '" + name + "'");
+        return x;
+    }
+
+    static double rt_num(Object x) {
+        if (x instanceof Double d) return d;
+        Double d = rt_parse((String) x);
+        if (d == null) throw new EviaError("'" + x + "' is not a number");
+        return d;
+    }
+
+    static String rt_text(Object x) {
+        return x instanceof Double d ? rt_text(d.doubleValue()) : (String) x;
+    }
+
+    static boolean rt_truthy(Object x) {
+        return x instanceof Double d ? d != 0.0 : !((String) x).isEmpty();
+    }
+
+    static Object rt_B(boolean b) {
+        return b ? 1.0 : 0.0;
+    }
+
+    static double rt_non_zero(double d) {
+        if (d == 0.0) throw new EviaError("division by zero");
+        return d;
+    }
+
+    static Object rt_add(Object a, Object b) {
+        if (a instanceof String || b instanceof String) return rt_text(a) + rt_text(b);
+        return (Double) a + (Double) b;
+    }
+
+    static Object rt_sub(Object a, Object b) { return rt_num(a) - rt_num(b); }
+    static Object rt_mul(Object a, Object b) { return rt_num(a) * rt_num(b); }
+
+    static Object rt_div(Object a, Object b) {
+        double x = rt_num(a);
+        return x / rt_non_zero(rt_num(b));
+    }
+
+    static Object rt_mod(Object a, Object b) {
+        double x = rt_num(a);
+        return x % rt_non_zero(rt_num(b));
+    }
+
+    static Object rt_neg(Object a) { return -rt_num(a); }
+    static Object rt_not(Object a) { return rt_B(!rt_truthy(a)); }
+
+    static boolean rt_equal(Object a, Object b) {
+        if (a instanceof Double x && b instanceof Double y) return x.doubleValue() == y.doubleValue();
+        return rt_text(a).equals(rt_text(b));
+    }
+
+    static int rt_compare(Object a, Object b) {
+        if (a instanceof String x && b instanceof String y) return x.compareTo(y);
+        return Double.compare(rt_num(a), rt_num(b));
+    }
+
+    static Object rt_eq(Object a, Object b) { return rt_B(rt_equal(a, b)); }
+    static Object rt_ne(Object a, Object b) { return rt_B(!rt_equal(a, b)); }
+    static Object rt_lt(Object a, Object b) { return rt_B(rt_compare(a, b) < 0); }
+    static Object rt_le(Object a, Object b) { return rt_B(rt_compare(a, b) <= 0); }
+    static Object rt_gt(Object a, Object b) { return rt_B(rt_compare(a, b) > 0); }
+    static Object rt_ge(Object a, Object b) { return rt_B(rt_compare(a, b) >= 0); }
+
+    static void rt_print(Object x) {
+        rt_print_line(rt_text(x));
+    }
+
+    /** Input block: a line that reads as a number becomes a number, otherwise text. */
+    static Object rt_input(String name) {
+        String line = rt_read_line(name);
+        Double d = rt_parse(line);
+        return d == null ? line : d;
+    }
+
+    /** Nested method calls, limited like the interpreter (an endless recursion stops with an error). */
+    static int rt_depth = 0;
+
+    static void rt_enter() {
+        if (rt_depth >= 400) throw new EviaError("too many nested method calls (endless recursion?)");
+        rt_depth++;
+    }

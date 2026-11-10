@@ -18,18 +18,18 @@ final class HelpWindow extends JFrame {
     /** Guide languages: code, name (in that language), window title, topic names (same order as ANCHORS). */
     private record Lang(String code, String name, String title, String[] topics) {}
 
-    private static final String[] ANCHORS = {"start", "blocks", "expressions", "classes", "modules", "projects", "git", "cpp",
+    private static final String[] ANCHORS = {"start", "blocks", "expressions", "classes", "modules", "projects", "git", "cpp", "jvm",
             "boards", "fpga", "linux", "keys", "vim"};
 
     private static final Lang[] LANGS = {
             new Lang("en", "English", "EVIA Paradigma Guide", new String[]{"Getting started", "Blocks", "Expressions",
-                    "Classes and objects", "Modules", "Projects", "Git and GitHub", "C and C++ code",
+                    "Classes and objects", "Modules", "Projects", "Git and GitHub", "C and C++ code", "Java, Kotlin and Android",
                     "Arduino and ESP32 boards", "FPGA: Artix-7 and GateMate", "Linux images", "Keyboard shortcuts", "Vim keys"}),
             new Lang("ru", "Русский", "Руководство EVIA Paradigma", new String[]{"Начало работы", "Блоки", "Выражения",
-                    "Классы и объекты", "Модули", "Проекты", "Git и GitHub", "Код на C и C++",
+                    "Классы и объекты", "Модули", "Проекты", "Git и GitHub", "Код на C и C++", "Java, Kotlin и Android",
                     "Платы Arduino и ESP32", "FPGA: Artix-7 и GateMate", "Образы Linux", "Горячие клавиши", "Клавиши Vim"}),
             new Lang("hy", "Հայերեն", "EVIA Paradigma ուղեցույց", new String[]{"Սկսել", "Բլոկներ", "Արտահայտություններ",
-                    "Դասեր և օբյեկտներ", "Մոդուլներ", "Նախագծեր", "Git և GitHub", "C և C++ կոդ",
+                    "Դասեր և օբյեկտներ", "Մոդուլներ", "Նախագծեր", "Git և GitHub", "C և C++ կոդ", "Java, Kotlin և Android",
                     "Arduino և ESP32 տախտակներ", "FPGA՝ Artix-7 և GateMate", "Linux պատկերներ", "Ստեղնային համակցություններ", "Vim ստեղներ"}),
     };
 

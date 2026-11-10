@@ -131,6 +131,12 @@ about = {
     "oss-cad-suite": ("OSS CAD Suite", "FPGA", False,
                       "The open-source FPGA tools: yosys, nextpnr, gmpack, openFPGALoader, GHDL and more, for "
                       "Artix-7 and GateMate boards. Large: about 1 GB to download."),
+    "jdk": ("JDK (Eclipse Temurin)", "Java, Kotlin, Android", False,
+            "The Eclipse Temurin JDK 25: compiles and runs generated Java and Kotlin, and builds Android apps. "
+            "Any JDK 17 or newer already on the computer works as well."),
+    "kotlin": ("Kotlin compiler", "Java, Kotlin, Android", False,
+               "kotlinc from JetBrains: compiles generated Kotlin and Android apps (it runs on the JDK). The Android "
+               "SDK comes from Google instead (Settings, Android, Get Android SDK): its licence does not allow passing it on."),
     "buildroot": ("Buildroot sources", "Linux images", False,
                   "Buildroot 2026.02.3 (LTS), for Linux > Linux Images: small custom Linux systems for the BeagleBone "
                   "Black and Raspberry Pi 5. The build downloads the toolchain and packages it needs itself."),
@@ -141,7 +147,7 @@ about = {
                 "OpenWrt 25.12.6 for Linux > Linux Images: the sources, and on x86-64 the Image Builders for the "
                 "BeagleBone Black and Raspberry Pi 5, which make an image in minutes."),
 }
-order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "oss-cad-suite",
+order = ["app", "arduino-cli", "avr-gcc", "arm-none-eabi-gcc", "openocd", "pic32prog", "oss-cad-suite", "jdk", "kotlin",
          "buildroot", "yocto", "openwrt"]
 pk = {}
 for line in open(manifest, encoding="utf-8"):

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, firmware and HDL</title>
-<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean source file in any of fifteen languages: C99 to C++20 built with Clang or GCC, Python 3, Arduino sketches, bare-metal AVR and PIC32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).>
+<title>EVIA Paradigma: visual programming that compiles to C, C++, Python, Java, Kotlin, Android, firmware and HDL</title>
+<meta name="description" content="Wire blocks on a canvas, run them, and turn them into one clean source file in any of nineteen languages: C99 to C++20 built with Clang or GCC, Python 3, Java, Kotlin, Android apps, Arduino sketches, bare-metal AVR, PIC32 and STM32 C, and SystemVerilog, Verilog or VHDL for Artix-7 and GateMate FPGAs. Classes, modules, projects, Git, Vim. Free and open source (MIT).">
 <meta property="og:title" content="EVIA Paradigma">
 <meta property="og:description" content="Draw a program as blocks. Pick the language it becomes.">
 <meta property="og:image" content="img/hero-diagram.png">
@@ -38,6 +38,7 @@
     <a href="#features">Features</a>
     <a href="#tutorial">Tutorial</a>
     <a href="#python">Python</a>
+    <a href="#android">Android</a>
     <a href="#fpga">FPGA</a>
     <a href="#download">Download</a>
     <a href="#docs">Docs</a>
@@ -75,7 +76,7 @@
   <div class="hero-text">
     <h1>Draw a program.<br>Pick its language.</h1>
     <div class="hero-grid">
-      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3 program, an Arduino sketch, bare-metal C for an AVR or PIC32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.</p>
+      <p class="lede">EVIA Paradigma is visual programming for people who like to see what the machine gets. The diagram is the program; the language is a setting. Wire blocks on a canvas, run them, then choose what they become: C99 to C++20 built with Clang or GCC, a Python 3, Java or Kotlin program, an Android app, an Arduino sketch, bare-metal C for an AVR, PIC32 or STM32 chip, or SystemVerilog, Verilog or VHDL for an FPGA.</p>
       <div class="side">
         <p class="actions">
           <a class="btn primary" href="#download">Download {{VERSION}}</a>
@@ -104,6 +105,8 @@
           <button role="tab" data-lang="c++17">C++17</button>
           <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
           <button role="tab" data-lang="python">Python</button>
+          <button role="tab" data-lang="java">Java</button>
+          <button role="tab" data-lang="kotlin">Kotlin</button>
         </div>
         <div class="modes">
           <span class="mode" role="radiogroup" aria-label="Flow">
@@ -122,7 +125,7 @@
       </div>
     </div>
     <figcaption id="bench-caption"><span id="sample-note" data-note="The diagram on the left as {lang}: {fn} from the generated {lines}-line file.">The diagram on the left, as the generator writes it.</span>
-      All 36 versions print the same output as the built-in interpreter.</figcaption>
+      All 44 versions print the same output as the built-in interpreter.</figcaption>
   </figure>
 </section>
 
@@ -152,9 +155,9 @@
 
   <article class="feature">
     <div class="feature-text">
-      <h3>One diagram, fifteen languages</h3>
+      <h3>One diagram, nineteen languages</h3>
       <p>A diagram says what the program does, not what it is written in. The same canvas becomes eight C and C++
-        standards, Python 3, an Arduino sketch, bare-metal AVR or PIC32 C, or SystemVerilog, Verilog-2001 and VHDL for an
+        standards, Python 3, Java, Kotlin, an Android app, an Arduino sketch, bare-metal AVR, PIC32 or STM32 C, or SystemVerilog, Verilog-2001 and VHDL for an
         FPGA, and Run executes the diagram itself, so you can compare its output with any of them. Where a target
         cannot keep a block, the error names that block instead of quietly changing what the program means.</p>
     </div>
@@ -221,6 +224,7 @@
       <p>New in 0.8.0: the installers bring their toolchains — avr-gcc with avrdude, and the OSS CAD Suite for FPGAs — so bare-metal AVR C and the FPGA flows work with nothing to set up. Microchip's free XC32 installs from inside the application (Settings, PIC32, Get XC32), straight from microchip.com. Settings and Devices are now menus of their own.</p>
       <p>New in 0.7.1: an AppImage for any Linux on x86-64, next to the .deb — one executable file with the Java runtime inside it, nothing to install and no root needed. The modules a board program can use are described above: UART, SPI, I2C and MQTT.</p>
       <p>New in 0.9.0: STM32. The Blue Pill, Black Pill, Nucleo-F401RE, Nucleo-F411RE and STM32F4DISCOVERY take the same diagrams as bare-metal STM32 C (registers only, its own start-up code and linker script) or as Arduino sketches with STMicroelectronics' core, and Upload sends them through an ST-Link with OpenOCD. The installers are now small online installers: the toolchains — arduino-cli, avr-gcc, the Arm GNU Toolchain, OpenOCD and the OSS CAD Suite — are packages of the EVIA server, picked on the first start and updated in place from Settings, Packages and Updates, and the application updates itself the same way. The STM32 code is built with arm-none-eabi-gcc and run in QEMU in CI, but has not yet been run on a board.</p>
+      <p>New in 0.10.0: Java, Kotlin and Android. The same diagram becomes a Java or Kotlin program, compiled and run from the code window, or an Android app that EVIA Paradigma builds without Gradle and installs on a phone over USB. The JDK and the Kotlin compiler are packages of the EVIA server; the Android SDK comes from Google once you accept its licence.</p>
     </div>
     <img src="img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="The blink program as bare-metal AVR C, built with avr-gcc 14 for the Arduino Uno: 4032 bytes of code.">
   </article>
@@ -287,6 +291,22 @@ java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang python --flow g
   <p class="fine">Settings, Python holds the command: python3, the py launcher on Windows, or a full path. Detect looks for it again and Check shows its version.</p>
 </section>
 
+<section class="tutorial" id="android" aria-labelledby="android-h">
+  <h2 id="android-h">Java, Kotlin and Android apps in four steps</h2>
+  <p class="section-lede">The same diagram becomes a Java or Kotlin program, or an app for an Android phone. Settings fetches a JDK and the Kotlin compiler with one click, and the Android SDK from Google once you accept its licence.</p>
+  <ol class="steps">
+    <li><h3>Choose Java, Kotlin or Android</h3><p>Pick it in the Language list, in the toolbar or in the code window, and press F7 to see the code.</p></li>
+    <li><h3>Compile and run</h3><p>For Java and Kotlin, press Compile &amp; Run in the code window. Text typed into Input goes to the program.</p></li>
+    <li><h3>Build the Android app</h3><p>Build makes the APK in seconds with the Android SDK's own tools, without Gradle or Android Studio. The folder still opens in Android Studio.</p></li>
+    <li><h3>Install it on your phone</h3><p>Turn on USB debugging, connect the phone and press Install on Phone. The app starts by itself: Print on the screen, Input in a text field.</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang java -o Program.java
+java Program.java
+java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang kotlin -o tutorial.kt
+java -jar evia-paradigma.jar --android examples/tutorial.evia ~/apps/tutorial --install</code></pre>
+  <p class="fine">Settings, Java and Kotlin holds the JDK and kotlinc; Settings, Android holds the SDK, the app's id and name, and the phone. The Java and Kotlin output matches the interpreter in CI; the apps are checked on the computer but have not yet been run on a phone.</p>
+</section>
+
 <section class="tutorial" id="fpga" aria-labelledby="fpga-h">
   <h2 id="fpga-h">Your first FPGA program in four steps</h2>
   <p class="section-lede">The same blink diagram becomes hardware for Artix-7 and GateMate boards. The full tutorial, step 10, is in the PDF above, and the guide has an FPGA topic (F1).</p>
@@ -335,14 +355,16 @@ java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board 
 
 <section class="tested" aria-labelledby="tested-h">
   <h2 id="tested-h">Tested against its own interpreter</h2>
-  <p class="section-lede">On every change, CI generates every example and test program in all 36 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the
+  <p class="section-lede">On every change, CI generates every example and test program in all 44 combinations of language, flow and values, compiles it with warnings as errors (Python: checks it), runs it, and compares stdout, stderr and the
     exit code with the interpreter.</p>
   <table class="results">
     <thead><tr><th scope="col">Where</th><th scope="col">Compiler</th><th scope="col">Identical to the interpreter</th></tr></thead>
     <tbody>
       <tr><td>Linux, all 8 C and C++ standards</td><td>Clang 23</td><td>416 of 416</td></tr>
       <tr><td>Linux, all 8 C and C++ standards</td><td>GCC 13</td><td>416 of 416</td></tr>
-      <tr><td>Linux, Python 3: every example and test, both flows, both value modes</td><td>Python 3.12</td><td>52 of 52</td></tr>
+      <tr><td>Linux, Python 3: every example and test, both flows, both value modes</td><td>Python 3.12</td><td>54 of 54</td></tr>
+      <tr><td>Linux, Java and Kotlin: every example and test, both flows, both value modes</td><td>JDK 25, Kotlin 2.4</td><td>108 of 108</td></tr>
+      <tr><td>Android apps: the program part run on the computer, every example and test</td><td>Kotlin 2.4</td><td>54 of 54</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23, static</td><td>260 of 260</td></tr>
       <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16, static</td><td>260 of 260</td></tr>
       <tr><td>Board examples, bare-metal AVR C in simavr (ATmega328P, 2560, 32U4)</td><td>avr-gcc 14</td><td>30 of 30</td></tr>

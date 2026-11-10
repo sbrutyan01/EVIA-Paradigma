@@ -10,7 +10,10 @@ import glob, json, os, re, shutil, subprocess, sys
 
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(root)
-jar = sys.argv[1] if len(sys.argv) > 1 else sorted(glob.glob("target/evia-paradigma-*.jar"))[-1]
+def _version(path):   # 0.10.0 after 0.9.5: by numbers, not by letters
+    m = re.search(r"evia-paradigma-([0-9.]+)\.jar$", path)
+    return [int(n) for n in m.group(1).split(".")] if m else []
+jar = sys.argv[1] if len(sys.argv) > 1 else max(glob.glob("target/evia-paradigma-*.jar"), key=_version)
 # the download links point at a published release: SITE_VERSION (the latest release, set by the workflow),
 # or else the version of the jar
 version = os.environ.get("SITE_VERSION", "").lstrip("v") or re.search(r"evia-paradigma-([0-9.]+)\.jar", jar).group(1)
@@ -41,7 +44,7 @@ for f in glob.glob("docs/screenshots/*.png") + ["docs/logo.png", "docs/logo-dark
     shutil.copy(f, out + "/img/")
 
 def excerpt(code, lang):
-    """The main program's function: run_program() in C, Program::run() in C++, Program.run() in Python."""
+    """The main program's function: run_program() in C, Program::run() in C++, Program.run() in Python, Java, Kotlin."""
     lines = code.split("\n")
     if lang == "python":
         i = next(k for k, l in enumerate(lines) if l == "    def run(self):")
@@ -49,13 +52,19 @@ def excerpt(code, lang):
         while not lines[j - 1].strip():
             j -= 1
         return "\n".join(l[4:] for l in lines[i:j])
+    if lang in ("java", "kotlin"):
+        # Java: static void run() inside class Program; Kotlin: fun run() inside class Program
+        start = "    static void run() {" if lang == "java" else "    fun run() {"
+        i = next(k for k, l in enumerate(lines) if l == start)
+        j = next(k for k in range(i, len(lines)) if lines[k] == "    }")
+        return "\n".join(l[4:] for l in lines[i:j + 1])
     start = "static void run_program(void) {" if not lang.startswith("c++") else "void Program::run() {"
     i = next(k for k, l in enumerate(lines) if l.startswith(start))
     j = next(k for k in range(i, len(lines)) if lines[k] == "}")
     return "\n".join(lines[i:j + 1])
 
 samples = {}
-for lang in ["c99", "c11", "c17", "c++98", "c++11", "c++14", "c++17", "c++20", "python"]:
+for lang in ["c99", "c11", "c17", "c++98", "c++11", "c++14", "c++17", "c++20", "python", "java", "kotlin"]:
     for flow in ["structured", "goto"]:
         for values in ["safe", "fast"]:
             code = subprocess.run(["java", "-jar", jar, "--gen", "examples/tutorial.evia", "--lang", lang,

@@ -8,6 +8,8 @@
 #   pic32prog/          pic32prog (PIC32 upload), built by this repository's pic32prog workflow
 #   arduino-cli/        arduino-cli (Arduino, ESP32 and STM32 sketches; the cores come through it)
 #   oss-cad-suite/      yosys, nextpnr, gmpack, openFPGALoader ... (FPGA)
+#   jdk/                the Eclipse Temurin JDK (Java and Kotlin programs, Android apps)
+#   kotlin/             kotlinc, the Kotlin compiler (Kotlin programs, Android apps)
 #   buildroot/          the Buildroot sources (Linux > Linux Images; Linux computers only)
 #   yocto/              Poky and meta-raspberrypi, the Yocto sources (Linux only)
 #   openwrt/            the OpenWrt sources, and on x86-64 the Image Builders for the two boards (Linux only)
@@ -24,7 +26,7 @@
 # from microchip.com instead (Settings, PIC32, Get XC32).
 set -euo pipefail
 KIND="${1:?usage: fetch-toolchains.sh linux|linux-arm64|windows|macos-arm64|macos-x64}"
-ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd pic32prog arduino-cli oss-cad-suite buildroot yocto openwrt}"
+ONLY="${ONLY:-avr-gcc arm-none-eabi-gcc openocd pic32prog arduino-cli oss-cad-suite jdk kotlin buildroot yocto openwrt}"
 want() { case " $ONLY " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 OUT="${TOOLCHAINS_OUT:-build/toolchains}"
 CACHE="${TOOLCHAINS_CACHE:-build/toolchain-downloads}"
@@ -36,6 +38,9 @@ AVR_TAG=v16.1.0-1
 ARM_VER=15.2.1-1.1
 OCD_VER=0.12.0-7
 CLI_VER=1.5.1
+JDK_VER=25.0.5+8            # Eclipse Temurin; the files say 25.0.5_8
+KOTLIN_VER=2.4.21
+KOTLIN_SHA=7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd
 P32_COMMIT=4b4c8e5
 # the Linux build systems: the same pins as LinuxImages.java (scripts/check-linux.sh compares them)
 BR_VER=2026.02.3
@@ -59,27 +64,32 @@ case "$KIND" in
                ARM_SHA=da6a49ad4003944b823c6c93702a8787c922ab34bd7e918ec0eaf6933a9b1ff6
                OCD_SHA=94b3790983beaf8ed57e646c0620dd66d705fddae03d290823a6ed3b439468d6
                CLI=("Linux_64bit.tar.gz" 28a8e119c498a25607821c36cb2dc49e8463941b261a0d99091baa7bc692dd2b)
-               P32=("linux-x64.tar.gz" 60d5247f358662de1a61027752a790cfeade8174b32435f3634a6306776dfddc) ;;
+               P32=("linux-x64.tar.gz" 60d5247f358662de1a61027752a790cfeade8174b32435f3634a6306776dfddc)
+               JDK=("x64_linux_hotspot.tar.gz" 68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb) ;;
   linux-arm64) XP=linux-arm64.tar.gz
                ARM_SHA=67980c7990eba7bb7ffdf39699102effd70889f5ac427be19a8c8a6c5fab2972
                OCD_SHA=db73a3ab91c556ecec2405a7e02d404b11139df6aba1031cad94a7e6766d06cc
                CLI=("Linux_ARM64.tar.gz" 1e69e077479f300614d4551334e0a33f08ee40b04315d83b8e7e0e94f0d0ee62)
-               P32=("linux-arm64.tar.gz" ab2354b585e3de110534b4bb1ae6866fc46cf46c899c24c7565565f3b576fb38) ;;
+               P32=("linux-arm64.tar.gz" ab2354b585e3de110534b4bb1ae6866fc46cf46c899c24c7565565f3b576fb38)
+               JDK=("aarch64_linux_hotspot.tar.gz" bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880) ;;
   windows)     XP=win32-x64.zip
                ARM_SHA=bae6a3d1667697ce750c3b13d6d26d80973ecedc2cc87bf04869e83447fd93ea
                OCD_SHA=6bfd3c97135aafef8affc9af1acf34fd0e2b9ca26044506f6abd7f95b7630052
                CLI=("Windows_64bit.zip" fabe42e0eb04d00e776a66178299ff95a46c623dbc260f997e58fd514853dd40)
-               P32=("windows-x64.zip" 6b4530b1890605a0735bc7b272d7b4042cc7ea89e7dd3211068edcab68ee45c4) ;;
+               P32=("windows-x64.zip" 6b4530b1890605a0735bc7b272d7b4042cc7ea89e7dd3211068edcab68ee45c4)
+               JDK=("x64_windows_hotspot.zip" 636bdc13dc649ddc7d5921c5c7d23cca6e44fd19d662b45cc9c02135a6c96c42) ;;
   macos-arm64) XP=darwin-arm64.tar.gz
                ARM_SHA=574082d35e49a2bcbdc355836b2a3ae5e5bb3b9456c9f5e37177db2ab4aad870
                OCD_SHA=667342c086984f3e5a55b4e0d5f711add13fb04de040fca493303000e6c19327
                CLI=("macOS_ARM64.tar.gz" cb952e8c1621c95ef5f1d17831c945e3d0ec5973f89c557a7ec8feb9c4f7d4c9)
-               P32=("macos-arm64.tar.gz" 576b7961fd917962792ec23594a36c3e86e152dcb5d0222d6822aae6b4660f01) ;;
+               P32=("macos-arm64.tar.gz" 576b7961fd917962792ec23594a36c3e86e152dcb5d0222d6822aae6b4660f01)
+               JDK=("aarch64_mac_hotspot.tar.gz" 36dc14d797aaff6d89aab302cd053fdba6207dfdcf772052fa7b023a94b0e857) ;;
   macos-x64)   XP=darwin-x64.tar.gz
                ARM_SHA=5be906a5194c3173e145a58048e5607ffff947773237802b93e55e23c415f1b6
                OCD_SHA=668ad25350103a4357e11629ec833eae5982e973889ce25bad0c2963e37fa8bf
                CLI=("macOS_64bit.tar.gz" c982e940027996bea9901050e95fae99c59c1dcfee54beedecaf28141e7bf2e7)
-               P32=("macos-x64.tar.gz" 8009d4bc75d07cc6ebb85b66d723243eb779f4de566301122a64b4022ae2c4c6) ;;
+               P32=("macos-x64.tar.gz" 8009d4bc75d07cc6ebb85b66d723243eb779f4de566301122a64b4022ae2c4c6)
+               JDK=("x64_mac_hotspot.tar.gz" 32cd4d2151c91aa00d0fc911edfd05245ed40fa6b1aa894d5f35c928cd67a59d) ;;
   *) echo "unknown platform $KIND" >&2; exit 2 ;;
 esac
 
@@ -127,6 +137,8 @@ if [ "${VERSIONS_ONLY:-}" = 1 ]; then
     want pic32prog && echo "pic32prog git-$P32_COMMIT"
     want arduino-cli && echo "arduino-cli $CLI_VER"
     want oss-cad-suite && echo "oss-cad-suite $OSS_TAG"
+    want jdk && echo "jdk $JDK_VER"
+    want kotlin && echo "kotlin $KOTLIN_VER"
     want buildroot && echo "buildroot $BR_VER"
     want yocto && echo "yocto $YOCTO_VER"
     want openwrt && echo "openwrt $OWRT_VER"
@@ -236,6 +248,43 @@ The xPack OpenOCD $OCD_VER, passed on unchanged with EVIA Paradigma. GNU GPL v2 
   Source: https://github.com/xpack-dev-tools/openocd-xpack and https://openocd.org
 On Linux, OpenOCD needs permission to open the ST-Link: the udev rules are in openocd/contrib/60-openocd.rules
 (copy them to /etc/udev/rules.d/ once and plug the ST-Link in again).
+EOF
+fi
+
+# ---- the JDK (Eclipse Temurin): compiles and runs Java and Kotlin programs, and builds Android apps
+if want jdk; then
+echo "== JDK" >&2
+jdk_file="OpenJDK${JDK_VER%%.*}U-jdk_${JDK[0]%%.*}_${JDK_VER//+/_}.${JDK[0]#*.}"
+jdk=$(fetch "$GH/adoptium/temurin${JDK_VER%%.*}-binaries/releases/download/jdk-${JDK_VER//+/%2B}/$jdk_file" "${JDK[1]}")
+unpack "$jdk" "$OUT/jdk"
+if [ -d "$OUT/jdk/Contents/Home" ]; then   # macOS: the JDK proper is inside the bundle
+    mv "$OUT/jdk/Contents/Home" "$OUT/jdk.home"
+    rm -rf "$OUT/jdk"
+    mv "$OUT/jdk.home" "$OUT/jdk"
+fi
+echo "JDK $JDK_VER (Eclipse Temurin)" > "$OUT/jdk/EVIA-VERSION"
+echo "$JDK_VER" > "$OUT/jdk/EVIA-PACKAGE-VERSION"
+cat > "$OUT/jdk/SOURCES.txt" <<EOF
+Eclipse Temurin $JDK_VER, an OpenJDK build by the Eclipse Adoptium project, passed on unchanged with EVIA Paradigma.
+  GNU GPL v2 with the Classpath Exception (see legal/ and NOTICE in this folder).
+  Downloaded from: $GH/adoptium/temurin${JDK_VER%%.*}-binaries/releases/tag/jdk-$JDK_VER
+  Source: https://github.com/adoptium/jdk${JDK_VER%%.*}u and https://openjdk.org
+EOF
+fi
+
+# ---- kotlinc: the Kotlin compiler (the same zip for every system; it runs on the JDK)
+if want kotlin; then
+echo "== Kotlin" >&2
+kt=$(fetch "$GH/JetBrains/kotlin/releases/download/v$KOTLIN_VER/kotlin-compiler-$KOTLIN_VER.zip" "$KOTLIN_SHA")
+unpack "$kt" "$OUT/kotlin"
+chmod +x "$OUT/kotlin/bin/"* 2> /dev/null || true
+echo "Kotlin $KOTLIN_VER (kotlinc)" > "$OUT/kotlin/EVIA-VERSION"
+echo "$KOTLIN_VER" > "$OUT/kotlin/EVIA-PACKAGE-VERSION"
+cat > "$OUT/kotlin/SOURCES.txt" <<EOF
+The Kotlin compiler $KOTLIN_VER by JetBrains, passed on unchanged with EVIA Paradigma. Apache License 2.0
+(see license/ in this folder).
+  Downloaded from: $GH/JetBrains/kotlin/releases/tag/v$KOTLIN_VER
+  Source: https://github.com/JetBrains/kotlin
 EOF
 fi
 

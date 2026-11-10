@@ -410,3 +410,44 @@ Install Microchip's MPLAB IPE (ipecmd) from the MPLAB X installer you download a
 Programmer:	Программатор:
 MPLAB IPE:	MPLAB IPE:
 not installed	не установлена
+Get Android SDK	Скачать Android SDK
+Android SDK from Google	Android SDK от Google
+Platform %s, build-tools %s and platform-tools (adb), into:	Платформа %s, build-tools %s и platform-tools (adb), в папку:
+Reading Google's SDK index...	Чтение каталога SDK Google...
+I accept the terms of Google's licence above	Я принимаю условия лицензии Google, приведённой выше
+Download: %s	Загрузка: %s
+Google's SDK index could not be read:	Не удалось прочитать каталог SDK Google:
+Done	Готово
+Failed	Ошибка
+Build	Собрать
+Build the app (an APK) with the Android SDK; the project folder opens in Android Studio too	Собрать приложение (APK) с помощью Android SDK; папку проекта можно открыть и в Android Studio
+Install on Phone	Установить на телефон
+Build, then install the app on the phone with adb and start it	Собрать, установить приложение на телефон через adb и запустить его
+Checking the JDK...	Проверка JDK...
+No JDK found - Settings > Java and Kotlin > Get	JDK не найден - Настройки > Java и Kotlin > Скачать
+, no kotlinc - Settings > Java and Kotlin > Get	, нет kotlinc - Настройки > Java и Kotlin > Скачать
+, no Android SDK - Settings > Android > Get Android SDK...	, нет Android SDK - Настройки > Android > Скачать Android SDK...
+Open the Settings page to get what is missing?	Открыть страницу настроек, чтобы получить недостающее?
+Android	Android
+Java and Kotlin...	Java и Kotlin...
+Android...	Android...
+This Computer (C, C++, Python, Java, Kotlin)	Этот компьютер (C, C++, Python, Java, Kotlin)
+Java and Kotlin Settings...	Настройки Java и Kotlin...
+Android Phones and Tablets	Телефоны и планшеты Android
+Android app (Kotlin)	Приложение Android (Kotlin)
+Android Settings...	Настройки Android...
+Java and Kotlin	Java и Kotlin
+The JDK's folder (the one with bin/javac), or empty to find one by itself	Папка JDK (та, где есть bin/javac), или пусто, чтобы найти JDK автоматически
+kotlinc: its full path, or kotlinc to take it from PATH	kotlinc: полный путь или просто kotlinc, чтобы взять его из PATH
+Get Android SDK...	Скачать Android SDK...
+Download the platform, build-tools and platform-tools from Google, after you accept Google's licence	Скачать platform, build-tools и platform-tools с сайта Google после принятия лицензии Google
+Lower-case words with dots, e.g. am.evia.counter; a phone keeps one app per id	Слова строчными буквами через точку, например am.evia.counter; на телефоне одно приложение на каждый id
+JDK:	JDK:
+Android SDK:	Android SDK:
+Application id:	Идентификатор приложения:
+App name:	Название приложения:
+Phone:	Телефон:
+Checking kotlinc...	Проверка kotlinc...
+Looking for phones...	Поиск телефонов...
+No phones found: is USB debugging on, and adb installed (Get Android SDK)?	Телефоны не найдены: включена ли отладка по USB и установлен ли adb (Скачать Android SDK)?
+Found %d phone(s) or emulator(s). Empty uses the only one connected.	Найдено телефонов или эмуляторов: %d. Если пусто, используется единственный подключённый.
