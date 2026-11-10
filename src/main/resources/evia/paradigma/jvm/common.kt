@@ -26,5 +26,14 @@ fun rt_read_line(name: String): String {
     return line
 }
 
+/** Delay and Millis: milliseconds since the program started (Run again starts the count again), and waiting. */
+var rt_start = System.nanoTime()
+
+fun rt_millis(): Double = ((System.nanoTime() - rt_start) / 1_000_000L).toDouble()
+
+fun rt_delay(ms: Double) {
+    if (ms > 0) rt_sleep(ms.toLong())
+}
+
 /** A loop with no condition; not the constant true, so the code after it still counts as reachable. */
 var rt_forever = true

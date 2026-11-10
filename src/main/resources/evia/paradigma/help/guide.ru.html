@@ -167,6 +167,14 @@ kotlinc (<b>Get</b> скачивает компилятор JetBrains). <b>На�
 пишет (<code>build/android</code> проекта или <code>EVIA Projects/Android/</code>), это ещё и обычный проект Android
 Studio: <i>File &gt; Open</i> и Run.</p>
 
+<p><b>Датчики телефона.</b> Блок <b>Датчик телефона</b> (группа палитры «Телефон») сохраняет показание в переменной:
+<code>ax = ACCEL_X</code>. Он читает <code>ACCEL_X</code>, <code>ACCEL_Y</code>, <code>ACCEL_Z</code> (м/с&sup2;),
+<code>GYRO_X</code>, <code>GYRO_Y</code>, <code>GYRO_Z</code> (рад/с), <code>LATITUDE</code>, <code>LONGITUDE</code>,
+<code>ALTITUDE</code>, <code>GPS_ACCURACY</code> и <code>GPS_FIX</code> (1, когда положение известно). Run имитирует
+телефон, лежащий на столе; язык Android читает настоящие датчики, а приложение, читающее положение, запрашивает
+разрешение на геолокацию. <b>Delay</b> и <b>Millis</b> тоже работают в Java, Kotlin и Android. Примеры: <i>Файл &gt;
+Открыть пример &gt; Телефоны Android</i> (Hello world, GPS-координаты, тест движения).</p>
+
 <a name="boards"></a>
 <h2>Платы Arduino и ESP32</h2>
 <p>Ещё три языка создают код для микроконтроллеров. Оба используют быстрые значения (числа; текст только в Print),

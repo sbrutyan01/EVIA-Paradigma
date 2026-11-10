@@ -28,3 +28,11 @@ fun rt_error(message: String) {
     err.print(">> error: $message\n")
     err.flush()
 }
+
+fun rt_sleep(ms: Long) {
+    try {
+        Thread.sleep(ms)
+    } catch (e: InterruptedException) {
+        Thread.currentThread().interrupt()
+    }
+}

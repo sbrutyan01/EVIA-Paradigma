@@ -72,6 +72,11 @@ public enum BlockType {
     MQTT_READ("MQTT Read", new Color(160, 224, 218), true, 1, true, "cmd = \"evia/command\"",
             "name = \"topic\"   Stores the number in the next message of that topic, or -1 if none has arrived (MQTT Has Message tells a waiting -1 apart), e.g.  cmd = \"evia/command\""),
 
+    // ---- a phone: the sensors of an Android phone (simulated when run on the computer)
+    SENSOR("Phone Sensor", new Color(120, 180, 232), true, 1, true, "ax = ACCEL_X",
+            "name = sensor   ACCEL_X, ACCEL_Y, ACCEL_Z (m/s\u00b2), GYRO_X, GYRO_Y, GYRO_Z (rad/s), LATITUDE, LONGITUDE (degrees),"
+                    + " ALTITUDE (m), GPS_ACCURACY (m), GPS_FIX (1 when the position is known), e.g.  lat = LATITUDE"),
+
     // ---- only inside custom block definitions
     ENTER("Enter", new Color(112, 204, 196), false, 1, false, "",
             "Where the method starts executing (one per method)."),
@@ -98,6 +103,11 @@ public enum BlockType {
                  MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> true;
             default -> false;
         };
+    }
+
+    /** The Phone group of the palette: blocks for Language Android. */
+    boolean isPhone() {
+        return this == SENSOR;
     }
 
     boolean isLoop() {

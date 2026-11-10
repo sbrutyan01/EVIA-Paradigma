@@ -156,5 +156,6 @@
  "SettingsのJava and KotlinページでJDKとkotlincを、AndroidページでSDK、アプリのIDと名前、スマートフォンを設定します。JavaとKotlinの出力はCIでインタープリターと一致しています。アプリはコンピューター上で確認済みですが、まだスマートフォンでは実行していません。",
  "<td>Linux、JavaとKotlin：すべてのサンプルとテスト、両方のフロー、両方の値モード</td>",
  "<td>Androidアプリ：プログラム部分をコンピューターで実行、すべてのサンプルとテスト</td>",
- "<td>108 / 108</td>"
+ "<td>108 / 108</td>",
+ "<p>0.10.1の新機能：スマートフォンのセンサー。Phone SensorブロックでAndroidスマートフォンの加速度センサー、ジャイロスコープ、GPSを読み取れ、Runではそれらをシミュレートします。File → Open Example → Android Phonesには、Hello world、GPS座標ビューア、モーションテスターの3つのアプリがあります。</p>"
 ]

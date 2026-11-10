@@ -630,5 +630,9 @@
  [
   "<td>108 of 108</td>",
   "<td>108 из 108</td>"
+ ],
+ [
+  "<p>New in 0.10.1: the phone's sensors. A Phone Sensor block reads the accelerometer, the gyroscope and the GPS of an Android phone, and Run simulates them. File, Open Example, Android Phones has three apps to start from: Hello world, a GPS viewer and a motion tester.</p>",
+  "<p>Новое в 0.10.1: датчики телефона. Блок «Датчик телефона» читает акселерометр, гироскоп и GPS телефона Android, а Run их имитирует. В меню «Файл → Открыть пример → Телефоны Android» есть три готовых приложения: Hello world, просмотр GPS-координат и тест движения.</p>"
  ]
 ]

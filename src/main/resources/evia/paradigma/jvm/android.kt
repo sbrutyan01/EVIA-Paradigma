@@ -24,3 +24,17 @@ fun rt_error(message: String) {
 
 /** Stops the program when the app closes (thrown from Print or Input). */
 class RtStop : RuntimeException(null, null, false, false)
+
+/** Waiting in a Delay block; closing the app ends it. */
+fun rt_sleep(ms: Long) {
+    try {
+        Thread.sleep(ms)
+    } catch (e: InterruptedException) {
+        throw RtStop()
+    }
+}
+
+/** The newest reading of each sensor, kept by MainActivity (GPS_FIX is 0 until the position is known). */
+val rt_sensors = java.util.concurrent.ConcurrentHashMap<String, Double>()
+
+fun rt_sensor(name: String): Double = rt_sensors[name] ?: 0.0

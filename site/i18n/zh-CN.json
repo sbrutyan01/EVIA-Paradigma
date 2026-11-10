@@ -156,5 +156,6 @@
  "Settings 的 Java and Kotlin 页面设置 JDK 和 kotlinc；Android 页面设置 SDK、应用的 ID 和名称以及手机。Java 和 Kotlin 的输出在 CI 中与解释器一致；应用已在电脑上检查，但尚未在手机上运行过。",
  "<td>Linux，Java 和 Kotlin：所有示例和测试，两种流程，两种数值模式</td>",
  "<td>Android 应用：程序部分在电脑上运行，所有示例和测试</td>",
- "<td>108 / 108</td>"
+ "<td>108 / 108</td>",
+ "<p>0.10.1 新增：手机传感器。Phone Sensor 程序块可读取 Android 手机的加速度计、陀螺仪和 GPS，Run 会模拟它们。File → Open Example → Android Phones 中有三个入门应用：Hello world、GPS 坐标查看器和运动测试器。</p>"
 ]

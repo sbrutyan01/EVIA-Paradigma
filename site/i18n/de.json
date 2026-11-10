@@ -156,5 +156,6 @@
  "Settings, Java and Kotlin enthält das JDK und kotlinc; Settings, Android das SDK, ID und Namen der App sowie das Telefon. Die Ausgabe von Java und Kotlin stimmt in CI mit dem Interpreter überein; die Apps sind auf dem Computer geprüft, liefen aber noch nicht auf einem Telefon.",
  "<td>Linux, Java und Kotlin: jedes Beispiel und jeder Test, beide Abläufe, beide Wertemodi</td>",
  "<td>Android-Apps: der Programmteil auf dem Computer ausgeführt, jedes Beispiel und jeder Test</td>",
- "<td>108 von 108</td>"
+ "<td>108 von 108</td>",
+ "<p>Neu in 0.10.1: die Sensoren des Telefons. Ein Phone-Sensor-Block liest Beschleunigungssensor, Gyroskop und GPS eines Android-Telefons, und Run simuliert sie. Unter File, Open Example, Android Phones gibt es drei Apps zum Einstieg: Hello world, einen GPS-Viewer und einen Bewegungstester.</p>"
 ]

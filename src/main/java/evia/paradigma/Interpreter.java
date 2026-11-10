@@ -91,6 +91,15 @@ final class Interpreter {
                 yield new Compiled(null, ExprParser.parse(parts.get(0)), List.of(ExprParser.parse(parts.get(1))));
             }
             case DELAY, UART_OPEN, UART_WRITE, SPI_OPEN, I2C_OPEN -> new Compiled(null, ExprParser.parse(code), null);
+            case SENSOR -> {
+                Matcher m = ASSIGN.matcher(code);
+                String sensor = m.matches() ? m.group(2).trim() : "";
+                if (!BoardSim.SENSORS.contains(sensor)) {
+                    throw new FlowException("expected  name = sensor   e.g.  ax = ACCEL_X   (sensors: "
+                            + String.join(", ", BoardSim.SENSORS) + ")");
+                }
+                yield new Compiled(variable(m.group(1)), new Expr.Str(sensor), null);
+            }
             case UART_READ -> {
                 String name = code.trim();
                 if (!VAR.matcher(name).matches()) throw new FlowException("expected a variable name");
@@ -493,6 +502,10 @@ final class Interpreter {
                     }
                     case MILLIS -> {
                         scope.set(c.var(), (double) board.millis());
+                        yield cur.next[0];
+                    }
+                    case SENSOR -> {
+                        scope.set(c.var(), board.sensor(((Expr.Str) c.expr()).value()));
                         yield cur.next[0];
                     }
                     case UART_OPEN -> {

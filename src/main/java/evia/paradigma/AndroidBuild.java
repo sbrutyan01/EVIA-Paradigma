@@ -111,7 +111,7 @@ final class AndroidBuild {
         Path src = main.resolve("kotlin").resolve(pkg.replace('.', '/')).resolve("MainActivity.kt");
         Files.createDirectories(src.getParent());
         Files.writeString(src, code, StandardCharsets.UTF_8);
-        Files.writeString(main.resolve("AndroidManifest.xml"), manifest(null, name), StandardCharsets.UTF_8);
+        Files.writeString(main.resolve("AndroidManifest.xml"), manifest(null, name, usesGps(code)), StandardCharsets.UTF_8);
         String project = name.replaceAll("[^A-Za-z0-9 _-]", "").strip();
         write(dir.resolve("settings.gradle.kts"), """
                 pluginManagement {
@@ -164,12 +164,20 @@ final class AndroidBuild {
         Files.writeString(p, text, StandardCharsets.UTF_8);
     }
 
+    /** The program reads the position (JvmGenerator writes RT_GPS): the app needs the location permission. */
+    static boolean usesGps(String code) {
+        return code.contains("const val RT_GPS = true");
+    }
+
     /** The manifest: one activity that keeps running when the phone is turned. Gradle adds the package itself. */
-    static String manifest(String pkg, String name) {
+    static String manifest(String pkg, String name, boolean gps) {
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                 + "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\""
                 + (pkg != null ? "\n    package=\"" + pkg + "\" android:versionCode=\"1\" android:versionName=\"1.0\"" : "") + ">\n"
                 + (pkg != null ? "    <uses-sdk android:minSdkVersion=\"" + MIN_SDK + "\" android:targetSdkVersion=\"" + TARGET_SDK + "\" />\n" : "")
+                + (gps ? "    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n"
+                        + "    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\n"
+                        + "    <uses-feature android:name=\"android.hardware.location.gps\" android:required=\"false\" />\n" : "")
                 + "    <application android:label=\"" + xml(name) + "\" android:allowBackup=\"true\"\n"
                 + "        android:theme=\"@android:style/Theme.Material.Light.DarkActionBar\">\n"
                 + "        <activity android:name=\".MainActivity\" android:exported=\"true\"\n"
@@ -283,7 +291,7 @@ final class AndroidBuild {
 
         // 1. the manifest, linked against the platform
         Path manifest = work.resolve("AndroidManifest.xml");
-        Files.writeString(manifest, manifest(pkg, name), StandardCharsets.UTF_8);
+        Files.writeString(manifest, manifest(pkg, name, usesGps(Files.readString(src, StandardCharsets.UTF_8))), StandardCharsets.UTF_8);
         Path base = work.resolve("base.apk");
         log.line("aapt2: linking the manifest");
         run(log, null, exe(bt, "aapt2").toString(), "link", "-o", base.toString(), "-I", jar.toString(),

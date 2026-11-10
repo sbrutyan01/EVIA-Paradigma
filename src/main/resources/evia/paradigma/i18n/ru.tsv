@@ -451,3 +451,7 @@ Checking kotlinc...	Проверка kotlinc...
 Looking for phones...	Поиск телефонов...
 No phones found: is USB debugging on, and adb installed (Get Android SDK)?	Телефоны не найдены: включена ли отладка по USB и установлен ли adb (Скачать Android SDK)?
 Found %d phone(s) or emulator(s). Empty uses the only one connected.	Найдено телефонов или эмуляторов: %d. Если пусто, используется единственный подключённый.
+Phone Sensor	Датчик телефона
+Android Phones	Телефоны Android
+Phone	Телефон
+Language Android reads the phone's sensors; Run simulates them.	Язык Android читает датчики телефона; Run их имитирует.

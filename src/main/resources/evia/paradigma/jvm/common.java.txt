@@ -63,5 +63,21 @@
         return line.toString();
     }
 
+    /** Delay and Millis: milliseconds since the program started, and waiting. */
+    static final long rt_start = System.nanoTime();
+
+    static double rt_millis() {
+        return (double) ((System.nanoTime() - rt_start) / 1_000_000L);
+    }
+
+    static void rt_delay(double ms) {
+        if (!(ms > 0)) return;
+        try {
+            Thread.sleep((long) ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     /** A loop with no condition; not the constant true, so the code after it still counts as reachable. */
     static boolean rt_forever = true;

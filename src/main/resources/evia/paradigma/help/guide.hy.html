@@ -169,6 +169,14 @@ Google-ի լիցենզիան և, եթե այն ընդունեք, Google-ից ն�
 թղթապանակը (նախագծի <code>build/android</code>-ը կամ <code>EVIA Projects/Android/</code>-ը) նաև սովորական Android Studio
 նախագիծ է՝ <i>File &gt; Open</i> և Run։</p>
 
+<p><b>Հեռախոսի սենսորները։</b> <b>Հեռախոսի սենսոր</b> բլոկը (պալիտրայի «Հեռախոս» խումբ) ցուցմունքը պահում է
+փոփոխականում՝ <code>ax = ACCEL_X</code>։ Այն կարդում է <code>ACCEL_X</code>, <code>ACCEL_Y</code>, <code>ACCEL_Z</code>
+(մ/վ&sup2;), <code>GYRO_X</code>, <code>GYRO_Y</code>, <code>GYRO_Z</code> (ռադ/վ), <code>LATITUDE</code>,
+<code>LONGITUDE</code>, <code>ALTITUDE</code>, <code>GPS_ACCURACY</code> և <code>GPS_FIX</code> (1, երբ դիրքը հայտնի է)։
+Run-ը նմանակում է սեղանին դրված հեռախոս, Android լեզուն կարդում է իրական սենսորները, իսկ դիրքը կարդացող հավելվածը
+խնդրում է տեղորոշման թույլտվություն։ <b>Delay</b>-ը և <b>Millis</b>-ը նույնպես աշխատում են Java-ում, Kotlin-ում և
+Android-ում։ Օրինակներ՝ <i>Ֆայլ &gt; Բացել օրինակ &gt; Android հեռախոսներ</i> (Hello world, GPS դիտիչ, շարժման թեստ)։</p>
+
 <a name="boards"></a>
 <h2>Arduino և ESP32 տախտակներ</h2>
 <p>Եվս երեք լեզու կոդ են ստեղծում միկրոկոնտրոլերների համար։ Երկուսն էլ օգտագործում են արագ արժեքներ (թվեր. տեքստ՝ միայն

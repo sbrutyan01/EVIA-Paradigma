@@ -73,6 +73,43 @@ final class BoardSim {
         }
     }
 
+    /** What a Phone Sensor block can read. */
+    static final java.util.List<String> SENSORS = java.util.List.of("ACCEL_X", "ACCEL_Y", "ACCEL_Z", "GYRO_X", "GYRO_Y",
+            "GYRO_Z", "LATITUDE", "LONGITUDE", "ALTITUDE", "GPS_ACCURACY", "GPS_FIX");
+
+    /** The GPS readings need the location permission on the phone. */
+    static boolean isGps(String sensor) {
+        return sensor.startsWith("LAT") || sensor.startsWith("LON") || sensor.startsWith("ALT") || sensor.startsWith("GPS");
+    }
+
+    /**
+     * A simulated phone lying on a table in Yerevan that rocks gently: the values follow the simulated clock, so
+     * Run gives the same numbers every time. Rounded as the app rounds the real ones: 0.01 m/s\u00b2, 0.001 rad/s,
+     * 6 decimals of a degree, 0.1 m.
+     */
+    double sensor(String name) {
+        double t = clock / 1000.0;
+        return switch (name) {
+            case "ACCEL_X" -> round(0.6 * Math.sin(t), 2);
+            case "ACCEL_Y" -> round(0.4 * Math.cos(t), 2);
+            case "ACCEL_Z" -> round(9.81 + 0.05 * Math.sin(3 * t), 2);
+            case "GYRO_X" -> round(0.02 * Math.cos(t), 3);
+            case "GYRO_Y" -> round(-0.02 * Math.sin(t), 3);
+            case "GYRO_Z" -> round(0.01, 3);
+            case "LATITUDE" -> round(40.1772 + 0.0002 * Math.sin(t / 10), 6);
+            case "LONGITUDE" -> round(44.5126 + 0.0002 * Math.cos(t / 10), 6);
+            case "ALTITUDE" -> 990.0;
+            case "GPS_ACCURACY" -> 5.0;
+            case "GPS_FIX" -> 1.0;
+            default -> throw new FlowException("unknown sensor " + name);
+        };
+    }
+
+    static double round(double v, int decimals) {
+        double f = Math.pow(10, decimals);
+        return Math.round(v * f) / f;
+    }
+
     interface Events {
         void board(String event);
     }

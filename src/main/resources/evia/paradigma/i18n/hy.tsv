@@ -451,3 +451,7 @@ Checking kotlinc...	kotlinc-ի ստուգում...
 Looking for phones...	Հեռախոսների որոնում...
 No phones found: is USB debugging on, and adb installed (Get Android SDK)?	Հեռախոս չի գտնվել. միացվա՞ծ է USB վրիպազերծումը, և տեղադրվա՞ծ է adb-ն (Ներբեռնել Android SDK)
 Found %d phone(s) or emulator(s). Empty uses the only one connected.	Գտնվել է %d հեռախոս կամ էմուլյատոր։ Դատարկի դեպքում օգտագործվում է միակ միացվածը։
+Phone Sensor	Հեռախոսի սենսոր
+Android Phones	Android հեռախոսներ
+Phone	Հեռախոս
+Language Android reads the phone's sensors; Run simulates them.	Android լեզուն կարդում է հեռախոսի սենսորները, Run-ը դրանք նմանակում է։

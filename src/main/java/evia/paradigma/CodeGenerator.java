@@ -792,7 +792,7 @@ final class CodeGenerator {
                         case INPUT -> add(input(c.var(), b));
                         case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
                              UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
-                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> add(board(b, c));
+                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ, SENSOR -> add(board(b, c));
                         case END -> {
                             add("return;");
                             return;
@@ -975,7 +975,7 @@ final class CodeGenerator {
                 }
                 case PIN_MODE, DIGITAL_WRITE, DIGITAL_READ, ANALOG_READ, ANALOG_WRITE, DELAY, MILLIS,
                              UART_OPEN, UART_WRITE, UART_READ, SPI_OPEN, SPI_TRANSFER, I2C_OPEN, I2C_WRITE, I2C_READ,
-                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ -> {
+                             MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ, SENSOR -> {
                     line(board(b, c));
                     line(go(b, 0, after));
                 }
@@ -1182,6 +1182,7 @@ final class CodeGenerator {
 
         /** A pin, time or bus (UART, SPI, I2C) block: Arduino's functions (the bare-metal AVR runtime has the same ones). */
         String board(Block b, Interpreter.Compiled c) {
+            if (b.type == BlockType.SENSOR) throw new FlowException(b, "the Phone Sensor block reads a phone's sensors: choose Language Android (Run simulates them on the computer)");
             if (!EMB) {
                 throw new FlowException(b, "the " + b.type.title + " block runs on a microcontroller: choose Language Arduino or AVR C"
                         + " (Run simulates the board on the computer)");

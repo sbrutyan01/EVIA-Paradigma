@@ -630,5 +630,9 @@
  [
   "<td>108 of 108</td>",
   "<td>108-ից 108</td>"
+ ],
+ [
+  "<p>New in 0.10.1: the phone's sensors. A Phone Sensor block reads the accelerometer, the gyroscope and the GPS of an Android phone, and Run simulates them. File, Open Example, Android Phones has three apps to start from: Hello world, a GPS viewer and a motion tester.</p>",
+  "<p>Նորը 0.10.1-ում՝ հեռախոսի սենսորները։ «Հեռախոսի սենսոր» բլոկը կարդում է Android հեռախոսի արագացմաչափը, գիրոսկոպը և GPS-ը, իսկ Run-ը դրանք նմանակում է։ «Ֆայլ → Բացել օրինակ → Android հեռախոսներ» ընտրացանկում կա երեք պատրաստի հավելված՝ Hello world, GPS կոորդինատների դիտիչ և շարժման թեստ։</p>"
  ]
 ]

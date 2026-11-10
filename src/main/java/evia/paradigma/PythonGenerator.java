@@ -725,6 +725,7 @@ final class PythonGenerator {
         }
 
         FlowException board(Block b) {
+            if (b.type == BlockType.SENSOR) return new FlowException(b, "the Phone Sensor block reads a phone's sensors: choose Language Android (Run simulates them on the computer)");
             return new FlowException(b, "the " + b.type.title + " block runs on a microcontroller: choose Language Arduino or AVR C"
                     + " (Run simulates the board on the computer)");
         }

@@ -156,6 +156,7 @@ final class HdlGenerator {
                      MQTT_CONNECT, MQTT_PUBLISH, MQTT_SUBSCRIBE, MQTT_HAS, MQTT_READ ->
                         throw new FlowException(b, b.type.title + " is not supported when generating for an FPGA yet. UART, digital pins and PWM are.");
                 case CUSTOM, ENTER, EXIT -> throw new FlowException(b, "custom blocks are not supported when generating for an FPGA yet");
+                case SENSOR -> throw new FlowException(b, "the Phone Sensor block reads a phone's sensors: choose Language Android (Run simulates them on the computer)");
                 default -> { }
             }
         }

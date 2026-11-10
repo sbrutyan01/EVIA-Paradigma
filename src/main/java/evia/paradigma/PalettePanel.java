@@ -43,8 +43,18 @@ final class PalettePanel extends JPanel {
         removeAll();
         add(header(Text.t("Blocks")));
         for (BlockType t : BlockType.values()) {
-            if (t == BlockType.CUSTOM || t.isBoard() || !target.allows(t)) continue;
+            if (t == BlockType.CUSTOM || t.isBoard() || t.isPhone() || !target.allows(t)) continue;
             add(item(Text.t(t.title), t.color, Text.t(t.hint), "TYPE:" + t.name(), null, null));
+            add(Box.createVerticalStrut(5));
+        }
+
+        add(Box.createVerticalStrut(10));
+        add(header(Text.t("Phone")));
+        for (BlockType t : BlockType.values()) {
+            if (!t.isPhone() || !target.allows(t)) continue;
+            add(item(Text.t(t.title), t.color, "<html>" + Text.t(t.hint) + "<br><i>"
+                            + Text.t("Language Android reads the phone's sensors; Run simulates them.") + "</i></html>",
+                    "TYPE:" + t.name(), null, null));
             add(Box.createVerticalStrut(5));
         }
 

@@ -71,6 +71,12 @@ final class MainFrame extends JFrame {
             {"fpga/fade.evia", "Fade an LED with PWM"},
             {"fpga/uart_hello.evia", "Serial port: hello, then echo"},
     };
+    /** Programs for Android phones (Language Android; the sensor examples use the Phone Sensor block, which Run simulates). */
+    static final String[][] ANDROID_EXAMPLES = {
+            {"android/hello.evia", "Hello, world: print and ask a name"},
+            {"android/gps.evia", "GPS viewer: latitude, longitude, altitude"},
+            {"android/motion.evia", "Motion tester: accelerometer and gyroscope"},
+    };
     static final String[] EXAMPLE_FILES = {"modules/counter.eviam"};
 
     private final Library lib = new Library();
@@ -524,7 +530,10 @@ final class MainFrame extends JFrame {
         }
         JMenu fpga = new JMenu(Text.t("FPGA Boards (Artix-7, GateMate)"));
         for (String[] ex : FPGA_EXAMPLES) fpga.add(item(ex[1], null, e -> openExample(ex[0])));
+        JMenu android = new JMenu(Text.t("Android Phones"));
+        for (String[] ex : ANDROID_EXAMPLES) android.add(item(ex[1], null, e -> openExample(ex[0])));
         m.addSeparator();
+        m.add(android);
         m.add(arduino);
         m.add(esp32);
         m.add(pic32);
@@ -1074,10 +1083,15 @@ final class MainFrame extends JFrame {
             } else if (name.startsWith("boards/") && !Settings.target().embedded()) {
                 Settings.setTarget(Settings.target().withLang(Target.Lang.ARDUINO));
             }
+            if (name.startsWith("android/") && Settings.target().lang() != Target.Lang.ANDROID) {
+                Settings.setTarget(Settings.target().withLang(Target.Lang.ANDROID));   // its code is a phone app
+            }
             if (name.startsWith("fpga/") && !Settings.target().lang().fpga()) {
                 Settings.setTarget(Settings.target().withLang(Target.Lang.SYSTEMVERILOG));   // its code is for an FPGA
             }
-            status.setText(name.startsWith("fpga/")
+            status.setText(name.startsWith("android/")
+                    ? "Example " + name + ". Run (F5) simulates the phone; Generate Code (F7), then Build and Install on Phone."
+                    : name.startsWith("fpga/")
                     ? "Example " + name + ". Run (F5) simulates it; Generate Code (F7) makes the hardware design for your FPGA board."
                     : name.startsWith("boards/")
                     ? "Example " + name + ". Run (F5) simulates the board's pins; Generate Code (F7) makes the code for "

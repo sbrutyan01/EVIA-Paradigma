@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Android apps. For every program in examples/ and tests/programs/, both flows and both value modes:
+# Android apps. For every program in examples/, tests/programs/ and examples/android/, both flows and both value modes:
 # write the app's project (--android), compile its MainActivity.kt with kotlinc against an Android
 # platform, then run the program part on this computer with a console in place of the screen and
 # require the interpreter's stdout, stderr and exit code (the same rules as check-targets.sh).
@@ -26,11 +26,11 @@ if [ -z "$PLATFORM_JAR" ] || [ ! -f "$PLATFORM_JAR" ]; then
 fi
 STDLIB="$(dirname "$(readlink -f "$(command -v "$KOTLINC")")")/../lib/kotlin-stdlib.jar"
 echo "android.jar: $PLATFORM_JAR"
-ok=0; refused=0; failed=0; n=0
+ok=0; refused=0; failed=0; n=0; compiled=0
 runs=()
 files=()
 
-for src in examples/*.evia tests/programs/*.evia; do
+for src in examples/*.evia tests/programs/*.evia examples/android/*.evia; do
   name=$(basename "$src" .evia)
   dir=$(dirname "$src")
   input="$dir/$name.input"
@@ -41,6 +41,8 @@ for src in examples/*.evia tests/programs/*.evia; do
   for flow in structured goto; do
     for values in safe fast; do
       [[ "$name" == err_* && "$values" == fast ]] && continue
+      # the phone examples keep text (a name) in a variable: safe values, as they are meant
+      [[ "$src" == examples/android/* && "$values" == fast ]] && continue
       n=$((n + 1))
       pkg="am.evia.check$n"
       id="$name.$flow.$values"
@@ -76,6 +78,8 @@ fun main() {
 }
 EOF
       files+=("$OUT/$id/app/src/main/kotlin/${pkg//.//}/MainActivity.kt" "$OUT/$id/Harness.kt")
+      # the sensor examples run for an hour with Delay blocks: compiled, not run
+      if grep -q '|SENSOR|\||DELAY|' "$src"; then compiled=$((compiled + 1)); continue; fi
       runs+=("$id $pkg $input $name")
     done
   done
@@ -101,7 +105,7 @@ for r in "${runs[@]}"; do
     failed=$((failed + 1))
   fi
 done
-echo "$ok apps behave like the interpreter, $refused refused by fast values (text in variables), $failed failed"
+echo "$ok apps behave like the interpreter, $compiled more compiled only (sensors and Delay), $refused refused by fast values (text in variables), $failed failed"
 
 # ---------------------------------------------------------------- one real APK, when the SDK is complete
 BT=$(ls -d "$SDK"/build-tools/*/ 2> /dev/null | sort -V | tail -n 1)
