@@ -8,6 +8,7 @@ case "$1" in
           /usr/share/icons/hicolor/512x512/apps/evia-paradigma.png \
           /usr/share/mime/packages/evia-paradigma.xml
     if [ -L /usr/bin/evia-paradigma ]; then rm -f /usr/bin/evia-paradigma; fi
+    if [ "$(readlink /usr/bin/evia 2> /dev/null)" = /opt/evia-paradigma/bin/evia ]; then rm -f /usr/bin/evia; fi
     if command -v update-mime-database > /dev/null 2>&1; then update-mime-database /usr/share/mime || true; fi
     if command -v update-desktop-database > /dev/null 2>&1; then update-desktop-database -q /usr/share/applications || true; fi
     ;;

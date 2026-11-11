@@ -7,7 +7,7 @@ APP=/opt/evia-paradigma
 
 case "$1" in
   configure)
-    for f in "$APP"/lib/*.desktop; do
+    for f in "$APP"/lib/*EVIA_Paradigma.desktop; do
       [ -f "$f" ] || continue
       install -D -m 644 "$f" /usr/share/applications/evia-paradigma.desktop
     done
@@ -36,6 +36,10 @@ case "$1" in
 </mime-info>
 XML
     ln -sf "$APP/bin/EVIA Paradigma" /usr/bin/evia-paradigma
+    # the evia command (gen, run, watch ...), unless another package already owns /usr/bin/evia
+    if [ -x "$APP/bin/evia" ] && { [ ! -e /usr/bin/evia ] || [ -L /usr/bin/evia ]; }; then
+      ln -sf "$APP/bin/evia" /usr/bin/evia
+    fi
 
     if command -v update-mime-database > /dev/null 2>&1; then update-mime-database /usr/share/mime || true; fi
     if command -v update-desktop-database > /dev/null 2>&1; then update-desktop-database -q /usr/share/applications || true; fi

@@ -89,7 +89,9 @@ smoke_test() {   # run the bundled app in command-line mode on an example progra
 
 case "$KIND" in
   linux)
-    jpackage --type app-image "${image_opts[@]}" --app-version "$VERSION" --icon packaging/icons/evia.png
+    # second launcher bin/evia for the command line; postinst links it as /usr/bin/evia
+    jpackage --type app-image "${image_opts[@]}" --app-version "$VERSION" --icon packaging/icons/evia.png \
+      --add-launcher evia=packaging/evia-cli.properties
     add_toolchains "$WORK/image/$NAME/lib/toolchains"   # the .deb keeps bin/, lib/ and share/ only
     smoke_test "$WORK/image/$NAME/bin/$NAME"
     jpackage --type deb --app-image "$WORK/image/$NAME" --name "$NAME" --app-version "$VERSION" \
@@ -143,6 +145,7 @@ case "$KIND" in
     jpackage --type app-image "${image_opts[@]}" --app-version "$MACVER" --icon packaging/icons/evia.icns \
       --mac-package-identifier "$MAC_ID" \
       --mac-package-name "$NAME" \
+      --add-launcher evia=packaging/evia-cli.properties \
       ${ASSOC[@]+"${ASSOC[@]}"}
     APP="$WORK/image/$NAME.app"
     add_toolchains "$APP/Contents/Resources/toolchains"   # code signing allows extra files in Resources only
