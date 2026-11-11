@@ -71,19 +71,7 @@ final class Cli {
                     }
                     Library program = load(args[1]);
                     String code = CodeGenerator.generate(program, t);
-                    if (t.lang().fpga() && output != null) {
-                        // the pin constraints go next to the HDL file: x.sv -> x.xdc (Artix-7) or x.ccf (GateMate)
-                        Board b = Settings.board(t.lang());
-                        HdlGenerator.Result r = HdlGenerator.generate(program, t.lang().hdl(), b.fpga(), b.display, "evia_top");
-                        String base = output.contains(".") ? output.substring(0, output.lastIndexOf('.')) : output;
-                        Files.writeString(Path.of(base + Fpga.constraintExt(b.fpga())), r.constraints(), StandardCharsets.UTF_8);
-                    }
-                    if (t.lang() == Target.Lang.STM32 && output != null) {
-                        // the linker script goes next to the C file
-                        Path ld = Path.of(output).toAbsolutePath().resolveSibling("stm32.ld");
-                        Files.writeString(ld, Stm32Runtime.linkerScript(Settings.board(Target.Lang.STM32).stm32), StandardCharsets.UTF_8);
-                    }
-                    if (output != null) Files.writeString(Path.of(output), code, StandardCharsets.UTF_8);
+                    if (output != null) writeGenerated(program, t, code, Path.of(output));
                     else out.print(code);
                     return 0;
                 }
@@ -392,7 +380,26 @@ final class Cli {
         }
     }
 
-    private static int runProgram(Library lib, PrintStream out, PrintStream err) {
+    /**
+     * Writes generated code to {@code output}, with what has to go next to it: the pin constraints of an
+     * FPGA (x.sv -> x.xdc for Artix-7, x.ccf for GateMate) or the linker script of STM32 C (stm32.ld).
+     */
+    static void writeGenerated(Library program, Target t, String code, Path output) throws IOException {
+        if (t.lang().fpga()) {
+            Board b = Settings.board(t.lang());
+            HdlGenerator.Result r = HdlGenerator.generate(program, t.lang().hdl(), b.fpga(), b.display, "evia_top");
+            String name = output.getFileName().toString();
+            String base = name.contains(".") ? name.substring(0, name.lastIndexOf('.')) : name;
+            Files.writeString(output.resolveSibling(base + Fpga.constraintExt(b.fpga())), r.constraints(), StandardCharsets.UTF_8);
+        }
+        if (t.lang() == Target.Lang.STM32) {
+            Path ld = output.toAbsolutePath().resolveSibling("stm32.ld");
+            Files.writeString(ld, Stm32Runtime.linkerScript(Settings.board(Target.Lang.STM32).stm32), StandardCharsets.UTF_8);
+        }
+        Files.writeString(output, code, StandardCharsets.UTF_8);
+    }
+
+    static int runProgram(Library lib, PrintStream out, PrintStream err) {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         try {
             Block start = Interpreter.prepare(lib);
@@ -420,13 +427,13 @@ final class Cli {
         }
     }
 
-    private static Library newLibrary() {
+    static Library newLibrary() {
         Library lib = new Library();
         lib.main = new FlowCanvas(lib, null);
         return lib;
     }
 
-    private static Library load(String file) throws IOException {
+    static Library load(String file) throws IOException {
         Library lib = newLibrary();
         Path path = Path.of(file);
         // a project folder or *.eviaproj file means its main program

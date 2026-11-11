@@ -11,7 +11,7 @@
   Visual block programming in Java Swing — with classes, a Vim-powered editor and C / C++ / Python / Java / Kotlin code generation, and Android apps.
   <br><br>
   <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml"><img src="https://github.com/sbrutyan01/EVIA-Paradigma/actions/workflows/build.yml/badge.svg" alt="build"></a>
-  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.11.1-blue" alt="version 0.11.1"></a>
+  <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/latest"><img src="https://img.shields.io/badge/version-0.12.0-blue" alt="version 0.12.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
   <a href="https://sbrutyan01.github.io/EVIA-Paradigma/"><img src="https://img.shields.io/badge/website-sbrutyan01.github.io-7da7ec" alt="website"></a>
   <br><br>
@@ -67,12 +67,18 @@ itself the same way.
 
 | System | File | Notes |
 |---|---|---|
-| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.11.1-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
-| macOS, Apple Silicon | `EVIA-Paradigma-0.11.1-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
-| macOS, Intel | `EVIA-Paradigma-0.11.1-macos-x64.dmg` | Same as above |
-| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.11.1_amd64.deb` | `sudo apt install ./evia-paradigma_0.11.1_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
-| Any Linux (x86-64) | `EVIA-Paradigma-0.11.1-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.11.1-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
-| Any OS with Java 25 | `evia-paradigma-0.11.1.jar` | `java -jar evia-paradigma-0.11.1.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+| Windows 10 / 11 (x64) | `EVIA-Paradigma-0.12.0-windows-x64.exe` | Start menu entry, optional desktop shortcut, `.evia` file association, and `evia.exe` for the command line. The installer isn't code-signed yet: on the SmartScreen warning click **More info → Run anyway** |
+| macOS, Apple Silicon | `EVIA-Paradigma-0.12.0-macos-arm64.dmg` | Drag **EVIA Paradigma** to Applications. The app isn't notarized by Apple yet: if macOS won't open it, go to **System Settings → Privacy & Security** and click **Open Anyway** |
+| macOS, Intel | `EVIA-Paradigma-0.12.0-macos-x64.dmg` | Same as above |
+| Ubuntu 22.04+ / Debian 12+ (amd64) | `evia-paradigma_0.12.0_amd64.deb` | `sudo apt install ./evia-paradigma_0.12.0_amd64.deb`. Installs to `/opt/evia-paradigma` with a menu entry and the `evia-paradigma` command |
+| Any Linux (x86-64) | `EVIA-Paradigma-0.12.0-x86_64.AppImage` | Nothing to install: `chmod +x EVIA-Paradigma-0.12.0-x86_64.AppImage` and run it. No root and no package manager, so it suits Fedora, Arch, openSUSE or a live system |
+| Any OS with Java 25 | `evia-paradigma-0.12.0.jar` | `java -jar evia-paradigma-0.12.0.jar`. It carries the tutorial PDFs in seven languages, which is most of its size |
+
+### Release 0.12.0
+
+[EVIA Paradigma v0.12.0](https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.12.0) ([release notes](docs/release-notes/v0.12.0.md)):
+the [`evia` command](#the-evia-command): `evia gen app.evia -l python,java,c11 -d out/`, `evia watch`, `evia check`,
+`evia langs`, `evia boards`. An update package for 0.9.0 to 0.11.1.
 
 ### Release 0.11.1
 
@@ -1236,6 +1242,32 @@ Chip's example, and the `.xdc` and `.ccf` follow their formats, but no vendor to
 reaches the USB port depends on the RP2040 firmware. Treat the first build on your board as a test, and please report what you find.
 
 ## Command line
+
+### The `evia` command
+
+The installers put an `evia` command next to the app (`evia.exe` on Windows). With a plain jar, run
+`scripts/install-cli.sh` (copies the jar to `~/.local/share/evia` and `packaging/cli/evia` to `~/.local/bin`), or use
+`java -jar evia-paradigma.jar gen ...`.
+
+```
+evia gen app.evia -l python -o app.py               # one language (standard output without -o)
+evia gen app.evia -l c11,python,java,kotlin -d out/ # several: out/app.c, app.py, app.java, app.kt
+evia gen blink.evia -l arduino -b uno -o blink/blink.ino
+evia gen top.evia -l sv -b basys3 -o top.sv         # also writes top.xdc
+evia watch app.evia -l python -o app.py             # write it again every time app.evia is saved
+evia check app.evia                                 # does it generate for every language? (exit code 0/1)
+evia run app.evia                                   # run with the interpreter
+evia native app.evia -o app                         # Linux x86-64 executable, no compiler
+evia langs                                          # languages; evia boards [LANG] for boards
+evia new hello.evia                                 # start from the example
+evia help gen
+```
+
+Options of `gen` and `watch`: `-l LANGS` (comma separated, or `all`), `-o FILE`, `-d DIR`, `-b BOARD`,
+`--flow structured|goto`, `--values safe|fast`, `--net uart|ethernet`, `-q`. The options below (`--gen`, `--linux` ...)
+still work, also as `evia --gen ...`.
+
+### Options
 
 ```
 java -jar evia-paradigma.jar --run program.evia              # run with the interpreter

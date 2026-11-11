@@ -14,7 +14,7 @@ import java.io.File;
  */
 public final class App {
     /** Released version, shown by --version and in the About dialog. */
-    public static final String VERSION = "0.11.1";
+    public static final String VERSION = "0.12.0";
 
     /**
      * EVIA Paradigma Native: the same editor, but no code generation. Build makes an executable straight from the
@@ -35,6 +35,11 @@ public final class App {
             args = java.util.Arrays.copyOfRange(args, 2, args.length);
         }
         if (handOver(args)) return;
+        // the evia command (installed launcher: -Devia.cli=true), or a subcommand such as "gen" that is not a file here
+        if (Boolean.getBoolean("evia.cli") || args.length > 0 && EviaCmd.COMMANDS.contains(args[0]) && !new File(args[0]).exists()) {
+            System.setProperty("java.awt.headless", "true");
+            System.exit(EviaCmd.run(args));
+        }
         if (args.length > 0 && args[0].startsWith("-")) {
             System.setProperty("java.awt.headless", "true");
             System.exit(Cli.run(args));

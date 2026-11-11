@@ -1,0 +1,15 @@
+#!/bin/sh
+# The evia command for a plain EVIA Paradigma jar (installers have their own evia launcher).
+# Uses $EVIA_JAR, else evia-paradigma.jar next to this script, else ~/.local/share/evia/evia-paradigma.jar.
+# Java 21 or newer: $JAVA_HOME/bin/java, else java on PATH.
+here=$(dirname "$0")
+jar=${EVIA_JAR:-}
+[ -z "$jar" ] && [ -f "$here/evia-paradigma.jar" ] && jar="$here/evia-paradigma.jar"
+[ -z "$jar" ] && jar="${XDG_DATA_HOME:-$HOME/.local/share}/evia/evia-paradigma.jar"
+if [ ! -f "$jar" ]; then
+  echo "evia: no evia-paradigma.jar (set EVIA_JAR, or run scripts/install-cli.sh)" >&2
+  exit 2
+fi
+java=java
+[ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ] && java="$JAVA_HOME/bin/java"
+exec "$java" -Devia.cli=true -Djava.awt.headless=true -jar "$jar" "$@"
