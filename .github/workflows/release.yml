@@ -118,10 +118,6 @@ jobs:
       - name: Test the .deb on Ubuntu 22.04/24.04 and Debian 12/13
         if: matrix.kind == 'linux'
         run: packaging/test-deb.sh packages/evia-paradigma_*.deb
-      # EVIA Paradigma Native: the same jar with -Devia.edition=native (Build makes executables straight from the
-      # blocks, no code generation), its own names so both editions install side by side
-      - name: Build the installer of EVIA Paradigma Native
-        run: EDITION=native packaging/package.sh ${{ matrix.kind }}
       - name: How big the installer came out
         shell: bash
         run: |
