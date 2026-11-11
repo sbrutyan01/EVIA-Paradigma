@@ -68,15 +68,16 @@ SITE_VERSION="$TAG" python3 scripts/build-site.py "$JAR" || die "the site did no
 
 # ---------------------------------------------------------------- install
 say "installing into $ROOT"
-# The downloads and packages folders are kept: the installers and the package server (scripts/build-packages.sh)
+# The downloads, packages and native folders are kept: the installers, the package server (scripts/build-packages.sh)
+# and the update index of EVIA Paradigma Native (its native-sync service on dell)
 # are large, and are not part of the site.
 if command -v rsync > /dev/null; then
-    rsync -a --delete --exclude downloads/ --exclude packages/ build/site/ "$ROOT/" || die "rsync failed"
+    rsync -a --delete --exclude downloads/ --exclude packages/ --exclude native/ build/site/ "$ROOT/" || die "rsync failed"
 else
-    find "$ROOT" -mindepth 1 -maxdepth 1 ! -name downloads ! -name packages -exec rm -rf {} + 2> /dev/null
+    find "$ROOT" -mindepth 1 -maxdepth 1 ! -name downloads ! -name packages ! -name native -exec rm -rf {} + 2> /dev/null
     cp -a build/site/. "$ROOT/" || die "copy failed"
 fi
-echo "   $(find "$ROOT" -type f ! -path "$ROOT/downloads/*" ! -path "$ROOT/packages/*" | wc -l) files"
+echo "   $(find "$ROOT" -type f ! -path "$ROOT/downloads/*" ! -path "$ROOT/packages/*" ! -path "$ROOT/native/*" | wc -l) files"
 
 # ---------------------------------------------------------------- the installers, when asked for
 if [ "$WANT_DOWNLOADS" = 1 ]; then
