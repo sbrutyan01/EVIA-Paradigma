@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVIA Paradigma：可編譯為 C、C++、Python、Java、Kotlin、Android、韌體和 HDL 的視覺化程式設計</title>
+<meta name="description" content="在畫布上連接程式方塊並執行，將其轉換為十九種語言之一的整潔原始碼檔案：使用 Clang 或 GCC 編譯的 C99 至 C++20、Python 3、Java、Kotlin、Android 應用程式、Arduino 草圖、裸機 AVR、PIC32 和 STM32 C，以及適用於 Artix-7 和 GateMate FPGA 的 SystemVerilog、Verilog 或 VHDL。支援類別、模組、專案、Git 和 Vim。免費開放原始碼（MIT）。">
+<meta property="og:title" content="EVIA Paradigma">
+<meta property="og:description" content="用程式方塊繪製程式。選擇它要轉換成的語言。">
+<meta property="og:image" content="img/hero-diagram.png">
+<link rel="icon" type="image/png" href="../img/logo.png">
+<link rel="preload" href="../fonts/FamiljenGrotesk.woff" as="font" type="font/woff" crossorigin>
+<meta name="color-scheme" content="light dark">
+<script>
+  // the theme chosen with the header switch (otherwise the system's), before the page is drawn
+  try { var t = localStorage.getItem("evia-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="alternate" hreflang="en" href="https://sbrutyan01.github.io/EVIA-Paradigma/">
+<link rel="alternate" hreflang="ru" href="https://sbrutyan01.github.io/EVIA-Paradigma/ru/">
+<link rel="alternate" hreflang="hy" href="https://sbrutyan01.github.io/EVIA-Paradigma/hy/">
+<link rel="alternate" hreflang="de" href="https://sbrutyan01.github.io/EVIA-Paradigma/de/">
+<link rel="alternate" hreflang="zh-CN" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-CN/">
+<link rel="alternate" hreflang="zh-TW" href="https://sbrutyan01.github.io/EVIA-Paradigma/zh-TW/">
+<link rel="alternate" hreflang="ja" href="https://sbrutyan01.github.io/EVIA-Paradigma/ja/">
+<link rel="stylesheet" href="../style.css?v=c53edfd3fe">
+</head>
+<body>
+
+<a class="skip" href="#main">跳到本文</a>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="EVIA Paradigma 首頁">
+    <img class="logo-light" src="../img/logo.png" alt="" width="136" height="136">
+    <img class="logo-dark" src="../img/logo-dark.png" alt="" width="136" height="136">
+    <span>EVIA Paradigma</span>
+  </a>
+  <nav aria-label="主導覽">
+    <a href="#features">功能</a>
+    <a href="#tutorial">教學</a>
+    <a href="#python">Python</a>
+    <a href="#android">Android</a>
+    <a href="#fpga">FPGA</a>
+    <a href="#download">下載</a>
+    <a href="#docs">文件</a>
+    <a class="gh" href="https://github.com/sbrutyan01/EVIA-Paradigma">GitHub</a>
+    <div class="top-tools">
+    <div class="site-language" role="group" aria-label="網站語言">
+      <span class="site-language-label">網站語言</span>
+      <div class="site-langs">
+        <a href=".././" hreflang="en" lang="en" title="English">EN</a>
+        <a href="../ru/" hreflang="ru" lang="ru" title="Русский">RU</a>
+        <a href="../hy/" hreflang="hy" lang="hy" title="Հայերեն">ՀԱՅ</a>
+        <a href="../de/" hreflang="de" lang="de" title="Deutsch">DE</a>
+        <a href="../zh-CN/" hreflang="zh-CN" lang="zh-CN" title="简体中文">简</a>
+        <a href="../zh-TW/" hreflang="zh-TW" lang="zh-TW" aria-current="page" title="繁體中文">繁</a>
+        <a href="../ja/" hreflang="ja" lang="ja" title="日本語">日本語</a>
+      </div>
+    </div>
+    <div class="themes" role="group" aria-label="色彩主題">
+      <button type="button" data-theme-choice="light" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+        </svg>淺色</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>
+        </svg>深色</button>
+    </div>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-text">
+    <h1>繪製程式。<br>選擇它的語言。</h1>
+    <div class="hero-grid">
+      <p class="lede">EVIA Paradigma 是一款視覺化程式設計工具，適合想了解機器實際接收內容的人。圖表就是程式，語言只是一項設定。在畫布上連接程式方塊並執行，接著選擇產生目標：使用 Clang 或 GCC 的 C99 至 C++20、Python 3、Java 或 Kotlin 程式、Android 應用程式、Arduino 草圖、適用於 AVR、PIC32 或 STM32 晶片的裸機 C，或用於 FPGA 的 SystemVerilog、Verilog 或 VHDL。</p>
+      <div class="side">
+        <p class="actions">
+          <a class="btn primary" href="#download">下載 EVIA 0.12.1</a>
+          <a class="btn" href="https://github.com/sbrutyan01/EVIA-Paradigma">在 GitHub 上檢視原始碼</a>
+        </p>
+        <p class="fine">支援 Windows、macOS 和 Linux。免費開放原始碼，採用 MIT 授權。</p>
+      </div>
+    </div>
+  </div>
+
+  <figure class="bench" aria-labelledby="bench-caption">
+    <div class="bench-diagram">
+      <img src="../img/hero-diagram.png" width="1440" height="1048"
+           alt="程式方塊圖：Start、Set n = 3、一個從 1 到 n 的 For 迴圈（列印步驟並對 Counter 物件呼叫 c.add(i)），接著是 c.show() 和 End。">
+    </div>
+    <div class="bench-arrow" aria-hidden="true"></div>
+    <div class="bench-code">
+      <div class="controls" role="group" aria-label="產生程式碼選項">
+        <div class="langs" role="tablist" aria-label="語言">
+          <button role="tab" data-lang="c99">C99</button>
+          <button role="tab" data-lang="c11">C11</button>
+          <button role="tab" data-lang="c17">C17</button>
+          <button role="tab" data-lang="c++98">C++98</button>
+          <button role="tab" data-lang="c++11">C++11</button>
+          <button role="tab" data-lang="c++14">C++14</button>
+          <button role="tab" data-lang="c++17">C++17</button>
+          <button role="tab" data-lang="c++20" aria-selected="true">C++20</button>
+          <button role="tab" data-lang="python">Python</button>
+          <button role="tab" data-lang="java">Java</button>
+          <button role="tab" data-lang="kotlin">Kotlin</button>
+        </div>
+        <div class="modes">
+          <span class="mode" role="radiogroup" aria-label="流程">
+            <button role="radio" data-flow="structured" aria-checked="true">Structured</button>
+            <button role="radio" data-flow="goto" aria-checked="false">Goto</button>
+          </span>
+          <span class="mode" role="radiogroup" aria-label="數值">
+            <button role="radio" data-values="safe" aria-checked="true">Safe</button>
+            <button role="radio" data-values="fast" aria-checked="false">Fast</button>
+          </span>
+        </div>
+      </div>
+      <pre class="code" tabindex="0" aria-live="polite"><code id="sample"></code></pre>
+      <div class="run">
+        <pre id="output" aria-label="程式輸出"></pre>
+      </div>
+    </div>
+    <figcaption id="bench-caption"><span id="sample-note" data-note="左側圖表產生的 {lang} 程式碼：{fn}，共 {lines} 行。">左側圖表對應產生器實際寫出的程式碼。</span>
+      全部 44 種版本的輸出都與內建直譯器相同。</figcaption>
+  </figure>
+</section>
+
+<section class="features" id="features" aria-labelledby="features-h">
+  <h2 id="features-h">功能介紹</h2>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>程式由方塊和連線組成</h3>
+      <p>Start、Set、Input、Print、If/Else、For、While 和 Do-While 都是程式方塊；它們之間的連線表示控制流程。按下 Run，正在執行的程式方塊會反白顯示。運算式支援數字和文字、<code>&amp;&amp; || !</code>、比較運算及一般算術運算。</p>
+    </div>
+    <img src="../img/03-first-run.png" loading="lazy" width="2360" height="1760" alt="由程式方塊連接而成的 For 迴圈及其輸出：step 1、step 2、step 3。">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>類別、物件和模組</h3>
+      <p>類別包含具有初始值的欄位、建構函式和方法；每個方法都是從 Enter 到 Exit 的獨立程式方塊圖。每個 Exit 都會成為呼叫方塊的輸出。使用相同物件名稱的方塊會共用同一個物件。將類別儲存為模組（<code>.eviam</code>）並匯入其他程式。</p>
+    </div>
+    <img src="../img/05-class-method.png" loading="lazy" width="2160" height="1280" alt="Counter 類別視窗：包含欄位、建構函式和方法索引標籤；add(x) 方法將 x 加到 this.total。">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>一個圖表，十九種語言</h3>
+      <p>圖表描述程式的功能，而不是它使用的語言。同一畫布可產生八種 C 和 C++ 標準、Python 3、Java、Kotlin、Android 應用程式、Arduino 草圖、裸機 AVR、PIC32 或 STM32 C，或用於 FPGA 的 SystemVerilog、Verilog-2001 和 VHDL。Run 會直接執行圖表本身，因此你可以將輸出與任何產生版本比較。如果目標不支援某個方塊，錯誤會指出該方塊，而不會悄悄改變程式含意。</p>
+    </div>
+    <img src="../img/24-menu-code-language.png" loading="lazy" width="1516" height="1286" alt="已展開的 Code Language and Mode 選單：C99 至 C++20、Python 3、Arduino、AVR C、PIC32 C、SystemVerilog、Verilog-2001 和 VHDL，下方是流程與數值。">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>八種 C 和 C++ 標準，兩種撰寫方式</h3>
+      <p>在工具列中選擇 C99、C11、C17、C++98、C++11、C++14、C++17 或 C++20。<b>Structured</b> 會產生 if/else、迴圈和 switch；<b>Goto</b> 會將每個方塊轉換為標籤，並將每條連線轉換為跳躍。<b>Safe</b> 數值保留文字及直譯器的所有檢查；<b>Fast</b> 數值是沒有執行階段檢查的一般 <code>double</code>。C 執行階段僅包含程式實際使用的部分，因此可透過 <code>-Wall -Wextra -Wpedantic -Werror</code> 嚴格編譯。</p>
+    </div>
+    <img src="../img/22-c11-compile-run.png" loading="lazy" width="2120" height="1520" alt="顯示 C11 程式的程式碼視窗，已使用 Clang 編譯並執行。">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Python 3，無需編譯</h3>
+      <p>選擇 Python 3，同一圖表就會產生一個 .py 檔案，可在 Python 3.8 或更新版本上執行，無需任何套件或編譯器。類別會變成 Python 類別，程式變數會變成模組全域變數；程式碼視窗中的 Run 會啟動程式，在 Input 中輸入的文字會傳給程式。Python 沒有 goto，因此 <b>Structured</b> 會寫出 if/else 和 while 迴圈，<b>Goto</b> 則變成每個方塊一個分支的小型狀態機。Print、Input、數字文字以及所有錯誤訊息都與直譯器完全一致。</p>
+    </div>
+    <img src="../img/35-python-run.png" loading="lazy" width="2120" height="1520" alt="程式碼視窗中以 Python 3 顯示的教學程式，使用 Python 3.13 執行；c.add(i) 方塊對應的行已醒目標示。">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>檢視任何方塊的程式碼</h3>
+      <p>在方塊上按右鍵並選擇 View source code：產生的檔案會開啟，並精確反白該方塊對應的程式碼行。也可檢視整個方法或類別，並支援所選的任何語言。Compile &amp; Run 會直接使用 Clang 或 GCC 編譯；在 Windows 上，應用程式會自動安裝 llvm-mingw 或 WinLibs GCC，不需要 Visual Studio。</p>
+    </div>
+    <img src="../img/11-compile-run.png" loading="lazy" width="2120" height="1520" alt="產生的 C++ 程式碼中，c.add(i) 方塊對應的行已反白，程式碼已使用 Clang 編譯並執行。">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>Arduino 和 ESP32 開發板</h3>
+      <p>Pin Mode、Digital Write and Read、Analog Read and Write、Delay 和 Millis 也都是方塊。同一個 Arduino 草圖可用於 Uno、Nano、Mega 2560、Leonardo、Micro、Pro Mini，以及 ESP32、ESP32-S2、-S3、-C3、-C6 和 -H2。UART、SPI、I2C 與 MQTT 同樣是積木。Run 會在電腦上模擬 Uno，並在輸出中顯示每次接腳變化，讓你在接上開發板前先測試程式。</p>
+    </div>
+    <img src="../img/27-board-simulated.png" loading="lazy" width="2360" height="1760" alt="範例 blink 的方塊調色盤中包含 Board 方塊；輸出顯示模擬的 13 號接腳每 500 毫秒切換一次。">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>深入暫存器的裸機程式設計</h3>
+      <p>AVR C 可為 ATmega328P、ATmega2560 或 ATmega32U4 撰寫不依賴 Arduino 核心程式庫的程式：以易讀的 C 設定連接埠、計時器、PWM、ADC 和 UART。avr-gcc 可將程式編譯至約 4 KB，Upload 會透過 avrdude 將程式寫入開發板。每個範例都會在 simavr 模擬器中執行，並與直譯器比對。</p>
+      <p>0.5 新增：PIC32 C 使用 Microchip XC32 為九款 PIC32MX 晶片提供相同功能；UART、SPI 和 I2C 也成為 Run 和全部三種開發板語言中的方塊。PIC32 程式碼已根據 Microchip 裝置標頭檔檢查，但尚未使用 XC32 編譯或在晶片上執行。</p>
+      <p>0.6 新增：FPGA 支援。SystemVerilog、Verilog-2001 和 VHDL 可將同一圖表轉換為適用於 Artix-7（Nexys A7、Arty A7、Basys 3）和 Cologne Chip GateMate 開發板的硬體。輸出會與 Run 的結果進行模擬比對，並使用開放原始碼工具合成；目前尚未透過 Vivado 或載入開發板。</p>
+      <p>0.6.5 新增：MQTT。五個積木把程式的數字發布給代理伺服器並讀回命令：UART2 接 WiFi 模組的 PIC32MX、自帶 WiFi 的 ESP32，以及對著你電腦上代理伺服器執行的 Run。產生的用戶端對著真實代理伺服器檢查過，但沒有 WiFi 模組或晶片參與。隨附兩個範例，其中一個用於 PIC32 Ethernet Starter Kit II。0.6.7 新增：在 MX695、MX795 和入門套件上，MQTT 還可以從晶片自帶的以太網路埠出去，產生的檔案成為 MPLAB X Harmony 專案的應用程式；這是實驗性的，尚未用真正的 Harmony 建置過。介面本身也可在設定中選擇英語、俄語或亞美尼亞語。</p>
+      <p>0.6.9 新增：Python 3。同一圖表會產生一個 .py 檔案，可在 Python 3.8 或更新版本上執行，無需安裝其他內容；程式碼視窗中的 Run 會直接啟動它。其輸出、錯誤和結束代碼都與直譯器一致，和每種 C 與 C++ 標準一樣。</p>
+      <p>0.7.0 新增：設定移到了 File 選單中，每個裝置系列各有一頁——一般、C、C++ 和 Python、Arduino、ESP32、AVR C、PIC32 和 FPGA；Open Example 也分成了 Arduino、ESP32 和 PIC32 子選單，開啟範例時會同時選好對應的語言和開發板。</p>
+      <p>0.8.0 新增：安裝程式自帶工具鏈——avr-gcc 和 avrdude，以及用於 FPGA 的 OSS CAD Suite——因此裸機 AVR C 和 FPGA 流程無需任何設定即可使用。Microchip 的免費 XC32 可直接在應用程式中安裝（Settings、PIC32、Get XC32），直接從 microchip.com 取得。Settings 和 Devices 現在是獨立的選單。</p>
+      <p>0.7.1 新增：除 .deb 之外，還有適用於任意 x86-64 Linux 的 AppImage——一個內含 Java 執行環境的執行檔，無需安裝，也不需要 root。板上程式可用的模組（UART、SPI、I2C 和 MQTT）在上面有說明。</p>
+      <p>New in 0.9.0: STM32. The Blue Pill, Black Pill, Nucleo-F401RE, Nucleo-F411RE and STM32F4DISCOVERY take the same diagrams as bare-metal STM32 C (registers only, its own start-up code and linker script) or as Arduino sketches with STMicroelectronics' core, and Upload sends them through an ST-Link with OpenOCD. The installers are now small online installers: the toolchains — arduino-cli, avr-gcc, the Arm GNU Toolchain, OpenOCD and the OSS CAD Suite — are packages of the EVIA server, picked on the first start and updated in place from Settings, Packages and Updates, and the application updates itself the same way. The STM32 code is built with arm-none-eabi-gcc and run in QEMU in CI, but has not yet been run on a board.</p>
+      <p>0.10.0 新增：Java、Kotlin 和 Android。同一圖表可產生 Java 或 Kotlin 程式，直接在程式碼視窗中編譯執行；也可產生 Android 應用程式，EVIA Paradigma 不需 Gradle 即可建置，並透過 USB 安裝到手機上。JDK 和 Kotlin 編譯器是 EVIA 伺服器的套件；Android SDK 在你接受其授權後從 Google 下載。</p>
+      <p>0.10.1 新增：手機感測器。Phone Sensor 方塊可讀取 Android 手機的加速度計、陀螺儀和 GPS，Run 會模擬它們。File → Open Example → Android Phones 中有三個入門應用程式：Hello world、GPS 座標檢視器和動作測試器。</p>
+      <p>0.11.0 新增：原生可執行程式。EVIA Paradigma 自帶的編譯器可將方塊直接轉換為 Linux x86-64 程式，電腦上不需編譯器、組譯器或連結器，程式的行為與 Run 完全一致。EVIA Paradigma Native 是以它為核心的第二個應用程式：不產生程式碼，只有 Build executable 和 Run executable。</p>
+    </div>
+    <img src="../img/29-avr-build.png" loading="lazy" width="2360" height="1720" alt="blink 程式以裸機 AVR C 撰寫，使用 avr-gcc 14 為 Arduino Uno 編譯：程式碼大小 4032 位元組。">
+  </article>
+
+  <article class="feature">
+    <div class="feature-text">
+      <h3>板上程式可用的模組</h3>
+      <p><b>UART</b> 在所選埠上收發位元組或整行，在板子上也是 Print 的輸出去處。<b>SPI</b> 以主機方式傳輸一個位元組或一段緩衝區，模式與時脈由你選擇，每個裝置可指定各自的晶片選擇腳。<b>I2C</b> 按裝置位址讀寫暫存器，大多數感測器就是這樣驅動的。<b>MQTT</b> 是五個區塊——Connect、Publish、Subscribe、Has Message、Read——把程式的數值送到代理並取回命令，走 UART2 上的 WiFi 模組、ESP32 自帶的 WiFi，或 PIC32 自己的以太網路埠（作為 Harmony 應用程式）。每個模組都是調色盤裡的一個區塊，而不是需要安裝的程式庫；在 Run 中與在晶片上行為一致；在不支援它的目標上會指名拒絕，而不是產生一段默默無法運作的程式碼。</p>
+    </div>
+    <img src="../img/28-arduino-sketch.png" loading="lazy" width="2360" height="1720" alt="板上程式顯示為 Arduino 草稿，旁邊是它的 UART 輸出。">
+  </article>
+
+  <article class="feature flip">
+    <div class="feature-text">
+      <h3>專案、Git 和 GitHub</h3>
+      <p>File, New Project 會建立一個包含程式、模組資料夾、README 和 Git 儲存庫的資料夾。Git 選單中可執行 Commit、push 和 pull；Connect to GitHub 會使用 Git 既有的登入資訊發佈專案。應用程式不會索取或儲存密碼。</p>
+    </div>
+    <img src="../img/18-connect-github.png" loading="lazy" width="1110" height="392" alt="Connect to GitHub 對話方塊，儲存庫名稱為 sbrutyan01/CounterDemo。">
+  </article>
+
+  <ul class="extras">
+    <li><b>隨處使用 Vim。</b>程式碼欄位、程式碼視窗和提交訊息均支援 Vim 按鍵；Edit in Vim 會開啟真正的 Vim。</li>
+    <li><b>命令列。</b> <code>evia --run program.evia</code> 和 <code>evia --gen program.evia --lang c11 -o program.c</code> 可用於指令碼和 Makefile。</li>
+    <li><b>自動找到 Python。</b> Settings, Python 無需設定即可使用 python3 或 Windows 上的 py 啟動器；Check 會顯示版本。</li>
+    <li><b>Clang 或 GCC。</b>可在 Settings 中切換；Windows 會自動安裝所選編譯器，不需要 Visual Studio。</li>
+    <li><b>深色模式。</b>應用程式採用類似 IntelliJ IDEA 的外觀，並使用 Inter 和 JetBrains Mono 字型。View、Theme 可選擇淺色、深色或系統主題。</li>
+    <li><b>內建指南。</b>Help、Guide（F1）提供英文、俄文和亞美尼亞文版本，說明各方塊、運算式、類別功能、快速鍵和 Vim 按鍵。</li>
+    <li><b>PDF 教學。</b> Help, Tutorial 可用七種語言中的任一種開啟完整教學。</li>
+    <li><b>設定會下載工具。</b> arduino-cli、avr-gcc 與 FPGA 套件會下載到應用程式自己的資料夾；XC32 會開啟 Microchip 的頁面。</li>
+  </ul>
+</section>
+
+<section class="tutorial" id="tutorial" aria-labelledby="tutorial-h">
+  <h2 id="tutorial-h">八步完成第一個程式</h2>
+  <p class="section-lede">完整教學包含所有螢幕擷圖，提供七種語言的 PDF：<a href="../tutorial/EVIA-Paradigma-Tutorial.en.pdf">English</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.ru.pdf">Русский</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.hy.pdf">Հայերեն</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.de.pdf">Deutsch</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.zh-CN.pdf">简体中文</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.zh-TW.pdf">繁體中文</a>、<a href="../tutorial/EVIA-Paradigma-Tutorial.ja.pdf">日本語</a>。也可在應用程式的 Help、Tutorial 中查看，或閱讀 <a href="https://github.com/sbrutyan01/EVIA-Paradigma#tutorial">README</a>。</p>
+  <ol class="steps">
+    <li><img src="../img/01-new-project.png" loading="lazy" alt=""><h3>建立專案</h3><p>File、New Project。保持勾選 Create a Git repository。</p></li>
+    <li><img src="../img/03-first-run.png" loading="lazy" alt=""><h3>建立迴圈</h3><p>將 Set、For 和 Print 拖曳到畫布上，連接它們並按 Run。</p></li>
+    <li><img src="../img/04-class-fields.png" loading="lazy" alt=""><h3>建立類別</h3><p>Edit、New Class：為 Counter 新增 total 和 calls 欄位。</p></li>
+    <li><img src="../img/07-call-dialog.png" loading="lazy" alt=""><h3>使用類別</h3><p>將 Counter.add(x) 拖曳到迴圈中，並將物件命名為 c。</p></li>
+    <li><img src="../img/09-block-menu.png" loading="lazy" alt=""><h3>檢視程式碼</h3><p>在方塊上按右鍵並選擇 View source code。</p></li>
+    <li><img src="../img/21-language-dropdown.png" loading="lazy" alt=""><h3>選擇語言</h3><p>切換到 C11 或任一 C++ 標準，程式碼會重新產生。</p></li>
+    <li><img src="../img/17-commit.png" loading="lazy" alt=""><h3>提交並發佈</h3><p>選擇 Git、Commit，接著選擇 Connect to GitHub。</p></li>
+    <li><img src="../img/20-help-guide.png" loading="lazy" alt=""><h3>繼續探索</h3><p>模組、範例和指南（F1）。</p></li>
+  </ol>
+</section>
+
+<section class="tutorial" id="python" aria-labelledby="python-h">
+  <h2 id="python-h">四步完成第一個 Python 程式</h2>
+  <p class="section-lede">任何圖表都能作為 Python 執行。只需要來自 python.org 的 Python 3.8 或更新版本，EVIA Paradigma 會自動找到它。</p>
+  <ol class="steps">
+    <li><h3>選擇 Python 3</h3><p>在工具列或程式碼視窗的 Language 清單中選擇 Python 3。</p></li>
+    <li><h3>產生 Python 程式碼</h3><p>按 F7。在方塊上按右鍵並選擇 View source code，即可查看它產生的程式碼行。</p></li>
+    <li><h3>在程式碼視窗中執行</h3><p>按 Run。在 Input 中輸入的文字會傳給程式，出錯時程式會停止，並顯示與編輯器中相同的訊息。</p></li>
+    <li><h3>儲存 .py 檔案</h3><p>Save 會寫出該檔案，它可以在任何地方用 python3 program.py 執行。</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang python -o tutorial.py
+python3 tutorial.py
+# goto flow and fast values work too
+java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang python --flow goto --values fast -o tutorial.py</code></pre>
+  <p class="fine">Settings, Python 中保存執行命令：python3、Windows 上的 py 啟動器或完整路徑。Detect 會重新尋找，Check 會顯示版本。</p>
+</section>
+
+<section class="tutorial" id="android" aria-labelledby="android-h">
+  <h2 id="android-h">四步完成 Java、Kotlin 和 Android 應用程式</h2>
+  <p class="section-lede">同一圖表可以產生 Java 或 Kotlin 程式，也可以產生 Android 手機應用程式。設定中一鍵即可取得 JDK 和 Kotlin 編譯器；接受授權後，Android SDK 會從 Google 下載。</p>
+  <ol class="steps">
+    <li><h3>選擇 Java、Kotlin 或 Android</h3><p>在工具列或程式碼視窗的 Language 清單中選擇，然後按 F7 檢視程式碼。</p></li>
+    <li><h3>編譯並執行</h3><p>對於 Java 和 Kotlin，在程式碼視窗中按 Compile &amp; Run。在 Input 中輸入的文字會傳給程式。</p></li>
+    <li><h3>建置 Android 應用程式</h3><p>Build 使用 Android SDK 本身的工具在幾秒內產生 APK，不需 Gradle 或 Android Studio。該資料夾仍可在 Android Studio 中開啟。</p></li>
+    <li><h3>安裝到手機</h3><p>開啟 USB 偵錯，連接手機並按 Install on Phone。應用程式會自動啟動：Print 顯示在螢幕上，Input 在文字欄位中輸入。</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang java -o Program.java
+java Program.java
+java -jar evia-paradigma.jar --gen examples/tutorial.evia --lang kotlin -o tutorial.kt
+java -jar evia-paradigma.jar --android examples/tutorial.evia ~/apps/tutorial --install</code></pre>
+  <p class="fine">Settings 的 Java and Kotlin 頁面設定 JDK 和 kotlinc；Android 頁面設定 SDK、應用程式的 ID 和名稱以及手機。Java 和 Kotlin 的輸出在 CI 中與直譯器一致；應用程式已在電腦上檢查，但尚未在手機上執行過。</p>
+</section>
+
+<section class="tutorial" id="fpga" aria-labelledby="fpga-h">
+  <h2 id="fpga-h">四步完成第一個 FPGA 程式</h2>
+  <p class="section-lede">同一個 blink 圖表可轉換為適用於 Artix-7 和 GateMate 開發板的硬體。完整教學的第 10 步見上方 PDF，指南中也有 FPGA 主題（F1）。</p>
+  <ol class="steps">
+    <li><h3>選擇語言和開發板</h3><p>語言：SystemVerilog、Verilog-2001 或 VHDL。開發板：Nexys A7、Arty A7、Basys 3 或 GateMate。</p></li>
+    <li><h3>開啟 Blink 範例</h3><p>File、Open Example、FPGA Boards、Blink。接腳名稱範例：LED0、SW3、BTNC 和 JA1。</p></li>
+    <li><h3>產生程式碼</h3><p>按 F7。接腳限制位於第一則註解中，命令列會將其寫入獨立檔案。</p></li>
+    <li><h3>建置並上傳</h3><p>在 Settings 中選擇 Vivado 或開放原始碼工具。Upload 會對開發板進行程式設計。</p></li>
+  </ol>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang sv --board nexys-a7-100t -o blink.sv
+# writes blink.sv and blink.xdc
+java -jar evia-paradigma.jar --gen examples/fpga/blink.evia --lang vhdl --board olimex-gatemate -o blink.vhd
+# writes blink.vhd and blink.ccf</code></pre>
+  <p class="fine">已在模擬中與直譯器比對，並使用開放原始碼工具合成。尚未透過 Vivado 執行或載入實體開發板。</p>
+</section>
+
+<section class="download" id="download" aria-labelledby="download-h">
+  <h2 id="download-h">下載 EVIA Paradigma 0.12.1</h2>
+  <p class="section-lede">每個安裝程式都附有 Java 執行環境，不需要安裝其他軟體。編譯產生的程式碼需要 Clang 或 GCC（Windows 上的應用程式會自動設定其中一個）；產生的 Python 只需要 Python 3.8 或更新版本。</p>
+  <table class="dl">
+    <thead><tr><th scope="col">系統</th><th scope="col">檔案</th><th scope="col">備註</th></tr></thead>
+    <tbody>
+      <tr><td>Windows 10 / 11, x64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/EVIA-Paradigma-0.12.1-windows-x64.exe">EVIA-Paradigma-0.12.1-windows-x64.exe</a></td>
+        <td>尚未進行程式碼簽署：出現 SmartScreen 警告時，選擇 More info，再選擇 Run anyway。</td></tr>
+      <tr><td>macOS, Apple Silicon</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/EVIA-Paradigma-0.12.1-macos-arm64.dmg">EVIA-Paradigma-0.12.1-macos-arm64.dmg</a></td>
+        <td>尚未經過 Apple 公證：如果 macOS 無法開啟，請在「系統設定」的「隱私權與安全性」中選擇「強制打開」。</td></tr>
+      <tr><td>macOS, Intel</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/EVIA-Paradigma-0.12.1-macos-x64.dmg">EVIA-Paradigma-0.12.1-macos-x64.dmg</a></td>
+        <td>尚未經過 Apple 公證：如果 macOS 無法開啟，請在「系統設定」的「隱私權與安全性」中選擇「強制打開」。</td></tr>
+      <tr><td>Ubuntu 22.04+ / Debian 12+</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/evia-paradigma_0.12.1_amd64.deb">evia-paradigma_0.12.1_amd64.deb</a></td>
+        <td><code>sudo apt install ./evia-paradigma_0.12.1_amd64.deb</code></td></tr>
+      <tr><td>任意 Linux，x86-64</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/EVIA-Paradigma-0.12.1-x86_64.AppImage">EVIA-Paradigma-0.12.1-x86_64.AppImage</a></td>
+        <td>無需安裝：加上可執行權限直接執行。不需要 root，也不需要套件管理器，適合 Fedora、Arch、openSUSE 或 live 系統。</td></tr>
+      <tr><td>任何安裝 Java 25 的系統</td>
+        <td><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/download/v0.12.1/evia-paradigma-0.12.1.jar">evia-paradigma-0.12.1.jar</a></td>
+        <td><code>java -jar evia-paradigma-0.12.1.jar</code></td></tr>
+    </tbody>
+  </table>
+  <p class="fine"><a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases">所有版本和發行說明</a></p>
+</section>
+
+<section class="tested" aria-labelledby="tested-h">
+  <h2 id="tested-h">使用內建直譯器測試</h2>
+  <p class="section-lede">每次變更後，CI 都會在語言、流程和數值的全部 44 種組合下產生每個範例和測試程式，以警告視為錯誤的方式編譯（Python 則進行檢查）、執行，並將 stdout、stderr 和結束代碼與直譯器比較。</p>
+  <table class="results">
+    <thead><tr><th scope="col">環境</th><th scope="col">編譯器</th><th scope="col">與直譯器一致</th></tr></thead>
+    <tbody>
+      <tr><td>Linux，全部 8 種 C 和 C++ 標準</td><td>Clang 23</td><td>416 項中的 416 項</td></tr>
+      <tr><td>Linux，全部 8 種 C 和 C++ 標準</td><td>GCC 13</td><td>416 項中的 416 項</td></tr>
+      <tr><td>Linux，Python 3：所有範例和測試，兩種流程，兩種數值模式</td><td>Python 3.12</td><td>54 項中的 54 項</td></tr>
+      <tr><td>Linux，Java 和 Kotlin：所有範例和測試，兩種流程，兩種數值模式</td><td>JDK 25, Kotlin 2.4</td><td>108 / 108</td></tr>
+      <tr><td>Android 應用程式：程式部分在電腦上執行，所有範例和測試</td><td>Kotlin 2.4</td><td>54 項中的 54 項</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>llvm-mingw Clang 23，靜態編譯</td><td>260 項中的 260 項</td></tr>
+      <tr><td>Windows, C99, C17, C++98, C++14, C++20</td><td>WinLibs GCC 16，靜態編譯</td><td>260 項中的 260 項</td></tr>
+      <tr><td>開發板範例：在 simavr 中執行的裸機 AVR C（ATmega328P、2560、32U4）</td><td>avr-gcc 14</td><td>30 項中的 30 項</td></tr>
+      <tr><td>在 simavr 中執行的 Arduino Uno 和 Mega 2560 草圖</td><td>arduino-cli, arduino:avr</td><td>15 項中的 15 項</td></tr>
+      <tr><td>模擬中的 FPGA 設計（SystemVerilog、Verilog-2001、VHDL）</td><td>Icarus Verilog、GHDL</td><td>27 項中的 27 項</td></tr>
+    </tbody>
+  </table>
+  <p class="fine">Arduino 草圖也會為全部 12 款開發板（包括 ESP32）建置，共 70 次且沒有警告。PIC32 範例會根據 Microchip 裝置標頭檔進行純語法編譯檢查（144/144）。每個 FPGA 範例和測試都會使用 yosys 為 Artix-7 合成；GateMate 設計會完成配置、繞線並封裝為位元流。Vivado、openXC7 和實體開發板不屬於 CI 測試範圍。MQTT 用戶端在建置機器上編譯，並對著真實的代理伺服器執行檢查。此外也會在實際視窗中檢查應用程式、模組、專案、Git、縮放和平移。請參閱 <a href="https://github.com/sbrutyan01/EVIA-Paradigma/actions">GitHub Actions</a>。</p>
+</section>
+
+<section class="docs" id="docs" aria-labelledby="docs-h">
+  <h2 id="docs-h">文件</h2>
+  <ul class="doclinks">
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma#readme">README</a>：功能、教學、選單、語言和命令列</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/docs/release-notes">各版本的發行說明</a>；目前版本的新功能： <a href="https://github.com/sbrutyan01/EVIA-Paradigma/releases/tag/v0.12.1">0.12.1</a></li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples">範例程式</a>，也可在 File、Open Example 中找到（開發板程式位於 <a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/boards">examples/boards</a>)</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/tree/main/examples/fpga">FPGA 範例程式</a>，也可在 File、Open Example、FPGA Boards 中找到</li>
+    <li><a href="https://github.com/sbrutyan01/EVIA-Paradigma/issues">回報問題或提出功能建議</a></li>
+  </ul>
+  <pre class="cli"><code>java -jar evia-paradigma.jar --run program.evia
+java -jar evia-paradigma.jar --gen program.evia --lang c11 -o program.c
+clang -std=c11 -O2 -o program program.c -lm</code></pre>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img class="logo-light" src="../img/logo.png" alt="" width="28" height="28">
+  <img class="logo-dark" src="../img/logo-dark.png" alt="" width="28" height="28">
+  <p>EVIA Paradigma 0.12.1. Copyright 2026 Sergey Brutyan。依以下授權發佈：
+    <a href="https://github.com/sbrutyan01/EVIA-Paradigma/blob/main/LICENSE">MIT 授權</a>。</p>
+</footer>
+
+<script src="../samples.js?v=980ee24be0"></script>
+<script src="../app.js?v=922a62308d"></script>
+</body>
+</html>
