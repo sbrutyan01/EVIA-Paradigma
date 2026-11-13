@@ -3,9 +3,8 @@ name: gitlab-push
 # Pushes the current main, and optionally a tag, to the self-hosted GitLab - from a runner on the
 # machine that hosts it, which is the only thing that can reach it.
 #
-# It uses whatever Git credentials that machine already has for the GitLab (its credential helper).
-# It asks for no token and sets none up: if nothing is cached there, the push fails and says so,
-# and the GITLAB_TOKEN route (mirror-gitlab, or scripts/mirror-to-gitlab.sh) is the alternative.
+# It uses the GITLAB_TOKEN secret when one is set, otherwise whatever Git credentials that machine
+# already has for the GitLab (its credential helper). With neither, the push fails and says so.
 #
 # This pushes only to the GitLab. Nothing here pushes to GitHub.
 #
@@ -41,12 +40,18 @@ jobs:
         env:
           GITLAB_URL: ${{ vars.GITLAB_URL }}
           GITLAB_PROJECT: ${{ vars.GITLAB_PROJECT }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           url="${GITLAB_URL:-https://git.evia.am}"
           project="${GITLAB_PROJECT:-evia/evia-paradigma}"
           echo "remote: $url/$project.git"
+          remote="$url/$project.git"
+          if [ -n "${GITLAB_TOKEN:-}" ]; then
+            echo "::add-mask::$GITLAB_TOKEN"
+            remote="${url%%://*}://oauth2:$GITLAB_TOKEN@${url#*://}/$project.git"
+          fi
           echo "::group::its refs"
-          git ls-remote "$url/$project.git" 2>&1 | head -20 || echo "cannot list - no credentials, or it is unreachable"
+          git ls-remote "$remote" 2>&1 | head -20 || echo "cannot list - no credentials, or it is unreachable"
           echo "::endgroup::"
           echo "here: $(git rev-parse --short HEAD) $(git log -1 --pretty=%s)"
 
@@ -54,11 +59,16 @@ jobs:
         env:
           GITLAB_URL: ${{ vars.GITLAB_URL }}
           GITLAB_PROJECT: ${{ vars.GITLAB_PROJECT }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           set -o pipefail
           url="${GITLAB_URL:-https://git.evia.am}"
           project="${GITLAB_PROJECT:-evia/evia-paradigma}"
           remote="$url/$project.git"
+          if [ -n "${GITLAB_TOKEN:-}" ]; then
+            echo "::add-mask::$GITLAB_TOKEN"
+            remote="${url%%://*}://oauth2:$GITLAB_TOKEN@${url#*://}/$project.git"
+          fi
           tag="${{ inputs.tag }}"
           refs="HEAD:refs/heads/main"
           if [ -n "$tag" ]; then
@@ -75,7 +85,7 @@ jobs:
             echo "::error::The push to the GitLab failed. If it was rejected as non-fast-forward, its"
             echo "::error::history is unrelated - run this again with force. If it asked for a password"
             echo "::error::or said authentication failed, this machine has no cached credentials for"
-            echo "::error::that GitLab: use the GITLAB_TOKEN route instead."
+            echo "::error::that GitLab: add a GITLAB_TOKEN secret (Settings > Secrets and variables > Actions)."
             exit 1
           fi
           echo "pushed. $url/$project/-/tree/main"
